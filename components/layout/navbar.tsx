@@ -53,7 +53,7 @@ export default function Navbar() {
           >
             <div className="relative z-10 p-1 group-hover:border-orange-600 transition-colors duration-300">
               <Image
-                src="/logo/1.png"
+                src="/logo/logois2.png"
                 alt="ProSafe Logo"
                 width={120}
                 height={32}
