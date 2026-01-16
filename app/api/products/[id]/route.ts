@@ -15,6 +15,7 @@ export async function GET(
       where: { id: Number(id) },
       include: {
         category: true,
+        middleCategory: true,
         subCategory: true,
       },
     });
@@ -28,6 +29,7 @@ export async function GET(
         product: {
           ...product,
           category: product.category.name,
+          middleCategory: product.middleCategory?.name ?? null,
           subCategory: product.subCategory?.name ?? null,
         },
       },
@@ -111,6 +113,7 @@ export async function PUT(
       : 0;
 
     const mainCategoryName = formData.get("category") as string;
+    const middleCategoryName = formData.get("middleCategory") as string | null;
     const subCategoryName = formData.get("subCategory") as string | null;
     const description = formData.get("description")?.toString() || "";
 
@@ -121,6 +124,7 @@ export async function PUT(
       );
     }
 
+    // Ana kategoriyi bul
     const mainCategory = await prisma.category.findFirst({
       where: { name: mainCategoryName },
     });
@@ -132,10 +136,26 @@ export async function PUT(
       );
     }
 
+    // Orta kategoriyi bul
+    let middleCategoryId: number | undefined = undefined;
+    if (middleCategoryName && middleCategoryName !== "null") {
+      const middleCategory = await prisma.middleCategory.findFirst({
+        where: { name: middleCategoryName, categoryId: mainCategory.id },
+      });
+      if (!middleCategory) {
+        return NextResponse.json(
+          { success: false, error: "Orta kategori bulunamadı." },
+          { status: 404 }
+        );
+      }
+      middleCategoryId = middleCategory.id;
+    }
+
+    // Alt kategoriyi bul
     let subCategoryId: number | undefined = undefined;
-    if (subCategoryName && subCategoryName !== "null") {
+    if (subCategoryName && subCategoryName !== "null" && middleCategoryId) {
       const subCategory = await prisma.subCategory.findFirst({
-        where: { name: subCategoryName, categoryId: mainCategory.id },
+        where: { name: subCategoryName, middleCategoryId: middleCategoryId },
       });
       if (!subCategory) {
         return NextResponse.json(
@@ -207,10 +227,12 @@ export async function PUT(
         subImage3: subImage3Path,
         subImage4: subImage4Path,
         categoryId: mainCategory.id,
+        middleCategoryId,
         subCategoryId,
       },
       include: {
         category: true,
+        middleCategory: true,
         subCategory: true,
       },
     });
@@ -221,6 +243,7 @@ export async function PUT(
         product: {
           ...updatedProduct,
           category: updatedProduct.category.name,
+          middleCategory: updatedProduct.middleCategory?.name ?? null,
           subCategory: updatedProduct.subCategory?.name ?? null,
         },
       },

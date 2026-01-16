@@ -1,6 +1,6 @@
 // app/api/products/route.ts
 import { NextResponse } from "next/server";
-import {prisma} from "@/lib/db";
+import { prisma } from "@/lib/db";
 
 interface ProductData {
   id: number;
@@ -17,7 +17,10 @@ interface ProductData {
   rating: number;
   reviewCount?: number;
   category: string;
+  middleCategory?: string;
   subCategory?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // ======================================================
@@ -28,6 +31,7 @@ export async function GET() {
     const products = await prisma.product.findMany({
       include: {
         category: true,
+        middleCategory: true,
         subCategory: true,
       },
       orderBy: { createdAt: "desc" },
@@ -48,6 +52,7 @@ export async function GET() {
       subImage3: p.subImage3 ?? undefined,
       subImage4: p.subImage4 ?? undefined,
       category: p.category.name,
+      middleCategory: p.middleCategory?.name ?? undefined,
       subCategory: p.subCategory?.name ?? undefined,
       createdAt: p.createdAt.toISOString(),
       updatedAt: p.updatedAt.toISOString(),
@@ -130,9 +135,10 @@ export async function POST(request: Request) {
       : undefined;
 
     const categoryName = formData.get("category") as string;
+    const middleCategoryName = formData.get("middleCategory") as string | null;
     const subCategoryName = formData.get("subCategory") as string | null;
 
-    // Find main category
+    // Ana kategoriyi bul
     const category = await prisma.category.findFirst({
       where: { name: categoryName },
     });
@@ -144,11 +150,28 @@ export async function POST(request: Request) {
       );
     }
 
-    // Find subCategory
+    // Orta kategoriyi bul
+    let middleCategoryId: number | undefined = undefined;
+    if (middleCategoryName) {
+      const middleCategory = await prisma.middleCategory.findFirst({
+        where: { name: middleCategoryName, categoryId: category.id },
+      });
+
+      if (!middleCategory) {
+        return NextResponse.json(
+          { success: false, error: "Orta kategori bulunamadı." },
+          { status: 404 }
+        );
+      }
+
+      middleCategoryId = middleCategory.id;
+    }
+
+    // Alt kategoriyi bul
     let subCategoryId: number | undefined = undefined;
-    if (subCategoryName) {
+    if (subCategoryName && middleCategoryId) {
       const subCategory = await prisma.subCategory.findFirst({
-        where: { name: subCategoryName, categoryId: category.id },
+        where: { name: subCategoryName, middleCategoryId: middleCategoryId },
       });
 
       if (!subCategory) {
@@ -161,7 +184,7 @@ export async function POST(request: Request) {
       subCategoryId = subCategory.id;
     }
 
-    // Create product
+    // Ürün oluştur
     const newProduct = await prisma.product.create({
       data: {
         title,
@@ -177,10 +200,12 @@ export async function POST(request: Request) {
         subImage3: subImage3Path,
         subImage4: subImage4Path,
         categoryId: category.id,
+        middleCategoryId,
         subCategoryId,
       },
       include: {
         category: true,
+        middleCategory: true,
         subCategory: true,
       },
     });
@@ -198,8 +223,10 @@ export async function POST(request: Request) {
       subImage: newProduct.subImage ?? undefined,
       subImage2: newProduct.subImage2 ?? undefined,
       subImage3: newProduct.subImage3 ?? undefined,
+      subImage4: newProduct.subImage4 ?? undefined,
       category: newProduct.category.name,
-      subCategory: newProduct.subCategory?.name,
+      middleCategory: newProduct.middleCategory?.name ?? undefined,
+      subCategory: newProduct.subCategory?.name ?? undefined,
     };
 
     return NextResponse.json(
