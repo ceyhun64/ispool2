@@ -1,0 +1,331 @@
+"use client";
+
+import { useState, useMemo, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import ProductCard from "./productCard";
+import Filter from "./filter";
+import ProductTopBar from "./productTopbar";
+import { cn } from "@/lib/utils";
+import ProductSkeleton from "./productSkeleton";
+import {
+  SlidersHorizontal,
+  X,
+  Activity,
+  ShieldCheck,
+  Zap,
+  Cog,
+  Layers,
+} from "lucide-react";
+import MobileFilter from "./mobileFilter";
+
+export default function Products() {
+  const [colorFilter, setColorFilter] = useState<string>("all");
+  const [maxPrice, setMaxPrice] = useState<number>(300000);
+  const [minPrice, setMinPrice] = useState<number>(0);
+  const [sort, setSort] = useState<"az" | "za" | "priceLow" | "priceHigh">(
+    "az"
+  );
+  const [gridCols, setGridCols] = useState<1 | 2 | 3 | 4>(3);
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isFilterOpen, setIsFilterOpen] = useState(true);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const res = await fetch("/api/products");
+        const data = await res.json();
+        if (data.products) setProducts(data.products);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = isMobileFilterOpen ? "hidden" : "unset";
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMobileFilterOpen]);
+
+  const filteredProducts = useMemo(() => {
+    let result = products.filter((p) => {
+      const colorCheck = colorFilter === "all" || p.color === colorFilter;
+      return p.price >= minPrice && p.price <= maxPrice && colorCheck;
+    });
+
+    return result.sort((a, b) => {
+      switch (sort) {
+        case "az":
+          return a.title.localeCompare(b.title);
+        case "za":
+          return b.title.localeCompare(a.title);
+        case "priceLow":
+          return a.price - b.price;
+        case "priceHigh":
+          return b.price - a.price;
+        default:
+          return 0;
+      }
+    });
+  }, [colorFilter, minPrice, maxPrice, products, sort]);
+
+  if (loading) return <ProductSkeleton />;
+
+  return (
+    <div className="min-h-screen bg-slate-100 text-slate-900 selection:bg-orange-500 selection:text-white relative font-sans overflow-x-hidden">
+      {/* TEKNİK ARKA PLAN: Blueprint Grid */}
+    
+      {/* Radial Gradient Glow */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-500/5 blur-[120px]  -z-10" />
+
+      <main className="max-w-[1600px] mx-auto px-6 md:px-12 py-12 relative z-10">
+        {/* --- HEADER: OPERASYONEL GÖRÜNÜM --- */}
+        <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10 mb-16">
+          <div className="relative">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex gap-1">
+                <span className="w-2 h-2 bg-orange-600  animate-pulse" />
+                <span className="w-2 h-2 bg-slate-300 " />
+                <span className="w-2 h-2 bg-slate-300 " />
+              </div>
+              <span className="text-[10px] font-black tracking-[0.3em] uppercase text-slate-400 border-l border-slate-300 pl-3">
+                Industrial Safety Inventory v4.0
+              </span>
+            </div>
+
+            <h1 className="text-4xl md:text-2xl font-black tracking-tighter leading-none uppercase ">
+              EKİPMAN <br />
+              <span className="text-orange-600">KATALOĞU</span>
+            </h1>
+
+            <div className="mt-6 flex items-center gap-4">
+              <div className="h-[2px] w-12 bg-orange-600" />
+              <p className="text-slate-500 text-xs font-bold uppercase tracking-widest leading-relaxed">
+                Saha Standartlarına Uygun{" "}
+                <span className="text-slate-900">
+                  {filteredProducts.length}
+                </span>{" "}
+                Birim Listeleniyor
+              </p>
+            </div>
+          </div>
+
+          {/* İstatistikler: Daha Modern ve Endüstriyel */}
+          <div className="flex gap-4 w-full lg:w-auto">
+            {[
+              {
+                label: "Güvenlik Skoru",
+                val: "%100",
+                icon: ShieldCheck,
+                color: "text-emerald-600",
+              },
+              {
+                label: "Anlık Stok",
+                val: products.length,
+                icon: Activity,
+                color: "text-orange-600",
+              },
+              {
+                label: "Standartlar",
+                val: "EN/ISO",
+                icon: Cog,
+                color: "text-blue-600",
+              },
+            ].map((stat, i) => (
+              <div
+                key={i}
+                className="flex-1 lg:flex-none bg-slate-50  p-5   min-w-[140px] group hover:border-b-orange-600 transition-all duration-300"
+              >
+                <stat.icon
+                  size={18}
+                  className={`${stat.color} mb-3 group-hover:rotate-180 transition-transform duration-500`}
+                />
+                <div className="text-2xl font-black tracking-tight text-slate-900 mb-1">
+                  {stat.val}
+                </div>
+                <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </header>
+
+        {/* --- TOOLBAR: KONTROL MERKEZİ --- */}
+        <div className="sticky top-24 z-40 mb-12 flex items-center justify-between gap-4 p-2 ">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className={cn(
+                "hidden lg:flex items-center gap-4 px-8 py-4 transition-all font-black text-[11px] tracking-[0.2em] uppercase",
+                isFilterOpen
+                  ? "bg-slate-900 text-white  "
+                  : "bg-transparent text-slate-600 hover:bg-slate-100"
+              )}
+            >
+              <SlidersHorizontal
+                size={16}
+                className={isFilterOpen ? "text-orange-500" : "text-slate-400"}
+              />
+              {isFilterOpen ? "Filtreyi Kapat" : "Filtrele"}
+            </button>
+
+            <button
+              onClick={() => setIsMobileFilterOpen(true)}
+              className="lg:hidden flex items-center gap-3 px-6 py-4 bg-slate-900 text-white text-[11px] font-black tracking-widest uppercase"
+            >
+              <SlidersHorizontal size={14} className="text-orange-500" />
+              PARAMETRELER
+            </button>
+          </div>
+
+          <div className="flex-1 bg-slate-50">
+            <ProductTopBar
+              gridCols={gridCols}
+              setGridCols={setGridCols}
+              sort={sort}
+              setSort={setSort}
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-row items-start gap-8">
+          {/* --- SIDEBAR: TEKNİK FİLTRELEME --- */}
+          <AnimatePresence initial={false}>
+            {isFilterOpen && (
+              <motion.aside
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: 320, opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="hidden lg:block sticky top-48 overflow-hidden flex-shrink-0 h-fit"
+              >
+                <div className="w-[320px] bg-slate-50 border border-slate-200  p-8  relative overflow-hidden">
+                 
+                  <Filter
+                    colorFilter={colorFilter}
+                    setColorFilter={setColorFilter}
+                    maxPrice={maxPrice}
+                    setMaxPrice={setMaxPrice}
+                    minPrice={minPrice}
+                    setMinPrice={setMinPrice}
+                  />
+                </div>
+              </motion.aside>
+            )}
+          </AnimatePresence>
+
+          {/* --- PRODUCT GRID --- */}
+          <motion.div layout className="flex-1">
+            {filteredProducts.length > 0 ? (
+              <div
+                className={cn(
+                  "grid gap-x-8 gap-y-16 transition-all duration-500",
+                  gridCols === 1
+                    ? "grid-cols-1"
+                    : gridCols === 2
+                    ? "grid-cols-1 sm:grid-cols-2"
+                    : gridCols === 3
+                    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                    : "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
+                )}
+              >
+                {filteredProducts.map((product, index) => (
+                  <motion.div
+                    layout
+                    key={product.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.02 }}
+                  >
+                    <ProductCard product={product} />
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="h-[60vh] flex flex-col items-center justify-center border-2 border-dashed border-slate-200 bg-white/50 ">
+                <div className="relative mb-6">
+                  <Zap size={64} className="text-slate-200" />
+                  <X
+                    size={24}
+                    className="absolute top-0 right-0 text-orange-600 animate-bounce"
+                  />
+                </div>
+                <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-[10px] text-center max-w-xs leading-loose">
+                  Hata: Arama kriterlerine uygun teknik spesifikasyon
+                  bulunamadı.
+                </p>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      </main>
+
+      {/* --- MOBILE FILTER PANEL --- */}
+      <AnimatePresence>
+        {isMobileFilterOpen && (
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "tween", duration: 0.4 }}
+            className="lg:hidden fixed inset-0 z-[100] bg-white flex flex-col"
+          >
+            <div className="px-8 py-8 border-b-2 border-slate-900 flex items-center justify-between bg-white">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-slate-900 flex items-center justify-center">
+                  <SlidersHorizontal size={18} className="text-orange-500" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-black tracking-widest uppercase text-xs">
+                    Konfigüratör
+                  </span>
+                  <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">
+                    Saha Ekipman Ayarları
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsMobileFilterOpen(false)}
+                className="w-10 h-10 border border-slate-200 flex items-center justify-center hover:bg-slate-50"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-8">
+              <MobileFilter
+                selectedCategory={selectedCategory}
+                onSelectCategory={setSelectedCategory}
+                minPrice={minPrice}
+                maxPrice={maxPrice}
+                setMinPrice={setMinPrice}
+                setMaxPrice={setMaxPrice}
+                gridCols={gridCols}
+                setGridCols={setGridCols}
+                sort={sort}
+                setSort={setSort}
+              />
+            </div>
+
+            <div className="p-8 border-t bg-slate-50">
+              <button
+                onClick={() => setIsMobileFilterOpen(false)}
+                className="w-full py-6 bg-slate-900 text-white font-black uppercase tracking-[0.3em] text-xs hover:bg-orange-600 transition-colors duration-500"
+              >
+                Sistemleri Güncelle
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

@@ -1,0 +1,54 @@
+[
+  {
+    "title": "Pro-Series Reflektörlü İş Yeleği",
+    "mainImage": "/products/1.jpg",
+    "subImage": "/products/2.jpg",
+    "price": 1250,
+    "oldPrice": 1800,
+    "discountPercentage": 30,
+    "rating": 5,
+    "reviewCount": 128,
+    "category": "İŞ ELBİSELERİ",
+    "middleCategory": "İş Yelekleri",
+    "subCategory": "Reflektörlü Yelek",
+    "description": "Yüksek görünürlüklü reflektör şeritleri ile gece çalışmalarında tam güvenlik sağlar."
+  },
+  {
+    "title": "S3 Kompozit Burun İş Botu",
+    "mainImage": "/products/3.jpg",
+    "subImage": "/products/4.jpg",
+
+    "price": 2100,
+    "rating": 4.8,
+    "reviewCount": 340,
+    "category": "AYAK KORUMA",
+    "middleCategory": "İş Botları",
+    "subCategory": "Kompozit Burunlu İş Botları",
+    "description": "Darbelere dayanıklı kompozit burun ve delinmez ara taban teknolojisi."
+  },
+  {
+    "title": "Nitril Kaplı Kesilmez Eldiven",
+    "mainImage": "/products/5.png",
+    "subImage": "/products/6.png",
+
+    "price": 145,
+    "rating": 4,
+    "reviewCount": 850,
+    "category": "EL KORUMA",
+    "middleCategory": "Nitril Eldivenler",
+    "description": "Kesilmeye karşı dirençli nitril kaplama yüzey ile endüstriyel koruma."
+  },
+  {
+    "title": "3M Peltor X4A Kulaklık",
+    "mainImage": "/products/7.jpg",
+    "subImage": "/products/8.jpg",
+
+    "price": 1450,
+    "rating": 5,
+    "reviewCount": 42,
+    "category": "EKİPMANLAR",
+    "middleCategory": "3M Profesyonel Seri",
+    "subCategory": "3M Peltor Kulak Koruma",
+    "description": "Yüksek gürültülü ortamlar için ultra ince ve hafif kulak koruyucu."
+  }
+]
