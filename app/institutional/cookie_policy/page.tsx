@@ -10,7 +10,7 @@ export default function CookiePolicyPage() {
     <div>
  <TopBar />
       <Navbar />
-      <CategoryBar />      <CookiePolicy />
+           <CookiePolicy />
       <Footer />
     </div>
   );

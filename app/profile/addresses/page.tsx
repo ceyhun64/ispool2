@@ -11,7 +11,7 @@ export default function AddressesPage() {
     <div>
       <TopBar/>
       <Navbar />
-      <CategoryBar /> <Addresses />
+   <Addresses />
       <Footer />
     </div>
   );

@@ -10,7 +10,7 @@ export default function PersonalDataPage() {
     <div>
       <TopBar />
       <Navbar />
-      <CategoryBar /> <PersonalData />
+      <PersonalData />
       <Footer />
     </div>
   );

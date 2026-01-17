@@ -14,18 +14,10 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  SheetDescription,
-  SheetFooter,
   SheetClose,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import {
-  ShoppingCart,
-  ArrowRight,
-  Minus,
-  ShieldCheck,
-  Package,
-} from "lucide-react";
+import { ShoppingCart, ArrowRight, ShieldCheck, Package } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import CartItemDropdown from "./cartItem";
@@ -182,8 +174,8 @@ const CartDropdown = forwardRef(
         const updatedItem = await res.json();
         setCartItems((prev) =>
           prev.map((c) =>
-            c.id === id ? { ...c, quantity: updatedItem.quantity } : c
-          )
+            c.id === id ? { ...c, quantity: updatedItem.quantity } : c,
+          ),
         );
       } catch (err) {
         toast.error("Miktar güncellenemedi");
@@ -210,67 +202,57 @@ const CartDropdown = forwardRef(
       }
     };
 
-    const subtotal = cartItems.reduce((acc, item) => {
-      return acc + item.product.price * item.quantity;
-    }, 0);
-
+    const subtotal = cartItems.reduce(
+      (acc, item) => acc + item.product.price * item.quantity,
+      0,
+    );
     const taxAmount = subtotal * 0.1;
     const total = subtotal + taxAmount;
 
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
-          <button
-            className="relative p-2.5 bg-slate-800 text-white hover:bg-orange-600 transition-all duration-300 group shadow-lg shadow-black/10"
-            aria-label="sepet"
-          >
+          <button className="relative p-2.5 bg-slate-900 text-white hover:bg-orange-600 transition-all group shadow-lg">
             <ShoppingCart className="h-5 w-5 stroke-[2px]" />
-            <AnimatePresence>
-              {showCount && cartItems.length > 0 && (
-                <motion.span
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0, opacity: 0 }}
-                  className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-orange-500 text-white text-[10px] flex items-center justify-center font-bold border-2 border-slate-900 shadow-sm"
-                >
-                  {cartItems.length}
-                </motion.span>
-              )}
-            </AnimatePresence>
+            {showCount && cartItems.length > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-orange-500 text-white text-[10px] flex items-center justify-center font-bold border border-white">
+                {cartItems.length}
+              </span>
+            )}
           </button>
         </SheetTrigger>
 
         <SheetContent
           side="right"
-          className="z-[2000] p-0 w-full max-w-[420px] h-full fixed top-0 right-0 bg-white flex flex-col shadow-2xl border-l-4 border-l-orange-500"
+          className="z-[200] p-0 w-full sm:max-w-[420px] h-full fixed top-0 right-0 bg-white flex flex-col border-l-4 border-l-orange-500 shadow-2xl"
         >
-          {/* Header - Industrial Style */}
-          <div className="bg-slate-900 p-6 text-white relative overflow-hidden">
+          {/* Header */}
+          <div className="bg-slate-900 p-5 sm:p-6 text-white relative overflow-hidden shrink-0">
             <div className="absolute top-0 right-0 opacity-10 translate-x-1/4 -translate-y-1/4">
               <ShieldCheck size={140} />
             </div>
             <div className="relative z-10">
               <SheetTitle className="flex items-center gap-2">
-                <span className="text-[11px] tracking-[0.3em] text-orange-400 uppercase font-black">
+                <span className="text-[10px] sm:text-[11px] tracking-[0.3em] text-orange-400 uppercase font-black">
                   Ekipman Çantanız
                 </span>
               </SheetTitle>
               <div className="flex items-center gap-2 mt-1">
                 <Package className="h-3 w-3 text-slate-400" />
-                <span className="text-[10px] uppercase tracking-widest text-slate-300 font-medium">
+                <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-slate-300 font-medium">
                   {cartItems.length} Kalem Ürün Hazırlanıyor
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto px-6 py-4 scrollbar-thin scrollbar-thumb-slate-200">
+          {/* Items Area */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4">
             {isLoading ? (
               <div className="space-y-6 pt-4">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="flex gap-4">
-                    <Skeleton className="w-20 h-20 bg-slate-100" />
+                    <Skeleton className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100" />
                     <div className="flex-1 space-y-3 py-2">
                       <Skeleton className="h-4 w-3/4 bg-slate-100" />
                       <Skeleton className="h-3 w-1/4 bg-slate-100" />
@@ -280,23 +262,17 @@ const CartDropdown = forwardRef(
               </div>
             ) : cartItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full space-y-4 text-center">
-                <div className="w-20 h-20 bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center">
-                  <ShoppingCart className="h-8 w-8 text-slate-200 stroke-[1.5px]" />
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center">
+                  <ShoppingCart className="h-8 w-8 text-slate-200" />
                 </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-bold text-slate-800 uppercase tracking-tighter">
-                    Listeniz Henüz Boş
-                  </p>
-                  <p className="text-[11px] text-slate-400 max-w-[200px] leading-relaxed">
-                    İş güvenliğiniz için ihtiyacınız olan ekipmanları hemen
-                    ekleyin.
-                  </p>
-                </div>
+                <p className="text-sm font-bold text-slate-800 uppercase tracking-tighter">
+                  Listeniz Henüz Boş
+                </p>
                 <SheetClose asChild>
                   <Link href="/products">
                     <Button
                       variant="outline"
-                      className="mt-4 border-2 border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white transition-all font-bold text-[10px] uppercase tracking-widest px-6"
+                      className="border-2 border-slate-900 font-black text-[10px] uppercase tracking-widest px-6 h-11"
                     >
                       Katalogu İncele
                     </Button>
@@ -326,87 +302,56 @@ const CartDropdown = forwardRef(
             )}
           </div>
 
-          {/* Footer - Professional Checkout Area */}
+          {/* Summary Footer */}
           {cartItems.length > 0 && (
-            <div className="bg-slate-50 border-t border-slate-200 p-6 space-y-5 shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
-              <div className="space-y-2.5">
-                <div className="flex justify-between items-center text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+            <div className="bg-slate-50 border-t border-slate-200 p-4 sm:p-6 space-y-4 shrink-0 shadow-inner">
+              <div className="space-y-2">
+                <div className="flex justify-between text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                   <span>Ara Toplam</span>
-                  <span className="font-mono text-slate-700">
-                    ₺
-                    {subtotal.toLocaleString("tr-TR", {
-                      minimumFractionDigits: 2,
-                    })}
+                  <span className="font-mono">
+                    ₺{subtotal.toLocaleString("tr-TR")}
                   </span>
                 </div>
-
-                <div className="flex justify-between items-center text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  <span>KDV (%10)</span>
-                  <span className="font-mono text-slate-700">
-                    ₺
-                    {taxAmount.toLocaleString("tr-TR", {
-                      minimumFractionDigits: 2,
-                    })}
-                  </span>
-                </div>
-
                 <div className="pt-3 border-t-2 border-slate-200 border-dotted flex justify-between items-end">
                   <div className="flex flex-col">
                     <span className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em]">
                       Genel Toplam
                     </span>
-                    <span className="text-2xl font-black text-slate-900 font-mono tracking-tighter">
+                    <span className="text-xl sm:text-2xl font-black text-slate-900 font-mono tracking-tighter">
                       ₺
                       {total.toLocaleString("tr-TR", {
                         minimumFractionDigits: 2,
                       })}
                     </span>
                   </div>
-                  <div className="text-[9px] text-slate-400 font-medium italic mb-1">
-                    Kargo hariç tutulmuştur
-                  </div>
                 </div>
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid gap-2">
                 <SheetClose asChild>
                   <Link href="/checkout" className="w-full">
-                    <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white h-14 font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-orange-600/20 group transition-all active:scale-[0.98]">
+                    <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white h-12 sm:h-14 font-black text-xs uppercase tracking-[0.2em]">
                       Siparişi Tamamla
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </Link>
                 </SheetClose>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <SheetClose asChild>
-                    <Link href="/cart">
-                      <Button
-                        variant="outline"
-                        className="w-full h-11 border-slate-200 text-slate-600 hover:bg-white hover:border-slate-400 text-[10px] uppercase font-bold tracking-widest transition-all"
-                      >
-                        Sepeti Düzenle
-                      </Button>
-                    </Link>
-                  </SheetClose>
-                  <SheetClose asChild>
-                    <Button
-                      variant="ghost"
-                      className="w-full text-slate-400 hover:text-slate-900 text-[10px] uppercase font-bold tracking-widest h-11"
-                    >
-                      Kapat
-                    </Button>
-                  </SheetClose>
-                </div>
+                <SheetClose asChild>
+                  <Button
+                    variant="ghost"
+                    className="text-slate-400 font-bold text-[10px] uppercase h-10"
+                  >
+                    Kapat
+                  </Button>
+                </SheetClose>
               </div>
             </div>
           )}
         </SheetContent>
       </Sheet>
     );
-  }
+  },
 );
 
 CartDropdown.displayName = "CartDropdown";
-
 export default CartDropdown;

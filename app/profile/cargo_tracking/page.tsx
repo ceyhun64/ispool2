@@ -9,9 +9,9 @@ import CategoryBar from "@/components/layout/categoryBar";
 export default function CargoTrackingPage() {
   return (
     <div>
-<TopBar />
+      <TopBar />
       <Navbar />
-      <CategoryBar />      <CargoTracking />
+      <CargoTracking />
       <Footer />
     </div>
   );

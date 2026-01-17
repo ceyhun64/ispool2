@@ -17,7 +17,6 @@ export default function Home() {
     <div>
       <TopBar />
       <Navbar />
-      <CategoryBar />
       <HeroSection />
       <CategoriesSection />
       <Products />

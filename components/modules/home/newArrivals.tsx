@@ -89,7 +89,7 @@ export default function YeniUrunlerCarousel() {
                 Performans Serisi
               </span>
             </motion.div>
-            <h2 className="text-3xl md:text-2xl font-bold text-slate-950 tracking-tight leading-tight uppercase">
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tighter text-slate-900 leading-[1.1] uppercase">
               YENİ <span className="text-slate-400 font-medium">NESİL</span>{" "}
               <br />
               ZIRHLAR

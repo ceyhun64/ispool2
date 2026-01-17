@@ -10,7 +10,7 @@ export default function DocumentsPage() {
     <div>
       <TopBar />
       <Navbar />
-      <CategoryBar /> <WhyUs />
+      <WhyUs />
       <Footer />
     </div>
   );

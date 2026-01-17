@@ -65,10 +65,10 @@ const Testimonials: React.FC = () => {
                 Saha Referansları
               </span>
             </div>
-            <h3 className="text-2xl md:text-2xl font-bold text-slate-900 tracking-tight leading-tight uppercase">
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tighter text-slate-900 leading-[1.1] uppercase">
               PROFESYONELLERİN <br />
               <span className="text-slate-400">GÜVEN REHBERİ</span>
-            </h3>
+            </h2>
           </div>
 
           {/* Küçük İstatistikler */}

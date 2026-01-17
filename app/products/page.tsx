@@ -10,7 +10,6 @@ export default function AllProductsPage() {
     <div>
       <TopBar />
       <Navbar />
-      <CategoryBar />
       <AllProducts />
       <Footer />
     </div>

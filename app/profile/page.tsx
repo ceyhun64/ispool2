@@ -11,7 +11,6 @@ export default function MyPersonalInformationPage() {
     <div>
       <TopBar />
       <Navbar />
-      <CategoryBar />
       <MyPersonalInformation />
       <Footer />
     </div>

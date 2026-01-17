@@ -29,76 +29,89 @@ const whyChooseUs = [
   {
     icon: Truck,
     title: "LOJİSTİK GÜÇ",
-    desc: "Yüksek hacimli taleplerde hızlı termin ve kesintisiz tedarik slateiri.",
+    desc: "Yüksek hacimli taleplerde hızlı termin ve kesintisiz tedarik zinciri.",
   },
 ];
 
 const CardItem = ({ icon: Icon, title, desc, index }: any) => (
-  <div className="group relative p-8 transition-all duration-500 bg-white flex flex-col items-start text-left border-r border-slate-100 last:border-r-0 max-sm:border-b">
-    {/* Küçük İkon Kutusu */}
-    <div className="mb-8 p-2.5 rounded-lg bg-slate-50 text-slate-900 transition-all duration-500 group-hover:bg-orange-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-orange-100">
-      <Icon className="w-6 h-6 stroke-[1.5]" />
+  <div className="group relative p-10 transition-all duration-700 bg-white hover:bg-[#0a0a0b] flex flex-col items-start text-left border-r border-slate-100 last:border-r-0 max-sm:border-b overflow-hidden">
+    {/* Arka Plan Efekti */}
+    <div className="absolute inset-0 bg-gradient-to-br from-orange-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+    {/* İkon Kutusu - Modern & Premium */}
+    <div className="relative z-10 mb-10 p-4 rounded-none bg-slate-50 text-slate-900 transition-all duration-500 group-hover:bg-orange-600 group-hover:text-white ">
+      <Icon className="w-6 h-6 stroke-[1.2]" />
     </div>
 
     {/* Metin İçeriği */}
-    <div className="space-y-3 flex-1">
-      <h3 className="text-[11px] font-bold text-slate-900 tracking-[0.15em] uppercase flex items-center gap-2">
-        <span className="w-1.5 h-1.5 bg-orange-600 rounded-full" />
-        {title}
-      </h3>
-      <p className="text-[13px] text-slate-500 leading-relaxed font-normal max-w-[220px]">
+    <div className="relative z-10 space-y-4 flex-1">
+      <div className="flex items-center gap-3">
+        <span className="w-8 h-[1px] bg-orange-600 transform origin-left group-hover:scale-x-150 transition-transform duration-500" />
+        <h3 className="text-[10px] font-black text-slate-900 group-hover:text-white tracking-[0.25em] uppercase">
+          {title}
+        </h3>
+      </div>
+      <p className="text-[13px] text-slate-500 group-hover:text-slate-400 leading-relaxed font-medium max-w-[240px] transition-colors duration-500">
         {desc}
       </p>
     </div>
 
-    {/* Alt Detay - Daha Kibar */}
-    <div className="mt-6 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 flex items-center text-[10px] font-bold text-orange-600 tracking-widest uppercase">
-      Detaylar <ChevronRight className="w-3 h-3 ml-1" />
+    {/* Alt Link - Daha Sofistike */}
+    <div className="relative z-10 mt-8 opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-500 flex items-center text-[9px] font-black text-orange-500 tracking-[0.2em] uppercase">
+      KEŞFET{" "}
+      <ChevronRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
     </div>
 
-    {/* Numara Arka Plan - Küçültüldü */}
-    <span className="absolute top-6 right-8 text-2xl font-bold text-slate-50 opacity-[0.05] group-hover:opacity-[0.1] transition-opacity italic">
+    {/* Dekoratif Büyük Numara */}
+    <span className="absolute -bottom-4 -right-2 text-7xl font-black text-slate-100 group-hover:text-white/[0.03] transition-colors duration-700 select-none pointer-events-none">
       0{index + 1}
     </span>
 
-    {/* Vurgu Çizgisi */}
-    <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-orange-600 group-hover:w-full transition-all duration-500" />
+    {/* Köşe Detayı */}
+    <div className="absolute top-0 right-0 w-0 h-0 border-t-[2px] border-r-[2px] border-orange-600 opacity-0 group-hover:opacity-100 group-hover:w-4 group-hover:h-4 transition-all duration-500" />
   </div>
 );
 
 export default function ShopServices() {
   return (
-    <section className="py-20 bg-slate-100 overflow-hidden">
-      <div className="max-w-[1400px] mx-auto px-6">
-        {/* Başlık Alanı - Boyutlar Küçültüldü */}
-        <div className="mb-16 flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-          <div className="max-w-2xl">
+    <section className="py-24 bg-slate-100 relative overflow-hidden">
+      {/* Premium Arka Plan Dokusu */}
+      <div className="absolute inset-0 opacity-[0.015] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+
+      <div className="max-w-[1400px] mx-auto px-6 relative z-10">
+        {/* Header Alanı */}
+        <div className="mb-20 flex flex-col lg:flex-row lg:items-end justify-between gap-10">
+          <div className="max-w-2xl space-y-4">
             <motion.div
-              initial={{ x: -10, opacity: 0 }}
+              initial={{ x: -20, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
-              className="flex items-center gap-2 mb-4"
+              viewport={{ once: true }}
+              className="flex items-center gap-4"
             >
-              <div className="h-[1.5px] w-8 bg-orange-600" />
-              <span className="text-[10px] font-bold tracking-[0.3em] text-orange-600 uppercase">
-                Endüstriyel Çözümler
+              <span className="text-[9px] font-black tracking-[0.4em] text-orange-600 uppercase bg-orange-50 px-3 py-1">
+                Kalıcı Güvenlik
               </span>
+              <div className="h-[1px] flex-1 bg-slate-200 hidden md:block" />
             </motion.div>
-            <h2 className="text-2xl md:text-2xl font-bold text-slate-900 tracking-tight leading-tight uppercase">
+
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tighter text-slate-900 leading-[1.1] uppercase">
               SAHA ŞARTLARINDA <br />
-              <span className="text-slate-400">Sıfır Taviz.</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-400 to-slate-600">
+                SIFIR TAVİZ.
+              </span>
             </h2>
           </div>
 
-          <div className="lg:max-w-[280px] border-l-2 border-slate-900 pl-5 py-1">
-            <p className="text-slate-600 font-medium text-xs leading-relaxed">
-              İş sağlığı ve güvenliğini modern teknolojiyle birleştirerek,
-              personelinize hak ettiği konforu sunuyoruz.
+          <div className="lg:max-w-[320px] border-l border-orange-600 pl-8 py-2">
+            <p className="text-slate-500 font-semibold text-xs md:text-[13px] leading-relaxed italic">
+              "İş sağlığı ve güvenliğini modern teknolojiyle birleştirerek,
+              personelinize hak ettiği konforu sunuyoruz."
             </p>
           </div>
         </div>
 
-        {/* Grid Yapısı */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 shadow-xl shadow-slate-200/40 rounded-lg overflow-hidden border border-slate-100">
+        {/* Grid Yapısı - Havada Asılı Panel Etkisi */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] rounded-none overflow-hidden border border-slate-100">
           {whyChooseUs.map((item, idx) => (
             <CardItem key={idx} index={idx} {...item} />
           ))}

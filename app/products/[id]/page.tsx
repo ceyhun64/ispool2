@@ -10,7 +10,6 @@ export default function ProductDetailPage() {
     <div>
       <TopBar />
       <Navbar />
-      <CategoryBar />
       <ProductDetail />
       <Recommended />
       <Footer />

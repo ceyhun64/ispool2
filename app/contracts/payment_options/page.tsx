@@ -10,7 +10,7 @@ export default function PaymentOptionsPage() {
     <div>
  <TopBar />
       <Navbar />
-      <CategoryBar />      <PaymentOptions />
+            <PaymentOptions />
       <Footer />
     </div>
   );

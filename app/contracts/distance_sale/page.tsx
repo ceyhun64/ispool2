@@ -9,7 +9,7 @@ export default function DİstanceSalePage() {
     <div>
       <TopBar />
       <Navbar />
-      <CategoryBar /> <DistanceSale />
+      <DistanceSale />
       <Footer />
     </div>
   );

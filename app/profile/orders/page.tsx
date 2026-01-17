@@ -11,7 +11,7 @@ export default function OrdersPage() {
     <div>
       <TopBar />
       <Navbar />
-      <CategoryBar /> <Orders />
+      <Orders />
       <Footer />
     </div>
   );

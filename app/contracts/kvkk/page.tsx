@@ -7,9 +7,9 @@ import CategoryBar from "@/components/layout/categoryBar";
 export default function KvkkPage() {
   return (
     <div>
- <TopBar />
+      <TopBar />
       <Navbar />
-      <CategoryBar />      <Kvkk />
+      <Kvkk />
       <Footer />
     </div>
   );

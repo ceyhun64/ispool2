@@ -10,7 +10,6 @@ export default function Registerpage() {
     <>
       <TopBar />
       <Navbar />
-      <CategoryBar />
       <RegisterForm />
       <Footer />
     </>

@@ -10,7 +10,6 @@ export default function Loginpage() {
     <>
       <TopBar />
       <Navbar />
-      <CategoryBar />
       <LoginForm />
       <Footer />
     </>
