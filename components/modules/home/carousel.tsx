@@ -9,7 +9,7 @@ import {
   ShieldCheck,
   ArrowRight,
   Box,
-  Zap,
+  Scan,
 } from "lucide-react";
 
 // Tipler ve Veriler
@@ -80,7 +80,6 @@ const DEFAULT_BANNERS: BannerItem[] = [
     desktopImage: "/banner/7.webp",
   },
 ];
-
 export default function HeroSection() {
   const [current, setCurrent] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -104,67 +103,63 @@ export default function HeroSection() {
   }, [progress, nextSlide]);
 
   return (
-    <section className="relative w-full h-[85vh] md:h-screen min-h-[650px] overflow-hidden bg-[#0a0a0b]">
+    <section className="relative w-full h-[85vh] md:h-screen min-h-[650px] overflow-hidden ">
       {/* 1. BACKGROUND LAYER */}
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         <motion.div
           key={current}
-          initial={{ scale: 1.1, opacity: 0 }}
+          initial={{ scale: 1.05, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 1.05, opacity: 0 }}
-          transition={{ duration: 1.5, ease: [0.19, 1, 0.22, 1] }}
+          exit={{ scale: 1.02, opacity: 0 }}
+          transition={{ duration: 1.2, ease: [0.19, 1, 0.22, 1] }}
           className="absolute inset-0"
         >
           <Image
             src={DEFAULT_BANNERS[current].desktopImage}
-            alt={DEFAULT_BANNERS[current].title}
+            alt="Endüstriyel Güvenlik"
             fill
             priority
-            className="object-cover object-center brightness-[0.45] contrast-[1.1]"
+            className="object-cover object-center brightness-[0.55] contrast-[1.05]"
           />
-          {/* Industrial Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0b] via-[#0a0a0b]/40 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-r from-black/50 via-transparent to-transparent" />
         </motion.div>
       </AnimatePresence>
 
       {/* 2. MAIN CONTENT AREA */}
       <div className="relative h-full max-w-[1400px] mx-auto px-6 md:px-12 flex items-center z-10">
-        <div className="max-w-4xl">
-          <div className="space-y-8 md:space-y-10">
-            {/* Tagline */}
+        <div className="max-w-3xl">
+          <div className="space-y-6 md:space-y-8">
+            {/* Tagline - Daha narin tasarım */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               key={`tag-${current}`}
               className="flex items-center gap-4"
             >
-              <div className="w-1 h-8 bg-orange-600" />
-              <div className="flex flex-col">
-                <span className="text-white font-black text-[10px] tracking-[0.3em] uppercase">
-                  İşPool Engineering
-                </span>
-                <span className="text-orange-500 font-bold text-[9px] tracking-[0.2em] uppercase">
-                  {DEFAULT_BANNERS[current].tag}
-                </span>
-              </div>
+              <span className="bg-orange-600 px-3 py-1 text-[10px] font-bold text-white tracking-[0.15em] uppercase">
+                2026 EDITION
+              </span>
+              <span className="text-white/60 font-medium text-[11px] tracking-[0.3em] uppercase">
+                {DEFAULT_BANNERS[current].tag}
+              </span>
             </motion.div>
 
-            {/* Title Section */}
-            <div className="space-y-2">
+            {/* Title Section - Boyutlar Optimize Edildi */}
+            <div className="space-y-1">
               <div className="overflow-hidden">
                 <motion.h2
-                  initial={{ y: "110%" }}
+                  initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                   key={`title-${current}`}
-                  className="text-4xl md:text-7xl lg:text-8xl font-black text-white uppercase tracking-tighter leading-[0.9] italic"
+                  className="text-3xl md:text-5xl lg:text-6xl font-black text-white uppercase tracking-tight leading-[1.1]"
                 >
                   {DEFAULT_BANNERS[current].title}
                 </motion.h2>
               </div>
               <div className="overflow-hidden">
                 <motion.h2
-                  initial={{ y: "110%" }}
+                  initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   transition={{
                     duration: 0.8,
@@ -172,56 +167,53 @@ export default function HeroSection() {
                     ease: [0.16, 1, 0.3, 1],
                   }}
                   key={`subtitle-${current}`}
-                  className="text-4xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-orange-400 to-white/20 uppercase tracking-tighter leading-[0.9] italic"
+                  className="text-3xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-400 uppercase tracking-tight leading-[1.1]"
                 >
                   {DEFAULT_BANNERS[current].subtitle}
                 </motion.h2>
               </div>
             </div>
 
-            {/* Description */}
+            {/* Description - Okunabilirlik artırıldı */}
             <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ delay: 0.4, duration: 0.8 }}
               key={`desc-${current}`}
-              className="text-slate-400 text-sm md:text-xl max-w-xl font-medium leading-relaxed opacity-80"
+              className="text-gray-400 text-sm md:text-lg max-w-lg font-normal leading-relaxed border-l-2 border-orange-600/50 pl-6"
             >
               {DEFAULT_BANNERS[current].desc}
             </motion.p>
 
-            {/* CTA's */}
+            {/* CTA's - Daha kompakt butonlar */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="flex flex-wrap items-center gap-5 pt-6"
+              className="flex flex-wrap items-center gap-4 pt-4"
             >
-              <button className="group relative bg-orange-600 text-white px-10 py-5 text-[11px] font-black tracking-[0.2em] uppercase transition-all duration-500 hover:bg-white hover:text-black overflow-hidden">
-                <span className="relative z-10 flex items-center gap-3">
-                  KOLEKSİYONU KEŞFET
+              <button className="group relative bg-white text-black px-8 py-4 text-[11px] font-bold tracking-widest uppercase transition-all duration-300 hover:bg-orange-600 hover:text-white">
+                <span className="flex items-center gap-2">
+                  İNCELE
                   <ArrowRight
                     size={16}
-                    className="group-hover:translate-x-2 transition-transform duration-500"
+                    className="group-hover:translate-x-1 transition-transform"
                   />
                 </span>
               </button>
 
-              <button className="group px-10 py-5 border border-white/10 hover:border-orange-600 text-white text-[11px] font-black tracking-[0.2em] uppercase transition-all duration-500 flex items-center gap-3 backdrop-blur-md bg-white/5">
-                <Zap
-                  size={16}
-                  className="text-orange-500 group-hover:scale-125 transition-transform"
-                />
-                TEKNİK KATALOG
+              <button className="group px-8 py-4 border border-white/20 hover:border-white/60 text-white text-[11px] font-bold tracking-widest uppercase transition-all flex items-center gap-2 backdrop-blur-sm">
+                <Box size={16} className="text-orange-500" />
+                KATALOG
               </button>
             </motion.div>
           </div>
         </div>
       </div>
 
-      {/* 3. SIDE NAVIGATION */}
-      <div className="absolute right-12 top-1/2 -translate-y-1/2 flex flex-col items-center gap-8 z-20 hidden lg:flex">
-        <div className="flex flex-col gap-4 items-center">
+      {/* 3. SIDE NAVIGATION - Daha minimal noktalar */}
+      <div className="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col items-center gap-6 z-20 hidden lg:flex">
+        <div className="flex flex-col gap-3 items-center">
           {DEFAULT_BANNERS.map((_, i) => (
             <button
               key={i}
@@ -229,40 +221,28 @@ export default function HeroSection() {
                 setCurrent(i);
                 setProgress(0);
               }}
-              className="group relative flex items-center justify-end"
-            >
-              <span
-                className={`absolute right-8 text-[10px] font-black tracking-widest transition-all duration-500 ${current === i ? "opacity-100 text-orange-600" : "opacity-0 text-white group-hover:opacity-50"}`}
-              >
-                0{i + 1}
-              </span>
-              <div
-                className={`w-1 transition-all duration-700 rounded-full ${current === i ? "h-12 bg-orange-600 shadow-[0_0_15px_rgba(234,88,12,0.6)]" : "h-4 bg-white/10 hover:bg-white/40"}`}
-              />
-            </button>
+              className={`w-1 transition-all duration-500 ${current === i ? "h-8 bg-orange-600" : "h-4 bg-white/20 hover:bg-white/40"}`}
+            />
           ))}
         </div>
-
-        <div className="h-[1px] w-12 bg-white/10 rotate-90 my-4" />
-
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           <button
             onClick={prevSlide}
-            className="w-12 h-12 flex items-center justify-center border border-white/5 text-white/40 hover:text-orange-600 hover:border-orange-600 transition-all duration-500"
+            className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={18} />
           </button>
           <button
             onClick={nextSlide}
-            className="w-12 h-12 flex items-center justify-center border border-white/5 text-white/40 hover:text-orange-600 hover:border-orange-600 transition-all duration-500"
+            className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={18} />
           </button>
         </div>
       </div>
 
-      {/* 4. PROGRESS BAR (BOTTOM) */}
-      <div className="absolute bottom-0 left-0 w-full flex z-30">
+      {/* 4. PROGRESS BARS */}
+      <div className="absolute bottom-0 left-0 w-full flex gap-1 z-30">
         {DEFAULT_BANNERS.map((_, i) => (
           <div
             key={i}
@@ -270,11 +250,11 @@ export default function HeroSection() {
               setCurrent(i);
               setProgress(0);
             }}
-            className="flex-1 h-[2px] bg-white/5 cursor-pointer relative overflow-hidden"
+            className="flex-1 h-1 bg-white/10 cursor-pointer relative"
           >
             {current === i && (
               <motion.div
-                className="absolute inset-0 bg-orange-600 shadow-[0_0_20px_rgba(234,88,12,0.8)]"
+                className="absolute inset-0 bg-orange-600"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: progress / 100 }}
                 style={{ transformOrigin: "left" }}
@@ -285,16 +265,11 @@ export default function HeroSection() {
         ))}
       </div>
 
-      {/* Decorative Slide Number */}
-      <div className="absolute top-20 right-20 hidden xl:block select-none pointer-events-none">
-        <motion.span
-          key={current}
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 0.03, x: 0 }}
-          className="text-[250px] font-black text-white leading-none tracking-tighter italic"
-        >
+      {/* Slide Number - Daha küçük ve zarif */}
+      <div className="absolute top-10 right-12 hidden lg:block select-none pointer-events-none opacity-10">
+        <span className="text-8xl font-black text-white leading-none">
           0{current + 1}
-        </motion.span>
+        </span>
       </div>
     </section>
   );
