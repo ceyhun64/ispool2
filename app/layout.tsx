@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google"; // Playfair yerine daha teknik olan Inter eklendi
+import { Geist, Inter } from "next/font/google";
 import "./globals.css";
 import ClientLayoutWrapper from "@/components/layout/ClientLayoutWrapper";
 import ScrollToTopButton from "@/components/layout/scrollToTop";
@@ -8,7 +8,7 @@ import { FavoriteProvider } from "@/contexts/favoriteContext";
 import { Toaster } from "sonner";
 import CookieConsent from "@/components/layout/cookieConsent";
 
-// ✅ Endüstriyel ve Modern Font Optimizasyonu
+// ✅ Teknik ve Endüstriyel Tipografi
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -21,15 +21,15 @@ const inter = Inter({
   display: "swap",
 });
 
-// ✅ İş Güvenliği Temasına Uygun Metadata
+// ✅ İş Güvenliği Temasına Uygun Metadata (Gaziantep kaldırıldı)
 export const metadata: Metadata = {
-  title: "İşPool | İş Elbiseleri ve İş Güvenliği Ekipmanları",
+  title: "İşPool | Premium İş Elbiseleri ve Endüstriyel Güvenlik Çözümleri",
   description:
-    "Gaziantep merkezli, yüksek standartlı iş elbiseleri ve iş güvenliği çözümleri.",
+    "Yüksek standartlı, teknik donanımlı iş elbiseleri ve profesyonel iş güvenliği ekipmanları.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ea580c", // İş güvenliği turuncusu
+  themeColor: "#ea580c", // Safety Orange
 };
 
 export default function RootLayout({
@@ -38,45 +38,56 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr">
+    <html lang="tr" className="scroll-smooth">
       <body
-        className={`${inter.variable} ${geistSans.variable} antialiased bg-[#fcfcfc]`}
+        className={`${inter.variable} ${geistSans.variable} antialiased bg-[#fafafa] text-slate-900 overflow-x-hidden`}
       >
         <CartProvider>
           <FavoriteProvider>
             <ClientLayoutWrapper>
-              {/* Modern Grid Arka Plan Efekti (Opsiyonel teknik doku) */}
-              <div className="fixed inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-40" />
+              {/* MODERN ENDÜSTRİYEL ARKA PLAN 
+                - radial-gradient: Teknik çizim kağıdı dokusu
+                - scanline-effect: Sayfaya derinlik katan hafif çizgiler
+              */}
+              <div className="fixed inset-0 -z-10 pointer-events-none">
+                <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1.2px,transparent_1.2px)] [background-size:24px_24px] opacity-40" />
+                <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white/50" />
+              </div>
 
-              <main className="min-h-screen font-sans selection:bg-orange-600 selection:text-white">
+              <main className="min-h-screen font-sans selection:bg-orange-600 selection:text-white relative">
+                {/* Sayfa Akışı */}
                 {children}
+
                 <CookieConsent />
               </main>
             </ClientLayoutWrapper>
 
             <ScrollToTopButton />
 
-            {/* Endüstriyel Arayüze Uygun Bildirim Tasarımı */}
+            {/* PREMIUM ENDÜSTRİYEL TOASTER TASARIMI 
+              - Dark-tech tema
+              - Keskin köşeler (4px)
+              - Vurgulu sol kenarlık (Safety Orange)
+            */}
             <Toaster
-              richColors={true}
+              richColors={false}
               closeButton={true}
-              position="top-center" // Güvenlik uyarıları genellikle üstte daha dikkat çeker
+              position="bottom-right"
               toastOptions={{
                 style: {
-                  borderRadius: "4px", // Daha sert, endüstriyel hatlar
-                  padding: "16px 24px",
-                  background: "#0f172a", // Koyu lacivert/siyah profesyonel zemin
-                  color: "#ffffff",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  boxShadow:
-                    "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+                  borderRadius: "2px", // Daha keskin ve kurumsal hatlar
+                  padding: "20px",
+                  background: "#020617", // Slate-950 Teknik Siyah
+                  color: "#f8fafc",
+                  border: "1px solid rgba(255,255,255,0.05)",
+                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
                   fontFamily: "var(--font-inter), sans-serif",
-                  fontSize: "13px",
-                  fontWeight: "600",
-                  letterSpacing: "0.05em",
+                  fontSize: "12px",
+                  fontWeight: "700",
+                  letterSpacing: "0.1em",
                   textTransform: "uppercase",
-                  minWidth: "320px",
-                  borderLeft: "4px solid #ea580c", // İş güvenliği vurgu rengi
+                  minWidth: "350px",
+                  borderLeft: "5px solid #ea580c", // Ana vurgu rengi
                 },
               }}
             />
