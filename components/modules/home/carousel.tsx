@@ -29,7 +29,7 @@ const DEFAULT_BANNERS: BannerItem[] = [
     title: "Üst Düzey Şantiye",
     subtitle: "Performansı",
     desc: "Zorlu saha koşulları için geliştirilen, yüksek dayanımlı teknik iş kıyafetleri.",
-    desktopImage: "/banner/10.jpg",
+    desktopImage: "/banner/1.webp",
   },
   {
     id: 2,
@@ -37,7 +37,7 @@ const DEFAULT_BANNERS: BannerItem[] = [
     title: "S3 Sınıfı Maksimum",
     subtitle: "Güvenlik",
     desc: "Çelik burunlu botlarda kompozit hafiflik ve SRC kaymaz taban teknolojisi.",
-    desktopImage: "/banner/11.jpg",
+    desktopImage: "/banner/2.webp",
   },
   {
     id: 3,
@@ -45,7 +45,7 @@ const DEFAULT_BANNERS: BannerItem[] = [
     title: "Üst Düzey Şantiye",
     subtitle: "Performansı",
     desc: "Zorlu saha koşulları için geliştirilen, yüksek dayanımlı teknik iş kıyafetleri.",
-    desktopImage: "/banner/12.jpg",
+    desktopImage: "/banner/3.webp",
   },
   {
     id: 4,
@@ -53,7 +53,7 @@ const DEFAULT_BANNERS: BannerItem[] = [
     title: "S3 Sınıfı Maksimum",
     subtitle: "Güvenlik",
     desc: "Çelik burunlu botlarda kompozit hafiflik ve SRC kaymaz taban teknolojisi.",
-    desktopImage: "/banner/13.jpg",
+    desktopImage: "/banner/4.webp",
   },
   {
     id: 5,
@@ -61,7 +61,7 @@ const DEFAULT_BANNERS: BannerItem[] = [
     title: "Üst Düzey Şantiye",
     subtitle: "Performansı",
     desc: "Zorlu saha koşulları için geliştirilen, yüksek dayanımlı teknik iş kıyafetleri.",
-    desktopImage: "/banner/14.jpg",
+    desktopImage: "/banner/5.webp",
   },
   {
     id: 6,
@@ -69,7 +69,7 @@ const DEFAULT_BANNERS: BannerItem[] = [
     title: "S3 Sınıfı Maksimum",
     subtitle: "Güvenlik",
     desc: "Çelik burunlu botlarda kompozit hafiflik ve SRC kaymaz taban teknolojisi.",
-    desktopImage: "/banner/15.jpg",
+    desktopImage: "/banner/6.webp",
   },
   {
     id: 7,
@@ -77,7 +77,7 @@ const DEFAULT_BANNERS: BannerItem[] = [
     title: "S3 Sınıfı Maksimum",
     subtitle: "Güvenlik",
     desc: "Çelik burunlu botlarda kompozit hafiflik ve SRC kaymaz taban teknolojisi.",
-    desktopImage: "/banner/16.jpg",
+    desktopImage: "/banner/7.webp",
   },
 ];
 export default function HeroSection() {
