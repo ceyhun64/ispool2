@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "prisma generate && prisma migrate deploy && npm run seed && next build",
     "start": "next start",
-    "seed": "tsx prisma/seed.ts",
+    "seed": "npx tsx prisma/seed.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
