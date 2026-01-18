@@ -21,7 +21,6 @@ const inter = Inter({
   display: "swap",
 });
 
-// ✅ İş Güvenliği Temasına Uygun Metadata (Gaziantep kaldırıldı)
 export const metadata: Metadata = {
   title: "İşPool | Premium İş Elbiseleri ve Endüstriyel Güvenlik Çözümleri",
   description:

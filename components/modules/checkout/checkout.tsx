@@ -89,7 +89,7 @@ export default function PaymentPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [step, setStep] = useState(1);
   const [selectedCargo, setSelectedCargo] = useState<string>(
-    cargoOptions[0].id
+    cargoOptions[0].id,
   );
   const [selectedInstallment, setSelectedInstallment] = useState<number>(1);
   const [cardNumber, setCardNumber] = useState("");
@@ -165,20 +165,20 @@ export default function PaymentPage() {
     () =>
       cartItems.reduce(
         (acc, item) => acc + item.product.price * item.quantity,
-        0
+        0,
       ),
-    [cartItems]
+    [cartItems],
   );
 
   const selectedCargoFee = useMemo(
     () => cargoOptions.find((c) => c.id === selectedCargo)?.fee || 0,
-    [selectedCargo]
+    [selectedCargo],
   );
 
   // Kupon indirimi uygulanmadan önceki toplam (KDV dahil)
   const baseTotalBeforeDiscount = useMemo(
     () => (subTotal + selectedCargoFee) * 1.1,
-    [subTotal, selectedCargoFee]
+    [subTotal, selectedCargoFee],
   );
 
   // Kupon indiriminden sonraki ara toplam
@@ -186,7 +186,7 @@ export default function PaymentPage() {
     if (appliedCoupon) {
       return Math.max(
         0,
-        baseTotalBeforeDiscount - appliedCoupon.discountAmount
+        baseTotalBeforeDiscount - appliedCoupon.discountAmount,
       );
     }
     return baseTotalBeforeDiscount;
@@ -195,7 +195,7 @@ export default function PaymentPage() {
   // Taksit hesaplaması (kupon uygulandıktan sonra)
   const totalPriceWithInstallment = useMemo(() => {
     const selectedRate = installmentRates.find(
-      (r) => r.count === selectedInstallment
+      (r) => r.count === selectedInstallment,
     );
     if (!selectedRate) return baseTotalAfterDiscount;
     return (
@@ -231,7 +231,7 @@ export default function PaymentPage() {
         const guestEmail =
           newAddressForm.email || `guest_${Date.now()}@example.com`;
         const password = Math.random().toString(36).slice(-8);
-        const registerRes = await fetch("/api/account/register", {
+        const registerRes = await fetch("/api/account/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -270,7 +270,7 @@ export default function PaymentPage() {
                 ],
               },
             }
-          : prev
+          : prev,
       );
       setSelectedAddress(addressData.address.id);
 
@@ -307,7 +307,7 @@ export default function PaymentPage() {
 
       // Taksit oranını bul
       const selectedRate = installmentRates.find(
-        (r) => r.count === selectedInstallment
+        (r) => r.count === selectedInstallment,
       );
 
       // 1. totalPrice: Kupon uygulanmamış + taksit dahil (liste fiyatı)
@@ -396,8 +396,8 @@ export default function PaymentPage() {
       if (data.status === "success") {
         await Promise.all(
           cartItems.map((item) =>
-            fetch(`/api/cart/${item.id}`, { method: "DELETE" })
-          )
+            fetch(`/api/cart/${item.id}`, { method: "DELETE" }),
+          ),
         );
         localStorage.removeItem("cart");
         router.push("/checkout/success");

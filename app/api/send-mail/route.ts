@@ -64,7 +64,7 @@ export async function POST(req: Request): Promise<Response> {
           </p>
         </div>
 
-        <a href="mailto:balkoluxofficial@gmail.com" style="display: inline-block; background-color: #000000; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: 500; font-size: 13px;">
+        <a href="mailto:ispoolofficial@gmail.com" style="display: inline-block; background-color: #000000; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: 500; font-size: 13px;">
           Hızlıca Yanıtla
         </a>
       </div>
@@ -73,9 +73,9 @@ export async function POST(req: Request): Promise<Response> {
         <p style="margin: 0 0 15px 0; font-size: 13px; font-weight: 700; color: #1a1a1a; letter-spacing: 0.5px;">İşPool</p>
         
         <div style="font-size: 12px; color: #777777; line-height: 1.6;">
-          <p style="margin: 0 0 5px 0;">📍 Çukurova, Adana</p>
+          <p style="margin: 0 0 5px 0;">📍 Merkez/Uşak</p>
           <p style="margin: 0 0 5px 0;">📞 +90 546 225 56 59</p>
-          <p style="margin: 0;">✉️ <span style="color: #7B0323;">balkoluxofficial@gmail.com</span></p>
+          <p style="margin: 0;">✉️ <span style="color: #7B0323;">ispoolofficial@gmail.com</span></p>
         </div>
         
         <p style="margin: 25px 0 0 0; font-size: 11px; color: #bbbbbb; border-top: 1px solid #f0f0f0; padding-top: 15px;">

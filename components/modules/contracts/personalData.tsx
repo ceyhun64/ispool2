@@ -274,7 +274,7 @@ export default function PersonalDataConsent() {
                 {
                   icon: <Mail />,
                   label: "E-posta",
-                  val: "balkoluxofficial@gmail.com",
+                  val: "ispoolofficial@gmail.com",
                 },
                 { icon: <Globe />, label: "Web", val: "www.ispool.com" },
               ].map((item, i) => (

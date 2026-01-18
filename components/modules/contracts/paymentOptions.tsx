@@ -149,7 +149,7 @@ export default function PaymentOptions() {
                   Sipariş sonrası banka hesap bilgilerimiz e-postanıza
                   iletilecektir. Dekontunuzu{" "}
                   <span className="font-bold text-slate-900">
-                    balkoluxofficial@gmail.com
+                    ispoolofficial@gmail.com
                   </span>{" "}
                   adresine iletebilirsiniz.
                 </p>
@@ -272,7 +272,7 @@ export default function PaymentOptions() {
 
             <div className="grid grid-cols-1 gap-4">
               <a
-                href="mailto:balkoluxofficial@gmail.com"
+                href="mailto:ispoolofficial@gmail.com"
                 className="flex items-center gap-6 p-6 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all group"
               >
                 <div className="p-4 bg-orange-500 rounded-xl group-hover:scale-110 transition-transform">
@@ -282,9 +282,7 @@ export default function PaymentOptions() {
                   <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest mb-1">
                     Kurumsal E-posta
                   </p>
-                  <p className="text-lg font-bold">
-                    balkoluxofficial@gmail.com
-                  </p>
+                  <p className="text-lg font-bold">ispoolofficial@gmail.com</p>
                 </div>
               </a>
 

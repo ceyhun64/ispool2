@@ -129,7 +129,7 @@ export default function LoginForm() {
             </div>
 
             <Link
-              href="/register"
+              href="/auth/register"
               className="group flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 p-5  transition-all duration-300"
             >
               <div className="flex flex-col">
@@ -147,7 +147,6 @@ export default function LoginForm() {
 
         {/* SAĞ PANEL: FORM */}
         <div className="lg:col-span-7 p-8 lg:p-24 flex flex-col justify-center relative">
-         
           <div className="max-w-md mx-auto w-full">
             <header className="mb-10 text-center lg:text-left">
               <h2 className="text-sm font-semibold text-orange-600 mb-2 uppercase tracking-[0.2em]">
@@ -179,7 +178,7 @@ export default function LoginForm() {
                     Şifre
                   </Label>
                   <Link
-                    href="/forgot-password"
+                    href="/auth/forgot-password"
                     className="text-[11px] font-semibold text-orange-600 hover:underline transition-all uppercase tracking-wider"
                   >
                     Şifremi Unuttum

@@ -42,7 +42,7 @@ export default function KisiselBilgilerim() {
         const res = await fetch("/api/user", { method: "GET" });
 
         if (res.status === 401) {
-          router.push("/login");
+          router.push("/auth/login");
           return;
         }
 
@@ -52,7 +52,7 @@ export default function KisiselBilgilerim() {
         const userData = data.user;
 
         if (!userData) {
-          router.push("/login");
+          router.push("/auth/login");
           return;
         }
 
@@ -65,7 +65,7 @@ export default function KisiselBilgilerim() {
         });
       } catch (error) {
         console.error("Auth Error:", error);
-        router.push("/login");
+        router.push("/auth/login");
       } finally {
         setLoading(false);
       }

@@ -51,7 +51,7 @@ function ResetPasswordForm() {
       }
 
       toast.success("Şifreniz başarıyla güncellendi!");
-      setTimeout(() => router.push("/login"), 2000);
+      setTimeout(() => router.push("/auth/login"), 2000);
     } catch (err) {
       toast.error("Sunucu hatası, tekrar deneyin.");
     } finally {
@@ -159,7 +159,7 @@ function ResetPasswordForm() {
 
           <div className="flex justify-center">
             <Link
-              href="/login"
+              href="/auth/login"
               className="flex items-center gap-2 text-[11px] font-bold text-slate-400 hover:text-orange-600 transition-all tracking-wider uppercase group"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />

@@ -1,4 +1,4 @@
-// /app/api/register/route.ts
+// /app/api/auth/register/route.ts
 import { prisma } from "@/lib/db";
 import bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server"; // NextRequest ve NextResponse kullanılması önerilir
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     if (existingUser) {
       return NextResponse.json(
         { error: "Email zaten kayıtlı" },
-        { status: 400 } // statusText gereksiz, body üzerinden hata mesajı gönderiliyor
+        { status: 400 }, // statusText gereksiz, body üzerinden hata mesajı gönderiliyor
       );
     }
 
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
           email: user.email,
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error(error);
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       { error: "Kayıt başarısız. Lütfen tekrar deneyin." },
       {
         status: 500,
-      }
+      },
     );
   }
 }

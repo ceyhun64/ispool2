@@ -89,7 +89,7 @@ export default function Orders() {
       setLoading(true);
       const res = await fetch("/api/order/user", { method: "GET" });
       if (res.status === 401) {
-        router.push("/login");
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
@@ -172,7 +172,7 @@ export default function Orders() {
   const calculateOrderSummary = (order: Order) => {
     const subtotal = order.items.reduce(
       (sum, item) => sum + (item.unitPrice || 0) * item.quantity,
-      0
+      0,
     );
     const tax = order.totalPrice - subtotal;
     return { subtotal, tax };
@@ -186,10 +186,7 @@ export default function Orders() {
           <div className="max-w-5xl mx-auto space-y-10">
             <Skeleton className="h-12 w-64 bg-slate-200" />
             {[1, 2].map((i) => (
-              <Skeleton
-                key={i}
-                className="h-72 w-full bg-white  border"
-              />
+              <Skeleton key={i} className="h-72 w-full bg-white  border" />
             ))}
           </div>
         </main>
@@ -253,10 +250,10 @@ export default function Orders() {
             <div className="space-y-10">
               {orders.map((order) => {
                 const shippingAddress = order.addresses.find(
-                  (a) => a.type === "shipping"
+                  (a) => a.type === "shipping",
                 );
                 const billingAddress = order.addresses.find(
-                  (a) => a.type === "billing"
+                  (a) => a.type === "billing",
                 );
                 const { subtotal, tax } = calculateOrderSummary(order);
 
@@ -270,7 +267,7 @@ export default function Orders() {
                         </span>
                         <div
                           className={`flex items-center gap-2 px-4 py-1  text-[10px] font-black uppercase tracking-widest border shadow-sm ${getStatusStyle(
-                            order.status
+                            order.status,
                           )}`}
                         >
                           {getStatusIcon(order.status)}
@@ -479,7 +476,7 @@ export default function Orders() {
                                             </span>
                                             <span className="text-orange-600 underline decoration-2 underline-offset-4">
                                               {order.paidPrice.toLocaleString(
-                                                "tr-TR"
+                                                "tr-TR",
                                               )}{" "}
                                               ₺
                                             </span>

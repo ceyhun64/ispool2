@@ -55,7 +55,7 @@ interface UpdateOrderBody {
 const sendMail = async (
   recipients: string[],
   subject: string,
-  message: string
+  message: string,
 ) => {
   await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/send-mail`, {
     method: "POST",
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
     if (!userId || !basketItems || basketItems.length === 0) {
       return NextResponse.json(
         { status: "failure", error: "Geçerli kullanıcı veya ürün yok" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -187,7 +187,7 @@ export async function POST(req: NextRequest) {
           status: "failure",
           error: "Ödeme başarısız: " + errText,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -205,7 +205,7 @@ export async function POST(req: NextRequest) {
             "Ödeme başarısız",
           errorCode: paymentResult?.errorCode,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -325,7 +325,7 @@ ${
 ${
   couponCode
     ? `* **Kullanılan Kupon:** ${couponCode} (-${formatPrice(
-        discountAmount
+        discountAmount,
       )} ${currency})`
     : ""
 }
@@ -343,8 +343,8 @@ ${basketItems
   .map(
     (item) =>
       `• ${item.name} (${item.quantity} Adet) — Birim Fiyat: ${formatPrice(
-        item.unitPrice || item.totalPrice
-      )} ${currency}`
+        item.unitPrice || item.totalPrice,
+      )} ${currency}`,
   )
   .join("\n")}
 
@@ -359,7 +359,7 @@ ${basketItems
 ${
   installment > 1
     ? `\n**Taksit Bilgisi:**\nÖdemeniz ${installment} taksit olarak alınacaktır. Her ay ${formatPrice(
-        monthlyPayment
+        monthlyPayment,
       )} ${currency} tutarında ödeme kartınızdan çekilecektir.`
     : ""
 }
@@ -367,7 +367,7 @@ ${
 ${
   couponCode
     ? `\n**İndirim Bilgisi:**\n${couponCode} kupon koduyla ${formatPrice(
-        discountAmount
+        discountAmount,
       )} ${currency} indirim kazandınız!`
     : ""
 }
@@ -378,13 +378,13 @@ Bizi tercih ettiğiniz için teşekkür eder, iyi günler dileriz.
 
 Saygılarımızla, 
 **BALKOLÜX Ekibi**
-`
+`,
         );
       }
 
       // Admin bilgilendirme maili
       await sendMail(
-        ["balkoluxofficial@gmail.com"],
+        ["ispoolofficial@gmail.com"],
         `🔔 Yeni Sipariş Kaydı - Acil İşlem Gerekiyor: #${order.id}`,
         `
 Sayın Yönetici,
@@ -404,7 +404,7 @@ ${
 ${
   couponCode
     ? `* **Kullanılan Kupon:** ${couponCode} (-${formatPrice(
-        discountAmount
+        discountAmount,
       )} ${currency})`
     : ""
 }
@@ -417,7 +417,7 @@ ${basketItems
     (item) =>
       `• ${item.name} — Miktar: ${
         item.quantity
-      } Adet — Toplam Fiyat: ${formatPrice(item.totalPrice)} ${currency}`
+      } Adet — Toplam Fiyat: ${formatPrice(item.totalPrice)} ${currency}`,
   )
   .join("\n")}
 
@@ -429,7 +429,7 @@ ${basketItems
 Lütfen siparişin detaylarını kontrol ederek üretim ve gönderim sürecini başlatınız.
 
 İyi çalışmalar.
-`
+`,
       );
     } catch (mailErr) {
       console.error("⚠️ Mail gönderimi sırasında hata:", mailErr);
@@ -440,7 +440,7 @@ Lütfen siparişin detaylarını kontrol ederek üretim ve gönderim sürecini b
     console.error("💥 Order POST Error:", err);
     return NextResponse.json(
       { status: "failure", error: err.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -462,7 +462,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     console.error("Order GET Error:", error);
     return NextResponse.json(
       { status: "failure", error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -476,7 +476,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
     if (!orderId || !status) {
       return NextResponse.json(
         { status: "failure", error: "orderId ve status gerekli" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -491,7 +491,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
     if (!validStatuses.includes(status)) {
       return NextResponse.json(
         { status: "failure", error: "Geçersiz sipariş durumu" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -550,7 +550,7 @@ Saygılarımızla,
       await sendMail(
         [updatedOrder.user.email],
         `Sipariş Durumunuz Güncellendi: #${updatedOrder.id}`,
-        userMessage
+        userMessage,
       );
     }
 
@@ -565,9 +565,9 @@ Saygılarımızla,
 `;
 
     await sendMail(
-      ["balkoluxofficial@gmail.com"],
+      ["ispoolofficial@gmail.com"],
       `✅ Sipariş Durumu Değişikliği: #${updatedOrder.id}`,
-      adminMessage
+      adminMessage,
     );
 
     return NextResponse.json({ status: "success", order: updatedOrder });
@@ -575,7 +575,7 @@ Saygılarımızla,
     console.error("Order PATCH Error:", error);
     return NextResponse.json(
       { status: "failure", error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -6,12 +6,11 @@ import {
   Instagram,
   Facebook,
   Phone,
-  ArrowRight,
-  MessageCircle,
   ShieldCheck,
   Truck,
   Mail,
   MapPin,
+  MessageCircle,
 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -35,32 +34,49 @@ export default function Footer() {
     { icon: Phone, href: `tel:${whatsappNumber}`, label: "Telefon" },
   ];
 
+  // Görseldeki linklerin birebir kopyası
   const menuGroups = {
     kurumsal: {
-      title: "KURUMSAL STRATEJİ",
+      title: "Kurumsal",
       links: [
         { label: "Hakkımızda", href: "/institutional/about" },
-        { label: "Sertifikalarımız", href: "/institutional/certificates" },
-        { label: "Neden İşPool?", href: "/institutional/why_us" },
-        { label: "İletişim", href: "/contact" },
+        { label: "İşPool Neden Farklıdır?", href: "/institutional/why_us" },
+        { label: "Kalite Politikamız", href: "/institutional/quality" },
+        { label: "İşPool Blog", href: "/institutional/blog" },
+        { label: "İş Ortaklarımız", href: "/institutional/partners" },
       ],
     },
-    cozumler: {
-      title: "ENDÜSTRİYEL ÇÖZÜMLER",
+    musteriIliskileri: {
+      title: "Müşteri İlişkileri",
       links: [
-        { label: "Kurumsal Tedarik", href: "/institutional/corporate" },
-        { label: "Teknik Şartnameler", href: "/specs" },
-        { label: "Kargo Takip", href: "/profile/cargo_tracking" },
-        { label: "Ödeme Seçenekleri", href: "/contracts/payment_options" },
+        { label: "Banka Hesap Bilgileri", href: "/customer/bank-details" },
+        { label: "Gizlilik ve Güvenlik", href: "/customer/privacy" },
+        { label: "Satış Sözleşmesi", href: "/customer/sales-agreement" },
+        { label: "Site Kullanım Şartları", href: "/customer/terms" },
+        { label: "İade ve Değişim", href: "/customer/returns" },
       ],
     },
-    yasal: {
-      title: "YASAL MEVZUAT",
+    populerLinkler: {
+      title: "Popüler Linkler",
       links: [
-        { href: "/contracts/kvkk", label: "KVKK Aydınlatma" },
-        { href: "/contracts/distance_sale", label: "Satış Sözleşmesi" },
-        { href: "/contracts/personal_data", label: "Veri Politikası" },
-        { href: "/contracts/cookie_policy", label: "Çerezler" },
+        { label: "İş Ayakkabıları", href: "/category/shoes" },
+        { label: "Toz Maskeleri", href: "/category/masks" },
+        { label: "İş Pantolonları", href: "/category/pants" },
+        { label: "İkaz Yelekleri", href: "/category/vests" },
+        { label: "İş Yelekleri", href: "/category/work-vests" },
+        { label: "Koruyucu Teknik Giysiler", href: "/category/protective" },
+        { label: "Yüksek Görünümlü Ürünler", href: "/category/hi-vis" },
+      ],
+    },
+    yardim: {
+      title: "Yardım",
+      links: [
+        { label: "İletişim", href: "/help/contact" },
+        { label: "Sıkça Sorulan Sorular", href: "/help/faq" },
+        { label: "KVKK", href: "/help/kvkk" },
+        { label: "Mesafeli Satış Sözleşmesi", href: "/help/distance-sales" },
+        { label: "Banka Bilgileri & Havale Bildirim", href: "/help/bank-info" },
+        { label: "İade ve Değişim", href: "/help/returns-help" },
       ],
     },
   };
@@ -87,7 +103,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-slate-950 text-slate-400 relative border-t-4 border-orange-600 font-sans">
-      {/* Üst Bilgi Bantı: İSG Güven Paneli */}
+      {/* Üst Bilgi Bantı */}
       <div className="border-b border-white/5 bg-white/5">
         <div className="container mx-auto px-6 md:px-12 py-6">
           <div className="flex flex-wrap justify-between gap-6">
@@ -113,10 +129,10 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="container mx-auto px-6 md:px-12 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-          {/* 1. Kolon: Marka ve İletişim */}
-          <div className="lg:col-span-4 space-y-10">
+      <div className="container mx-auto px-6 md:px-12 py-16">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-12">
+          {/* 1. Kolon: Marka ve Bülten */}
+          <div className="xl:col-span-3 space-y-8">
             <Link
               href="/"
               className="inline-block brightness-0 invert opacity-100"
@@ -124,49 +140,60 @@ export default function Footer() {
               <Image
                 src="/logo/logois2.png"
                 alt="İşPool"
-                width={160}
-                height={50}
+                width={140}
+                height={40}
                 className="object-contain"
               />
             </Link>
 
-            <p className="text-slate-400 text-[14px] leading-relaxed font-medium max-w-sm italic border-l-2 border-orange-600 pl-6">
-              "İş güvenliği bir maliyet değil, sürdürülebilir üretimin temel
-              taşıdır. Teknik tekstilde mühendislik çözümleri sunuyoruz."
-            </p>
-
             <div className="space-y-4">
-              <h5 className="text-white text-[11px] font-black tracking-[0.2em] uppercase">
-                Bizi Takip Edin
-              </h5>
-              <div className="flex items-center gap-3">
-                {socialLinks.map((social, i) => (
-                  <a
-                    key={i}
-                    href={social.href}
-                    className="w-10 h-10 flex items-center justify-center bg-white/5 text-slate-400 hover:bg-orange-600 hover:text-white transition-all duration-300"
-                    aria-label={social.label}
-                  >
-                    <social.icon size={18} />
-                  </a>
-                ))}
-              </div>
+              <h4 className="text-white text-[11px] font-black tracking-widest uppercase">
+                Bültene Katılın
+              </h4>
+              <form onSubmit={handleSubscribe} className="relative group">
+                <input
+                  type="email"
+                  placeholder="E-posta adresiniz"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-800 p-3 pr-12 text-[13px] text-white focus:outline-none focus:border-orange-600 transition-all"
+                />
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-orange-600 hover:text-white transition-colors"
+                >
+                  <Mail size={20} />
+                </button>
+              </form>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {socialLinks.map((social, i) => (
+                <a
+                  key={i}
+                  href={social.href}
+                  className="w-9 h-9 flex items-center justify-center bg-white/5 text-slate-400 hover:bg-orange-600 hover:text-white transition-all"
+                >
+                  <social.icon size={16} />
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* 2. Orta Alan: Link Grupları */}
-          <div className="lg:col-span-5 grid grid-cols-2 sm:grid-cols-3 gap-8">
+          {/* 2. Orta Alan: Link Grupları (Görseldeki 4'lü yapı) */}
+          <div className="xl:col-span-9 grid grid-cols-2 md:grid-cols-4 gap-8">
             {Object.entries(menuGroups).map(([key, group]) => (
-              <div key={key} className="space-y-8">
-                <h4 className="text-white text-[11px] font-black tracking-[0.2em] uppercase">
+              <div key={key} className="space-y-6">
+                <h4 className="text-white text-[15px] font-bold">
                   {group.title}
                 </h4>
-                <ul className="space-y-4">
+                <ul className="space-y-3">
                   {group.links.map((link) => (
                     <li key={link.label}>
                       <Link
                         href={link.href}
-                        className="text-[13px] font-semibold text-slate-500 hover:text-orange-500 transition-colors"
+                        className="text-[13px] text-slate-400 hover:text-white hover:translate-x-1 transition-all inline-block"
                       >
                         {link.label}
                       </Link>
@@ -176,62 +203,22 @@ export default function Footer() {
               </div>
             ))}
           </div>
-
-          {/* 3. Sağ Kolon: Bülten */}
-          <div className="lg:col-span-3 space-y-8">
-            <div className="bg-white/5 p-8  border border-white/5">
-              <h4 className="text-white text-[11px] font-black tracking-[0.2em] uppercase mb-4">
-                TEKNİK BÜLTEN
-              </h4>
-              <p className="text-[12px] text-slate-400 font-medium leading-relaxed mb-6">
-                Yeni yönetmelikler ve ürün teknolojileri hakkında periyodik
-                bilgilendirme alın.
-              </p>
-
-              <form onSubmit={handleSubscribe} className="space-y-4">
-                <div className="relative">
-                  <input
-                    type="email"
-                    placeholder="E-posta adresiniz"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="w-full bg-slate-900 border border-slate-800 p-4 text-[13px] text-white focus:outline-none focus:border-orange-600 transition-all "
-                  />
-                  <Mail
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600"
-                    size={18}
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-orange-600 hover:bg-white hover:text-slate-950 text-white font-black text-[11px] tracking-[0.2em] py-4 transition-all duration-500 uppercase"
-                >
-                  {loading ? "KAYDEDİLİYOR..." : "ABONE OL"}
-                </button>
-              </form>
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* En Alt Bar */}
+      {/* Alt Bar */}
       <div className="bg-black py-8 border-t border-white/5">
         <div className="container mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-600">
             © {currentYear} İŞPOOL ENDÜSTRİYEL GÜVENLİK SİSTEMLERİ.
           </div>
-
-          <div className="flex items-center gap-8 transition-all duration-500">
-            <Image
-              src="/iyzico/logo_band_colored@3x.webp"
-              alt="Güvenli Ödeme"
-              width={200}
-              height={35}
-              className="object-contain"
-            />
-          </div>
+          <Image
+            src="/iyzico/logo_band_colored@3x.webp"
+            alt="Güvenli Ödeme"
+            width={200}
+            height={35}
+            className="object-contain"
+          />
         </div>
       </div>
     </footer>

@@ -111,13 +111,12 @@ export default function KvkkPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[13px] text-slate-500">
                     <p className="flex items-start gap-3 italic">
                       <MapPin size={16} className="text-amber-500 shrink-0" />
-                      Esentepe Bulvarı Prof Necmettin Erbakan Bulvarı No353,
-                      01150 Çukurova/Adana
+                      Fatih Mahallesi, Kazım Kara Bekir Caddesi No 144 a, 64000 Merkez/Uşak
                     </p>
                     <div className="space-y-2">
                       <p className="flex items-center gap-3 font-medium text-slate-700">
                         <Mail size={16} className="text-amber-500" />
-                        balkoluxofficial@gmail.com
+                        ispoolofficial@gmail.com
                       </p>
                       <p className="flex items-center gap-3 font-medium text-slate-700">
                         <Phone size={16} className="text-amber-500" />
@@ -233,7 +232,7 @@ export default function KvkkPage() {
                 </p>
                 <p className="text-[13px] text-amber-800/70 leading-relaxed">
                   Taleplerinizi yazılı olarak Adana adresimize veya{" "}
-                  <strong>balkoluxofficial@gmail.com</strong> adresine
+                  <strong>ispoolofficial@gmail.com</strong> adresine
                   iletebilirsiniz. En geç 30 gün içinde yanıtlanacaktır.
                 </p>
               </div>
