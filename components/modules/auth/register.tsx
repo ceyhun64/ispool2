@@ -44,7 +44,7 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/account/register", {
+      const res = await fetch("/api/account/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, surname, email, password }),
@@ -57,7 +57,7 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
       } else {
         toast.success("Kayıt başarılı! Giriş yapabilirsiniz.");
         if (onLoginClick) onLoginClick();
-        router.push("/login");
+        router.push("/auth/login");
       }
     } catch (err) {
       console.error(err);
@@ -124,7 +124,7 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
 
           <div className="relative z-10 space-y-6">
             <Link
-              href="/login"
+              href="/auth/login"
               className="group flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 p-5 transition-all duration-300"
             >
               <div className="flex flex-col">

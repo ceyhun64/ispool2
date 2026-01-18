@@ -85,7 +85,7 @@ export default function Adreslerim() {
       try {
         const res = await fetch("/api/address", { method: "GET" });
         if (res.status === 401) {
-          router.push("/login");
+          router.push("/auth/login");
           return;
         }
         if (!res.ok) throw new Error("Adresler yüklenemedi.");
@@ -95,7 +95,7 @@ export default function Adreslerim() {
       } catch (error) {
         console.error("Auth/Fetch error:", error);
         toast.error("Oturum doğrulanamadı.");
-        router.push("/login");
+        router.push("/auth/login");
       } finally {
         setLoading(false);
       }
@@ -159,7 +159,7 @@ export default function Adreslerim() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setAdresler((prev) =>
-        prev.map((a) => (a.id === duzenlenenAdres.id ? data.address : a))
+        prev.map((a) => (a.id === duzenlenenAdres.id ? data.address : a)),
       );
       toast.success("Adres bilgileri güncellendi.");
       setDuzenleForm(false);

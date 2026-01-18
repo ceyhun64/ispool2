@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { message: "Eğer e-posta kayıtlıysa şifre sıfırlama linki gönderildi" },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     });
 
     // 🔹 Mail içeriğini hazırla
-    const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password?token=${resetToken}`;
+    const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/reset-password?token=${resetToken}`;
     const subject = "Şifre Sıfırlama Talebi";
     const message = `
 Merhaba ${user.name || ""},
@@ -62,13 +62,13 @@ Eğer bu işlemi siz başlatmadıysanız, lütfen bu e-postayı dikkate almayın
 
     return NextResponse.json(
       { message: "Şifre sıfırlama linki e-posta adresinize gönderildi" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err: any) {
     console.error("Forgot password hatası:", err);
     return NextResponse.json(
       { error: err.message || "Sunucu hatası, tekrar deneyin." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

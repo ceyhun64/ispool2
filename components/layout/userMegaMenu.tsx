@@ -152,8 +152,6 @@ export default function UserMegaMenu({
                       </Link>
                     ))}
                   </nav>
-
-                
                 </div>
               ) : (
                 /* --- GUEST STATE (ZİYARETÇİ) --- */
@@ -170,7 +168,7 @@ export default function UserMegaMenu({
 
                   <div className="grid gap-4">
                     <Link
-                      href="/login"
+                      href="/auth/login"
                       onClick={() => setUserMenuOpen(false)}
                       className="flex items-center justify-between p-6 bg-slate-900 text-white hover:bg-orange-600 transition-all group"
                     >
@@ -184,7 +182,7 @@ export default function UserMegaMenu({
                     </Link>
 
                     <Link
-                      href="/register"
+                      href="/auth/register"
                       onClick={() => setUserMenuOpen(false)}
                       className="flex items-center justify-between p-6 bg-white border border-slate-200 text-slate-900 hover:border-slate-900 transition-all group"
                     >

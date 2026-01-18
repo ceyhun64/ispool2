@@ -4,7 +4,11 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import SocialSidebar from "@/components/layout/socialSidebar";
 
-export default function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
+export default function ClientLayoutWrapper({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const [isNotFound, setIsNotFound] = useState(false);
 
@@ -16,8 +20,8 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
   const hiddenPaths = [
     "/admin",
     "/checkout",
-    "/reset-password",
-    "/forgot-password",
+    "/auth/reset-password",
+    "/auth/forgot-password",
   ];
 
   const hideForPath = hiddenPaths.some((path) => pathname?.startsWith(path));
