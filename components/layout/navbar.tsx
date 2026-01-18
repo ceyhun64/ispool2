@@ -10,10 +10,10 @@ import {
 } from "framer-motion";
 import { Heart, User, Search, X, Bell, Command, Menu } from "lucide-react";
 import Image from "next/image";
-import CategoryBar from "./categoryBar";
-import CartDropdown from "./cartDropdown";
+import CategoryBar from "@/components/modules/navbar/categoryBar";
+import CartDropdown from "@/components/modules/navbar/cartDropdown";
 import { useFavorite } from "@/contexts/favoriteContext";
-import UserMegaMenu from "./userMegaMenu";
+import UserMegaMenu from "@/components/modules/navbar/userMegaMenu";
 
 export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
