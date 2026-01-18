@@ -16,6 +16,7 @@ import {
   Settings,
   Info,
 } from "lucide-react";
+import Link from "next/link";
 
 export default function TopBar() {
   const socialMedia = [
@@ -27,14 +28,14 @@ export default function TopBar() {
   const menuItems = [
    
     { label: "İletişim", icon: <Mail size={13} />, href: "/help/contact" },
-    { label: "Toptan Satış", icon: <Users size={13} />, href: "/toptan-satis" },
+    { label: "Toptan Satış", icon: <Users size={13} />, href: "/products/wholesale" },
     {
       label: "Özel Üretim",
       icon: <Settings size={13} />,
-      href: "/ozel-uretim",
+      href: "/products/special_production",
     },
-    { label: "Hakkımızda", icon: <Info size={13} />, href: "/hakkimizda" },
-    { label: "Kargo Takibi", icon: <Truck size={13} />, href: "/kargo-takibi" },
+    { label: "Hakkımızda", icon: <Info size={13} />, href: "/institutional/about" },
+    { label: "Kargo Takibi", icon: <Truck size={13} />, href: "/profile/cargo_tracking" },
   ];
 
   return (
@@ -100,8 +101,8 @@ export default function TopBar() {
 
             {/* Kariyer CTA - Endüstriyel Premium Buton */}
             <div className="h-full flex items-center ml-4 pl-4 border-l border-white/10">
-              <a
-                href="/kariyer"
+              <Link
+                href="/institutional/career"
                 className="group relative flex items-center gap-3 bg-white text-black px-4 h-6 text-[9px] font-black tracking-[0.2em] transition-all duration-300 hover:bg-orange-600 hover:text-white"
               >
                 <span className="relative z-10 flex items-center gap-2">
@@ -112,7 +113,7 @@ export default function TopBar() {
                   size={10}
                   className="relative z-10 transition-all duration-300 group-hover:translate-x-1"
                 />
-              </a>
+              </Link>
             </div>
           </div>
         </div>

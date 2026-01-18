@@ -77,6 +77,7 @@ export default function Footer() {
         { label: "Mesafeli Satış Sözleşmesi", href: "/help/distance-sales" },
         { label: "Banka Bilgileri & Havale Bildirim", href: "/help/bank-info" },
         { label: "İade ve Değişim", href: "/help/returns-help" },
+        { label: "Baskı ve Nakış Hizmetleri", href: "/help/printing" },
       ],
     },
   };

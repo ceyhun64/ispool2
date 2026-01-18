@@ -7,7 +7,7 @@ import {
   CarouselItem,
   CarouselApi,
 } from "@/components/ui/carousel";
-import ProductCard from "../products/productCard";
+import ProductCard from "../productCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronLeft, ChevronRight, Activity } from "lucide-react";
 import { motion } from "framer-motion";
