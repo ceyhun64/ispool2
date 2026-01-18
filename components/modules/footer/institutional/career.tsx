@@ -45,9 +45,9 @@ const KurumsalKariyer = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Sol Kolon: Pozisyon Detayı ve Örnekler */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white p-8 shadow-2xl rounded-2xl border border-slate-100">
+            <div className="bg-white p-8 shadow-2xl  border border-slate-100">
               <div className="flex items-center gap-2 text-amber-600 mb-4">
-                <span className="w-2 h-2 bg-amber-600 rounded-full animate-pulse"></span>
+                <span className="w-2 h-2 bg-amber-600  animate-pulse"></span>
                 <span className="text-xs font-bold uppercase tracking-widest">
                   Açık Pozisyon
                 </span>
@@ -121,7 +121,7 @@ const KurumsalKariyer = () => {
             </div>
 
             {/* Premium Ürün Örnekleri - Modern Kartlar */}
-            <div className="bg-slate-900 text-white p-8 rounded-2xl shadow-xl">
+            <div className="bg-slate-900 text-white p-8  shadow-xl">
               <h4 className="text-lg font-bold mb-6 border-b border-slate-700 pb-2">
                 Neler Üretiyoruz?
               </h4>
@@ -165,7 +165,7 @@ const KurumsalKariyer = () => {
 
           {/* Sağ Kolon: Modern Başvuru Formu */}
           <div className="lg:col-span-2">
-            <div className="bg-white p-10 shadow-2xl rounded-2xl border border-slate-100">
+            <div className="bg-white p-10 shadow-2xl  border border-slate-100">
               <div className="mb-10 text-center">
                 <h3 className="text-3xl font-bold text-slate-800 mb-2">
                   Hızlı Başvuru Formu
@@ -183,7 +183,7 @@ const KurumsalKariyer = () => {
                   <input
                     type="text"
                     placeholder="Örn: Ahmet Yılmaz"
-                    className="w-full bg-slate-50 border-none rounded-lg p-4 text-sm focus:ring-2 focus:ring-amber-500 transition-all outline-none"
+                    className="w-full bg-slate-50 border-none  p-4 text-sm focus:ring-2 focus:ring-amber-500 transition-all outline-none"
                   />
                 </div>
                 <div className="space-y-2">
@@ -193,7 +193,7 @@ const KurumsalKariyer = () => {
                   <input
                     type="email"
                     placeholder="ahmet@email.com"
-                    className="w-full bg-slate-50 border-none rounded-lg p-4 text-sm focus:ring-2 focus:ring-amber-500 transition-all outline-none"
+                    className="w-full bg-slate-50 border-none  p-4 text-sm focus:ring-2 focus:ring-amber-500 transition-all outline-none"
                   />
                 </div>
                 <div className="space-y-2">
@@ -203,14 +203,14 @@ const KurumsalKariyer = () => {
                   <input
                     type="tel"
                     placeholder="05xx xxx xx xx"
-                    className="w-full bg-slate-50 border-none rounded-lg p-4 text-sm focus:ring-2 focus:ring-amber-500 transition-all outline-none"
+                    className="w-full bg-slate-50 border-none  p-4 text-sm focus:ring-2 focus:ring-amber-500 transition-all outline-none"
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-700 uppercase">
                     Pozisyon
                   </label>
-                  <select className="w-full bg-slate-50 border-none rounded-lg p-4 text-sm focus:ring-2 focus:ring-amber-500 transition-all outline-none appearance-none">
+                  <select className="w-full bg-slate-50 border-none  p-4 text-sm focus:ring-2 focus:ring-amber-500 transition-all outline-none appearance-none">
                     <option>Kocaeli Mağaza - Satış Temsilcisi</option>
                     <option>Özel Üretim Tasarım Ekibi</option>
                     <option>Lojistik & Sevkiyat</option>
@@ -222,7 +222,7 @@ const KurumsalKariyer = () => {
                   </label>
                   <textarea
                     placeholder="Bize kendinizden ve tecrübelerinizden bahsedin..."
-                    className="w-full bg-slate-50 border-none rounded-lg p-4 text-sm focus:ring-2 focus:ring-amber-500 transition-all outline-none resize-none"
+                    className="w-full bg-slate-50 border-none  p-4 text-sm focus:ring-2 focus:ring-amber-500 transition-all outline-none resize-none"
                   ></textarea>
                 </div>
 
@@ -242,7 +242,7 @@ const KurumsalKariyer = () => {
                 </div>
 
                 <div className="md:col-span-2">
-                  <button className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-amber-200 transition-all transform hover:-translate-y-1 active:scale-[0.98] uppercase tracking-widest text-sm">
+                  <button className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4  shadow-lg shadow-amber-200 transition-all transform hover:-translate-y-1 active:scale-[0.98] uppercase tracking-widest text-sm">
                     Başvuruyu Gönder
                   </button>
                 </div>
