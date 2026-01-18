@@ -6,11 +6,15 @@ import {
   Youtube,
   Phone,
   FileText,
-  UserCheck,
   Truck,
   Box,
   ChevronRight,
-  ShieldCheck,
+  Store,
+  Mail,
+  Users,
+  Briefcase,
+  Settings,
+  Info,
 } from "lucide-react";
 
 export default function TopBar() {
@@ -21,14 +25,16 @@ export default function TopBar() {
   ];
 
   const menuItems = [
-    { label: "Lojistik", icon: <Truck size={13} />, href: "/kargo-takibi" },
+   
+    { label: "İletişim", icon: <Mail size={13} />, href: "/help/contact" },
+    { label: "Toptan Satış", icon: <Users size={13} />, href: "/toptan-satis" },
     {
-      label: "Bayi Paneli",
-      icon: <UserCheck size={13} />,
-      href: "/bayi-girisi",
+      label: "Özel Üretim",
+      icon: <Settings size={13} />,
+      href: "/ozel-uretim",
     },
-    { label: "Katalog", icon: <FileText size={13} />, href: "/katalog" },
-    { label: "Toptan Satış", icon: <Box size={13} />, href: "/toptan-satis" },
+    { label: "Hakkımızda", icon: <Info size={13} />, href: "/hakkimizda" },
+    { label: "Kargo Takibi", icon: <Truck size={13} />, href: "/kargo-takibi" },
   ];
 
   return (
@@ -40,7 +46,7 @@ export default function TopBar() {
         <div className="flex items-center justify-between h-11">
           {/* SOL BÖLÜM: Sosyal Medya & İletişim */}
           <div className="flex items-center gap-10">
-            {/* Sosyal Medya - Minimalist Tasarım */}
+            {/* Sosyal Medya */}
             <div className="flex items-center gap-5">
               {socialMedia.map((social, index) => (
                 <a
@@ -56,7 +62,7 @@ export default function TopBar() {
             {/* Ayırıcı Nokta */}
             <div className="w-1 h-1 bg-white/10 rounded-full" />
 
-            {/* Müşteri Hattı - Teknik ve Net */}
+            {/* Müşteri Hattı */}
             <div className="flex items-center gap-3 group cursor-pointer">
               <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-orange-600 transition-colors duration-500">
                 <Phone
@@ -65,21 +71,21 @@ export default function TopBar() {
                 />
               </div>
               <span className="text-[10px] font-black tracking-[0.15em] text-slate-400 group-hover:text-white transition-colors tabular-nums">
-                DESTEK: 0850 000 00 00
+                DESTEK: 0216 472 73 00
               </span>
             </div>
           </div>
 
-          {/* SAĞ BÖLÜM: Fonksiyonel Menü & CTA */}
+          {/* SAĞ BÖLÜM: Fonksiyonel Menü & Kariyer CTA */}
           <div className="flex items-center h-full">
             <nav className="flex items-center h-full">
               {menuItems.map((item, index) => (
                 <a
                   key={index}
                   href={item.href}
-                  className="group px-6 h-full flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-all duration-300 relative border-r border-white/[0.03] last:border-r-0"
+                  className="group px-4 h-full flex items-center text-[9px] font-black uppercase tracking-[0.15em] text-slate-500 hover:text-white transition-all duration-300 relative border-r border-white/[0.03] last:border-r-0"
                 >
-                  <span className="flex items-center gap-3">
+                  <span className="flex items-center gap-2">
                     <span className="text-orange-600 group-hover:scale-110 transition-transform duration-300">
                       {item.icon}
                     </span>
@@ -93,18 +99,19 @@ export default function TopBar() {
             </nav>
 
             {/* Kariyer CTA - Endüstriyel Premium Buton */}
-            <div className="h-full flex items-center ml-6 pl-6 border-l border-white/10">
+            <div className="h-full flex items-center ml-4 pl-4 border-l border-white/10">
               <a
                 href="/kariyer"
-                className="group relative flex items-center gap-3 bg-white text-black px-5 h-7 text-[9px] font-black tracking-[0.25em] transition-all duration-300 hover:bg-orange-600 hover:text-white"
+                className="group relative flex items-center gap-3 bg-white text-black px-4 h-6 text-[9px] font-black tracking-[0.2em] transition-all duration-300 hover:bg-orange-600 hover:text-white"
               >
-                <span className="relative z-10">KARİYER</span>
-                <div className="relative z-10 w-3 h-3 flex items-center justify-center">
-                  <ChevronRight
-                    size={12}
-                    className="absolute transition-all duration-300 group-hover:translate-x-1"
-                  />
-                </div>
+                <span className="relative z-10 flex items-center gap-2">
+                  <Briefcase size={10} />
+                  KARİYER
+                </span>
+                <ChevronRight
+                  size={10}
+                  className="relative z-10 transition-all duration-300 group-hover:translate-x-1"
+                />
               </a>
             </div>
           </div>

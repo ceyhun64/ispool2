@@ -11,6 +11,7 @@ import {
   Box,
   Scan,
 } from "lucide-react";
+import Link from "next/link";
 
 // Tipler ve Veriler
 interface BannerItem {
@@ -193,13 +194,15 @@ export default function HeroSection() {
               className="flex flex-wrap items-center gap-4 pt-4"
             >
               <button className="group relative bg-white text-black px-8 py-4 text-[11px] font-bold tracking-widest uppercase transition-all duration-300 hover:bg-orange-600 hover:text-white">
-                <span className="flex items-center gap-2">
-                  İNCELE
-                  <ArrowRight
-                    size={16}
-                    className="group-hover:translate-x-1 transition-transform"
-                  />
-                </span>
+                <Link href="/products">
+                  <span className="flex items-center gap-2">
+                    İNCELE
+                    <ArrowRight
+                      size={16}
+                      className="group-hover:translate-x-1 transition-transform"
+                    />
+                  </span>
+                </Link>
               </button>
 
               <button className="group px-8 py-4 border border-white/20 hover:border-white/60 text-white text-[11px] font-bold tracking-widest uppercase transition-all flex items-center gap-2 backdrop-blur-sm">
