@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import ProductCard from "./productCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Heart, ArrowRight } from "lucide-react";
+import { Heart, ShieldCheck, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useFavorite } from "@/contexts/favoriteContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,80 +14,92 @@ export default function Favorites() {
 
   const FavoriteSkeleton = () => (
     <div className="flex flex-col space-y-6">
-      <Skeleton className="w-full aspect-[3/4] rounded-none bg-slate-50" />
+      <Skeleton className="w-full aspect-square rounded-none bg-slate-200/50" />
       <div className="space-y-3">
-        <Skeleton className="h-3 w-2/3 bg-slate-50" />
-        <Skeleton className="h-3 w-1/3 bg-slate-50" />
+        <Skeleton className="h-4 w-2/3 bg-slate-200/50" />
+        <Skeleton className="h-4 w-1/3 bg-slate-200/50" />
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <div className="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-20 py-24 md:py-32">
-        {/* Header Section - Minimalist & Editorial */}
+    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-slate-900 selection:text-white">
+      <div className="max-w-[1800px] mx-auto px-6 md:px-12 lg:px-16 py-10 md:py-24">
+        {/* Header Section - Premium Industrial Aesthetic */}
         {!loading && favorites.length > 0 && (
-          <header className="flex flex-col items-start mb-20 border-b border-slate-100 pb-12">
+          <header className="flex flex-col md:flex-row md:items-end justify-between mb-24 border-b border-slate-100 pb-16">
             <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="space-y-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
             >
-              <span className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-light">
-                Kişisel Seçki
-              </span>
-              <h1 className="text-4xl md:text-5xl font-extralight tracking-tight">
-                Favorilerim
+              <div className="flex items-center gap-3">
+                <span className="h-px w-8 bg-slate-900" />
+                <span className="text-[11px] uppercase tracking-[0.3em] text-slate-500 font-bold">
+                  Pro-Selection / 2026
+                </span>
+              </div>
+              <h1 className="text-xl md:text-3xl font-bold tracking-tighter text-slate-900">
+                FAVORİLER
               </h1>
-              <p className="text-slate-400 text-sm font-light max-w-md">
-                Beğendiğiniz tasarımları tek bir noktada toplayın ve tarzınızı
-                şekillendirin.
+              <p className="text-slate-500 text-sm font-medium max-w-lg leading-relaxed">
+                Yüksek performanslı iş kıyafetleri ve güvenlik ekipmanlarından
+                oluşan kişisel seçkinizi yönetin. Güvenliğiniz için en iyisini
+                seçin.
               </p>
             </motion.div>
+
+            <div className="hidden md:block text-right">
+              <span className="text-sm font-mono text-slate-400">
+                TOPLAM: {favorites.length} ÜRÜN
+              </span>
+            </div>
           </header>
         )}
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-20">
             {Array.from({ length: 4 }).map((_, i) => (
               <FavoriteSkeleton key={i} />
             ))}
           </div>
         ) : favorites.length === 0 ? (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center justify-center py-40 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col items-center justify-center py-48 text-center"
           >
-            <div className="mb-10">
-              <Heart strokeWidth={0.5} className="h-16 w-16 text-slate-200" />
+            <div className="mb-12 relative">
+              <div className="absolute inset-0 bg-slate-100 scale-[2.5] rounded-full -z-10 blur-2xl opacity-50" />
+              <ShieldCheck
+                strokeWidth={0.75}
+                className="h-24 w-24 text-slate-200"
+              />
             </div>
 
-            <div className="space-y-6">
-              <h3 className="text-2xl font-light tracking-tight text-slate-900">
-                Kürasyonunuz boş görünüyor
+            <div className="space-y-8">
+              <h3 className="text-3xl font-bold tracking-tight text-slate-900">
+                Henüz bir seçim yapmadınız.
               </h3>
-              <p className="text-slate-400 max-w-xs mx-auto text-sm font-light leading-relaxed">
-                Henüz hiçbir ürünü favorilerinize eklemediniz. İlham almak için
-                koleksiyonlarımızı inceleyin.
+              <p className="text-slate-500 max-w-sm mx-auto text-sm font-medium leading-relaxed">
+                İş sahasında üstün koruma ve konfor sağlayan ekipmanları
+                favorilerinize ekleyerek projenize hazırlanın.
               </p>
-              <div className="pt-8">
+              <div className="pt-6">
                 <Link href="/products">
-                  <Button
-                    variant="outline"
-                    className="border-slate-200 text-slate-950 rounded-none px-8 py-6 text-xs tracking-widest uppercase hover:bg-slate-950 hover:text-white transition-all duration-500"
-                  >
-                    KOLEKSİYONU GÖR
+                  <Button className="bg-slate-900 text-white rounded-none px-12 py-7 text-xs tracking-widest uppercase hover:bg-slate-800 transition-all duration-300 group">
+                    EKİPMANLARI İNCELE
+                    <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                   </Button>
                 </Link>
               </div>
             </div>
           </motion.div>
         ) : (
-          /* Ürün Listesi - Grid Gap Revizesi */
+          /* Ürün Listesi - Industrial Grid */
           <motion.div
             layout
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-20"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-10 gap-y-24"
           >
             <AnimatePresence mode="popLayout">
               {favorites
@@ -96,22 +108,34 @@ export default function Favorites() {
                   <motion.div
                     key={productId}
                     layout
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{
-                      duration: 0.6,
-                      delay: index * 0.05,
-                      ease: [0.19, 1, 0.22, 1],
+                      duration: 0.7,
+                      delay: index * 0.08,
+                      ease: [0.16, 1, 0.3, 1],
                     }}
                     className="relative"
                   >
+                    {/* Teknik detay numarası eklemesi (Opsiyonel estetik) */}
+                    <div className="absolute -top-6 left-0 text-[10px] font-mono text-slate-300">
+                      REF NO: 00{productId}
+                    </div>
                     <ProductCard id={productId} onRemove={removeFavorite} />
                   </motion.div>
                 ))}
             </AnimatePresence>
           </motion.div>
         )}
+      </div>
+
+      {/* Alt Dekoratif Çizgi (Industrial Look) */}
+      <div className="h-20 border-t border-slate-100 flex items-center justify-center overflow-hidden">
+        <div className="whitespace-nowrap text-[10px] uppercase tracking-[1em] text-slate-200 font-black">
+          ENGINEERED FOR EXTREME PERFORMANCE • SAFETY FIRST • PREMIUM QUALITY
+          WORKWEAR
+        </div>
       </div>
     </div>
   );

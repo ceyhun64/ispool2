@@ -17,7 +17,14 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, ArrowRight, ShieldCheck, Package } from "lucide-react";
+import {
+  ShoppingCart,
+  ArrowRight,
+  ShieldCheck,
+  Package,
+  X,
+  Lock,
+} from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import CartItemDropdown from "./cartItem";
@@ -206,16 +213,16 @@ const CartDropdown = forwardRef(
       (acc, item) => acc + item.product.price * item.quantity,
       0,
     );
-    const taxAmount = subtotal * 0.1;
+    const taxAmount = subtotal * 0.1; // %10 KDV
     const total = subtotal + taxAmount;
 
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
-          <button className="relative p-2.5 bg-slate-900 text-white hover:bg-orange-600 transition-all group shadow-lg">
-            <ShoppingCart className="h-5 w-5 stroke-[2px]" />
+          <button className="relative p-2.5 text-slate-900 hover:text-slate-500 transition-colors duration-300">
+            <ShoppingCart className="h-5.5 w-5.5 stroke-[1.2px]" />
             {showCount && cartItems.length > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-orange-500 text-white text-[10px] flex items-center justify-center font-bold border border-white">
+              <span className="absolute top-1 right-1 h-4 w-4 rounded-full bg-slate-900 text-white text-[9px] flex items-center justify-center font-bold font-mono shadow-sm">
                 {cartItems.length}
               </span>
             )}
@@ -224,57 +231,68 @@ const CartDropdown = forwardRef(
 
         <SheetContent
           side="right"
-          className="z-[200] p-0 w-full sm:max-w-[420px] h-full fixed top-0 right-0 bg-white flex flex-col border-l-4 border-l-orange-500 shadow-2xl"
+          className="z-[200] p-0 w-full sm:max-w-[450px] h-full fixed top-0 right-0 bg-white flex flex-col border-l border-slate-100 shadow-2xl"
         >
-          {/* Header */}
-          <div className="bg-slate-900 p-5 sm:p-6 text-white relative overflow-hidden shrink-0">
-            <div className="absolute top-0 right-0 opacity-10 translate-x-1/4 -translate-y-1/4">
-              <ShieldCheck size={140} />
-            </div>
-            <div className="relative z-10">
-              <SheetTitle className="flex items-center gap-2">
-                <span className="text-[10px] sm:text-[11px] tracking-[0.3em] text-orange-400 uppercase font-black">
-                  Ekipman Çantanız
+          {/* Modern Industrial Header */}
+          <div className="px-8 pt-12 pb-8 shrink-0 border-b border-slate-50 bg-slate-50/30">
+            <div className="flex justify-between items-end">
+              <SheetTitle className="flex flex-col gap-1.5">
+                <span className="text-[10px] tracking-[0.4em] text-slate-400 uppercase font-black leading-none">
+                  EKİPMAN SEÇİMİ
+                </span>
+                <span className="text-3xl font-black tracking-tighter text-slate-900 uppercase">
+                  SEPETİM
                 </span>
               </SheetTitle>
-              <div className="flex items-center gap-2 mt-1">
-                <Package className="h-3 w-3 text-slate-400" />
-                <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-slate-300 font-medium">
-                  {cartItems.length} Kalem Ürün Hazırlanıyor
+              <div className="flex items-center gap-2 bg-slate-900 px-4 py-2 text-white">
+                <Package className="h-3.5 w-3.5" strokeWidth={2.5} />
+                <span className="text-[10px] font-black uppercase tracking-widest font-mono">
+                  {cartItems.length} ÜRÜN
                 </span>
               </div>
             </div>
           </div>
 
           {/* Items Area */}
-          <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4">
+          <div className="flex-1 overflow-y-auto px-8 py-6 custom-scrollbar">
             {isLoading ? (
-              <div className="space-y-6 pt-4">
+              <div className="space-y-10 pt-4">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex gap-4">
-                    <Skeleton className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100" />
-                    <div className="flex-1 space-y-3 py-2">
-                      <Skeleton className="h-4 w-3/4 bg-slate-100" />
-                      <Skeleton className="h-3 w-1/4 bg-slate-100" />
+                  <div key={i} className="flex gap-6">
+                    <Skeleton className="w-24 h-24 bg-slate-50 rounded-none border border-slate-100" />
+                    <div className="flex-1 space-y-4 py-1">
+                      <Skeleton className="h-4 w-3/4 bg-slate-50 rounded-none" />
+                      <Skeleton className="h-3 w-1/4 bg-slate-50 rounded-none" />
+                      <Skeleton className="h-8 w-20 bg-slate-50 rounded-none" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : cartItems.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full space-y-4 text-center">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center">
-                  <ShoppingCart className="h-8 w-8 text-slate-200" />
+              <div className="flex flex-col items-center justify-center h-full space-y-8 text-center">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-slate-50 scale-[2.5] rounded-full -z-10 blur-2xl" />
+                  <ShoppingCart
+                    className="h-16 w-16 text-slate-200"
+                    strokeWidth={0.5}
+                  />
                 </div>
-                <p className="text-sm font-bold text-slate-800 uppercase tracking-tighter">
-                  Listeniz Henüz Boş
-                </p>
+                <div className="space-y-3">
+                  <p className="text-lg font-black text-slate-900 uppercase tracking-tighter">
+                    SEPETİNİZ ŞU ANDA BOŞ
+                  </p>
+                  <p className="text-xs text-slate-400 max-w-[240px] leading-relaxed font-medium uppercase tracking-wide">
+                    Profesyonel iş elbiseleri ve güvenlik ekipmanlarını
+                    keşfedin.
+                  </p>
+                </div>
                 <SheetClose asChild>
                   <Link href="/products">
                     <Button
                       variant="outline"
-                      className="border-2 border-slate-900 font-black text-[10px] uppercase tracking-widest px-6 h-11"
+                      className="border-slate-900 text-slate-900 rounded-none font-black text-[10px] uppercase tracking-[0.2em] px-10 h-14 hover:bg-slate-900 hover:text-white transition-all duration-500 shadow-lg"
                     >
-                      Katalogu İncele
+                      KATALOĞU İNCELE
                     </Button>
                   </Link>
                 </SheetClose>
@@ -288,7 +306,11 @@ const CartDropdown = forwardRef(
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.2, delay: index * 0.03 }}
+                      transition={{
+                        duration: 0.5,
+                        ease: [0.19, 1, 0.22, 1],
+                        delay: index * 0.05,
+                      }}
                     >
                       <CartItemDropdown
                         item={item}
@@ -302,48 +324,75 @@ const CartDropdown = forwardRef(
             )}
           </div>
 
-          {/* Summary Footer */}
+          {/* Premium Footer Summary */}
           {cartItems.length > 0 && (
-            <div className="bg-slate-50 border-t border-slate-200 p-4 sm:p-6 space-y-4 shrink-0 shadow-inner">
-              <div className="space-y-2">
-                <div className="flex justify-between text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  <span>Ara Toplam</span>
-                  <span className="font-mono">
-                    ₺{subtotal.toLocaleString("tr-TR")}
+            <div className="bg-slate-50 border-t border-slate-200 p-8 space-y-6 shrink-0 shadow-[0_-10px_40px_rgba(0,0,0,0.03)]">
+              <div className="space-y-3">
+                <div className="flex justify-between text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                  <span>ARA TOPLAM</span>
+                  <span className="text-slate-900 font-mono">
+                    ₺
+                    {subtotal.toLocaleString("tr-TR", {
+                      minimumFractionDigits: 2,
+                    })}
                   </span>
                 </div>
-                <div className="pt-3 border-t-2 border-slate-200 border-dotted flex justify-between items-end">
+                {/* KDV Bilgisi */}
+                <div className="flex justify-between text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                  <span>KDV (%10)</span>
+                  <span className="text-slate-900 font-mono">
+                    ₺
+                    {taxAmount.toLocaleString("tr-TR", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </span>
+                </div>
+                <div className="flex justify-between items-start pt-4 border-t border-slate-200">
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em]">
-                      Genel Toplam
+                    <span className="text-xs font-black text-slate-900 uppercase tracking-tighter">
+                      GENEL TOPLAM
                     </span>
-                    <span className="text-xl sm:text-2xl font-black text-slate-900 font-mono tracking-tighter">
-                      ₺
-                      {total.toLocaleString("tr-TR", {
-                        minimumFractionDigits: 2,
-                      })}
+                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
+                      Vergiler Dahil Net Tutar
                     </span>
                   </div>
+                  <span className="text-3xl font-black text-slate-900 tracking-tighter font-mono leading-none">
+                    ₺
+                    {total.toLocaleString("tr-TR", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </span>
                 </div>
               </div>
 
-              <div className="grid gap-2">
+              <div className="flex flex-col gap-3">
                 <SheetClose asChild>
                   <Link href="/checkout" className="w-full">
-                    <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white h-12 sm:h-14 font-black text-xs uppercase tracking-[0.2em]">
-                      Siparişi Tamamla
-                      <ArrowRight className="ml-2 h-4 w-4" />
+                    <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white h-16 rounded-none font-bold text-[11px] uppercase tracking-[0.25em] transition-all duration-500 group relative overflow-hidden">
+                      <span className="relative z-10 flex items-center">
+                        GÜVENLİ ÖDEMEYE GEÇ
+                        <ArrowRight className="ml-3 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </span>
                     </Button>
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
-                  <Button
-                    variant="ghost"
-                    className="text-slate-400 font-bold text-[10px] uppercase h-10"
-                  >
-                    Kapat
-                  </Button>
+                  <Link href="/cart" className="w-full">
+                    <Button
+                      variant="ghost"
+                      className="w-full bg-transparent hover:bg-slate-100 text-slate-500 hover:text-slate-900 h-12 rounded-none font-bold text-[10px] uppercase tracking-[0.2em] transition-all duration-300"
+                    >
+                      SEPETE DETAYLI GÖZ AT
+                    </Button>
+                  </Link>
                 </SheetClose>
+
+                <div className="flex items-center justify-center gap-3 py-2 opacity-60">
+                  <Lock size={12} className="text-slate-900" />
+                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                    Endüstriyel Güvenlikli Ödeme
+                  </span>
+                </div>
               </div>
             </div>
           )}

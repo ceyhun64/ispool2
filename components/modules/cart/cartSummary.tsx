@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShieldCheck, Truck } from "lucide-react";
+import { ArrowRight, ShieldCheck, Truck, Lock } from "lucide-react";
 import Link from "next/link";
 
 interface CartSummaryProps {
@@ -24,72 +24,99 @@ export default function CartSummary({ subtotal }: CartSummaryProps) {
   };
 
   return (
-    <div className="w-full bg-slate-50/50 p-8 md:p-10 border border-slate-100 flex flex-col gap-8">
-      <div className="space-y-6">
-        <h2 className="text-xs font-medium tracking-[0.2em] uppercase text-slate-400 border-b border-slate-100 pb-4">
-          Sipariş Özeti
-        </h2>
+    <div className="w-full bg-slate-50 p-8 md:p-10 border border-slate-100 flex flex-col gap-10">
+      <div className="space-y-8">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-5">
+          <h2 className="text-[11px] font-bold tracking-[0.25em] uppercase text-slate-900">
+            SİPARİŞ ÖZETİ
+          </h2>
+          <span className="text-[10px] font-mono text-slate-400">V.2026</span>
+        </div>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           {/* Ara Toplam */}
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-slate-500 font-light">Ara Toplam</span>
-            <span className="text-slate-900 font-medium">
+          <div className="flex justify-between items-center text-[13px]">
+            <span className="text-slate-500 font-medium">Ara Toplam</span>
+            <span className="text-slate-900 font-bold font-mono">
               {formatCurrency(subtotal)}
             </span>
           </div>
 
           {/* KDV Tutarı */}
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-slate-500 font-light">KDV (%10)</span>
-            <span className="text-slate-900 font-medium">
+          <div className="flex justify-between items-center text-[13px]">
+            <span className="text-slate-500 font-medium">Vergi / KDV (%10)</span>
+            <span className="text-slate-900 font-bold font-mono">
               {formatCurrency(taxAmount)}
             </span>
           </div>
 
           {/* Teslimat */}
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-slate-500 font-light">Teslimat</span>
-            <span className="text-slate-400 text-[11px] tracking-tight uppercase">
-              Ödeme adımında hesaplanır
+          <div className="flex justify-between items-center text-[13px]">
+            <span className="text-slate-500 font-medium">
+              Lojistik / Teslimat
+            </span>
+            <span className="text-slate-400 text-[10px] tracking-widest uppercase font-bold">
+              Hesaplanıyor
             </span>
           </div>
 
           {/* Genel Toplam */}
-          <div className="pt-6 border-t border-slate-200 flex justify-between items-baseline">
-            <span className="text-base font-light text-slate-900">Toplam</span>
+          <div className="pt-8 mt-4 border-t border-slate-200 flex justify-between items-start">
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-black text-slate-900 uppercase tracking-tighter">
+                TOPLAM
+              </span>
+              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">
+                KDV Dahil Net Tutar
+              </span>
+            </div>
             <div className="text-right">
-              <span className="text-2xl font-medium tracking-tight text-slate-950">
+              <span className="text-3xl font-black tracking-tighter text-slate-900 font-mono">
                 {formatCurrency(total)}
               </span>
-              <p className="text-[10px] text-slate-400 mt-1 font-light">
-                KDV Dahil Toplam Tutar
-              </p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         <Link href="/checkout" className="block w-full">
-          <Button className="w-full bg-slate-950 hover:bg-slate-800 text-white rounded-none h-14 text-xs tracking-[0.15em] font-light transition-all duration-300 group">
-            ÖDEMEYİ TAMAMLA
-            <ArrowRight className="ml-2 h-3 w-3 transition-transform group-hover:translate-x-1" />
+          <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-none h-16 text-[11px] tracking-[0.2em] font-bold transition-all duration-500 group relative overflow-hidden">
+            <span className="relative z-10 flex items-center justify-center">
+              ÖDEME ADIMINA İLERLE
+              <ArrowRight className="ml-3 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </span>
           </Button>
         </Link>
 
-        <div className="flex flex-col gap-3 pt-2">
-          <div className="flex items-center gap-3 text-slate-400">
-            <ShieldCheck size={14} strokeWidth={1} />
-            <span className="text-[10px] tracking-wide uppercase font-light">
-              Güvenli Ödeme Altyapısı
-            </span>
+        {/* Güvenlik ve Lojistik İkonları */}
+        <div className="grid grid-cols-1 gap-4 pt-4 border-t border-slate-100">
+          <div className="flex items-center gap-4 text-slate-500 group">
+            <div className="w-8 h-8 rounded-full bg-white border border-slate-100 flex items-center justify-center transition-colors group-hover:border-slate-900">
+              <Lock size={14} className="text-slate-900" strokeWidth={2} />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] tracking-wider uppercase font-bold text-slate-900">
+                Endüstriyel Güvenlik
+              </span>
+              <span className="text-[9px] font-medium text-slate-400 uppercase">
+                256-Bit SSL Şifreleme Korunuyor
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-3 text-slate-400">
-            <Truck size={14} strokeWidth={1} />
-            <span className="text-[10px] tracking-wide uppercase font-light">
-              Ücretsiz Sigortalı Gönderim
-            </span>
+
+          <div className="flex items-center gap-4 text-slate-500 group">
+            <div className="w-8 h-8 rounded-full bg-white border border-slate-100 flex items-center justify-center transition-colors group-hover:border-slate-900">
+              <Truck size={14} className="text-slate-900" strokeWidth={2} />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] tracking-wider uppercase font-bold text-slate-900">
+                Lojistik Partneri
+              </span>
+              <span className="text-[9px] font-medium text-slate-400 uppercase">
+                Sigortalı ve Hızlı Sevkiyat
+              </span>
+            </div>
           </div>
         </div>
       </div>
