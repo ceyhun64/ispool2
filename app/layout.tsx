@@ -44,30 +44,12 @@ export default function RootLayout({
         <CartProvider>
           <FavoriteProvider>
             <ClientLayoutWrapper>
-              {/* MODERN ENDÜSTRİYEL ARKA PLAN 
-                - radial-gradient: Teknik çizim kağıdı dokusu
-                - scanline-effect: Sayfaya derinlik katan hafif çizgiler
-              */}
-              <div className="fixed inset-0 -z-10 pointer-events-none">
-                <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1.2px,transparent_1.2px)] [background-size:24px_24px] opacity-40" />
-                <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white/50" />
-              </div>
-
               <main className="min-h-screen font-sans selection:bg-orange-600 selection:text-white relative">
-                {/* Sayfa Akışı */}
                 {children}
-
                 <CookieConsent />
               </main>
             </ClientLayoutWrapper>
-
             <ScrollToTopButton />
-
-            {/* PREMIUM ENDÜSTRİYEL TOASTER TASARIMI 
-              - Dark-tech tema
-              - Keskin köşeler (4px)
-              - Vurgulu sol kenarlık (Safety Orange)
-            */}
             <Toaster
               richColors={false}
               closeButton={true}
