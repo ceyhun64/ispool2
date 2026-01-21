@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
+import { Rnd } from "react-rnd";
 import {
   Heart,
   Minus,
@@ -16,7 +17,10 @@ import {
   BadgeCheck,
   Star,
   Info,
-  ShoppingCart, // Yeni eklendi
+  ShoppingCart,
+  X,
+  UploadCloud,
+  Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -26,23 +30,28 @@ import ProductDetailSkeleton from "./productDetailSkeleton";
 import { useFavorite } from "@/contexts/favoriteContext";
 import { addToGuestCart } from "@/utils/cart";
 import Link from "next/link";
+import DesignPanel from "@/components/modules/products/productDetail/design/designPanel";
 
 export default function ProductDetailPage() {
   const params = useParams() as { id?: string };
   const productId = Number(params.id);
 
+  // --- STATE'LER ---
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const { isFavorited, addFavorite, removeFavorite } = useFavorite();
+  // Özelleştirme State'leri
+  const [showPreview, setShowPreview] = useState(false);
 
+  const { isFavorited, addFavorite, removeFavorite } = useFavorite();
   const cartDropdownRef = useRef<{ open: () => void; refreshCart: () => void }>(
-    null
+    null,
   );
 
+  // --- VERİ ÇEKME ---
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
@@ -75,6 +84,7 @@ export default function ProductDetailPage() {
     checkLogin();
   }, []);
 
+  // --- FONKSİYONLAR ---
   const handleAddToCart = async () => {
     if (!product) {
       toast.error("Ürün bilgisi bulunamadı.");
@@ -90,11 +100,7 @@ export default function ProductDetailPage() {
 
     if (!isLoggedIn) {
       addToGuestCart(item, quantity);
-      toast.success(
-        `${quantity} adet ürün sepete eklendi! Toplam: ₺${(
-          product.price * quantity
-        ).toLocaleString("tr-TR")}`
-      );
+      toast.success(`${quantity} adet ürün sepete eklendi!`);
       window.dispatchEvent(new CustomEvent("cartUpdated"));
       return;
     }
@@ -107,22 +113,13 @@ export default function ProductDetailPage() {
         credentials: "include",
       });
 
-      const data = await res.json();
       if (res.ok) {
-        toast.success(
-          `${quantity} adet ürün sepete eklendi! Toplam: ₺${(
-            product.price * quantity
-          ).toLocaleString("tr-TR")}`
-        );
+        toast.success(`${quantity} adet ürün sepete eklendi!`);
         window.dispatchEvent(new CustomEvent("cartUpdated"));
         cartDropdownRef.current?.open?.();
-        cartDropdownRef.current?.refreshCart?.();
-      } else {
-        toast.error(data.error || "Sepete eklenemedi");
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Sepete ekleme sırasında bir hata oluştu.");
+      toast.error("Sepete ekleme hatası.");
     }
   };
 
@@ -131,26 +128,19 @@ export default function ProductDetailPage() {
       try {
         await navigator.share({
           title: product.title,
-          text: `${product.title} - İşPool Tasarım`,
           url: window.location.href,
         });
-      } catch (error) {
-        console.error("Paylaşım hatası:", error);
-      }
+      } catch (err) {}
     } else {
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success("Ürün bağlantısı panoya kopyalandı.");
-      } catch (err) {
-        toast.error("Bağlantı kopyalanamadı.");
-      }
+      navigator.clipboard.writeText(window.location.href);
+      toast.success("Bağlantı kopyalanamadı.");
     }
   };
 
   if (loading) return <ProductDetailSkeleton />;
   if (!product)
     return (
-      <div className="h-screen flex items-center justify-center italic text-slate-400">
+      <div className="h-screen flex items-center justify-center">
         Ürün bulunamadı.
       </div>
     );
@@ -164,10 +154,17 @@ export default function ProductDetailPage() {
   ].filter(Boolean);
 
   const hasDiscount = product.oldPrice && product.oldPrice > product.price;
-  const discountPercentage = product.discountPercentage;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-orange-100 selection:text-orange-900">
+      {/* 1. MODAL: ÜZERİNDE GÖR (CUSTOMIZATION) */}
+      {showPreview && (
+        <DesignPanel
+          productImage={images[activeIndex]}
+          onClose={() => setShowPreview(false)}
+        />
+      )}
+      {/* --- ANA SAYFA İÇERİĞİ --- */}
       <div className="max-w-[1400px] mx-auto px-6 py-4">
         <nav className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
           <Link
@@ -183,10 +180,9 @@ export default function ProductDetailPage() {
 
       <div className="max-w-[1400px] mx-auto px-6 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* SOL: GÖRSEL GALERİSİ */}
+          {/* SOL: GÖRSEL VE GALERİ */}
           <div className="lg:col-span-7 space-y-4">
-            {/* Ana Görsel Kutusu: aspect-square ile tam kare oran sabitlendi */}
-            <div className="relative aspect-square w-full bg-white overflow-hidden border border-slate-100 group">
+            <div className="relative aspect-square w-full bg-white overflow-hidden border border-slate-100 group shadow-sm ">
               <div className="absolute top-4 left-4 z-10 flex flex-col gap-1.5">
                 <span className="bg-slate-900/90 backdrop-blur text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5">
                   <ShieldCheck size={11} className="text-orange-500" />{" "}
@@ -194,44 +190,47 @@ export default function ProductDetailPage() {
                 </span>
                 {hasDiscount && (
                   <span className="bg-orange-600 text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight">
-                    %{discountPercentage} İndirim
+                    %{product.discountPercentage} İndirim
                   </span>
                 )}
               </div>
 
-              {/* CustomImageZoom bileşeninin içindeki img etiketinin object-contain veya object-cover 
-        olduğundan emin olun. Ürün görselleri için genelde 'object-contain' (boşluk kalsa da resmi bozmaz) 
-        veya 'object-cover' (kareyi tam doldurur) tercih edilir. */}
-              <CustomImageZoom
-                src={images[activeIndex]}
-                alt={product.title}
-              />
+              {/* ÖNİZLEME TETİKLEYİCİ BUTON (Görsel Üzerinde) */}
+              <button
+                onClick={() => setShowPreview(true)}
+                className="absolute bottom-6 right-6 z-20 bg-orange-600 text-white px-5 py-3 text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-2xl hover:bg-slate-900 transition-all scale-100 hover:scale-105 active:scale-95"
+              >
+                <Eye size={16} /> Logonu Ekle
+              </button>
+
+              <CustomImageZoom src={images[activeIndex]} alt={product.title} />
             </div>
 
-            {/* Küçük Resimler (Thumbnail) */}
+            {/* Küçük Resimler */}
             <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
               {images.map((img, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveIndex(i)}
                   className={cn(
-                    "relative w-20 h-20 overflow-hidden transition-all border-2 flex-shrink-0 bg-white",
+                    "relative w-20 h-20 overflow-hidden transition-all border-2  flex-shrink-0 bg-white",
                     activeIndex === i
-                      ? "border-orange-600"
-                      : "border-transparent opacity-60 hover:opacity-100"
+                      ? "border-orange-600 shadow-md"
+                      : "border-transparent opacity-60",
                   )}
                 >
                   <Image
                     src={img}
-                    alt={`Ürün görseli ${i + 1}`}
+                    alt="Thumb"
                     fill
-                    className="object-contain p-1" // Ürün detayını bozmamak için contain
+                    className="object-contain p-1"
                   />
                 </button>
               ))}
             </div>
           </div>
-          {/* SAĞ: SATIN ALMA ALANI VE TEKNİK ÖZET */}
+
+          {/* SAĞ: ÜRÜN BİLGİLERİ */}
           <div className="lg:col-span-5 flex flex-col pt-2">
             <div className="space-y-8">
               <header className="space-y-2">
@@ -261,7 +260,7 @@ export default function ProductDetailPage() {
                   <div className="flex items-baseline gap-2">
                     <span className="text-3xl font-black tracking-tighter text-slate-900">
                       {product.price.toLocaleString("tr-TR")}{" "}
-                      <small className="text-sm font-bold uppercase">TL</small>
+                      <small className="text-sm">TL</small>
                     </span>
                     {hasDiscount && (
                       <span className="text-sm text-slate-400 line-through font-semibold">
@@ -274,9 +273,10 @@ export default function ProductDetailPage() {
                   </p>
                 </div>
 
+                {/* Butonlar */}
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center bg-slate-100 h-12 px-4 gap-5">
+                    <div className="flex items-center bg-slate-100 h-12 px-4 gap-5  border border-slate-200">
                       <button
                         onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                         className="text-slate-500 hover:text-orange-600 transition-colors"
@@ -296,7 +296,7 @@ export default function ProductDetailPage() {
 
                     <button
                       onClick={handleAddToCart}
-                      className="flex-1 h-12 bg-slate-900 text-white text-[11px] font-bold uppercase tracking-wider hover:bg-orange-600 transition-all shadow-sm flex items-center justify-center gap-2"
+                      className="flex-1 h-12 bg-slate-900 text-white text-[11px] font-bold uppercase tracking-wider hover:bg-orange-600 transition-all shadow-sm flex items-center justify-center gap-2 "
                     >
                       <ShoppingCart size={14} fill="currentColor" /> Sepete Ekle
                     </button>
@@ -310,24 +310,24 @@ export default function ProductDetailPage() {
                           : addFavorite(product.id)
                       }
                       className={cn(
-                        "flex-1 h-11 border flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider transition-all",
+                        "flex-1 h-11 border  flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider transition-all",
                         isFavorited(product.id)
                           ? "bg-slate-50 border-slate-200 text-slate-900"
-                          : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"
+                          : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50",
                       )}
                     >
                       <Heart
                         size={14}
                         className={cn(
                           isFavorited(product.id) &&
-                            "fill-orange-500 text-orange-500"
+                            "fill-orange-500 text-orange-500",
                         )}
                       />
                       {isFavorited(product.id) ? "Listede" : "Listeye Ekle"}
                     </button>
                     <button
                       onClick={handleShare}
-                      className="w-11 h-11 bg-white border border-slate-200 flex items-center justify-center hover:border-orange-600 hover:text-orange-600 transition-all"
+                      className="w-11 h-11 bg-white border border-slate-200 flex items-center justify-center hover:border-orange-600 hover:text-orange-600 transition-all  shadow-sm"
                     >
                       <Share2 size={14} />
                     </button>
@@ -335,53 +335,34 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* YENİ: TEKNİK DETAYLAR ÖZET ALANI */}
-              <div className="space-y-4 pt-4 border-t border-slate-50">
+              {/* Teknik Dökümantasyon */}
+              <div className="space-y-4 pt-4 border-t border-slate-100">
                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                   <Info size={14} className="text-orange-600" /> Teknik
                   Dökümantasyon
                 </div>
+                <div
+                  className="prose prose-slate max-w-none text-slate-600 text-[13px] line-clamp-4"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
 
-                {product.description ? (
-                  <div
-                    className="prose prose-slate max-w-none text-slate-600 leading-relaxed text-[13px] 
-                               [&>ul]:list-none [&>ul]:p-0 [&>ul>li]:flex [&>ul>li]:items-start [&>ul>li]:gap-2 
-                               [&>ul>li]:before:content-['✓'] [&>ul>li]:before:text-orange-600 [&>ul>li]:before:font-bold
-                               line-clamp-6 overflow-hidden relative"
-                    dangerouslySetInnerHTML={{ __html: product.description }}
-                  />
-                ) : (
-                  <p className="text-[12px] italic text-slate-400">
-                    Teknik detaylar yükleniyor...
-                  </p>
-                )}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                  <div className="p-3.5 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 text-blue-600">
+                {/* Rozetler */}
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  <div className="p-3 bg-slate-50/50 border border-slate-100  flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 text-blue-600 ">
                       <BadgeCheck size={16} />
                     </div>
-                    <div>
-                      <h4 className="text-[10px] font-bold uppercase tracking-tighter leading-none">
-                        Dayanıklılık
-                      </h4>
-                      <p className="text-[9px] text-slate-400 font-medium mt-0.5">
-                        Test edilmiş kumaş.
-                      </p>
-                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-tighter">
+                      Dayanıklı Kumaş
+                    </span>
                   </div>
-                  <div className="p-3.5 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
-                    <div className="p-2 bg-orange-100 text-orange-600">
+                  <div className="p-3 bg-slate-50/50 border border-slate-100  flex items-center gap-3">
+                    <div className="p-2 bg-orange-100 text-orange-600 ">
                       <HardHat size={16} />
                     </div>
-                    <div>
-                      <h4 className="text-[10px] font-bold uppercase tracking-tighter leading-none">
-                        İSG Uyumu
-                      </h4>
-                      <p className="text-[9px] text-slate-400 font-medium mt-0.5">
-                        %100 Standartlara uygun.
-                      </p>
-                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-tighter">
+                      İSG Uyumu
+                    </span>
                   </div>
                 </div>
               </div>
@@ -389,7 +370,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Tab Alanı - Alt kısımda tüm detaylar, yorumlar ve taksitler kalmaya devam eder */}
+        {/* Alt Tablar */}
         <div className="mt-20 pt-10 border-t border-slate-100">
           <ProductTabs
             productId={product.id}
