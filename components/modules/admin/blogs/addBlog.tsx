@@ -94,17 +94,17 @@ export default function AddBlogDialog({ onAdd }: AddBlogDialogProps) {
       }}
     >
       <DialogTrigger asChild>
-        <Button className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white rounded-xl px-4 sm:px-6 h-11 sm:h-12 shadow-lg shadow-indigo-200 transition-all hover:scale-105 flex items-center gap-2 font-semibold w-full sm:w-auto">
+        <Button className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white  px-4 sm:px-6 h-11 sm:h-12 shadow-lg shadow-indigo-200 transition-all hover:scale-105 flex items-center gap-2 font-semibold w-full sm:w-auto">
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">Yeni İçerik Ekle</span>
           <span className="sm:hidden">İçerik Ekle</span>
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[900px] lg:max-w-[1000px] p-0 overflow-hidden border-none shadow-2xl rounded-2xl bg-white max-w-[95vw] max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-[900px] lg:max-w-[1000px] p-0 overflow-hidden border-none shadow-2xl  bg-white max-w-[95vw] max-h-[90vh] flex flex-col">
         <DialogHeader className="p-4 sm:p-6 bg-gradient-to-r from-white to-slate-50 border-b border-slate-100 flex-shrink-0">
           <DialogTitle className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 to-indigo-600  flex items-center justify-center shadow-md">
               <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div>
@@ -126,21 +126,21 @@ export default function AddBlogDialog({ onAdd }: AddBlogDialogProps) {
             <div className="lg:col-span-3 p-4 sm:p-6 space-y-4 sm:space-y-5 bg-white border-r border-slate-50">
               <div className="space-y-2">
                 <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                  <div className="w-1 h-3 bg-indigo-500 rounded-full"></div>
+                  <div className="w-1 h-3 bg-indigo-500 "></div>
                   Başlık
                 </Label>
                 <Input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Yaratıcı bir başlık yazın..."
-                  className="h-11 sm:h-12 rounded-xl border-slate-200 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm text-sm sm:text-base"
+                  className="h-11 sm:h-12  border-slate-200 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm text-sm sm:text-base"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
                   <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                    <div className="w-1 h-3 bg-amber-500 rounded-full"></div>
+                    <div className="w-1 h-3 bg-amber-500 "></div>
                     Kategori
                   </Label>
                   <div className="relative">
@@ -149,17 +149,17 @@ export default function AddBlogDialog({ onAdd }: AddBlogDialogProps) {
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
                       placeholder="Eğitim, Teknoloji..."
-                      className="pl-10 h-11 sm:h-12 rounded-xl border-slate-200 focus:border-amber-400 focus:ring-4 focus:ring-amber-50 shadow-sm text-sm sm:text-base"
+                      className="pl-10 h-11 sm:h-12  border-slate-200 focus:border-amber-400 focus:ring-4 focus:ring-amber-50 shadow-sm text-sm sm:text-base"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                    <div className="w-1 h-3 bg-emerald-500 rounded-full"></div>
+                    <div className="w-1 h-3 bg-emerald-500 "></div>
                     Kapak Görseli
                   </Label>
-                  <label className="flex items-center justify-center h-11 sm:h-12 px-4 border-2 border-dashed border-slate-300 rounded-xl hover:bg-gradient-to-br hover:from-slate-50 hover:to-white hover:border-indigo-400 cursor-pointer transition-all group">
+                  <label className="flex items-center justify-center h-11 sm:h-12 px-4 border-2 border-dashed border-slate-300  hover:bg-gradient-to-br hover:from-slate-50 hover:to-white hover:border-indigo-400 cursor-pointer transition-all group">
                     <input
                       type="file"
                       accept="image/*"
@@ -178,14 +178,14 @@ export default function AddBlogDialog({ onAdd }: AddBlogDialogProps) {
 
               <div className="space-y-2">
                 <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                  <div className="w-1 h-3 bg-indigo-500 rounded-full"></div>
+                  <div className="w-1 h-3 bg-indigo-500 "></div>
                   İçerik Metni
                 </Label>
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Okuyucularınıza ne anlatmak istersiniz?"
-                  className="w-full min-h-[200px] p-3 sm:p-4 border border-slate-200 rounded-xl focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm text-sm sm:text-base outline-none resize-none leading-relaxed"
+                  className="w-full min-h-[200px] p-3 sm:p-4 border border-slate-200  focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm text-sm sm:text-base outline-none resize-none leading-relaxed"
                 />
                 <div className="flex items-center justify-between text-xs text-slate-400 mt-1">
                   <span>{content.length} karakter</span>
@@ -199,11 +199,11 @@ export default function AddBlogDialog({ onAdd }: AddBlogDialogProps) {
             {/* Preview Area */}
             <div className="lg:col-span-2 p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-white flex flex-col">
               <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
-                <div className="w-1 h-3 bg-indigo-500 rounded-full"></div>
+                <div className="w-1 h-3 bg-indigo-500 "></div>
                 Önizleme
               </Label>
 
-              <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden flex flex-col hover:shadow-xl transition-all group sticky top-0">
+              <div className="bg-white  shadow-lg border border-slate-200 overflow-hidden flex flex-col hover:shadow-xl transition-all group sticky top-0">
                 <div className="relative w-full aspect-video bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center overflow-hidden">
                   {previewUrl ? (
                     <Image
@@ -214,7 +214,7 @@ export default function AddBlogDialog({ onAdd }: AddBlogDialogProps) {
                     />
                   ) : (
                     <div className="flex flex-col items-center text-slate-300">
-                      <div className="w-12 h-12 bg-slate-200 rounded-2xl flex items-center justify-center mb-2">
+                      <div className="w-12 h-12 bg-slate-200  flex items-center justify-center mb-2">
                         <ImageIcon className="w-6 h-6" />
                       </div>
                       <span className="text-[10px] font-bold uppercase tracking-widest">
@@ -225,7 +225,7 @@ export default function AddBlogDialog({ onAdd }: AddBlogDialogProps) {
                 </div>
 
                 <div className="p-4 space-y-3">
-                  <span className="px-3 py-1 bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-700 text-[10px] font-bold rounded-lg uppercase tracking-wide border border-indigo-200">
+                  <span className="px-3 py-1 bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-700 text-[10px] font-bold  uppercase tracking-wide border border-indigo-200">
                     {category || "Kategori"}
                   </span>
                   <h4 className="font-bold text-slate-900 leading-tight line-clamp-2">
@@ -244,18 +244,18 @@ export default function AddBlogDialog({ onAdd }: AddBlogDialogProps) {
           <Button
             variant="ghost"
             onClick={() => setOpen(false)}
-            className="rounded-xl px-4 sm:px-6 font-semibold text-slate-600 hover:bg-slate-100 h-10 sm:h-11 order-2 sm:order-1 w-full sm:w-auto"
+            className=" px-4 sm:px-6 font-semibold text-slate-600 hover:bg-slate-100 h-10 sm:h-11 order-2 sm:order-1 w-full sm:w-auto"
           >
             Vazgeç
           </Button>
           <Button
             onClick={handleAddBlog}
             disabled={loading || !title || !content || !category || !imageFile}
-            className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white rounded-xl px-6 sm:px-8 font-semibold shadow-lg shadow-indigo-200 transition-all h-10 sm:h-11 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed order-1 sm:order-2 w-full sm:w-auto"
+            className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white  px-6 sm:px-8 font-semibold shadow-lg shadow-indigo-200 transition-all h-10 sm:h-11 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed order-1 sm:order-2 w-full sm:w-auto"
           >
             {loading ? (
               <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white  animate-spin"></div>
                 <span>Yükleniyor...</span>
               </>
             ) : (

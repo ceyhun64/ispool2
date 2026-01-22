@@ -252,7 +252,7 @@ const ProductDialog = forwardRef<HTMLDivElement, ProductDialogProps>(
 
       return (
         <div className="relative group">
-          <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden border-2 border-dashed border-slate-200 hover:border-indigo-400 transition-all bg-slate-50">
+          <div className="relative w-full aspect-[16/9]  overflow-hidden border-2 border-dashed border-slate-200 hover:border-indigo-400 transition-all bg-slate-50">
             {previewUrl ? (
               <>
                 <Image
@@ -264,7 +264,7 @@ const ProductDialog = forwardRef<HTMLDivElement, ProductDialogProps>(
                 <button
                   type="button"
                   onClick={onRemove}
-                  className="absolute top-2 right-2 w-7 h-7 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-lg z-10"
+                  className="absolute top-2 right-2 w-7 h-7 bg-red-500 hover:bg-red-600 text-white  flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-lg z-10"
                 >
                   <X size={14} />
                 </button>
@@ -284,7 +284,7 @@ const ProductDialog = forwardRef<HTMLDivElement, ProductDialogProps>(
       <>
         {!product && (
           <Button
-            className={`bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold shadow-lg shadow-indigo-200 transition-all duration-300 hover:shadow-xl hover:scale-105 rounded-xl ${className}`}
+            className={`bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold shadow-lg shadow-indigo-200 transition-all duration-300 hover:shadow-xl hover:scale-105  ${className}`}
             onClick={() => setOpen(true)}
           >
             <ImagePlus size={18} className="mr-2" />
@@ -293,7 +293,7 @@ const ProductDialog = forwardRef<HTMLDivElement, ProductDialogProps>(
         )}
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="bg-white text-gray-900 max-w-7xl w-[95vw] sm:w-[90vw] rounded-2xl shadow-2xl max-h-[95vh] overflow-y-auto p-4 sm:p-6 lg:p-8">
+          <DialogContent className="bg-white text-gray-900 max-w-7xl w-[95vw] sm:w-[90vw]  shadow-2xl max-h-[95vh] overflow-y-auto p-4 sm:p-6 lg:p-8">
             <DialogHeader className="space-y-3 pb-4 border-b border-slate-100">
               <DialogTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-indigo-800 bg-clip-text text-transparent">
                 {product ? "Ürünü Güncelle" : "Yeni Ürün Ekle"}
@@ -312,9 +312,9 @@ const ProductDialog = forwardRef<HTMLDivElement, ProductDialogProps>(
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                 {/* Left Column - Form Inputs */}
                 <div className="space-y-5 order-2 lg:order-1">
-                  <div className="bg-gradient-to-br from-slate-50 to-white p-5 sm:p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                  <div className="bg-gradient-to-br from-slate-50 to-white p-5 sm:p-6  border border-slate-200 shadow-sm space-y-4">
                     <h3 className="font-semibold text-slate-900 text-lg mb-4 flex items-center gap-2">
-                      <div className="w-1 h-5 bg-indigo-600 rounded-full"></div>
+                      <div className="w-1 h-5 bg-indigo-600 "></div>
                       Ürün Bilgileri
                     </h3>
 
@@ -341,12 +341,12 @@ const ProductDialog = forwardRef<HTMLDivElement, ProductDialogProps>(
                           }))
                         }
                         placeholder="Ürün hakkında detaylı açıklama yazın..."
-                        className="w-full min-h-[100px] px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all resize-none text-sm"
+                        className="w-full min-h-[100px] px-4 py-3  border border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all resize-none text-sm"
                       />
                     </div>
 
                     {/* Fiyat ve İndirim Bölümü */}
-                    <div className="space-y-4 p-4 bg-gradient-to-br from-amber-50 to-white rounded-lg border border-amber-100">
+                    <div className="space-y-4 p-4 bg-gradient-to-br from-amber-50 to-white  border border-amber-100">
                       <div className="flex items-center gap-2 mb-2">
                         <Calculator size={16} className="text-amber-600" />
                         <h4 className="text-sm font-semibold text-slate-700">
@@ -395,7 +395,7 @@ const ProductDialog = forwardRef<HTMLDivElement, ProductDialogProps>(
                           <button
                             type="button"
                             onClick={calculateDiscount}
-                            className="absolute right-2 top-8 text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full hover:bg-indigo-200 transition-colors"
+                            className="absolute right-2 top-8 text-xs bg-indigo-100 text-indigo-700 px-3 py-1  hover:bg-indigo-200 transition-colors"
                           >
                             Hesapla
                           </button>
@@ -405,7 +405,7 @@ const ProductDialog = forwardRef<HTMLDivElement, ProductDialogProps>(
                       {productData.oldPrice &&
                         productData.price > 0 &&
                         productData.oldPrice > productData.price && (
-                          <div className="text-xs text-green-700 bg-green-50 p-2 rounded-lg border border-green-200">
+                          <div className="text-xs text-green-700 bg-green-50 p-2  border border-green-200">
                             ✓ İndirim:{" "}
                             {productData.oldPrice.toLocaleString("tr-TR")} TL →{" "}
                             {productData.price.toLocaleString("tr-TR")} TL
@@ -428,15 +428,15 @@ const ProductDialog = forwardRef<HTMLDivElement, ProductDialogProps>(
                           }))
                         }
                       >
-                        <SelectTrigger className="w-full h-11 rounded-xl border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
+                        <SelectTrigger className="w-full h-11  border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
                           <SelectValue placeholder="Kategori seçin" />
                         </SelectTrigger>
-                        <SelectContent className="rounded-xl">
+                        <SelectContent className="">
                           {categories.map((cat) => (
                             <SelectItem
                               key={cat}
                               value={cat}
-                              className="rounded-lg"
+                              className=""
                             >
                               {cat}
                             </SelectItem>
@@ -449,9 +449,9 @@ const ProductDialog = forwardRef<HTMLDivElement, ProductDialogProps>(
 
                 {/* Right Column - Image Previews (Horizontal Layout) */}
                 <div className="space-y-4 order-1 lg:order-2">
-                  <div className="bg-gradient-to-br from-indigo-50 to-white p-5 sm:p-6 rounded-xl border border-indigo-100 shadow-sm">
+                  <div className="bg-gradient-to-br from-indigo-50 to-white p-5 sm:p-6  border border-indigo-100 shadow-sm">
                     <h3 className="font-semibold text-slate-900 text-lg mb-4 flex items-center gap-2">
-                      <div className="w-1 h-5 bg-indigo-600 rounded-full"></div>
+                      <div className="w-1 h-5 bg-indigo-600 "></div>
                       Ürün Görselleri
                     </h3>
 
@@ -543,7 +543,7 @@ const ProductDialog = forwardRef<HTMLDivElement, ProductDialogProps>(
 
                   {/* Live Preview Card - Only on Desktop */}
                   {!isMobile && (mainFile || mainUrl || productData.title) && (
-                    <div className="hidden lg:block bg-white p-6 rounded-xl border border-slate-200 shadow-lg">
+                    <div className="hidden lg:block bg-white p-6  border border-slate-200 shadow-lg">
                       <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
                         Önizleme
                       </h3>
@@ -582,7 +582,7 @@ const ProductDialog = forwardRef<HTMLDivElement, ProductDialogProps>(
                               )}
                           </div>
                           {productData.category && (
-                            <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-semibold">
+                            <span className="px-3 py-1 bg-indigo-50 text-indigo-700  text-xs font-semibold">
                               {productData.category}
                             </span>
                           )}
@@ -602,7 +602,7 @@ const ProductDialog = forwardRef<HTMLDivElement, ProductDialogProps>(
                     setOpen(false);
                     resetForm();
                   }}
-                  className="flex-1 sm:flex-none rounded-xl border-slate-300 hover:bg-slate-50 font-semibold h-11"
+                  className="flex-1 sm:flex-none  border-slate-300 hover:bg-slate-50 font-semibold h-11"
                 >
                   İptal
                 </Button>
@@ -611,11 +611,11 @@ const ProductDialog = forwardRef<HTMLDivElement, ProductDialogProps>(
                   disabled={
                     loading || !productData.title || !productData.category
                   }
-                  className="flex-1 sm:flex-none bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold shadow-lg shadow-indigo-200 rounded-xl h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 sm:flex-none bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold shadow-lg shadow-indigo-200  h-11 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <span className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent  animate-spin"></div>
                       {product ? "Güncelleniyor..." : "Ekleniyor..."}
                     </span>
                   ) : (
@@ -639,7 +639,7 @@ const InputGroup = ({ label, ...props }: any) => (
       {label}
     </Label>
     <Input
-      className="w-full h-11 rounded-xl border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
+      className="w-full h-11  border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
       {...props}
     />
   </div>

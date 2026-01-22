@@ -40,9 +40,9 @@ interface Blog {
 const DeleteDialog = ({ onConfirm, trigger, title, description }: any) => (
   <Dialog>
     <DialogTrigger asChild>{trigger}</DialogTrigger>
-    <DialogContent className="sm:max-w-[440px] rounded-2xl sm:rounded-[28px] border-none shadow-2xl p-6 sm:p-8 max-w-[92vw] mx-auto">
+    <DialogContent className="sm:max-w-[440px]  s border-none shadow-2xl p-6 sm:p-8 max-w-[92vw] mx-auto">
       <DialogHeader className="items-center text-center space-y-3 sm:space-y-4">
-        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-red-50 to-red-100 text-red-500 rounded-2xl sm:rounded-3xl flex items-center justify-center animate-bounce shadow-lg shadow-red-100">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-red-50 to-red-100 text-red-500   flex items-center justify-center animate-bounce shadow-lg shadow-red-100">
           <Trash2 size={32} className="sm:w-10 sm:h-10" />
         </div>
         <DialogTitle className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
@@ -59,13 +59,13 @@ const DeleteDialog = ({ onConfirm, trigger, title, description }: any) => (
       <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:gap-3 sm:justify-center pt-2">
         <Button
           variant="ghost"
-          className="flex-1 sm:flex-none rounded-xl font-semibold text-slate-600 hover:bg-slate-100 h-11 sm:h-12 order-2 sm:order-1 min-w-[120px]"
+          className="flex-1 sm:flex-none  font-semibold text-slate-600 hover:bg-slate-100 h-11 sm:h-12 order-2 sm:order-1 min-w-[120px]"
         >
           Vazgeç
         </Button>
         <Button
           variant="destructive"
-          className="flex-1 sm:flex-none rounded-xl font-semibold h-11 sm:h-12 shadow-lg shadow-red-200 hover:shadow-xl order-1 sm:order-2 min-w-[120px] bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700"
+          className="flex-1 sm:flex-none  font-semibold h-11 sm:h-12 shadow-lg shadow-red-200 hover:shadow-xl order-1 sm:order-2 min-w-[120px] bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700"
           onClick={onConfirm}
         >
           Evet, Sil
@@ -154,7 +154,7 @@ export default function Blogs() {
             {/* Title & Breadcrumb */}
             <div>
               <div className="flex items-center gap-2 mb-2 sm:mb-3">
-                <div className="h-1 w-8 sm:w-10 bg-gradient-to-r from-indigo-600 to-indigo-400 rounded-full"></div>
+                <div className="h-1 w-8 sm:w-10 bg-gradient-to-r from-indigo-600 to-indigo-400 "></div>
                 <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.15em] text-indigo-600">
                   Yönetim Paneli
                 </span>
@@ -177,7 +177,7 @@ export default function Blogs() {
                 trigger={
                   <Button
                     disabled={selectedIds.length === 0}
-                    className={`h-11 sm:h-12 rounded-xl px-4 sm:px-5 transition-all shadow-lg text-sm w-full sm:w-auto font-semibold ${
+                    className={`h-11 sm:h-12  px-4 sm:px-5 transition-all shadow-lg text-sm w-full sm:w-auto font-semibold ${
                       selectedIds.length > 0
                         ? "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-red-200"
                         : "bg-slate-100 text-slate-400 border border-slate-200 shadow-none cursor-not-allowed"
@@ -196,14 +196,14 @@ export default function Blogs() {
         </header>
 
         {/* Search & Filter Toolbar */}
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-100 p-3 sm:p-4 mb-4 sm:mb-6">
+        <div className="bg-white  shadow-sm border border-slate-100 p-3 sm:p-4 mb-4 sm:mb-6">
           <div className="flex flex-col sm:flex-row gap-3">
             {/* Search Input */}
             <div className="relative flex-1 group">
               <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
               <Input
                 placeholder="Yazı başlığı ile ara..."
-                className="pl-10 sm:pl-12 h-11 sm:h-12 bg-slate-50 border-slate-200 rounded-xl focus:bg-white focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 transition-all shadow-sm text-sm font-medium"
+                className="pl-10 sm:pl-12 h-11 sm:h-12 bg-slate-50 border-slate-200  focus:bg-white focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 transition-all shadow-sm text-sm font-medium"
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
@@ -220,21 +220,21 @@ export default function Blogs() {
               }}
               value={filter}
             >
-              <SelectTrigger className="w-full sm:w-64 h-11 sm:h-12 bg-slate-50 border-slate-200 rounded-xl shadow-sm text-slate-700 font-semibold focus:bg-white focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 text-sm transition-all">
+              <SelectTrigger className="w-full sm:w-64 h-11 sm:h-12 bg-slate-50 border-slate-200  shadow-sm text-slate-700 font-semibold focus:bg-white focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 text-sm transition-all">
                 <div className="flex items-center gap-2">
                   <Filter className="w-4 h-4 text-slate-400" />
                   <SelectValue placeholder="Kategori" />
                 </div>
               </SelectTrigger>
-              <SelectContent className="rounded-xl border-slate-100 shadow-xl">
-                <SelectItem value="all" className="font-medium rounded-lg">
+              <SelectContent className=" border-slate-100 shadow-xl">
+                <SelectItem value="all" className="font-medium ">
                   Tüm Kategoriler
                 </SelectItem>
                 {categories.map((cat) => (
                   <SelectItem
                     key={cat}
                     value={cat}
-                    className="font-medium rounded-lg"
+                    className="font-medium "
                   >
                     {cat}
                   </SelectItem>
@@ -245,7 +245,7 @@ export default function Blogs() {
         </div>
 
         {/* Content Table - Desktop */}
-        <div className="hidden lg:block bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-sm overflow-hidden min-h-[500px]">
+        <div className="hidden lg:block bg-white  s border border-slate-100 shadow-sm overflow-hidden min-h-[500px]">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -253,7 +253,7 @@ export default function Blogs() {
                   <th className="px-6 py-5 w-12">
                     <input
                       type="checkbox"
-                      className="w-4 h-4 rounded-md border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500"
+                      className="w-4 h-4  border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500"
                       checked={
                         paginatedBlogs.length > 0 &&
                         selectedIds.length === paginatedBlogs.length
@@ -308,7 +308,7 @@ export default function Blogs() {
                                 : [...prev, blog.id]
                             )
                           }
-                          className="w-4 h-4 rounded-md border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500"
+                          className="w-4 h-4  border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500"
                         />
                       </td>
                       <td className="px-6 py-4 text-slate-400 font-mono text-xs">
@@ -325,7 +325,7 @@ export default function Blogs() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <Badge className="bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 hover:from-indigo-50 hover:to-indigo-100 hover:text-indigo-700 border border-slate-200 hover:border-indigo-200 shadow-none hover:shadow-sm rounded-lg px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all">
+                        <Badge className="bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 hover:from-indigo-50 hover:to-indigo-100 hover:text-indigo-700 border border-slate-200 hover:border-indigo-200 shadow-none hover:shadow-sm  px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all">
                           {blog.category || "Genel"}
                         </Badge>
                       </td>
@@ -347,7 +347,7 @@ export default function Blogs() {
                               <Button
                                 size="icon"
                                 variant="ghost"
-                                className="h-9 w-9 text-slate-400 hover:text-red-500 hover:bg-gradient-to-br hover:from-red-50 hover:to-red-100 rounded-xl transition-all border border-transparent hover:border-red-200"
+                                className="h-9 w-9 text-slate-400 hover:text-red-500 hover:bg-gradient-to-br hover:from-red-50 hover:to-red-100  transition-all border border-transparent hover:border-red-200"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </Button>
@@ -365,7 +365,7 @@ export default function Blogs() {
 
             {filteredBlogs.length === 0 && (
               <div className="py-24 flex flex-col items-center justify-center text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl flex items-center justify-center mb-5">
+                <div className="w-20 h-20 bg-gradient-to-br from-slate-50 to-slate-100  flex items-center justify-center mb-5">
                   <BookOpen
                     className="w-10 h-10 text-slate-300"
                     strokeWidth={1.5}
@@ -393,7 +393,7 @@ export default function Blogs() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -20, scale: 0.95 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className={`bg-white rounded-2xl p-4 shadow-md border transition-all ${
+                className={`bg-white  p-4 shadow-md border transition-all ${
                   selectedIds.includes(blog.id)
                     ? "border-indigo-300 shadow-indigo-100 bg-gradient-to-br from-indigo-50/30 to-white"
                     : "border-slate-200 hover:shadow-lg hover:border-slate-300"
@@ -411,7 +411,7 @@ export default function Blogs() {
                             : [...prev, blog.id]
                         )
                       }
-                      className="w-5 h-5 rounded-md border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 flex-shrink-0"
+                      className="w-5 h-5  border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 flex-shrink-0"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="font-bold text-slate-900 text-sm truncate">
@@ -423,7 +423,7 @@ export default function Blogs() {
                     </div>
                   </div>
                 </div>
-                <Badge className="mb-2 bg-gradient-to-r from-slate-100 to-slate-50 text-slate-600 text-[9px] font-bold uppercase px-2 py-0.5 rounded-lg flex-shrink-0 border border-slate-200">
+                <Badge className="mb-2 bg-gradient-to-r from-slate-100 to-slate-50 text-slate-600 text-[9px] font-bold uppercase px-2 py-0.5  flex-shrink-0 border border-slate-200">
                   {blog.category || "Genel"}
                 </Badge>
 
@@ -446,7 +446,7 @@ export default function Blogs() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 px-3 text-slate-400 hover:text-red-500 hover:bg-gradient-to-br hover:from-red-50 hover:to-red-100 rounded-lg text-xs border border-transparent hover:border-red-200"
+                        className="h-8 px-3 text-slate-400 hover:text-red-500 hover:bg-gradient-to-br hover:from-red-50 hover:to-red-100  text-xs border border-transparent hover:border-red-200"
                       >
                         <Trash2 className="w-3.5 h-3.5 mr-1" />
                         Sil
@@ -461,8 +461,8 @@ export default function Blogs() {
           </AnimatePresence>
 
           {filteredBlogs.length === 0 && (
-            <div className="py-16 flex flex-col items-center justify-center text-center bg-white rounded-2xl border border-slate-200">
-              <div className="w-16 h-16 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl flex items-center justify-center mb-3">
+            <div className="py-16 flex flex-col items-center justify-center text-center bg-white  border border-slate-200">
+              <div className="w-16 h-16 bg-gradient-to-br from-slate-50 to-slate-100  flex items-center justify-center mb-3">
                 <BookOpen className="w-8 h-8 text-slate-300" />
               </div>
               <h3 className="text-slate-900 font-bold text-sm mb-2">

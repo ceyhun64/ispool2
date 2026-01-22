@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { Rnd } from "react-rnd";
 import {
   Heart,
   Minus,
@@ -18,9 +17,11 @@ import {
   Star,
   Info,
   ShoppingCart,
-  X,
-  UploadCloud,
   Eye,
+  Sparkles,
+  Upload,
+  X,
+  ImagePlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -36,22 +37,24 @@ export default function ProductDetailPage() {
   const params = useParams() as { id?: string };
   const productId = Number(params.id);
 
-  // --- STATE'LER ---
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // Özelleştirme State'leri
   const [showPreview, setShowPreview] = useState(false);
+  const [customDesign, setCustomDesign] = useState<string | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [uploadedImagePreview, setUploadedImagePreview] = useState<
+    string | null
+  >(null);
 
   const { isFavorited, addFavorite, removeFavorite } = useFavorite();
   const cartDropdownRef = useRef<{ open: () => void; refreshCart: () => void }>(
     null,
   );
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // --- VERİ ÇEKME ---
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
@@ -84,41 +87,115 @@ export default function ProductDetailPage() {
     checkLogin();
   }, []);
 
-  // --- FONKSİYONLAR ---
+  const handleSaveDesign = (designUrl: string) => {
+    setCustomDesign(designUrl);
+    setActiveIndex(0);
+  };
+
+  const handleDirectUpload = () => {
+    // Dosya yükleme inputunu tetikle
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Dosya boyutu kontrolü (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Dosya boyutu 5MB'dan küçük olmalıdır.");
+      return;
+    }
+
+    // Dosya tipi kontrolü
+    if (!file.type.startsWith("image/")) {
+      toast.error("Lütfen geçerli bir resim dosyası seçin.");
+      return;
+    }
+
+    setUploadedImage(file);
+
+    // Preview oluştur
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setUploadedImagePreview(e.target?.result as string);
+      setActiveIndex(0);
+    };
+    reader.readAsDataURL(file);
+
+    toast.success("Resim yüklendi! Sepete ekleyebilirsiniz.");
+  };
+
+  const handleRemoveUploadedImage = () => {
+    setUploadedImage(null);
+    setUploadedImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    toast.info("Yüklenen resim kaldırıldı.");
+  };
+
   const handleAddToCart = async () => {
     if (!product) {
       toast.error("Ürün bilgisi bulunamadı.");
       return;
     }
 
-    const item = {
-      productId: product.id,
-      title: product.title,
-      price: product.price,
-      image: product.mainImage,
-    };
-
+    // Misafir kullanıcılar için
     if (!isLoggedIn) {
+      const item = {
+        productId: product.id,
+        title: customDesign
+          ? `${product.title} (Özelleştirilmiş)`
+          : uploadedImagePreview
+            ? `${product.title} (Özel Resim)`
+            : product.title,
+        price: product.price,
+        image: customDesign || uploadedImagePreview || product.mainImage,
+        isCustom: !!(customDesign || uploadedImagePreview),
+      };
+
       addToGuestCart(item, quantity);
-      toast.success(`${quantity} adet ürün sepete eklendi!`);
+      toast.success(
+        `${quantity} adet ${customDesign || uploadedImagePreview ? "özelleştirilmiş " : ""}ürün sepete eklendi!`,
+      );
       window.dispatchEvent(new CustomEvent("cartUpdated"));
       return;
     }
 
+    // Kayıtlı kullanıcılar için - FormData ile gönder
     try {
+      const formData = new FormData();
+      formData.append("productId", product.id.toString());
+      formData.append("quantity", quantity.toString());
+
+      // Öncelik: tasarım panelinden gelen resim
+      if (customDesign) {
+        formData.append("customImage", customDesign);
+      }
+      // Alternatif: kullanıcının yüklediği dosya
+      else if (uploadedImage) {
+        formData.append("customImageFile", uploadedImage);
+      }
+
       const res = await fetch("/api/cart", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...item, quantity }),
+        body: formData,
         credentials: "include",
       });
 
       if (res.ok) {
-        toast.success(`${quantity} adet ürün sepete eklendi!`);
+        toast.success(
+          `${quantity} adet ${customDesign || uploadedImage ? "özelleştirilmiş " : ""}ürün sepete eklendi!`,
+        );
         window.dispatchEvent(new CustomEvent("cartUpdated"));
         cartDropdownRef.current?.open?.();
+      } else {
+        const error = await res.json();
+        toast.error(error.error || "Sepete ekleme hatası.");
       }
     } catch (error) {
+      console.error("Cart error:", error);
       toast.error("Sepete ekleme hatası.");
     }
   };
@@ -133,7 +210,7 @@ export default function ProductDetailPage() {
       } catch (err) {}
     } else {
       navigator.clipboard.writeText(window.location.href);
-      toast.success("Bağlantı kopyalanamadı.");
+      toast.success("Bağlantı kopyalandı!");
     }
   };
 
@@ -155,16 +232,24 @@ export default function ProductDetailPage() {
 
   const hasDiscount = product.oldPrice && product.oldPrice > product.price;
 
+  // Önce özelleştirilmiş tasarım, sonra yüklenen resim, sonra orijinal görseller
+  const displayImages = customDesign
+    ? [customDesign, ...images]
+    : uploadedImagePreview
+      ? [uploadedImagePreview, ...images]
+      : images;
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-orange-100 selection:text-orange-900">
-      {/* 1. MODAL: ÜZERİNDE GÖR (CUSTOMIZATION) */}
       {showPreview && (
         <DesignPanel
           productImage={images[activeIndex]}
           onClose={() => setShowPreview(false)}
+          onSaveDesign={handleSaveDesign}
+          onDirectUpload={handleDirectUpload}
         />
       )}
-      {/* --- ANA SAYFA İÇERİĞİ --- */}
+
       <div className="max-w-[1400px] mx-auto px-6 py-4">
         <nav className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
           <Link
@@ -182,12 +267,22 @@ export default function ProductDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* SOL: GÖRSEL VE GALERİ */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="relative aspect-square w-full bg-white overflow-hidden border border-slate-100 group shadow-sm ">
+            <div className="relative aspect-square w-full bg-white overflow-hidden border border-slate-100 group shadow-sm">
               <div className="absolute top-4 left-4 z-10 flex flex-col gap-1.5">
-                <span className="bg-slate-900/90 backdrop-blur text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5">
-                  <ShieldCheck size={11} className="text-orange-500" />{" "}
-                  Sertifikalı Koruma
-                </span>
+                {customDesign ? (
+                  <span className="bg-gradient-to-r from-orange-600 to-pink-600 text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5 animate-pulse">
+                    <Sparkles size={11} /> Özelleştirilmiş Tasarım
+                  </span>
+                ) : uploadedImagePreview ? (
+                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5">
+                    <ImagePlus size={11} /> Yüklenen Resim
+                  </span>
+                ) : (
+                  <span className="bg-slate-900/90 backdrop-blur text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5">
+                    <ShieldCheck size={11} className="text-orange-500" />{" "}
+                    Sertifikalı Koruma
+                  </span>
+                )}
                 {hasDiscount && (
                   <span className="bg-orange-600 text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight">
                     %{product.discountPercentage} İndirim
@@ -195,30 +290,48 @@ export default function ProductDetailPage() {
                 )}
               </div>
 
-              {/* ÖNİZLEME TETİKLEYİCİ BUTON (Görsel Üzerinde) */}
-              <button
-                onClick={() => setShowPreview(true)}
-                className="absolute bottom-6 right-6 z-20 bg-orange-600 text-white px-5 py-3 text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-2xl hover:bg-slate-900 transition-all scale-100 hover:scale-105 active:scale-95"
-              >
-                <Eye size={16} /> Logonu Ekle
-              </button>
+              <div className="absolute bottom-6 right-6 z-20 flex gap-2">
+                <button
+                  onClick={() => setShowPreview(true)}
+                  className="bg-orange-600 text-white px-5 py-3 text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-2xl hover:bg-slate-900 transition-all scale-100 hover:scale-105 active:scale-95"
+                >
+                  <Eye size={16} />{" "}
+                  {customDesign ? "Yeniden Tasarla" : "Logonu Ekle"}
+                </button>
+              </div>
 
-              <CustomImageZoom src={images[activeIndex]} alt={product.title} />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+
+              <CustomImageZoom
+                src={displayImages[activeIndex]}
+                alt={product.title}
+              />
             </div>
 
             {/* Küçük Resimler */}
             <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-              {images.map((img, i) => (
+              {displayImages.map((img, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveIndex(i)}
                   className={cn(
-                    "relative w-20 h-20 overflow-hidden transition-all border-2  flex-shrink-0 bg-white",
+                    "relative w-20 h-20 overflow-hidden transition-all border-2 flex-shrink-0 bg-white",
                     activeIndex === i
                       ? "border-orange-600 shadow-md"
                       : "border-transparent opacity-60",
                   )}
                 >
+                  {i === 0 && (customDesign || uploadedImagePreview) && (
+                    <div className="absolute top-0 left-0 bg-orange-600 text-white text-[6px] font-bold px-1 py-0.5 uppercase z-10">
+                      Özel
+                    </div>
+                  )}
                   <Image
                     src={img}
                     alt="Thumb"
@@ -228,6 +341,22 @@ export default function ProductDetailPage() {
                 </button>
               ))}
             </div>
+
+            {/* Yüklenen resmi kaldırma seçeneği */}
+            {uploadedImagePreview && (
+              <div className="flex items-center justify-between bg-blue-50 border border-blue-200 p-3 rounded">
+                <div className="flex items-center gap-2 text-xs text-blue-700">
+                  <ImagePlus size={14} />
+                  <span className="font-semibold">Özel resim yüklendi</span>
+                </div>
+                <button
+                  onClick={handleRemoveUploadedImage}
+                  className="text-blue-600 hover:text-red-600 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* SAĞ: ÜRÜN BİLGİLERİ */}
@@ -242,6 +371,11 @@ export default function ProductDetailPage() {
                 </div>
                 <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 leading-tight">
                   {product.title}
+                  {(customDesign || uploadedImagePreview) && (
+                    <span className="ml-2 text-sm font-normal text-orange-600">
+                      (Özelleştirilmiş)
+                    </span>
+                  )}
                 </h1>
                 <div className="flex items-center gap-3 text-xs text-slate-500">
                   <div className="flex text-orange-400">
@@ -273,10 +407,49 @@ export default function ProductDetailPage() {
                   </p>
                 </div>
 
+                {/* Özelleştirme Bilgisi */}
+                {(customDesign || uploadedImagePreview) && (
+                  <div className="bg-gradient-to-r from-orange-50 to-pink-50 border border-orange-200 p-4 rounded space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-bold text-orange-700 uppercase tracking-wider">
+                      <Sparkles size={14} />
+                      Özelleştirilmiş Ürün
+                    </div>
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      Bu ürün{" "}
+                      {customDesign
+                        ? "tasarım paneliyle"
+                        : "yüklediğiniz resimle"}{" "}
+                      özelleştirilmiştir. Sepete eklediğinizde bu özel tasarım
+                      kaydedilecektir.
+                    </p>
+                  </div>
+                )}
+
                 {/* Butonlar */}
                 <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className={cn(
+                      "h-12 w-full text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-sm border",
+                      uploadedImagePreview
+                        ? "bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100"
+                        : "bg-white border-slate-200 text-slate-700 hover:border-slate-900 hover:bg-slate-50",
+                    )}
+                  >
+                    {uploadedImagePreview ? (
+                      <>
+                        <BadgeCheck size={16} className="text-orange-600" />
+                        Farklı Resim Seç
+                      </>
+                    ) : (
+                      <>
+                        <Upload size={16} className="text-slate-500" />
+                        Logolu Resmini Yükle
+                      </>
+                    )}
+                  </button>
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center bg-slate-100 h-12 px-4 gap-5  border border-slate-200">
+                    <div className="flex items-center bg-slate-100 h-12 px-4 gap-5 border border-slate-200">
                       <button
                         onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                         className="text-slate-500 hover:text-orange-600 transition-colors"
@@ -296,7 +469,7 @@ export default function ProductDetailPage() {
 
                     <button
                       onClick={handleAddToCart}
-                      className="flex-1 h-12 bg-slate-900 text-white text-[11px] font-bold uppercase tracking-wider hover:bg-orange-600 transition-all shadow-sm flex items-center justify-center gap-2 "
+                      className="flex-1 h-12 bg-slate-900 text-white text-[11px] font-bold uppercase tracking-wider hover:bg-orange-600 transition-all shadow-sm flex items-center justify-center gap-2"
                     >
                       <ShoppingCart size={14} fill="currentColor" /> Sepete Ekle
                     </button>
@@ -310,7 +483,7 @@ export default function ProductDetailPage() {
                           : addFavorite(product.id)
                       }
                       className={cn(
-                        "flex-1 h-11 border  flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider transition-all",
+                        "flex-1 h-11 border flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider transition-all",
                         isFavorited(product.id)
                           ? "bg-slate-50 border-slate-200 text-slate-900"
                           : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50",
@@ -327,7 +500,7 @@ export default function ProductDetailPage() {
                     </button>
                     <button
                       onClick={handleShare}
-                      className="w-11 h-11 bg-white border border-slate-200 flex items-center justify-center hover:border-orange-600 hover:text-orange-600 transition-all  shadow-sm"
+                      className="w-11 h-11 bg-white border border-slate-200 flex items-center justify-center hover:border-orange-600 hover:text-orange-600 transition-all shadow-sm"
                     >
                       <Share2 size={14} />
                     </button>
@@ -335,7 +508,6 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* Teknik Dökümantasyon */}
               <div className="space-y-4 pt-4 border-t border-slate-100">
                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                   <Info size={14} className="text-orange-600" /> Teknik
@@ -346,18 +518,17 @@ export default function ProductDetailPage() {
                   dangerouslySetInnerHTML={{ __html: product.description }}
                 />
 
-                {/* Rozetler */}
                 <div className="grid grid-cols-2 gap-3 mt-4">
-                  <div className="p-3 bg-slate-50/50 border border-slate-100  flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 text-blue-600 ">
+                  <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 text-blue-600">
                       <BadgeCheck size={16} />
                     </div>
                     <span className="text-[10px] font-bold uppercase tracking-tighter">
                       Dayanıklı Kumaş
                     </span>
                   </div>
-                  <div className="p-3 bg-slate-50/50 border border-slate-100  flex items-center gap-3">
-                    <div className="p-2 bg-orange-100 text-orange-600 ">
+                  <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
+                    <div className="p-2 bg-orange-100 text-orange-600">
                       <HardHat size={16} />
                     </div>
                     <span className="text-[10px] font-bold uppercase tracking-tighter">
@@ -370,7 +541,6 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Alt Tablar */}
         <div className="mt-20 pt-10 border-t border-slate-100">
           <ProductTabs
             productId={product.id}

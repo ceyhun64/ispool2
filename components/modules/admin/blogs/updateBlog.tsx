@@ -77,16 +77,16 @@ export default function UpdateBlogDialog({
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 sm:h-9 sm:w-9 text-slate-400 hover:text-indigo-600 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-indigo-100 rounded-xl transition-all border border-transparent hover:border-indigo-200"
+          className="h-8 w-8 sm:h-9 sm:w-9 text-slate-400 hover:text-indigo-600 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-indigo-100  transition-all border border-transparent hover:border-indigo-200"
         >
           <Edit3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[900px] lg:max-w-[1000px] p-0 overflow-hidden border-none shadow-2xl rounded-2xl bg-white max-w-[95vw] max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-[900px] lg:max-w-[1000px] p-0 overflow-hidden border-none shadow-2xl  bg-white max-w-[95vw] max-h-[90vh] flex flex-col">
         <DialogHeader className="p-4 sm:p-6 bg-gradient-to-r from-white to-slate-50 border-b border-slate-100 flex-shrink-0">
           <DialogTitle className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 to-indigo-600  flex items-center justify-center shadow-md">
               <Layout className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div>
@@ -108,7 +108,7 @@ export default function UpdateBlogDialog({
             <div className="lg:col-span-3 p-4 sm:p-6 space-y-4 sm:space-y-5 bg-white border-r border-slate-50">
               <div className="space-y-2">
                 <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                  <div className="w-1 h-3 bg-indigo-500 rounded-full"></div>
+                  <div className="w-1 h-3 bg-indigo-500 "></div>
                   Başlık
                 </Label>
                 <div className="relative">
@@ -118,7 +118,7 @@ export default function UpdateBlogDialog({
                     onChange={(e) =>
                       setEditedBlog({ ...editedBlog, title: e.target.value })
                     }
-                    className="pl-10 h-11 sm:h-12 rounded-xl border-slate-200 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm text-sm sm:text-base"
+                    className="pl-10 h-11 sm:h-12  border-slate-200 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm text-sm sm:text-base"
                   />
                 </div>
               </div>
@@ -126,7 +126,7 @@ export default function UpdateBlogDialog({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
                   <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                    <div className="w-1 h-3 bg-amber-500 rounded-full"></div>
+                    <div className="w-1 h-3 bg-amber-500 "></div>
                     Kategori
                   </Label>
                   <div className="relative">
@@ -139,14 +139,14 @@ export default function UpdateBlogDialog({
                           category: e.target.value,
                         })
                       }
-                      className="pl-10 h-11 sm:h-12 rounded-xl border-slate-200 focus:border-amber-400 focus:ring-4 focus:ring-amber-50 shadow-sm text-sm sm:text-base"
+                      className="pl-10 h-11 sm:h-12  border-slate-200 focus:border-amber-400 focus:ring-4 focus:ring-amber-50 shadow-sm text-sm sm:text-base"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                    <div className="w-1 h-3 bg-emerald-500 rounded-full"></div>
+                    <div className="w-1 h-3 bg-emerald-500 "></div>
                     Görsel URL
                   </Label>
                   <div className="relative">
@@ -156,7 +156,7 @@ export default function UpdateBlogDialog({
                       onChange={(e) =>
                         setEditedBlog({ ...editedBlog, image: e.target.value })
                       }
-                      className="pl-10 h-11 sm:h-12 rounded-xl border-slate-200 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-50 shadow-sm font-mono text-xs"
+                      className="pl-10 h-11 sm:h-12  border-slate-200 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-50 shadow-sm font-mono text-xs"
                       placeholder="https://example.com/image.jpg"
                     />
                   </div>
@@ -165,7 +165,7 @@ export default function UpdateBlogDialog({
 
               <div className="space-y-2">
                 <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                  <div className="w-1 h-3 bg-indigo-500 rounded-full"></div>
+                  <div className="w-1 h-3 bg-indigo-500 "></div>
                   İçerik Metni
                 </Label>
                 <textarea
@@ -173,7 +173,7 @@ export default function UpdateBlogDialog({
                   onChange={(e) =>
                     setEditedBlog({ ...editedBlog, content: e.target.value })
                   }
-                  className="w-full min-h-[200px] p-3 sm:p-4 border border-slate-200 rounded-xl focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm text-sm sm:text-base outline-none resize-none leading-relaxed text-slate-700"
+                  className="w-full min-h-[200px] p-3 sm:p-4 border border-slate-200  focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm text-sm sm:text-base outline-none resize-none leading-relaxed text-slate-700"
                 />
                 <div className="flex items-center justify-between text-xs text-slate-400 mt-1">
                   <span>{editedBlog.content.length} karakter</span>
@@ -187,11 +187,11 @@ export default function UpdateBlogDialog({
             {/* Preview Area */}
             <div className="lg:col-span-2 p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-white flex flex-col items-center">
               <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-4 self-start flex items-center gap-2">
-                <div className="w-1 h-3 bg-indigo-500 rounded-full"></div>
+                <div className="w-1 h-3 bg-indigo-500 "></div>
                 Önizleme
               </Label>
 
-              <div className="w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden flex flex-col group hover:shadow-2xl transition-all sticky top-0">
+              <div className="w-full bg-white  shadow-xl border border-slate-200 overflow-hidden flex flex-col group hover:shadow-2xl transition-all sticky top-0">
                 <div className="relative w-full aspect-video bg-gradient-to-br from-slate-100 to-slate-50 overflow-hidden">
                   {editedBlog.image ? (
                     <Image
@@ -212,7 +212,7 @@ export default function UpdateBlogDialog({
                 </div>
 
                 <div className="p-4 space-y-3">
-                  <span className="inline-block px-3 py-1 bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-700 text-[10px] font-bold rounded-lg uppercase tracking-wide border border-indigo-200">
+                  <span className="inline-block px-3 py-1 bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-700 text-[10px] font-bold  uppercase tracking-wide border border-indigo-200">
                     {editedBlog.category || "Kategori"}
                   </span>
                   <h4 className="font-bold text-slate-900 leading-tight line-clamp-2">
@@ -231,18 +231,18 @@ export default function UpdateBlogDialog({
           <Button
             variant="ghost"
             onClick={() => setOpen(false)}
-            className="rounded-xl px-4 sm:px-6 font-semibold text-slate-600 hover:bg-slate-100 h-10 sm:h-11 order-2 sm:order-1 w-full sm:w-auto"
+            className=" px-4 sm:px-6 font-semibold text-slate-600 hover:bg-slate-100 h-10 sm:h-11 order-2 sm:order-1 w-full sm:w-auto"
           >
             Vazgeç
           </Button>
           <Button
             onClick={handleSave}
             disabled={loading}
-            className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white rounded-xl px-6 sm:px-8 font-semibold shadow-lg shadow-indigo-200 flex items-center gap-2 h-10 sm:h-11 disabled:opacity-50 disabled:cursor-not-allowed order-1 sm:order-2 w-full sm:w-auto"
+            className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white  px-6 sm:px-8 font-semibold shadow-lg shadow-indigo-200 flex items-center gap-2 h-10 sm:h-11 disabled:opacity-50 disabled:cursor-not-allowed order-1 sm:order-2 w-full sm:w-auto"
           >
             {loading ? (
               <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white  animate-spin"></div>
                 <span>Kaydediliyor...</span>
               </>
             ) : (

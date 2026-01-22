@@ -101,9 +101,16 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               <label className="text-[9px] text-slate-500 font-semibold">
                 Döndürme
               </label>
-              <span className="text-[9px] text-orange-400 font-bold">
-                {activeLayer.rotation}°
-              </span>
+              <input
+                type="number"
+                min="-180"
+                max="180"
+                value={activeLayer.rotation}
+                onChange={(e) =>
+                  onLayerUpdate({ rotation: Number(e.target.value) })
+                }
+                className="w-16 bg-slate-700 text-orange-400 px-2 py-0.5 rounded text-[9px] font-bold border border-slate-600 focus:border-orange-500 outline-none text-right"
+              />
             </div>
             <input
               type="range"
@@ -116,10 +123,11 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               className="w-full h-1.5 bg-slate-700 rounded appearance-none cursor-pointer accent-orange-500"
             />
           </div>
+
           {activeLayer && (
             <button
               onClick={() => onRemoveBackground(activeLayer.id)}
-              className="w-full mt-3 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold py-2 rounded"
+              className="w-full mt-3 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold py-2 rounded transition-all"
             >
               Arka Planı Kaldır
             </button>
@@ -184,9 +192,16 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               <label className="text-[9px] text-slate-500 font-semibold flex items-center gap-1">
                 <Droplets size={10} /> Opaklık
               </label>
-              <span className="text-[9px] text-orange-400 font-bold">
-                %{activeLayer.opacity}
-              </span>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={activeLayer.opacity}
+                onChange={(e) =>
+                  onLayerUpdate({ opacity: Number(e.target.value) })
+                }
+                className="w-16 bg-slate-700 text-orange-400 px-2 py-0.5 rounded text-[9px] font-bold border border-slate-600 focus:border-orange-500 outline-none text-right"
+              />
             </div>
             <input
               type="range"
@@ -206,9 +221,16 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               <label className="text-[9px] text-slate-500 font-semibold flex items-center gap-1">
                 <Sun size={10} /> Parlaklık
               </label>
-              <span className="text-[9px] text-orange-400 font-bold">
-                %{activeLayer.brightness}
-              </span>
+              <input
+                type="number"
+                min="0"
+                max="200"
+                value={activeLayer.brightness}
+                onChange={(e) =>
+                  onLayerUpdate({ brightness: Number(e.target.value) })
+                }
+                className="w-16 bg-slate-700 text-orange-400 px-2 py-0.5 rounded text-[9px] font-bold border border-slate-600 focus:border-orange-500 outline-none text-right"
+              />
             </div>
             <input
               type="range"
@@ -228,9 +250,16 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               <label className="text-[9px] text-slate-500 font-semibold flex items-center gap-1">
                 <Contrast size={10} /> Kontrast
               </label>
-              <span className="text-[9px] text-orange-400 font-bold">
-                %{activeLayer.contrast}
-              </span>
+              <input
+                type="number"
+                min="0"
+                max="200"
+                value={activeLayer.contrast}
+                onChange={(e) =>
+                  onLayerUpdate({ contrast: Number(e.target.value) })
+                }
+                className="w-16 bg-slate-700 text-orange-400 px-2 py-0.5 rounded text-[9px] font-bold border border-slate-600 focus:border-orange-500 outline-none text-right"
+              />
             </div>
             <input
               type="range"
@@ -250,9 +279,16 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               <label className="text-[9px] text-slate-500 font-semibold flex items-center gap-1">
                 <Palette size={10} /> Doygunluk
               </label>
-              <span className="text-[9px] text-orange-400 font-bold">
-                %{activeLayer.saturation}
-              </span>
+              <input
+                type="number"
+                min="0"
+                max="200"
+                value={activeLayer.saturation}
+                onChange={(e) =>
+                  onLayerUpdate({ saturation: Number(e.target.value) })
+                }
+                className="w-16 bg-slate-700 text-orange-400 px-2 py-0.5 rounded text-[9px] font-bold border border-slate-600 focus:border-orange-500 outline-none text-right"
+              />
             </div>
             <input
               type="range"
@@ -272,9 +308,14 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               <label className="text-[9px] text-slate-500 font-semibold">
                 Renk Tonu
               </label>
-              <span className="text-[9px] text-orange-400 font-bold">
-                {activeLayer.hue}°
-              </span>
+              <input
+                type="number"
+                min="0"
+                max="360"
+                value={activeLayer.hue}
+                onChange={(e) => onLayerUpdate({ hue: Number(e.target.value) })}
+                className="w-16 bg-slate-700 text-orange-400 px-2 py-0.5 rounded text-[9px] font-bold border border-slate-600 focus:border-orange-500 outline-none text-right"
+              />
             </div>
             <input
               type="range"
@@ -292,9 +333,16 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               <label className="text-[9px] text-slate-500 font-semibold">
                 Bulanıklık
               </label>
-              <span className="text-[9px] text-orange-400 font-bold">
-                {activeLayer.blur}px
-              </span>
+              <input
+                type="number"
+                min="0"
+                max="20"
+                value={activeLayer.blur}
+                onChange={(e) =>
+                  onLayerUpdate({ blur: Number(e.target.value) })
+                }
+                className="w-16 bg-slate-700 text-orange-400 px-2 py-0.5 rounded text-[9px] font-bold border border-slate-600 focus:border-orange-500 outline-none text-right"
+              />
             </div>
             <input
               type="range"

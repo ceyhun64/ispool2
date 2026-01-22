@@ -146,7 +146,7 @@ export default function UsersManagement() {
         <header className="flex flex-col gap-3 sm:gap-4 mb-8 sm:mb-12">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="h-1 w-6 sm:w-8 bg-indigo-600 rounded-full" />
+              <span className="h-1 w-6 sm:w-8 bg-indigo-600 " />
               <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-indigo-600">
                 Yönetim Paneli
               </span>
@@ -163,7 +163,7 @@ export default function UsersManagement() {
               <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
               <Input
                 placeholder="İsim veya e-posta ile ara..."
-                className="pl-9 sm:pl-11 h-11 sm:h-12 w-full sm:w-80 bg-white border-slate-200 rounded-xl sm:rounded-2xl shadow-sm focus:ring-4 focus:ring-indigo-50 transition-all border-none text-sm"
+                className="pl-9 sm:pl-11 h-11 sm:h-12 w-full sm:w-80 bg-white border-slate-200  shadow-sm focus:ring-4 focus:ring-indigo-50 transition-all border-none text-sm"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -172,12 +172,12 @@ export default function UsersManagement() {
             {selectedIds.length > 0 && (
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="h-11 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-red-50 text-red-600 hover:bg-red-100 border-none shadow-none font-bold animate-in fade-in zoom-in duration-200 text-sm w-full sm:w-auto">
+                  <Button className="h-11 sm:h-12 px-4 sm:px-6  bg-red-50 text-red-600 hover:bg-red-100 border-none shadow-none font-bold animate-in fade-in zoom-in duration-200 text-sm w-full sm:w-auto">
                     <Trash2 className="w-4 h-4 mr-2" />
                     Sil ({selectedIds.length})
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="rounded-2xl sm:rounded-[2rem] border-none max-w-[90vw] sm:max-w-md mx-4">
+                <DialogContent className=" border-none max-w-[90vw] sm:max-w-md mx-4">
                   <DialogHeader>
                     <DialogTitle className="text-lg sm:text-xl">
                       Seçilenleri Sil
@@ -190,14 +190,14 @@ export default function UsersManagement() {
                   <DialogFooter className="mt-4 flex-col sm:flex-row gap-2">
                     <Button
                       variant="ghost"
-                      className="rounded-xl w-full sm:w-auto"
+                      className=" w-full sm:w-auto"
                     >
                       Vazgeç
                     </Button>
                     <Button
                       onClick={handleBatchDelete}
                       disabled={isBatchDeleting}
-                      className="bg-red-600 hover:bg-red-700 rounded-xl px-8 w-full sm:w-auto"
+                      className="bg-red-600 hover:bg-red-700  px-8 w-full sm:w-auto"
                     >
                       {isBatchDeleting ? (
                         <Spinner className="w-4 h-4" />
@@ -213,7 +213,7 @@ export default function UsersManagement() {
         </header>
 
         {/* Desktop Table */}
-        <div className="hidden md:block bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+        <div className="hidden md:block bg-white border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left min-w-[768px]">
               <thead>
@@ -221,7 +221,7 @@ export default function UsersManagement() {
                   <th className="px-6 sm:px-8 py-4 sm:py-5 w-12">
                     <input
                       type="checkbox"
-                      className="w-4 h-4 sm:w-5 sm:h-5 rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                      className="w-4 h-4 sm:w-5 sm:h-5  border-slate-300 text-indigo-600 focus:ring-indigo-500"
                       onChange={(e) =>
                         setSelectedIds(
                           e.target.checked
@@ -262,12 +262,12 @@ export default function UsersManagement() {
                               : [...prev, user.id]
                           )
                         }
-                        className="w-4 h-4 sm:w-5 sm:h-5 rounded-md border-slate-300 text-indigo-600"
+                        className="w-4 h-4 sm:w-5 sm:h-5  border-slate-300 text-indigo-600"
                       />
                     </td>
                     <td className="px-4 sm:px-6 py-4 sm:py-5">
                       <div className="flex items-center gap-3 sm:gap-4">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-slate-600 font-black text-xs sm:text-sm shadow-inner group-hover:from-indigo-100 group-hover:to-indigo-200 group-hover:text-indigo-600 transition-all">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-slate-600 font-black text-xs sm:text-sm shadow-inner group-hover:from-indigo-100 group-hover:to-indigo-200 group-hover:text-indigo-600 transition-all">
                           {user.name[0]}
                           {user.surname[0]}
                         </div>
@@ -298,13 +298,13 @@ export default function UsersManagement() {
                         <DialogTrigger asChild>
                           <Button
                             variant="outline"
-                            className="h-8 sm:h-9 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold border-slate-200 hover:bg-slate-50 hover:text-indigo-600 transition-all"
+                            className="h-8 sm:h-9  text-[10px] sm:text-xs font-bold border-slate-200 hover:bg-slate-50 hover:text-indigo-600 transition-all"
                           >
                             <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 sm:mr-1.5" />
                             {user.addresses?.length || 0} Adres
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-[95vw] sm:max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-2xl sm:rounded-[2rem] border-none">
+                        <DialogContent className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-[95vw] sm:max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]  border-none">
                           {" "}
                           <DialogHeader>
                             <DialogTitle className="text-lg sm:text-xl font-black">
@@ -316,7 +316,7 @@ export default function UsersManagement() {
                               user.addresses.map((addr) => (
                                 <div
                                   key={addr.id}
-                                  className="p-4 sm:p-5 bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-100 hover:border-indigo-200 transition-colors"
+                                  className="p-4 sm:p-5 bg-slate-50  border border-slate-100 hover:border-indigo-200 transition-colors"
                                 >
                                   <div className="flex justify-between mb-2">
                                     <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-indigo-600">
@@ -352,12 +352,12 @@ export default function UsersManagement() {
                           <Button
                             size="icon"
                             variant="ghost"
-                            className="h-9 w-9 sm:h-10 sm:w-10 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg sm:rounded-xl transition-all"
+                            className="h-9 w-9 sm:h-10 sm:w-10 text-slate-300 hover:text-red-500 hover:bg-red-50  transition-all"
                           >
                             <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="rounded-2xl sm:rounded-3xl max-w-[90vw] sm:max-w-md mx-4">
+                        <DialogContent className=" max-w-[90vw] sm:max-w-md mx-4">
                           <DialogHeader>
                             <DialogTitle className="text-base sm:text-lg">
                               Kullanıcıyı Sil
@@ -373,13 +373,13 @@ export default function UsersManagement() {
                           <DialogFooter className="mt-6 flex-col sm:flex-row gap-2">
                             <Button
                               variant="ghost"
-                              className="rounded-xl w-full sm:w-auto"
+                              className=" w-full sm:w-auto"
                             >
                               Vazgeç
                             </Button>
                             <Button
                               onClick={() => handleDelete(user.id)}
-                              className="bg-red-600 hover:bg-red-700 rounded-xl px-8 w-full sm:w-auto"
+                              className="bg-red-600 hover:bg-red-700  px-8 w-full sm:w-auto"
                             >
                               Kullanıcıyı Sil
                             </Button>
@@ -395,7 +395,7 @@ export default function UsersManagement() {
 
           {filteredUsers.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 sm:py-32 space-y-4">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-50 rounded-full flex items-center justify-center">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-50  flex items-center justify-center">
                 <UsersIcon className="w-8 h-8 sm:w-10 sm:h-10 text-slate-200" />
               </div>
               <p className="text-slate-400 font-semibold text-base sm:text-lg">
@@ -417,7 +417,7 @@ export default function UsersManagement() {
           {paginatedUsers.map((user) => (
             <div
               key={user.id}
-              className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200"
+              className="bg-white  p-4 shadow-sm border border-slate-200"
             >
               <div className="flex items-start gap-3 mb-3">
                 <input
@@ -430,7 +430,7 @@ export default function UsersManagement() {
                         : [...prev, user.id]
                     )
                   }
-                  className="w-5 h-5 rounded-md border-slate-300 text-indigo-600 mt-1"
+                  className="w-5 h-5  border-slate-300 text-indigo-600 mt-1"
                 />
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-sm text-slate-900 truncate">
@@ -451,13 +451,13 @@ export default function UsersManagement() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-8 text-xs rounded-lg"
+                      className="h-8 text-xs "
                     >
                       <MapPin className="w-3 h-3 mr-1" />
                       {user.addresses?.length || 0} Adres
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-[95vw] sm:max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-2xl sm:rounded-[2rem] border-none">
+                  <DialogContent className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-[95vw] sm:max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]  border-none">
                     {" "}
                     <DialogHeader>
                       <DialogTitle className="text-lg">
@@ -469,7 +469,7 @@ export default function UsersManagement() {
                         user.addresses.map((addr) => (
                           <div
                             key={addr.id}
-                            className="p-4 bg-slate-50 rounded-xl border border-slate-100"
+                            className="p-4 bg-slate-50  border border-slate-100"
                           >
                             <p className="text-xs font-black uppercase text-indigo-600 mb-2">
                               {addr.title}
@@ -502,7 +502,7 @@ export default function UsersManagement() {
                       Sil
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="rounded-2xl max-w-[90vw] mx-4">
+                  <DialogContent className=" max-w-[90vw] mx-4">
                     <DialogHeader>
                       <DialogTitle>Kullanıcıyı Sil</DialogTitle>
                       <DialogDescription className="text-sm">
@@ -513,12 +513,12 @@ export default function UsersManagement() {
                       </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="flex-col gap-2">
-                      <Button variant="ghost" className="rounded-xl w-full">
+                      <Button variant="ghost" className=" w-full">
                         Vazgeç
                       </Button>
                       <Button
                         onClick={() => handleDelete(user.id)}
-                        className="bg-red-600 hover:bg-red-700 rounded-xl w-full"
+                        className="bg-red-600 hover:bg-red-700  w-full"
                       >
                         Kullanıcıyı Sil
                       </Button>
@@ -530,7 +530,7 @@ export default function UsersManagement() {
           ))}
 
           {filteredUsers.length === 0 && (
-            <div className="bg-white rounded-2xl p-8 text-center border border-slate-200">
+            <div className="bg-white  p-8 text-center border border-slate-200">
               <UsersIcon className="w-12 h-12 text-slate-200 mx-auto mb-3" />
               <p className="text-slate-400 font-semibold">
                 Eşleşen kullanıcı bulunamadı.
@@ -556,7 +556,7 @@ export default function UsersManagement() {
             </span>{" "}
             arası gösteriliyor
           </p>
-          <div className="bg-white p-1.5 rounded-xl sm:rounded-2xl shadow-xl shadow-slate-200/50">
+          <div className="bg-white p-1.5  shadow-xl shadow-slate-200/50">
             <DefaultPagination
               totalItems={filteredUsers.length}
               itemsPerPage={ITEMS_PER_PAGE}

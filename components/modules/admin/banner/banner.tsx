@@ -41,10 +41,10 @@ const BannerPreviewCard = ({
   title: string;
   subtitle: string;
 }) => (
-  <div className="relative w-full h-[240px] rounded-2xl overflow-hidden bg-[#0f0f0f] border border-slate-800 group-hover:border-slate-600 transition-all duration-500">
+  <div className="relative w-full h-[240px]  overflow-hidden bg-[#0f0f0f] border border-slate-800 group-hover:border-slate-600 transition-all duration-500">
     {/* Arka Plan Efekti */}
     <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]" />
-    <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[120%] bg-slate-400/10 rounded-full blur-[80px]" />
+    <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[120%] bg-slate-400/10  blur-[80px]" />
 
     <div className="relative h-full flex flex-col items-center justify-center text-center p-6">
       <span className="text-[7px] tracking-[0.4em] text-slate-500 uppercase mb-3 block font-medium">
@@ -140,7 +140,7 @@ export default function Banners() {
         <header className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="h-1 w-8 bg-indigo-600 rounded-full" />
+              <span className="h-1 w-8 bg-indigo-600 " />
               <span className="text-xs font-bold uppercase tracking-widest text-indigo-600">
                 Yönetim Paneli
               </span>
@@ -157,9 +157,9 @@ export default function Banners() {
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
           {/* Sol Panel: Editör */}
           <div className="xl:col-span-4 space-y-6">
-            <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 sticky top-10">
+            <div className="bg-white  p-6 shadow-sm border border-slate-100 sticky top-10">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-blue-50 rounded-2xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-blue-50  flex items-center justify-center">
                   <Plus className="w-5 h-5 text-blue-600" />
                 </div>
                 <h2 className="font-bold text-slate-800">Canlı Düzenleyici</h2>
@@ -185,7 +185,7 @@ export default function Banners() {
                     placeholder="Örn: Hayalinizdeki Salonu <br /> Beraber Tasarlayalım."
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
-                    className="h-12 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-blue-100 transition-all"
+                    className="h-12 bg-slate-50 border-none  focus:ring-4 focus:ring-blue-100 transition-all"
                   />
                 </div>
 
@@ -197,14 +197,14 @@ export default function Banners() {
                     placeholder="Rafine çözümler sunuyoruz..."
                     value={newSubtitle}
                     onChange={(e) => setNewSubtitle(e.target.value)}
-                    className="w-full p-4 bg-slate-50 border-none rounded-2xl min-h-[100px] text-sm focus:ring-4 focus:ring-blue-100 transition-all outline-none resize-none"
+                    className="w-full p-4 bg-slate-50 border-none  min-h-[100px] text-sm focus:ring-4 focus:ring-blue-100 transition-all outline-none resize-none"
                   />
                 </div>
 
                 <Button
                   onClick={handleAddBanner}
                   disabled={isAdding || !newTitle.trim()}
-                  className="w-full bg-black hover:bg-[#001e59] text-white h-12 rounded-2xl font-bold transition-all shadow-lg shadow-black/5"
+                  className="w-full bg-black hover:bg-[#001e59] text-white h-12  font-bold transition-all shadow-lg shadow-black/5"
                 >
                   {isAdding ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -225,7 +225,7 @@ export default function Banners() {
             </div>
 
             {isLoading ? (
-              <div className="h-64 flex items-center justify-center bg-white rounded-3xl border border-slate-100">
+              <div className="h-64 flex items-center justify-center bg-white  border border-slate-100">
                 <Loader2 className="w-10 h-10 animate-spin text-slate-200" />
               </div>
             ) : (
@@ -250,12 +250,12 @@ export default function Banners() {
                           <Button
                             size="icon"
                             variant="destructive"
-                            className="w-10 h-10 rounded-xl shadow-xl"
+                            className="w-10 h-10  shadow-xl"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="rounded-3xl border-none shadow-2xl">
+                        <DialogContent className=" border-none shadow-2xl">
                           <DialogHeader className="items-center text-center">
                             <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
                             <DialogTitle>Bu içeriği kaldıralım mı?</DialogTitle>
@@ -264,12 +264,12 @@ export default function Banners() {
                             </DialogDescription>
                           </DialogHeader>
                           <DialogFooter className="sm:justify-center gap-3">
-                            <Button variant="ghost" className="rounded-xl">
+                            <Button variant="ghost" className="">
                               İptal
                             </Button>
                             <Button
                               variant="destructive"
-                              className="rounded-xl px-8"
+                              className=" px-8"
                               onClick={() => handleDelete(banner.id)}
                             >
                               Evet, Sil

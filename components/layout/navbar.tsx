@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   motion,
@@ -20,13 +20,13 @@ export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const { favorites } = useFavorite();
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
-    // Scroll yönüne göre gizleme/gösterme
     if (latest > previous && latest > 150) {
       setHidden(true);
     } else {
@@ -34,8 +34,34 @@ export default function Navbar() {
     }
   });
 
+  // Cart Sheet açılış durumunu dinle
+  useEffect(() => {
+    const handleCartStateChange = (e: CustomEvent) => {
+      setIsCartOpen(e.detail.isOpen);
+    };
+
+    window.addEventListener('cartSheetStateChange' as any, handleCartStateChange);
+    return () => {
+      window.removeEventListener('cartSheetStateChange' as any, handleCartStateChange);
+    };
+  }, []);
+
   return (
     <>
+      {/* CART OVERLAY - Sadece cart açıkken */}
+      <AnimatePresence>
+        {isCartOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[150]"
+            style={{ pointerEvents: 'none' }}
+          />
+        )}
+      </AnimatePresence>
+
       <motion.header
         variants={{
           visible: { y: 0 },

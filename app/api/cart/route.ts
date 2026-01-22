@@ -1,76 +1,98 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
-// Düzeltme: authOptions'ı artık Route Handler'dan değil, config dosyasından içe aktarıyoruz.
-// '@/lib/auth' dosyasının içeriği, bir önceki yanıttaki authOptions yapısı olmalıdır.
 import { authOptions } from "@/lib/auth";
 
-interface CartItemRequestBody {
-  productId: number;
-  quantity?: number;
+// Resim yükleme yardımcı fonksiyonu
+async function uploadToCloudinary(file: File, folder: string) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("folderName", folder);
+
+  const res = await fetch(`${baseUrl}/api/upload`, {
+    method: "POST",
+    body: fd,
+  });
+
+  if (!res.ok) throw new Error("Cloudinary yükleme hatası");
+  const data = await res.json();
+  return data.path as string;
 }
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json([], { status: 200 }); // Giriş yok, boş liste dön
+  if (!session) return NextResponse.json([], { status: 200 });
 
   try {
     const cartItems = await prisma.cartItem.findMany({
       where: { userId: Number(session.user.id) },
       include: { product: true },
+      orderBy: { createdAt: "desc" },
     });
     return NextResponse.json(cartItems);
   } catch (error) {
-    console.error("Cart GET error:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch cart items" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Sepet yüklenemedi" }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
 
   try {
-    const body: CartItemRequestBody = await req.json();
+    const formData = await req.formData();
 
-    const { productId, quantity = 1 } = body;
+    // Verileri FormData'dan alıyoruz
+    const productId = Number(formData.get("productId"));
+    const quantity = Number(formData.get("quantity") || 1);
+    const customFile = formData.get("customImageFile") as File | null;
+    let customImageUrl = formData.get("customImage") as string | null;
 
+    // Eğer bir dosya gönderilmişse, önce Cloudinary'ye yükle
+    if (customFile && customFile.size > 0) {
+      customImageUrl = await uploadToCloudinary(
+        customFile,
+        "user_customizations",
+      );
+    }
+
+    // Aynı ürün ve aynı resme (veya resimsizliğe) sahip kayıt var mı?
     const existing = await prisma.cartItem.findFirst({
       where: {
         userId: Number(session.user.id),
         productId,
+        customImage: customImageUrl || null,
       },
     });
 
     if (existing) {
-      // Varsa miktarı artır
       const updated = await prisma.cartItem.update({
         where: { id: existing.id },
         data: { quantity: existing.quantity + quantity },
         include: { product: true },
       });
       return NextResponse.json(updated);
-    } // Yoksa yeni kayıt oluştur
+    }
 
+    // Yeni sepet öğesi oluştur
     const cartItem = await prisma.cartItem.create({
       data: {
         userId: Number(session.user.id),
         productId,
         quantity,
+        customImage: customImageUrl,
       },
       include: { product: true },
     });
 
     return NextResponse.json(cartItem);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Cart POST error:", error);
     return NextResponse.json(
-      { error: "Failed to add to cart" },
-      { status: 500 }
+      { error: error.message || "İşlem başarısız" },
+      { status: 500 },
     );
   }
 }
@@ -86,10 +108,6 @@ export async function DELETE(req: Request) {
     });
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Cart DELETE error:", error);
-    return NextResponse.json(
-      { error: "Failed to delete cart items" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Silme başarısız" }, { status: 500 });
   }
 }

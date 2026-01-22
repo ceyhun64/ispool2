@@ -89,7 +89,7 @@ export default function ProductTable({
                     selectedIds.length === products.length
                   }
                   onChange={onSelectAll}
-                  className="w-4 h-4 rounded-md border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
+                  className="w-4 h-4  border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
                 />
               </TableHead>
               <TableHead className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 py-5 px-6">
@@ -135,14 +135,14 @@ export default function ProductTable({
                         type="checkbox"
                         checked={selectedIds.includes(product.id)}
                         onChange={() => onSelectOne(product.id)}
-                        className="w-4 h-4 rounded-md border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
+                        className="w-4 h-4  border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
                       />
                     </TableCell>
 
                     <TableCell className="px-6 py-4">
                       <div className="flex items-center gap-4">
                         {/* Horizontal aspect ratio image */}
-                        <div className="relative w-16 h-12 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 flex-shrink-0 flex items-center justify-center shadow-sm">
+                        <div className="relative w-16 h-12  overflow-hidden bg-slate-100 border border-slate-200 flex-shrink-0 flex items-center justify-center shadow-sm">
                           {imgPath ? (
                             <Image
                               src={imgPath}
@@ -166,7 +166,7 @@ export default function ProductTable({
                     </TableCell>
 
                     <TableCell className="px-4">
-                      <Badge className="bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 border border-slate-200 shadow-none hover:shadow-sm hover:from-indigo-50 hover:to-indigo-100 hover:text-indigo-700 hover:border-indigo-200 text-[10px] px-2.5 py-1 rounded-lg font-bold transition-all">
+                      <Badge className="bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 border border-slate-200 shadow-none hover:shadow-sm hover:from-indigo-50 hover:to-indigo-100 hover:text-indigo-700 hover:border-indigo-200 text-[10px] px-2.5 py-1  font-bold transition-all">
                         {product.category}
                       </Badge>
                     </TableCell>
@@ -203,7 +203,7 @@ export default function ProductTable({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-9 w-9 rounded-lg hover:bg-gradient-to-br hover:from-indigo-50 hover:to-indigo-100 border border-transparent hover:border-indigo-200 text-slate-400 hover:text-indigo-600 transition-all hover:shadow-sm"
+                          className="h-9 w-9  hover:bg-gradient-to-br hover:from-indigo-50 hover:to-indigo-100 border border-transparent hover:border-indigo-200 text-slate-400 hover:text-indigo-600 transition-all hover:shadow-sm"
                           onClick={() => onUpdateClick(product)}
                         >
                           <Edit3 size={15} />
@@ -211,7 +211,7 @@ export default function ProductTable({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-9 w-9 rounded-lg hover:bg-gradient-to-br hover:from-red-50 hover:to-red-100 text-slate-400 hover:text-red-500 hover:border-red-200 border border-transparent transition-all hover:shadow-sm"
+                          className="h-9 w-9  hover:bg-gradient-to-br hover:from-red-50 hover:to-red-100 text-slate-400 hover:text-red-500 hover:border-red-200 border border-transparent transition-all hover:shadow-sm"
                           onClick={() => onDeleteClick(product)}
                         >
                           <Trash2 size={15} />
@@ -239,7 +239,7 @@ export default function ProductTable({
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -20 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className={`bg-white rounded-2xl p-4 shadow-md border transition-all ${
+                className={`bg-white  p-4 shadow-md border transition-all ${
                   selectedIds.includes(product.id)
                     ? "border-indigo-300 shadow-indigo-100 bg-gradient-to-br from-indigo-50/30 to-white"
                     : "border-slate-200 hover:shadow-lg hover:border-slate-300"
@@ -252,7 +252,7 @@ export default function ProductTable({
                       type="checkbox"
                       checked={selectedIds.includes(product.id)}
                       onChange={() => onSelectOne(product.id)}
-                      className="w-5 h-5 rounded-md border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500"
+                      className="w-5 h-5  border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500"
                     />
                     <Badge
                       variant="secondary"
@@ -267,7 +267,7 @@ export default function ProductTable({
                 </div>
 
                 {/* Product Image - Horizontal Aspect */}
-                <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 border border-slate-200 mb-4 shadow-sm">
+                <div className="relative w-full aspect-[16/9]  overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 border border-slate-200 mb-4 shadow-sm">
                   {imgPath ? (
                     <Image
                       src={imgPath}
@@ -318,7 +318,7 @@ export default function ProductTable({
                     <Button
                       size="sm"
                       variant="outline"
-                      className="flex-1 rounded-xl h-10 font-semibold text-sm border-slate-300 text-slate-700 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-indigo-100 hover:text-indigo-700 hover:border-indigo-300 transition-all"
+                      className="flex-1  h-10 font-semibold text-sm border-slate-300 text-slate-700 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-indigo-100 hover:text-indigo-700 hover:border-indigo-300 transition-all"
                       onClick={() => onUpdateClick(product)}
                     >
                       <Edit3 size={14} className="mr-2" />
@@ -327,7 +327,7 @@ export default function ProductTable({
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="rounded-xl h-10 w-10 p-0 text-red-400 hover:bg-gradient-to-br hover:from-red-50 hover:to-red-100 hover:text-red-600 border border-transparent hover:border-red-200 transition-all"
+                      className=" h-10 w-10 p-0 text-red-400 hover:bg-gradient-to-br hover:from-red-50 hover:to-red-100 hover:text-red-600 border border-transparent hover:border-red-200 transition-all"
                       onClick={() => onDeleteClick(product)}
                     >
                       <Trash2 size={16} />
