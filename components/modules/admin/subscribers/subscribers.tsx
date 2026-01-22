@@ -141,7 +141,7 @@ export default function Subscribers() {
         <header className="flex flex-col gap-3 sm:gap-4 mb-8 sm:mb-12">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="h-1 w-6 sm:w-8 bg-indigo-600 rounded-full" />
+              <span className="h-1 w-6 sm:w-8 bg-indigo-600 " />
               <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-indigo-600">
                 Yönetim Paneli
               </span>
@@ -160,7 +160,7 @@ export default function Subscribers() {
                 placeholder="Abone ara..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 w-full sm:w-64 bg-white border-slate-200 rounded-xl shadow-sm focus:ring-4 focus:ring-blue-50 transition-all h-11 text-sm"
+                className="pl-10 w-full sm:w-64 bg-white border-slate-200  shadow-sm focus:ring-4 focus:ring-blue-50 transition-all h-11 text-sm"
               />
             </div>
           </div>
@@ -169,9 +169,9 @@ export default function Subscribers() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Sol Panel: Mail Gönderimi */}
           <div className="lg:col-span-1 space-y-4 sm:space-y-6">
-            <div className="bg-white p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-sm border border-slate-200">
+            <div className="bg-white p-4 sm:p-6  shadow-sm border border-slate-200">
               <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-50  flex items-center justify-center">
                   <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-[#001e59]" />
                 </div>
                 <h2 className="font-bold text-sm sm:text-base text-slate-800 tracking-tight">
@@ -188,7 +188,7 @@ export default function Subscribers() {
                     placeholder="Örn: Haftalık Teknoloji Özeti"
                     value={mailSubject}
                     onChange={(e) => setMailSubject(e.target.value)}
-                    className="bg-slate-50 border-none rounded-xl h-10 sm:h-11 text-sm"
+                    className="bg-slate-50 border-none  h-10 sm:h-11 text-sm"
                   />
                 </div>
 
@@ -200,12 +200,12 @@ export default function Subscribers() {
                     placeholder="Abonelerinize iletmek istediğiniz mesaj..."
                     value={mailMessage}
                     onChange={(e) => setMailMessage(e.target.value)}
-                    className="bg-slate-50 border-none rounded-xl min-h-[140px] sm:min-h-[180px] py-3 resize-none text-sm"
+                    className="bg-slate-50 border-none  min-h-[140px] sm:min-h-[180px] py-3 resize-none text-sm"
                   />
                 </div>
 
                 <div
-                  className={`p-3 rounded-xl border flex items-center gap-2 sm:gap-3 transition-colors ${
+                  className={`p-3  border flex items-center gap-2 sm:gap-3 transition-colors ${
                     selectedIds.length > 0
                       ? "bg-amber-50 border-amber-100"
                       : "bg-blue-50 border-blue-100"
@@ -234,7 +234,7 @@ export default function Subscribers() {
                 <Button
                   onClick={handleSendMail}
                   disabled={sending}
-                  className="w-full bg-[#001e59] hover:bg-[#003080] text-white rounded-xl h-11 sm:h-12 font-semibold shadow-lg shadow-blue-900/10 transition-all flex items-center gap-2 text-sm"
+                  className="w-full bg-[#001e59] hover:bg-[#003080] text-white  h-11 sm:h-12 font-semibold shadow-lg shadow-blue-900/10 transition-all flex items-center gap-2 text-sm"
                 >
                   {sending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -272,7 +272,7 @@ export default function Subscribers() {
                   variant="destructive"
                   size="sm"
                   onClick={handleDeleteSelected}
-                  className="h-7 sm:h-8 rounded-lg text-[10px] sm:text-xs gap-1.5 sm:gap-2 px-2.5 sm:px-3 animate-in fade-in slide-in-from-right-2"
+                  className="h-7 sm:h-8  text-[10px] sm:text-xs gap-1.5 sm:gap-2 px-2.5 sm:px-3 animate-in fade-in slide-in-from-right-2"
                 >
                   <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   Seçilenleri Sil ({selectedIds.length})
@@ -281,7 +281,7 @@ export default function Subscribers() {
             </div>
 
             {loading ? (
-              <div className="h-48 sm:h-64 flex items-center justify-center bg-white rounded-xl sm:rounded-2xl border border-slate-200">
+              <div className="h-48 sm:h-64 flex items-center justify-center bg-white  border border-slate-200">
                 <Loader2 className="w-8 h-8 animate-spin text-slate-200" />
               </div>
             ) : (
@@ -289,7 +289,7 @@ export default function Subscribers() {
                 {paginatedUsers.map((user) => (
                   <div
                     key={user.id}
-                    className={`group p-3 sm:p-4 bg-white rounded-xl sm:rounded-2xl border transition-all flex items-center justify-between hover:shadow-md hover:border-blue-200 ${
+                    className={`group p-3 sm:p-4 bg-white border transition-all flex items-center justify-between hover:shadow-md hover:border-blue-200 ${
                       selectedIds.includes(user.id)
                         ? "border-blue-500 bg-blue-50/30"
                         : "border-slate-100"
@@ -321,7 +321,7 @@ export default function Subscribers() {
                       variant="ghost"
                       size="icon"
                       onClick={() => handleDelete(user.id)}
-                      className="opacity-0 group-hover:opacity-100 h-7 w-7 sm:h-8 sm:w-8 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all flex-shrink-0"
+                      className="opacity-0 group-hover:opacity-100 h-7 w-7 sm:h-8 sm:w-8 text-slate-300 hover:text-red-500 hover:bg-red-50  transition-all flex-shrink-0"
                     >
                       <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </Button>
@@ -331,7 +331,7 @@ export default function Subscribers() {
             )}
 
             {!loading && filteredUsers.length === 0 && (
-              <div className="h-48 sm:h-64 flex flex-col items-center justify-center bg-white rounded-xl sm:rounded-2xl border border-dashed border-slate-300">
+              <div className="h-48 sm:h-64 flex flex-col items-center justify-center bg-white  border border-dashed border-slate-300">
                 <Users className="w-10 h-10 sm:w-12 sm:h-12 text-slate-200 mb-2" />
                 <p className="text-slate-400 text-xs sm:text-sm italic">
                   Aradığınız kriterde abone bulunamadı.

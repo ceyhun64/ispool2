@@ -92,7 +92,7 @@ export default function OrderDetailDialog({
 
       <div className="p-6 space-y-6">
         {/* Ödeme ve Kupon Bilgileri */}
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100 shadow-sm">
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50  p-5 border border-blue-100 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-800">
               <Wallet className="w-5 h-5 text-indigo-600" /> Ödeme Özeti
@@ -140,7 +140,7 @@ export default function OrderDetailDialog({
             </div>
 
             {/* Sağ Kolon: Teknik Detaylar */}
-            <div className="bg-white/50 rounded-lg p-3 space-y-3 text-xs border border-blue-100/50">
+            <div className="bg-white/50  p-3 space-y-3 text-xs border border-blue-100/50">
               <div>
                 <span className="text-gray-500 block mb-0.5">
                   İşlem (Transaction) ID:
@@ -180,12 +180,12 @@ export default function OrderDetailDialog({
         </div>
 
         {/* Sipariş Ürünleri */}
-        <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+        <div className="bg-gray-50  p-5 border border-gray-200">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-800">
               <Package className="w-5 h-5 text-gray-600" /> Sipariş İçeriği
             </h3>
-            <div className="text-xs font-medium text-gray-500 bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">
+            <div className="text-xs font-medium text-gray-500 bg-white px-3 py-1  border border-gray-200 shadow-sm">
               {getTotalQuantity()} Parça Ürün
             </div>
           </div>
@@ -193,12 +193,12 @@ export default function OrderDetailDialog({
             {order.items.map((item, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-4 p-3 bg-white border border-gray-100 rounded-lg hover:border-indigo-200 transition-colors"
+                className="flex items-center gap-4 p-3 bg-white border border-gray-100  hover:border-indigo-200 transition-colors"
               >
                 <img
                   src={item.product.mainImage}
                   alt={item.product.title}
-                  className="w-16 h-16 object-cover rounded-md border border-gray-100 flex-shrink-0"
+                  className="w-16 h-16 object-cover border border-gray-100 flex-shrink-0"
                 />
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-gray-800 text-sm truncate">
@@ -229,7 +229,7 @@ export default function OrderDetailDialog({
         {/* Adres Bilgileri */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Kargo Adresi */}
-          <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-5 border border-emerald-100">
+          <div className="bg-gradient-to-br from-emerald-50 to-teal-50  p-5 border border-emerald-100">
             <h3 className="text-md font-bold flex items-center gap-2 text-emerald-800 mb-3">
               <Truck className="w-5 h-5" /> Teslimat Bilgileri
             </h3>
@@ -255,7 +255,7 @@ export default function OrderDetailDialog({
           </div>
 
           {/* Fatura Adresi */}
-          <div className="bg-gradient-to-br from-slate-50 to-gray-100 rounded-xl p-5 border border-gray-200">
+          <div className="bg-gradient-to-br from-slate-50 to-gray-100  p-5 border border-gray-200">
             <h3 className="text-md font-bold flex items-center gap-2 text-gray-700 mb-3">
               <Receipt className="w-5 h-5" /> Fatura Bilgileri
             </h3>
@@ -281,7 +281,7 @@ export default function OrderDetailDialog({
       <div className="flex justify-end p-6 bg-gray-50 border-t border-gray-100">
         <Button
           onClick={() => setSelectedOrder(null)}
-          className="bg-gray-800 hover:bg-black text-white px-8 rounded-lg transition-colors"
+          className="bg-gray-800 hover:bg-black text-white px-8  transition-colors"
         >
           Kapat
         </Button>

@@ -14,6 +14,7 @@ import {
   Bell,
   ChevronRight,
   Ticket,
+  ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -37,87 +38,97 @@ export default function AdminSidebar(): React.ReactElement {
   const menuItems: MenuItem[] = [
     {
       id: "dashboard",
-      label: "Genel Bakış",
+      label: "GENEL BAKIŞ",
       icon: LayoutDashboard,
       href: "/admin/dashboard",
     },
     {
       id: "products",
-      label: "Ürün Yönetimi",
+      label: "ÜRÜN YÖNETİMİ",
       icon: Package,
       href: "/admin/products",
     },
     {
       id: "orders",
-      label: "Siparişler",
+      label: "SİPARİŞ KAYITLARI",
       icon: ShoppingCart,
       href: "/admin/orders",
     },
-    { id: "users", label: "Müşteriler", icon: Users, href: "/admin/users" },
+    {
+      id: "users",
+      label: "MÜŞTERİ PORTFÖYÜ",
+      icon: Users,
+      href: "/admin/users",
+    },
     {
       id: "blogs",
-      label: "Blog Yazıları",
+      label: "İÇERİK YÖNETİMİ",
       icon: FileText,
       href: "/admin/blogs",
     },
     {
       id: "subscribers",
-      label: "Aboneler",
+      label: "BÜLTEN ABONELERİ",
       icon: Bell,
       href: "/admin/subscribers",
     },
     {
       id: "coupon",
-      label: "Kuponlar",
+      label: "PROMOSYON KODLARI",
       icon: Ticket,
       href: "/admin/coupon",
     },
     {
       id: "settings",
-      label: "Sistem Ayarları",
+      label: "SİSTEM AYARLARI",
       icon: Settings,
       href: "/admin/banner",
     },
   ];
 
   const activeId = menuItems.find(
-    (item) => pathname === item.href || pathname.startsWith(item.href + "/")
+    (item) => pathname === item.href || pathname.startsWith(item.href + "/"),
   )?.id;
 
   const handleLogout = async () => {
     try {
       const res = await fetch("/api/auth/logout", { method: "POST" });
       if (!res.ok) throw new Error();
-      toast.success("Güvenli çıkış yapıldı", {
-        description: "Yönetici oturumunuz sonlandırıldı.",
+      toast.success("Oturum Kapatıldı", {
+        description: "Sistem güvenli bir şekilde kapatıldı.",
       });
       router.push("/admin");
     } catch (error) {
-      toast.error("Çıkış yapılırken bir hata oluştu.");
+      toast.error("Çıkış işlemi başarısız.");
     }
   };
 
   const NavContent = (isMobile = false) => (
-    <div className="flex flex-col h-full bg-white px-4 sm:px-5 py-6 sm:py-8">
-      {/* Brand Logo */}
-      <div className="px-2 sm:px-3 mb-8 sm:mb-12">
-        <Link
-          href="/admin/dashboard"
-          className="inline-block hover:opacity-80 transition-opacity"
-        >
-          <Image
-            src="/logo/logoblack.webp"
-            alt="İşPool Logo"
-            width={120}
-            height={30}
-            priority
-            className="h-auto w-auto sm:w-[140px]"
-          />
-        </Link>
+    <div className="flex flex-col h-full bg-slate-900 text-slate-300 py-8 px-0 border-r border-slate-800">
+      {/* Brand Logo - Keskin Kenarlı Konteynır */}
+      <div className="px-6 mb-12 flex items-center gap-3">
+        <Image
+          src="/logo/logois2.png"
+          alt="Logo"
+          width={40}
+          height={40}
+          className="flex-shrink-0"
+        />
+        <div className="flex flex-col">
+          <span className="text-xl font-black tracking-tighter text-white leading-none">
+            İŞPOOL
+          </span>
+          <span className="text-[10px] font-bold text-amber-500 tracking-[0.2em]">
+            CONTROL
+          </span>
+        </div>
       </div>
 
       {/* Navigation Menu */}
-      <nav className="flex-1 space-y-1 relative">
+      <nav className="flex-1 px-0 space-y-0.5">
+        <div className="px-6 mb-4 text-[10px] font-black text-slate-500 tracking-[.25em] uppercase">
+          Ana Menü
+        </div>
         {menuItems.map(({ id, label, icon: Icon, href }) => {
           const isActive = activeId === id;
           return (
@@ -125,79 +136,57 @@ export default function AdminSidebar(): React.ReactElement {
               key={id}
               href={href}
               onClick={() => isMobile && setIsOpen(false)}
-              className={`relative flex items-center justify-between group px-3 sm:px-4 py-3 sm:py-2.5 rounded-xl sm:rounded-2xl transition-all duration-300 ${
+              className={`relative flex items-center justify-between group px-6 py-3.5 transition-all duration-200 border-l-4 ${
                 isActive
-                  ? "text-slate-950"
-                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                  ? "bg-slate-800/50 border-amber-500 text-white"
+                  : "border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-100"
               }`}
             >
-              {/* Active Background Animation */}
-              {isActive && (
-                <motion.div
-                  layoutId="activeNav"
-                  className="absolute inset-0 bg-slate-100/80 rounded-xl sm:rounded-2xl z-0"
-                  initial={false}
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
-              )}
-
-              <div className="flex items-center gap-3 sm:gap-3.5 z-10 min-w-0">
+              <div className="flex items-center gap-4 z-10 min-w-0">
                 <Icon
                   size={18}
-                  className={`flex-shrink-0 sm:w-5 sm:h-5 ${
-                    isActive
-                      ? "text-slate-950"
-                      : "text-slate-400 group-hover:text-slate-600 transition-colors"
-                  }`}
-                  strokeWidth={isActive ? 2.5 : 2}
+                  className={`flex-shrink-0 ${isActive ? "text-amber-500" : "text-slate-500 group-hover:text-slate-300"}`}
                 />
                 <span
-                  className={`text-xs sm:text-[13.5px] tracking-tight truncate ${
-                    isActive ? "font-bold" : "font-medium"
-                  }`}
+                  className={`text-[11px] tracking-widest font-bold uppercase`}
                 >
                   {label}
                 </span>
               </div>
 
               {isActive && (
-                <motion.div
-                  initial={{ opacity: 0, x: -5 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="z-10 flex-shrink-0"
-                >
-                  <ChevronRight size={14} className="text-slate-400" />
-                </motion.div>
+                <div className="flex items-center gap-1">
+                  <div className="h-1 w-1 bg-amber-500 rounded-full animate-pulse" />
+                  <ChevronRight size={14} className="text-amber-500" />
+                </div>
               )}
             </Link>
           );
         })}
       </nav>
 
-      {/* Profile & Logout Section */}
-      <div className="mt-auto pt-4 sm:pt-6 border-t border-slate-100">
-        <div className="flex items-center gap-2 sm:gap-3 px-2 sm:px-3 mb-4 sm:mb-6">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+      {/* Footer / Profile Section */}
+      <div className="mt-auto px-4 pt-6 bg-slate-950/50">
+        <div className="flex items-center gap-3 px-3 py-5 border-t border-slate-800">
+          <div className="w-10 h-10 rounded-none bg-slate-800 border border-slate-700 flex items-center justify-center text-amber-500 font-black text-xs">
             AD
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-bold text-slate-900 leading-none truncate">
-              Yönetici
+            <span className="text-xs font-black text-white uppercase tracking-tight truncate">
+              Yönetici Paneli
             </span>
-            <span className="text-[10px] sm:text-[11px] text-slate-400 mt-1 font-medium truncate">
-              İşPool Admin Panel
+            <span className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-tighter truncate">
+              V2.0.4.88
             </span>
           </div>
         </div>
 
         <button
           onClick={handleLogout}
-          className="group flex items-center gap-2 sm:gap-3 w-full px-3 sm:px-4 py-3 sm:py-3.5 text-xs sm:text-sm font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50/50 rounded-xl sm:rounded-2xl transition-all duration-200"
+          className="group flex items-center justify-center gap-3 w-full bg-red-950/20 hover:bg-red-600 px-6 py-4 text-[11px] font-black text-red-500 hover:text-white transition-all duration-300 border-t border-red-900/30"
         >
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-red-50 transition-colors flex-shrink-0">
-            <LogOut size={14} className="sm:w-4 sm:h-4" />
-          </div>
-          <span className="truncate">Oturumu Kapat</span>
+          <LogOut size={16} />
+          <span className="uppercase tracking-widest">Sistemi Kapat</span>
         </button>
       </div>
     </div>
@@ -206,26 +195,27 @@ export default function AdminSidebar(): React.ReactElement {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="fixed left-0 top-0 w-[240px] sm:w-[280px] h-screen bg-white border-r border-slate-100 hidden md:block z-50">
+      <aside className="fixed left-0 top-0 w-[240px] sm:w-[280px] h-screen bg-slate-900 hidden md:block z-50 shadow-2xl">
         {NavContent()}
       </aside>
 
       {/* Mobile Top Bar */}
-      <div className="md:hidden fixed top-0 left-0 w-full bg-white/70 backdrop-blur-xl border-b border-slate-100 px-4 sm:px-6 py-3 sm:py-4 z-40 flex justify-between items-center">
-        <Image
-          src="/logo/logoblack.webp"
-          alt="logo"
-          width={90}
-          height={24}
-          className="sm:w-[100px] sm:h-[26px]"
-        />
+      <div className="md:hidden fixed top-0 left-0 w-full bg-slate-900 border-b border-slate-800 px-5 py-4 z-40 flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <div className="bg-amber-500 p-1">
+            <ShieldCheck size={18} className="text-black" />
+          </div>
+          <span className="text-sm font-black text-white tracking-widest uppercase">
+            İŞPOOL
+          </span>
+        </div>
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setIsOpen(true)}
-          className="rounded-xl bg-slate-50 hover:bg-slate-100 h-10 w-10"
+          className="rounded-none bg-slate-800 hover:bg-slate-700 h-10 w-10 text-white"
         >
-          <Menu size={20} className="text-slate-900" />
+          <Menu size={22} />
         </Button>
       </div>
 
@@ -238,23 +228,23 @@ export default function AdminSidebar(): React.ReactElement {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-slate-950/30 backdrop-blur-sm z-[60] md:hidden"
+              className="fixed inset-0 bg-black/80 backdrop-blur-md z-[60] md:hidden"
             />
             <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 220 }}
-              className="fixed left-0 top-0 w-[280px] sm:w-[300px] h-screen bg-white z-[70] md:hidden shadow-2xl border-r border-slate-100"
+              transition={{ type: "tween", duration: 0.3 }}
+              className="fixed left-0 top-0 w-[280px] h-screen bg-slate-900 z-[70] md:hidden border-r border-slate-800"
             >
-              <div className="absolute top-6 sm:top-8 right-4 sm:right-6">
+              <div className="absolute top-6 right-4">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-full hover:bg-slate-100 h-9 w-9"
+                  className="rounded-none hover:bg-slate-800 h-10 w-10 text-slate-400"
                   onClick={() => setIsOpen(false)}
                 >
-                  <X size={18} className="text-slate-500" />
+                  <X size={20} />
                 </Button>
               </div>
               {NavContent(true)}

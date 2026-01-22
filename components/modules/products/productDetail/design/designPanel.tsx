@@ -13,7 +13,12 @@ import { toPng } from "html-to-image";
 export default function DesignPanel({
   productImage,
   onClose,
-}: DesignPanelProps) {
+  onSaveDesign,
+  onDirectUpload,
+}: DesignPanelProps & {
+  onSaveDesign?: (imageUrl: string) => void;
+  onDirectUpload?: () => void;
+}) {
   const [layers, setLayers] = useState<LogoLayer[]>([]);
   const [activeLayerId, setActiveLayerId] = useState<string | null>(null);
   const [history, setHistory] = useState<LogoLayer[][]>([]);
@@ -157,7 +162,6 @@ export default function DesignPanel({
     toast.loading("Arka plan kaldırılıyor...");
 
     try {
-      // Blob URL'yi base64'e çevir
       let imageBase64 = layer.image;
 
       if (layer.image.startsWith("blob:")) {
@@ -201,13 +205,11 @@ export default function DesignPanel({
     if (!designArea) return;
 
     const currentActiveId = activeLayerId;
-    setActiveLayerId(null); // Seçili çerçeveyi (ring) kaldırmak için şart
+    setActiveLayerId(null);
 
     toast.loading("Görsel hazırlanıyor...");
 
-    // Export işlemi için filtre fonksiyonu
     const filter = (node: HTMLElement) => {
-      // Dışlanacak sınıflar
       const exclusionClasses = [
         "react-resizable-handle",
         "export-hide-guides",
@@ -215,7 +217,6 @@ export default function DesignPanel({
         "selection-ring",
       ];
 
-      // Eğer node bir elementse class'larını kontrol et
       if (node.classList) {
         return !exclusionClasses.some((cls) => node.classList.contains(cls));
       }
@@ -223,14 +224,13 @@ export default function DesignPanel({
     };
 
     try {
-      // DOM'un render olması için çok kısa bir bekleme
       await new Promise((resolve) => setTimeout(resolve, 50));
 
       const dataUrl = await toPng(designArea, {
         quality: 1,
-        pixelRatio: 2, // Daha yüksek kalite için
+        pixelRatio: 2,
         filter: filter,
-        backgroundColor: "#ffffff", // Arka planın şeffaf değil beyaz olmasını garanti eder
+        backgroundColor: "#ffffff",
       });
 
       const link = document.createElement("a");
@@ -245,7 +245,71 @@ export default function DesignPanel({
       toast.dismiss();
       toast.error("Görsel oluşturulurken bir hata oluştu.");
     } finally {
-      setActiveLayerId(currentActiveId); // Kullanıcıya seçimi geri göster
+      setActiveLayerId(currentActiveId);
+    }
+  };
+
+  const handleSaveAndClose = async () => {
+    // Logo eklenmediyse direkt dosya yükleme işlevini tetikle
+    if (layers.length === 0) {
+      if (onDirectUpload) {
+        onDirectUpload();
+      }
+      onClose();
+      return;
+    }
+
+    const designArea = document.getElementById("design-area");
+    if (!designArea) {
+      onClose();
+      return;
+    }
+
+    const currentActiveId = activeLayerId;
+    setActiveLayerId(null);
+
+    toast.loading("Tasarım kaydediliyor...");
+
+    const filter = (node: HTMLElement) => {
+      const exclusionClasses = [
+        "react-resizable-handle",
+        "export-hide-guides",
+        "export-hide-handles",
+        "selection-ring",
+      ];
+
+      if (node.classList) {
+        return !exclusionClasses.some((cls) => node.classList.contains(cls));
+      }
+      return true;
+    };
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const dataUrl = await toPng(designArea, {
+        quality: 1,
+        pixelRatio: 2,
+        filter: filter,
+        backgroundColor: "#ffffff",
+      });
+
+      toast.dismiss();
+      toast.success("Tasarımınız başarıyla kaydedildi! 🎨");
+
+      // Tasarımı parent component'e gönder
+      if (onSaveDesign) {
+        onSaveDesign(dataUrl);
+      }
+
+      // Kısa bir animasyon için bekle
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      onClose();
+    } catch (error) {
+      console.error("Save error:", error);
+      toast.dismiss();
+      toast.error("Tasarım kaydedilemedi.");
+      setActiveLayerId(currentActiveId);
     }
   };
 
@@ -265,7 +329,7 @@ export default function DesignPanel({
           onZoomChange={setZoom}
           onGridToggle={() => setShowGrid(!showGrid)}
           onExport={handleExport}
-          onClose={onClose}
+          onClose={handleSaveAndClose}
         />
 
         <div className="flex-1 flex overflow-hidden">
@@ -280,7 +344,6 @@ export default function DesignPanel({
             onLayerDelete={deleteLayer}
             onLayerMove={moveLayer}
           />
-
           {/* Canvas */}
           <Canvas
             productImage={productImage}

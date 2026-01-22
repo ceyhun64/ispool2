@@ -62,6 +62,14 @@ const CartDropdown = forwardRef(
     const [isOpen, setIsOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+    // Cart Sheet durumunu Navbar'a bildir
+    useEffect(() => {
+      const event = new CustomEvent('cartSheetStateChange', {
+        detail: { isOpen }
+      });
+      window.dispatchEvent(event);
+    }, [isOpen]);
+
     const checkLogin = useCallback(async (): Promise<boolean> => {
       try {
         const res = await fetch("/api/account/check", {
@@ -213,7 +221,7 @@ const CartDropdown = forwardRef(
       (acc, item) => acc + item.product.price * item.quantity,
       0,
     );
-    const taxAmount = subtotal * 0.1; // %10 KDV
+    const taxAmount = subtotal * 0.1;
     const total = subtotal + taxAmount;
 
     return (
@@ -337,7 +345,6 @@ const CartDropdown = forwardRef(
                     })}
                   </span>
                 </div>
-                {/* KDV Bilgisi */}
                 <div className="flex justify-between text-[11px] font-bold text-slate-400 uppercase tracking-widest">
                   <span>KDV (%10)</span>
                   <span className="text-slate-900 font-mono">

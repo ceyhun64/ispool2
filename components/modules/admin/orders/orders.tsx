@@ -251,7 +251,7 @@ export default function Orders() {
         {/* Header */}
         <header className="mb-8 sm:mb-10">
           <div className="flex items-center gap-2 mb-1">
-            <div className="h-1 sm:h-1.5 w-5 sm:w-6 bg-indigo-600 rounded-full" />
+            <div className="h-1 sm:h-1.5 w-5 sm:w-6 bg-indigo-600 " />
             <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-indigo-600/80">
               Yönetici Paneli
             </span>
@@ -279,7 +279,7 @@ export default function Orders() {
         </div>
 
         {/* Desktop Table */}
-        <div className="hidden md:block bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="hidden md:block bg-white  border border-slate-200 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left border-collapse min-w-[768px]">
               <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-medium text-xs uppercase tracking-wider">
@@ -321,7 +321,7 @@ export default function Orders() {
                             {order.items.slice(0, 3).map((item, idx) => (
                               <div
                                 key={idx}
-                                className="inline-block h-8 w-8 rounded-full ring-2 ring-white overflow-hidden bg-slate-100 border border-slate-200"
+                                className="inline-block h-8 w-8  ring-2 ring-white overflow-hidden bg-slate-100 border border-slate-200"
                               >
                                 <img
                                   src={item.product.mainImage}
@@ -380,7 +380,7 @@ export default function Orders() {
             return (
               <div
                 key={order.id}
-                className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200"
+                className="bg-white  p-4 shadow-sm border border-slate-200"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 min-w-0">
@@ -463,7 +463,7 @@ export default function Orders() {
           open={isUpdateDialogOpen}
           onOpenChange={setIsUpdateDialogOpen}
         >
-          <AlertDialogContent className="bg-white rounded-2xl border-none shadow-2xl">
+          <AlertDialogContent className="bg-white  border-none shadow-2xl">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-xl font-bold text-slate-900">
                 Durumu Güncelle
@@ -481,12 +481,12 @@ export default function Orders() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className="gap-2">
-              <AlertDialogCancel className="rounded-xl border-slate-200 font-semibold h-11">
+              <AlertDialogCancel className=" border-slate-200 font-semibold h-11">
                 Vazgeç
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={confirmUpdateStatus}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold h-11"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white  font-semibold h-11"
               >
                 Evet, Güncelle
               </AlertDialogAction>

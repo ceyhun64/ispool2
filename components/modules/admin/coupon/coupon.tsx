@@ -65,7 +65,7 @@ export default function CouponAdmin() {
         <header className="flex flex-col gap-3 sm:gap-4 mb-8 sm:mb-12">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="h-1 w-6 sm:w-8 bg-indigo-600 rounded-full" />
+              <span className="h-1 w-6 sm:w-8 bg-indigo-600 " />
               <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-indigo-600">
                 Yönetim Paneli
               </span>
@@ -85,7 +85,7 @@ export default function CouponAdmin() {
             onSubmit={handleSubmit}
             className="lg:col-span-2 space-y-4 sm:space-y-6"
           >
-            <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-white  border border-slate-200 shadow-sm overflow-hidden">
               <div className="p-4 sm:p-6 border-b border-slate-50 bg-slate-50/50">
                 <h3 className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
                   <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-500" />{" "}
@@ -109,7 +109,7 @@ export default function CouponAdmin() {
                           code: e.target.value.toUpperCase(),
                         })
                       }
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all uppercase font-mono font-bold"
+                      className="w-full bg-slate-50 border border-slate-200  px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all uppercase font-mono font-bold"
                       placeholder="Örn: YAZ20"
                     />
                   </div>
@@ -120,13 +120,13 @@ export default function CouponAdmin() {
                   <label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-1">
                     İndirim Modeli
                   </label>
-                  <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl">
+                  <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 ">
                     <button
                       type="button"
                       onClick={() =>
                         setFormData({ ...formData, type: "PERCENTAGE" })
                       }
-                      className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-all ${
+                      className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2  text-[10px] sm:text-xs font-medium transition-all ${
                         formData.type === "PERCENTAGE"
                           ? "bg-white shadow-sm text-indigo-600"
                           : "text-slate-500 hover:text-slate-700"
@@ -141,7 +141,7 @@ export default function CouponAdmin() {
                       onClick={() =>
                         setFormData({ ...formData, type: "FIXED" })
                       }
-                      className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-all ${
+                      className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2  text-[10px] sm:text-xs font-medium transition-all ${
                         formData.type === "FIXED"
                           ? "bg-white shadow-sm text-indigo-600"
                           : "text-slate-500 hover:text-slate-700"
@@ -170,7 +170,7 @@ export default function CouponAdmin() {
                       onChange={(e) =>
                         setFormData({ ...formData, value: e.target.value })
                       }
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                      className="w-full bg-slate-50 border border-slate-200  px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
                       placeholder="0.00"
                     />
                   </div>
@@ -187,7 +187,7 @@ export default function CouponAdmin() {
                     onChange={(e) =>
                       setFormData({ ...formData, minAmount: e.target.value })
                     }
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                    className="w-full bg-slate-50 border border-slate-200  px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
                     placeholder="Örn: 500 TL"
                   />
                 </div>
@@ -195,7 +195,7 @@ export default function CouponAdmin() {
             </div>
 
             {/* Kısıtlamalar Bölümü */}
-            <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-white  border border-slate-200 shadow-sm overflow-hidden">
               <div className="p-4 sm:p-6 border-b border-slate-50 bg-slate-50/50">
                 <h3 className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
                   <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500" />{" "}
@@ -213,7 +213,7 @@ export default function CouponAdmin() {
                     onChange={(e) =>
                       setFormData({ ...formData, usageLimit: e.target.value })
                     }
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                    className="w-full bg-slate-50 border border-slate-200  px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
                     placeholder="Sınırsız için boş bırakın"
                   />
                 </div>
@@ -227,7 +227,7 @@ export default function CouponAdmin() {
                     onChange={(e) =>
                       setFormData({ ...formData, expiryDate: e.target.value })
                     }
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                    className="w-full bg-slate-50 border border-slate-200  px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
                   />
                 </div>
               </div>
@@ -235,7 +235,7 @@ export default function CouponAdmin() {
 
             <button
               disabled={loading}
-              className="group w-full bg-slate-900 text-white py-3 sm:py-4 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-semibold uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl shadow-slate-200 flex items-center justify-center gap-2 disabled:bg-slate-300"
+              className="group w-full bg-slate-900 text-white py-3 sm:py-4  text-xs sm:text-sm font-semibold uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl shadow-slate-200 flex items-center justify-center gap-2 disabled:bg-slate-300"
             >
               {loading ? "Sistem Güncelleniyor..." : "Kuponu Aktif Et"}
             </button>
@@ -246,12 +246,12 @@ export default function CouponAdmin() {
             <h3 className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-400">
               Canlı Önizleme
             </h3>
-            <div className="relative bg-gradient-to-br from-indigo-600 to-indigo-800 p-5 sm:p-6 rounded-2xl sm:rounded-3xl shadow-2xl shadow-indigo-200 overflow-hidden text-white group">
+            <div className="relative bg-gradient-to-br from-indigo-600 to-indigo-800 p-5 sm:p-6  shadow-2xl shadow-indigo-200 overflow-hidden text-white group">
               {/* Estetik Arkaplan Halkası */}
-              <div className="absolute -right-8 -top-8 w-20 h-20 sm:w-24 sm:h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+              <div className="absolute -right-8 -top-8 w-20 h-20 sm:w-24 sm:h-24 bg-white/10  blur-2xl group-hover:scale-150 transition-transform duration-700" />
 
               <div className="relative">
-                <div className="bg-white/20 w-fit px-2.5 sm:px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-bold tracking-tighter mb-3 sm:mb-4">
+                <div className="bg-white/20 w-fit px-2.5 sm:px-3 py-1  text-[9px] sm:text-[10px] font-bold tracking-tighter mb-3 sm:mb-4">
                   {formData.type === "PERCENTAGE"
                     ? "YÜZDELİK İNDİRİM"
                     : "NAKİT İNDİRİM"}
@@ -269,7 +269,7 @@ export default function CouponAdmin() {
                     : "Alt limit bulunmuyor"}
                 </div>
 
-                <div className="flex items-center justify-between bg-black/20 p-3 rounded-xl sm:rounded-2xl border border-white/10">
+                <div className="flex items-center justify-between bg-black/20 p-3  border border-white/10">
                   <span className="font-mono text-xs sm:text-sm tracking-widest font-bold truncate">
                     {formData.code || "KOD_YAZ"}
                   </span>
@@ -283,7 +283,7 @@ export default function CouponAdmin() {
               </div>
             </div>
 
-            <div className="bg-orange-50 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-orange-100">
+            <div className="bg-orange-50 p-3 sm:p-4  border border-orange-100">
               <p className="text-[10px] sm:text-[11px] text-orange-700 leading-relaxed font-medium italic">
                 * Kupon oluşturulduğu anda mağazanızdaki tüm geçerli ürünlerde
                 aktif hale gelecektir.
