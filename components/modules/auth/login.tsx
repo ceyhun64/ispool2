@@ -43,7 +43,7 @@ export default function LoginForm() {
       }
 
       toast.success("Oturum başarıyla açıldı.");
-      router.push("/dashboard");
+      router.push("/");
     } catch (err) {
       toast.error("Sistemsel bir hata oluştu.");
     } finally {
