@@ -1,3 +1,4 @@
+// api/send-mail/route.ts
 import nodemailer from "nodemailer";
 
 interface EmailRequestBody {
@@ -41,7 +42,7 @@ export async function POST(req: Request): Promise<Response> {
   <div style="padding: 40px 10px;">
     <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
 
-      <div style="background-color: #000000; padding: 45px 40px; text-align: center;">
+      <div style="background-color: #FF7F00; padding: 45px 40px; text-align: center;">
         <img 
           src="cid:ispool-logo" 
           alt="İşPool" 
@@ -74,7 +75,7 @@ export async function POST(req: Request): Promise<Response> {
         
         <div style="font-size: 12px; color: #777777; line-height: 1.6;">
           <p style="margin: 0 0 5px 0;">📍 Merkez/Uşak</p>
-          <p style="margin: 0 0 5px 0;">📞 +90 546 225 56 59</p>
+          <p style="margin: 0 0 5px 0;">📞 +90 534 352 94 20</p>
           <p style="margin: 0;">✉️ <span style="color: #7B0323;">ispoolofficial@gmail.com</span></p>
         </div>
         
@@ -98,8 +99,8 @@ export async function POST(req: Request): Promise<Response> {
       html: htmlTemplate,
       attachments: [
         {
-          filename: "logobg.webp",
-          path: "./public/logo/logobg.webp",
+          filename: "logois2.png",
+          path: "./public/logo/logois2.png",
           cid: "ispool-logo",
           contentDisposition: "inline",
         },

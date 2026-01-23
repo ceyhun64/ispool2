@@ -1,106 +1,260 @@
-import React from "react";
+"use client";
+import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { Loader2, X, Send } from "lucide-react";
 
 const OzelUretimPremium = () => {
-  return (
-    <div className="bg-white min-h-screen font-sans text-slate-900 selection:bg-amber-100">
-      {/* --- HERO SECTION: Kurumsal Estetik --- */}
-      <section className="relative h-[85vh] flex items-center bg-slate-950 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img
-            src="https://images.unsplash.com/photo-1558444479-c8482432b79a?auto=format&fit=crop&q=80&w=2070"
-            alt="Master Tailor"
-            className="w-full h-full object-cover opacity-30 scale-105"
-          />
-          {/* Modern Overlay Gradients */}
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/40 to-transparent"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
-        </div>
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    company: "",
+    email: "",
+    phone: "",
+    details: "",
+  });
 
-        <div className="container mx-auto px-8 relative z-10">
-          <div className="max-w-4xl">
-            <div className="flex items-center gap-4 mb-8">
-              <span className="h-[1px] w-12 bg-amber-500"></span>
-              <span className="text-amber-500 font-bold tracking-[0.5em] uppercase text-[10px] md:text-xs block">
-                Kişiselleştirilmiş Endüstriyel Çözümler
-              </span>
+  // Modal açıkken kaydırmayı engelle
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [isModalOpen]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/send-mail", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipients: ["ispoolofficial@gmail.com"],
+          subject: `ÖZEL PROJE TALEBİ: ${formData.company}`,
+          message: `
+            PROJE DETAYLARI
+            --------------------------
+            Müşteri: ${formData.name}
+            Şirket: ${formData.company}
+            E-posta: ${formData.email}
+            Telefon: ${formData.phone}
+            
+            Talep ve Adet Bilgisi:
+            ${formData.details}
+            --------------------------
+            Bu talep Özel Üretim (Bespoke) sayfasından gönderilmiştir.
+          `,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Proje dosyanız başarıyla danışmanımıza iletildi.");
+        setFormData({
+          name: "",
+          company: "",
+          email: "",
+          phone: "",
+          details: "",
+        });
+        setIsModalOpen(false);
+      } else {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || "Gönderim sırasında bir hata oluştu.",
+        );
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Bağlantı hatası, lütfen tekrar deneyin.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="bg-white min-h-screen font-sans text-slate-950 selection:bg-slate-900 selection:text-white overflow-x-hidden">
+      {/* --- MODAL --- */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center p-2 sm:p-4">
+          <div
+            className="absolute inset-0 bg-slate-950/95 backdrop-blur-md"
+            onClick={() => !isLoading && setIsModalOpen(false)}
+          />
+          <div className="relative bg-white w-full max-w-2xl border-t-[8px] sm:border-t-[12px] border-amber-600 p-6 sm:p-10 md:p-16 shadow-2xl animate-in fade-in zoom-in duration-300 max-h-[95vh] overflow-y-auto">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-950 p-2 border border-slate-100"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="mb-8">
+              <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-tighter leading-none mb-3">
+                ÖZEL PROJE <br /> BAŞLATIN
+              </h3>
+              <div className="h-1 w-16 bg-amber-600"></div>
             </div>
-            <h1 className="text-6xl md:text-8xl font-extralight text-white leading-[0.95] mb-10 tracking-tighter">
-              Sınırları{" "}
-              <span className="font-black text-amber-500 italic drop-shadow-2xl">
-                Siz Çizin,
-              </span>{" "}
-              <br />
-              <span className="text-slate-200">Biz Gerçeğe Dönüştürelim</span>
-            </h1>
-            <div className="max-w-2xl border-l-2 border-amber-600 pl-8 py-2">
-              <p className="text-slate-300 text-lg md:text-xl font-light leading-relaxed">
-                Standartların ötesinde, firmanızın karakterini dikişlerine kadar
-                taşıyan premium iş kıyafetleri. Tasarımdan üretime her aşamada
-                mükemmeliyet.
-              </p>
-            </div>
+
+            <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input
+                  required
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  type="text"
+                  placeholder="AD SOYAD"
+                  className="w-full border-b-2 border-slate-200 p-3 focus:border-amber-600 outline-none transition-colors font-bold text-sm uppercase bg-slate-50"
+                />
+                <input
+                  required
+                  name="company"
+                  value={formData.company}
+                  onChange={handleInputChange}
+                  type="text"
+                  placeholder="ŞİRKET ÜNVANI"
+                  className="w-full border-b-2 border-slate-200 p-3 focus:border-amber-600 outline-none transition-colors font-bold text-sm uppercase bg-slate-50"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input
+                  required
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  type="email"
+                  placeholder="E-POSTA"
+                  className="w-full border-b-2 border-slate-200 p-3 focus:border-amber-600 outline-none transition-colors font-bold text-sm uppercase bg-slate-50"
+                />
+                <input
+                  required
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  type="tel"
+                  placeholder="İRTİBAT NO"
+                  className="w-full border-b-2 border-slate-200 p-3 focus:border-amber-600 outline-none transition-colors font-bold text-sm uppercase bg-slate-50"
+                />
+              </div>
+              <textarea
+                required
+                name="details"
+                value={formData.details}
+                onChange={handleInputChange}
+                placeholder="PROJE DETAYLARI VE ADET BİLGİSİ"
+                rows={4}
+                className="w-full border-b-2 border-slate-200 p-3 focus:border-amber-600 outline-none transition-colors font-bold text-sm uppercase bg-slate-50 resize-none"
+              />
+              <button
+                disabled={isLoading}
+                className="w-full bg-slate-950 text-white py-5 font-black uppercase text-xs tracking-[0.4em] hover:bg-amber-600 transition-all flex items-center justify-center gap-3 disabled:bg-slate-400"
+              >
+                {isLoading ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <>
+                    DANIŞMANA İLET <Send size={14} />
+                  </>
+                )}
+              </button>
+            </form>
           </div>
         </div>
+      )}
 
-        {/* Teknik Detay Dekoru */}
-        <div className="absolute bottom-10 right-10 hidden lg:block">
-          <div className="text-white/10 text-[180px] font-black leading-none select-none">
-            CRAFT
+      {/* --- HERO SECTION --- */}
+      <section className="relative min-h-[85vh] md:h-[90vh] flex items-center bg-slate-950 overflow-hidden py-20 md:py-0">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/special_production/banner.jpg"
+            className="w-full h-full object-cover opacity-20 contrast-150 scale-110"
+            alt="Zanaat"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent"></div>
+        </div>
+
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="max-w-6xl">
+            <div className="inline-flex items-center gap-4 mb-6 sm:mb-10">
+              <span className="w-8 sm:w-12 h-[2px] bg-amber-600"></span>
+              <span className="text-amber-600 font-black tracking-[0.4em] uppercase text-[10px] sm:text-[12px]">
+                Bespoke Industrial Craft
+              </span>
+            </div>
+            <h1 className="text-5xl sm:text-7xl md:text-[130px] font-black text-white leading-[0.9] mb-8 sm:mb-12 tracking-tighter uppercase italic">
+              ÖZEL <br />
+              <span
+                className="text-transparent"
+                style={{ WebkitTextStroke: "2px #f59e0b" } as any}
+              >
+                ÜRETİM
+              </span>
+            </h1>
+            <div className="flex flex-col md:flex-row gap-8 md:gap-16 items-start">
+              <p className="text-slate-400 text-lg sm:text-xl font-light leading-relaxed max-w-2xl border-l-4 border-amber-600 pl-6 sm:pl-8">
+                Standartların bittiği yerde vizyonunuz başlar. Markanızın
+                DNA'sını kumaşa işliyor, tamamen size özel teknik çözümler
+                üretiyoruz.
+              </p>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="w-full sm:w-auto bg-white text-slate-950 px-10 py-5 sm:px-12 sm:py-6 font-black uppercase text-xs tracking-widest hover:bg-amber-600 hover:text-white transition-all shadow-xl"
+              >
+                PROJE BAŞLAT
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* --- TASARIM SÜRECİ: Modern Galeri Yapısı --- */}
-      <section className="py-32 bg-slate-50 relative overflow-hidden">
-        <div className="container mx-auto px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
-            <div className="space-y-4">
-              <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 uppercase leading-none">
-                Kusursuz <br /> Üretim Döngüsü
-              </h2>
-              <div className="h-1.5 w-32 bg-amber-500"></div>
-            </div>
-            <p className="text-slate-400 font-bold text-sm tracking-[0.2em] uppercase">
-              Architecture of Quality
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+      {/* --- SÜREÇ --- */}
+      <section className="py-16 md:py-32 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 border-2 border-slate-950">
             {[
               {
-                title: "Kreatif Tasarım",
-                desc: "AR-GE ekibimizle vizyonunuzu dijital taslaklara döküyoruz.",
-                img: "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?auto=format&fit=crop&q=80&w=600",
+                title: "KREATİF ANALİZ",
+                desc: "Markanızın sahadaki fiziksel ihtiyaçlarını ve estetik kodlarını analiz ediyoruz.",
+                img: "/special_production/creative.jpg",
               },
               {
-                title: "Zanaatlı Numune",
-                desc: "Seri üretim öncesi kumaş ve kalıp kalitesini deneyimleyin.",
-                img: "https://images.unsplash.com/photo-1524234107056-1c1f48f64ab8?auto=format&fit=crop&q=80&w=600",
+                title: "MASTER NUMUNE",
+                desc: "Seri üretim öncesi, mükemmel prototipi atölyemizde hazırlıyoruz.",
+                img: "/special_production/master.jpg",
               },
               {
-                title: "Marka Entegrasyonu",
-                desc: "Logonuzu en ileri nakış ve baskı teknikleriyle işliyoruz.",
-                img: "https://images.unsplash.com/photo-1613913396648-560bb5ec8ec0?auto=format&fit=crop&q=80&w=600",
+                title: "TEKNİK ENTEGRASYON",
+                desc: "Logonuzu yüksek dayanımlı tekniklerle ürüne mühürlüyoruz.",
+                img: "/special_production/tech.jpg",
               },
             ].map((step, idx) => (
-              <div key={idx} className="group relative">
-                <div className="overflow-hidden aspect-[3/4] mb-8 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] relative">
+              <div
+                key={idx}
+                className="group border-b-2 md:border-b-0 md:border-r-2 last:border-0 border-slate-950 overflow-hidden"
+              >
+                <div className="h-[300px] sm:h-[400px] overflow-hidden">
                   <img
                     src={step.img}
-                    alt={step.title}
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-[1.5s] ease-out"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                   />
-                  <div className="absolute inset-0 bg-slate-900/40 group-hover:bg-transparent transition-all duration-700"></div>
-                  <div className="absolute top-6 left-6 w-12 h-12 border-t border-l border-white/50 group-hover:border-amber-500 transition-colors"></div>
                 </div>
-                <div className="relative">
-                  <span className="text-amber-500/10 font-black text-8xl absolute -top-12 -left-4 pointer-events-none">
-                    0{idx + 1}
+                <div className="p-8 sm:p-10 bg-white group-hover:bg-slate-950 group-hover:text-white transition-all">
+                  <span className="text-amber-600 font-black text-3xl sm:text-4xl mb-4 block italic">
+                    0{idx + 1}.
                   </span>
-                  <h3 className="text-2xl font-black mb-4 text-slate-900 uppercase tracking-tight relative z-10">
+                  <h3 className="text-xl sm:text-2xl font-black mb-4 uppercase tracking-tighter">
                     {step.title}
                   </h3>
-                  <p className="text-slate-500 text-sm leading-relaxed max-w-[280px] relative z-10 font-medium">
+                  <p className="text-slate-500 group-hover:text-slate-400 text-sm font-light uppercase">
                     {step.desc}
                   </p>
                 </div>
@@ -110,35 +264,28 @@ const OzelUretimPremium = () => {
         </div>
       </section>
 
-      {/* --- PREMİUM DETAYLAR: Minimalist Grid --- */}
-      <section className="py-32 bg-white">
-        <div className="container mx-auto px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1px bg-slate-100 border border-slate-100 shadow-2xl">
+      {/* --- TEKNİK ÖZELLİKLER --- */}
+      <section className="py-20 md:py-32 bg-slate-950 text-white overflow-hidden">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter italic mb-12 sm:mb-20">
+            FONKSİYONEL <span className="text-amber-600">ÜSTÜNLÜK</span>
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border border-white/10">
             {[
-              {
-                label: "Kumaş Seçimi",
-                icon: "🧵",
-                sub: "Teknolojik & Dayanıklı",
-              },
-              { label: "Kurumsal Kimlik", icon: "🏛️", sub: "Tam Marka Uyumu" },
-              { label: "Özel Etiket", icon: "🏷️", sub: "Prestijli Detaylar" },
-              {
-                label: "V.I.P Paketleme",
-                icon: "📦",
-                sub: "Kusursuz Teslimat",
-              },
+              { label: "ANTİSTATİK", sub: "ESD Koruma" },
+              { label: "ALEV ALMAZ", sub: "FR Sertifikalı" },
+              { label: "ASİT DİRENCİ", sub: "Kimyasal Bariyer" },
+              { label: "YÜKSEK GÖRÜNÜM", sub: "EN ISO 20471" },
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="p-16 bg-white hover:bg-slate-50 transition-all duration-500 text-center group"
+                className="p-10 sm:p-16 border border-white/5 hover:bg-amber-600 hover:text-slate-950 transition-all cursor-default group"
               >
-                <div className="text-5xl mb-8 group-hover:scale-110 transition-transform duration-500 grayscale group-hover:grayscale-0">
-                  {item.icon}
-                </div>
-                <h4 className="font-black text-slate-900 mb-2 uppercase tracking-tighter text-lg">
+                <div className="h-1 w-12 bg-amber-600 group-hover:bg-slate-950 mb-8" />
+                <h4 className="text-xl sm:text-2xl font-black uppercase mb-2">
                   {item.label}
                 </h4>
-                <p className="text-[10px] text-amber-600 font-black uppercase tracking-[0.2em]">
+                <p className="text-[10px] font-bold tracking-widest opacity-60 uppercase">
                   {item.sub}
                 </p>
               </div>
@@ -147,151 +294,46 @@ const OzelUretimPremium = () => {
         </div>
       </section>
 
-      {/* --- BİLGİLENDİRME PANELİ: Dark Mode Glassmorphism --- */}
-      <section className="py-32 bg-slate-950 text-white overflow-hidden relative">
-        {/* Subtle Background pattern */}
-        <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-
-        <div className="container mx-auto px-8 relative z-10">
-          <div className="max-w-6xl mx-auto">
-            <div className="mb-20 text-center">
-              <h3 className="text-3xl md:text-5xl font-extralight italic leading-tight text-slate-200">
-                "Her firma benzersizdir; <br />
-                <span className="text-amber-500 font-black not-italic uppercase tracking-tighter">
-                  kıyafetleri de öyle olmalı.
+      {/* --- İLETİŞİM --- */}
+      <section className="py-20 md:py-32 bg-slate-50 border-t border-slate-200">
+        <div className="container mx-auto px-6 text-center">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-5xl sm:text-6xl md:text-8xl font-black text-slate-950 tracking-tighter uppercase leading-[0.8] mb-12 sm:mb-16">
+              V.I.P <br /> ÇÖZÜM ORTAĞI
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 border-2 border-slate-950 shadow-2xl">
+              <a
+                href="tel:+902164727300"
+                className="bg-white p-10 sm:p-12 hover:bg-slate-950 hover:text-white transition-all group border-b-2 sm:border-b-0 sm:border-r-2 border-slate-950"
+              >
+                <span className="block text-[10px] font-black uppercase text-slate-400 group-hover:text-amber-600 mb-4">
+                  DİREKT TELEFON
                 </span>
-                "
-              </h3>
-            </div>
-
-            <div className="grid lg:grid-cols-2 gap-20 items-center">
-              <div className="space-y-8">
-                <p className="text-slate-400 text-base leading-relaxed font-light">
-                  Yeni modellerimizi geliştirirken değişen farklı ihtiyaçları
-                  dikkate alıyoruz. Ancak her firmanın kendine özgü çalışma
-                  yöntemleri ve kuralları, personel kıyafetlerinde farklı
-                  fonksiyonel özellikler gerektirir. Biz, markanızın profilini
-                  yansıtan o özel tasarımı hayata geçiriyoruz.
-                </p>
-                <div className="p-10 bg-white/5 border border-white/10 backdrop-blur-sm">
-                  <p className="text-slate-300 text-sm leading-relaxed italic border-l-2 border-amber-500 pl-6 uppercase tracking-wider font-light">
-                    Tasarım ve ARGE ekibimizle size en uygun ürünü bilgisayar
-                    ortamında geliştirerek tasarımdan üretime esnek ve hızlı bir
-                    sistemle hayata geçiriyoruz.
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4">
-                {[
-                  { title: "Antistatik", desc: "Statik yük koruması" },
-                  { title: "FR (Alev Almaz)", desc: "Isı ve alev direnci" },
-                  { title: "Yüksek Görünürlük", desc: "Maksimum farkındalık" },
-                ].map((feature, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between p-6 border border-white/5 bg-white/[0.02] hover:bg-amber-500 transition-all group"
-                  >
-                    <div>
-                      <span className="text-lg font-black uppercase tracking-tighter group-hover:text-slate-950">
-                        {feature.title}
-                      </span>
-                      <p className="text-[10px] text-slate-500 group-hover:text-slate-900 font-bold uppercase">
-                        {feature.desc}
-                      </p>
-                    </div>
-                    <div className="h-px w-12 bg-amber-500 group-hover:bg-slate-950"></div>
-                  </div>
-                ))}
-              </div>
+                <span className="text-xl sm:text-2xl font-black">
+                  +90 216 472 73 00
+                </span>
+              </a>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="bg-amber-600 p-10 sm:p-12 text-slate-950 hover:bg-slate-950 hover:text-white transition-all group"
+              >
+                <span className="block text-[10px] font-black uppercase text-slate-900/60 group-hover:text-amber-600 mb-4">
+                  TEKLİF FORMU
+                </span>
+                <span className="text-xl sm:text-2xl font-black uppercase tracking-tighter">
+                  PROJE BAŞLATIN
+                </span>
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- SÜREÇLER & FOOTER CTA: Bold & Minimalist --- */}
-      <section className="py-32 bg-white">
-        <div className="container mx-auto px-8">
-          <div className="max-w-7xl mx-auto bg-slate-900 p-1px border border-slate-800 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.4)]">
-            <div className="bg-slate-950 p-12 md:p-24 relative overflow-hidden">
-              <div className="relative z-10">
-                <div className="text-center mb-20">
-                  <h4 className="text-[10px] font-black tracking-[0.6em] text-amber-500 uppercase mb-4">
-                    Operasyonel Adımlar
-                  </h4>
-                  <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter">
-                    Yol Haritamız
-                  </h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-px bg-white/10 mb-24">
-                  {[
-                    "İhtiyaç Analizi & Dinleme",
-                    "Dijital Tasarım & Onay",
-                    "Master Numune Üretimi",
-                    "Yüksek Standartlı Seri Üretim",
-                  ].map((text, i) => (
-                    <div
-                      key={i}
-                      className="bg-slate-950 p-8 hover:bg-slate-900 transition-colors group"
-                    >
-                      <div className="w-10 h-10 border border-amber-500 text-amber-500 flex items-center justify-center text-sm font-black mb-6 group-hover:bg-amber-500 group-hover:text-slate-950 transition-all">
-                        0{i + 1}
-                      </div>
-                      <span className="text-sm font-bold text-slate-200 uppercase tracking-wide leading-tight block">
-                        {text}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="text-center space-y-12">
-                  <div className="space-y-4">
-                    <h4 className="text-4xl font-black text-white uppercase tracking-tighter">
-                      Özel Üretim Atölyemize Başvurun
-                    </h4>
-                    <p className="text-slate-400 text-base max-w-2xl mx-auto font-light leading-relaxed">
-                      İhtiyaçlarınıza yönelik en doğru çözümü uzman müşteri
-                      temsilcilerimizle belirleyin. Kurumsal kimliğinizi
-                      dikişlerle güçlendirelim.
-                    </p>
-                  </div>
-
-                  <div className="flex flex-col md:flex-row justify-center gap-1px bg-white/10 max-w-3xl mx-auto border border-white/10">
-                    <a
-                      href="tel:+902164727300"
-                      className="flex-1 bg-slate-950 hover:bg-slate-900 text-white px-12 py-8 transition-all group"
-                    >
-                      <span className="block text-[10px] text-amber-500 font-black uppercase tracking-widest mb-2">
-                        Hızlı Arama
-                      </span>
-                      <span className="text-xl font-black tracking-tighter">
-                        +90 216 472 73 00
-                      </span>
-                    </a>
-                    <a
-                      href="mailto:ismont@ismont.com.tr"
-                      className="flex-1 bg-amber-600 hover:bg-amber-500 text-slate-950 px-12 py-8 transition-all group"
-                    >
-                      <span className="block text-[10px] text-slate-900/60 font-black uppercase tracking-widest mb-2">
-                        E-Posta
-                      </span>
-                      <span className="text-xl font-black tracking-tighter">
-                        ismont@ismont.com.tr
-                      </span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              {/* Arka Plan Dekoratif Yazı */}
-              <div className="absolute top-0 right-0 p-12 opacity-[0.02] select-none pointer-events-none">
-                <div className="text-[250px] font-black leading-none">VIP</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <footer className="bg-slate-950 py-12 text-center">
+        <p className="text-slate-600 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.5em] px-6">
+          İŞPOOL ÖZEL TASARIM ATÖLYESİ // BESPOKE PRODUCTION 2026
+        </p>
+      </footer>
     </div>
   );
 };

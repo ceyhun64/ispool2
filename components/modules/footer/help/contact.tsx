@@ -1,71 +1,26 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import {
   Mail,
   Phone,
   MapPin,
   Send,
   ArrowUpRight,
-  ShieldCheck,
   Clock,
-  Briefcase,
+  Globe,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
-
-// --- YARDIMCI BİLEŞENLER ---
-
-const ContactInfoCard = ({
-  icon: Icon,
-  label,
-  value,
-  href,
-}: {
-  icon: any;
-  label: string;
-  value: string;
-  href?: string;
-}) => (
-  <div className="flex flex-col gap-1 py-6 border-b border-slate-200 last:border-0">
-    <div className="flex items-center gap-2 text-slate-500 mb-1">
-      <Icon size={14} className="text-slate-400" />
-      <span className="text-[11px] uppercase tracking-widest font-semibold italic">
-        {label}
-      </span>
-    </div>
-    {href ? (
-      <a
-        href={href}
-        className="text-base font-medium text-slate-800 hover:text-blue-700 transition-colors inline-flex items-center gap-1.5 group w-fit"
-      >
-        {value}
-        <ArrowUpRight
-          size={14}
-          className="opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0"
-        />
-      </a>
-    ) : (
-      <span className="text-base font-medium text-slate-800 leading-relaxed">
-        {value}
-      </span>
-    )}
-  </div>
-);
-
-// --- ANA BİLEŞEN ---
 
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: "",
-    phone: "",
     email: "",
     message: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,209 +29,236 @@ export default function Contact() {
     try {
       const response = await fetch("/api/send-mail", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          recipients: ["ispoolofficial@gmail.com"],
-          subject: `Kurumsal İletişim Formu: ${formData.name}`,
-          message: `Müşteri: ${formData.name}\nTel: ${formData.phone}\nE-posta: ${formData.email}\n\nMesaj: ${formData.message}`,
+          recipients: ["ispoolofficial@gmail.com"], // Mailin gideceği adres
+          subject: `Yeni İletişim Formu: ${formData.name}`,
+          message: `
+            Gönderen: ${formData.name}
+            E-Posta: ${formData.email}
+            
+            Mesaj:
+            ${formData.message}
+          `,
         }),
       });
 
+      const result = await response.json();
+
       if (response.ok) {
-        toast.success("Mesajınız başarıyla kurumsal sistemimize iletildi.");
-        setFormData({ name: "", phone: "", email: "", message: "" });
+        toast.success(
+          "Mesajınız başarıyla iletildi. En kısa sürede döneceğiz.",
+        );
+        setFormData({ name: "", email: "", message: "" }); // Formu sıfırla
       } else {
-        toast.error("Bir hata oluştu, lütfen tekrar deneyiniz.");
+        throw new Error(result.error || "Bir hata oluştu.");
       }
-    } catch (error) {
-      toast.error("Bağlantı hatası oluştu.");
+    } catch (error: any) {
+      toast.error(
+        error.message || "Mesaj gönderilemedi, lütfen tekrar deneyin.",
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-slate-900 selection:text-white">
-      <main className="max-w-6xl mx-auto px-6 py-20 md:py-32">
-        {/* ÜST BAŞLIK ALANI */}
-        <header className="max-w-3xl mb-24 border-l-4 border-slate-900 pl-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Briefcase size={16} className="text-slate-400" />
-            <span className="text-xs uppercase tracking-[0.3em] text-slate-500 font-bold">
-              Professional Solutions
-            </span>
+    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-orange-600 selection:text-white">
+      <main className="max-w-[1400px] mx-auto px-6 py-24 md:py-40">
+        {/* HEADER */}
+        <header className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-32">
+          <div className="lg:col-span-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <span className="text-[10px] tracking-[0.5em] text-orange-600 font-bold uppercase block">
+                // İletişim Kanalları
+              </span>
+              <h1 className="text-5xl md:text-7xl font-extralight tracking-tighter leading-[0.9]">
+                Sizin için <br />
+                <span className="font-bold">buradayız.</span>
+              </h1>
+            </motion.div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-light tracking-tight text-slate-900 leading-tight mb-6">
-            İş Dünyası İçin <br />
-            <span className="font-serif italic text-slate-600">
-              Yüksek Standartlı
-            </span>{" "}
-            Çözümler
-          </h1>
-          <p className="text-slate-500 text-lg max-w-xl font-light leading-relaxed">
-            Kurumsal kimliğinizi yansıtan premium iş elbiseleri ve güvenlik
-            ekipmanları projeleriniz için profesyonel ekibimizle iletişime
-            geçin.
-          </p>
+          <div className="lg:col-span-4 flex items-end">
+            <p className="text-slate-400 text-sm leading-relaxed max-w-[280px]">
+              Projeleriniz, talepleriniz veya teknik destek ihtiyaçlarınız için
+              küresel standartlarda kurumsal destek sağlıyoruz.
+            </p>
+          </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24">
-          {/* SOL: KURUMSAL BİLGİLER */}
-          <section className="lg:col-span-4 space-y-2">
-            <div className="pb-8 mb-8 border-b border-slate-100">
-              <h3 className="text-sm uppercase tracking-widest font-bold text-slate-900 mb-2">
-                Merkez Ofis & Atölye
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed uppercase tracking-tighter">
-                Resmi yazışmalar ve ziyaretleriniz için randevu alınız.
-              </p>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-24">
+          {/* INFO CARDS */}
+          <aside className="lg:col-span-4 space-y-16">
+            <div className="space-y-12">
+              <ContactItem
+                icon={<MapPin size={18} />}
+                title="Genel Merkez"
+                content="Fatih Mah. Kazım Kara Bekir Cad. No: 144/A, Uşak"
+                subContent="Pazartesi — Cuma / 09:00 — 18:00"
+              />
+              <ContactItem
+                icon={<Phone size={18} />}
+                title="Doğrudan Hat"
+                content="+90 546 225 56 59"
+                href="tel:+905462255659"
+              />
+              <ContactItem
+                icon={<Mail size={18} />}
+                title="Dijital Yazışma"
+                content="ispoolofficial@gmail.com"
+                href="mailto:ispoolofficial@gmail.com"
+              />
             </div>
 
-            <ContactInfoCard
-              icon={MapPin}
-              label="Adres"
-              value="Fatih Mahallesi, Kazım Kara Bekir Caddesi No 144 a, 64000 Merkez/Uşak"
-            />
-            <ContactInfoCard
-              icon={Phone}
-              label="Kurumsal Hattımız"
-              value="+90 546 225 56 59"
-              href="tel:+905462255659"
-            />
-            <ContactInfoCard
-              icon={Mail}
-              label="E-posta"
-              value="ispoolofficial@gmail.com"
-              href="mailto:ispoolofficial@gmail.com"
-            />
-
-            <div className="mt-12 flex items-center gap-3 text-slate-400">
-              <Clock size={16} />
-              <span className="text-xs font-medium italic">
-                Hafta içi: 09:00 - 18:00 | Hafta sonu: Kapalı
-              </span>
+            <div className="pt-12 border-t border-slate-100 flex items-center gap-4 text-slate-400 text-[10px] tracking-widest uppercase font-bold">
+              <Globe size={14} className="text-orange-600" />
+              <span>Uşak, Türkiye — Global Shipping</span>
             </div>
-          </section>
+          </aside>
 
-          {/* SAĞ: İLETİŞİM FORMU */}
-          <section className="lg:col-span-8 bg-slate-50 p-8 md:p-12 border border-slate-100 shadow-sm">
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <label
-                    htmlFor="name"
-                    className="text-[11px] uppercase tracking-widest font-bold text-slate-600"
-                  >
-                    Ad Soyad
-                  </label>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full bg-white border border-slate-200 px-4 py-3 outline-none focus:border-slate-900 transition-colors text-sm"
-                    placeholder="Adınız ve Soyadınız"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label
-                    htmlFor="phone"
-                    className="text-[11px] uppercase tracking-widest font-bold text-slate-600"
-                  >
-                    İrtibat Numarası
-                  </label>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full bg-white border border-slate-200 px-4 py-3 outline-none focus:border-slate-900 transition-colors text-sm"
-                    placeholder="05xx xxx xx xx"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="email"
-                  className="text-[11px] uppercase tracking-widest font-bold text-slate-600"
-                >
-                  E-posta Adresi
+          {/* DİNAMİK FORM */}
+          <section className="lg:col-span-8">
+            <form
+              onSubmit={handleSubmit}
+              className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10"
+            >
+              <div className="group space-y-2">
+                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400 group-focus-within:text-orange-600 transition-colors">
+                  İsim Soyisim
                 </label>
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full bg-white border border-slate-200 px-4 py-3 outline-none focus:border-slate-900 transition-colors text-sm"
-                  placeholder="kurumsal@sirketiniz.com"
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full bg-transparent border-b border-slate-200 py-4 outline-none focus:border-orange-600 transition-all text-lg font-light placeholder:text-slate-200"
+                  placeholder="Ali Yılmaz"
                   required
                 />
               </div>
 
-              <div className="space-y-2">
-                <label
-                  htmlFor="message"
-                  className="text-[11px] uppercase tracking-widest font-bold text-slate-600"
-                >
-                  Talebiniz / Mesajınız
+              <div className="group space-y-2">
+                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400 group-focus-within:text-orange-600 transition-colors">
+                  E-Posta
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full bg-transparent border-b border-slate-200 py-4 outline-none focus:border-orange-600 transition-all text-lg font-light placeholder:text-slate-200"
+                  placeholder="office@company.com"
+                  required
+                />
+              </div>
+
+              <div className="md:col-span-2 group space-y-2">
+                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400 group-focus-within:text-orange-600 transition-colors">
+                  Mesajınız
                 </label>
                 <textarea
-                  id="message"
                   name="message"
                   value={formData.message}
-                  onChange={handleChange}
-                  rows={5}
-                  className="w-full bg-white border border-slate-200 px-4 py-3 outline-none focus:border-slate-900 transition-colors text-sm resize-none"
-                  placeholder="Ürün talepleriniz veya sorularınız hakkında detaylı bilgi veriniz..."
+                  onChange={handleInputChange}
+                  rows={4}
+                  className="w-full bg-transparent border-b border-slate-200 py-4 outline-none focus:border-orange-600 transition-all text-lg font-light resize-none placeholder:text-slate-200"
+                  placeholder="Projenizden kısaca bahsedin..."
                   required
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="inline-flex items-center justify-center gap-3 bg-slate-900 text-white px-10 py-4 text-xs uppercase tracking-[0.2em] font-bold hover:bg-slate-800 transition-all disabled:bg-slate-400 group"
-              >
-                {isLoading ? "İletiliyor..." : "Formu Gönder"}
-                <Send
-                  size={14}
-                  className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"
-                />
-              </button>
+              <div className="md:col-span-2 pt-6">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="group relative flex items-center gap-4 bg-slate-900 text-white px-12 py-6 overflow-hidden transition-all hover:bg-orange-600 disabled:bg-slate-200 disabled:cursor-not-allowed"
+                >
+                  <span className="relative z-10 text-[11px] font-bold uppercase tracking-[0.3em]">
+                    {isLoading ? "Gönderiliyor..." : "Mesajı İletin"}
+                  </span>
+                  {isLoading ? (
+                    <Loader2 size={16} className="animate-spin relative z-10" />
+                  ) : (
+                    <Send
+                      size={16}
+                      className="relative z-10 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"
+                    />
+                  )}
+                </button>
+              </div>
             </form>
           </section>
         </div>
 
-        {/* HARİTA ALANI: SADE VE ŞIK */}
-        <section className="mt-32">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <ShieldCheck size={18} className="text-slate-900" />
-              <span className="text-[11px] uppercase tracking-[0.2em] font-bold">
-                Resmi Lokasyonumuz
-              </span>
+        {/* MAP SECTION */}
+        <section className="mt-40 transition-all duration-1000 border-t border-slate-100 pt-20">
+          <div className="flex justify-between items-center mb-10">
+            <h5 className="text-[10px] uppercase tracking-[0.4em] font-bold text-slate-400 italic">
+              Location Terminal v1.0
+            </h5>
+            <div className="flex items-center gap-2 text-slate-300">
+              <Clock size={12} />
+              <span className="text-[10px] uppercase">GMT +3</span>
             </div>
-            <span className="text-[10px] text-slate-400 uppercase italic">
-              Güvenli ve Modern Tesis
-            </span>
           </div>
-          <div className="relative aspect-video md:aspect-[21/8] bg-slate-100 overflow-hidden border border-slate-200 transition-all duration-1000">
+          <div className="aspect-[21/7] w-full bg-slate-50 relative overflow-hidden rounded-xl border border-slate-100 group">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3114.7891129993463!2d29.370786199999998!3d38.6767144!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14c87f27d51a8911%3A0xaebf3af5f1f9655e!2zxLDFniBQT09MIMSwxZ4gS0lZQUZFVExFUsSwIMSwTUFMQVRJIFZFIEfDnFZFTkzEsEsgRUvEsFBNQU5MQVJJ!5e0!3m2!1str!2str!4v1768723978625!5m2!1str!2str"
-              className="absolute inset-0 w-full h-full border-0"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3135.244365314781!2d29.4000!3d38.6700!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzjCsDQwJzEyLjAiTiAyOcKwMjQnMDAuMCJF!5e0!3m2!1str!2str!4v1700000000000"
+              className="absolute inset-0 w-full h-full grayscale contrast-125 opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
               allowFullScreen={true}
               loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
             />
           </div>
         </section>
       </main>
+    </div>
+  );
+}
+
+// Yardımcı Bileşen (Refactored)
+function ContactItem({ icon, title, content, subContent, href }: any) {
+  return (
+    <div className="group space-y-3">
+      <div className="flex items-center gap-3 text-orange-600 transition-transform group-hover:translate-x-1">
+        {icon}
+        <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+          {title}
+        </span>
+      </div>
+      <div className="space-y-1">
+        {href ? (
+          <a
+            href={href}
+            className="text-xl font-medium hover:text-orange-600 transition-colors flex items-center gap-2"
+          >
+            {content}
+            <ArrowUpRight
+              size={14}
+              className="opacity-20 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"
+            />
+          </a>
+        ) : (
+          <p className="text-xl font-medium leading-tight text-slate-800">
+            {content}
+          </p>
+        )}
+        {subContent && (
+          <p className="text-xs text-slate-400 font-medium">{subContent}</p>
+        )}
+      </div>
     </div>
   );
 }

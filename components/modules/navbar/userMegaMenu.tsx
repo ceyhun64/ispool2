@@ -91,7 +91,7 @@ export default function UserMegaMenu({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed top-0 right-0 h-full w-full max-w-[400px] bg-white z-[151] flex flex-col shadow-2xl"
+            className="fixed top-0 right-0 h-full w-[95%] max-w-[400px] bg-white z-[151] flex flex-col shadow-2xl"
           >
             {/* ÜST PANEL */}
             <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">

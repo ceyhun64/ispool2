@@ -64,8 +64,8 @@ const CartDropdown = forwardRef(
 
     // Cart Sheet durumunu Navbar'a bildir
     useEffect(() => {
-      const event = new CustomEvent('cartSheetStateChange', {
-        detail: { isOpen }
+      const event = new CustomEvent("cartSheetStateChange", {
+        detail: { isOpen },
       });
       window.dispatchEvent(event);
     }, [isOpen]);
@@ -228,9 +228,11 @@ const CartDropdown = forwardRef(
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <button className="relative p-2.5 text-slate-900 hover:text-slate-500 transition-colors duration-300">
-            <ShoppingCart className="h-5.5 w-5.5 stroke-[1.2px]" />
+            <div className="w-9 h-9 md:w-10 md:h-10 text-slate-900 flex items-center justify-center group-hover:bg-orange-600 transition-all">
+              <ShoppingCart size={18} strokeWidth={2.5} />
+            </div>{" "}
             {showCount && cartItems.length > 0 && (
-              <span className="absolute top-1 right-1 h-4 w-4 rounded-full bg-slate-900 text-white text-[9px] flex items-center justify-center font-bold font-mono shadow-sm">
+              <span className="absolute top-3 right-3 h-4 w-4 rounded-full bg-slate-900 text-white text-[9px] flex items-center justify-center font-bold font-mono shadow-sm">
                 {cartItems.length}
               </span>
             )}

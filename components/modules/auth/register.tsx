@@ -44,7 +44,7 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/account/auth/register", {
+      const res = await fetch("/api/account/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, surname, email, password }),
