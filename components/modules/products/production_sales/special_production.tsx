@@ -81,7 +81,7 @@ const OzelUretimPremium = () => {
   };
 
   return (
-    <div className="bg-white min-h-screen font-sans text-slate-950 selection:bg-slate-900 selection:text-white overflow-x-hidden">
+    <div className="bg-slate-100 min-h-screen font-sans text-slate-950 selection:bg-slate-900 selection:text-white overflow-x-hidden">
       {/* --- MODAL --- */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center p-2 sm:p-4">

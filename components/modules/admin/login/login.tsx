@@ -62,7 +62,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f8fafc] relative overflow-hidden font-sans">
+    <div className="flex min-h-screen items-center justify-center bg-slate-100 relative overflow-hidden font-sans">
       {/* Arka Plan Dekorasyonu - Endüstriyel Tema */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-orange-500/5  blur-[120px]" />

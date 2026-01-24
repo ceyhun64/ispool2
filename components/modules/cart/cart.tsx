@@ -129,7 +129,7 @@ export default function Cart() {
   if (isLoading) return <CartLoadingSkeleton />;
 
   return (
-    <div className="min-h-screen bg-white text-slate-900">
+    <div className="min-h-screen bg-slate-100 text-slate-900">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 py-16 md:py-28">
         <AnimatePresence mode="wait">
           {cartItems.length === 0 ? (

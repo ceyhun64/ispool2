@@ -51,7 +51,7 @@ const workwearTestimonials: Testimonial[] = [
 ];
 const Testimonials: React.FC = () => {
   return (
-    <div className="py-20 md:py-24 bg-slate-50 relative overflow-hidden font-sans">
+    <div className="py-20 md:py-24 bg-slate-100 relative overflow-hidden font-sans">
       {/* İnce Üst Çizgi */}
       <div className="absolute top-0 left-0 w-full h-[1px] bg-slate-100" />
 
