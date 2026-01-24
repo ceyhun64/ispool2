@@ -39,7 +39,7 @@ const StatItem = ({ val, label }: { val: string; label: string }) => (
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-white text-slate-900 selection:bg-orange-600 selection:text-white font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-slate-100 text-slate-900 selection:bg-orange-600 selection:text-white font-sans overflow-x-hidden">
       {/* --- HERO SECTION --- */}
       <section className="relative min-h-[70vh] md:min-h-[85vh] flex items-center justify-center overflow-hidden bg-slate-950 px-6 py-20 md:py-0">
         <div className="absolute inset-0 z-0">

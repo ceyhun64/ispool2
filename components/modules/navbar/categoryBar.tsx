@@ -27,18 +27,17 @@ import {
   Info,
   Truck,
 } from "lucide-react";
-
 import { CATEGORIES } from "@/data/categories";
 
 const CategoryIcon = ({ id, size = 18 }: { id: string; size?: number }) => {
   const icons: Record<string, React.ReactNode> = {
-    is_elbiseleri: <Shirt size={size} strokeWidth={1.5} />,
-    ayak_koruma: <Footprints size={size} strokeWidth={1.5} />,
-    el_koruma: <Hand size={size} strokeWidth={1.5} />,
-    teknik: <Flame size={size} strokeWidth={1.5} />,
-    ekipman: <HardHat size={size} strokeWidth={1.5} />,
-    outdoor: <Mountain size={size} strokeWidth={1.5} />,
-    markalar: <Briefcase size={size} strokeWidth={1.5} />,
+    is_elbiseleri: <Shirt size={size} />,
+    ayak_koruma: <Footprints size={size} />,
+    el_koruma: <Hand size={size} />,
+    teknik: <Flame size={size} />,
+    ekipman: <HardHat size={size} />,
+    outdoor: <Mountain size={size} />,
+    markalar: <Briefcase size={size} />,
     en_yeniler: <Zap size={size} strokeWidth={2} />,
     indirim: <TrendingDown size={size} strokeWidth={2} />,
   };
@@ -86,6 +85,7 @@ export default function CategoryBar({
 
   return (
     <>
+      {/* ================= MOBILE ================= */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -94,49 +94,49 @@ export default function CategoryBar({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 bg-slate-950/60 z-[200] lg:hidden backdrop-blur-md"
+              className="fixed inset-0 z-[200] bg-slate-950/70 backdrop-blur-md lg:hidden"
             />
-            <motion.div
+
+            <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 left-0 w-[85%] max-w-[320px] bg-slate-50 z-[210] lg:hidden flex flex-col shadow-2xl"
+              transition={{ type: "spring", stiffness: 220, damping: 28 }}
+              className="fixed inset-y-0 left-0 z-[210] w-[85%] max-w-[340px] bg-slate-50 lg:hidden flex flex-col shadow-2xl"
             >
-              <div className="p-5 flex items-center justify-between border-b bg-white shrink-0">
-                <div className="flex flex-col">
-                  <span className="font-black text-slate-900 uppercase text-lg leading-none">
+              {/* Header */}
+              <div className="flex items-center justify-between p-5 bg-white border-b">
+                <div>
+                  <p className="text-lg font-black uppercase text-slate-900">
                     İŞPOOL
-                  </span>
-                  <span className="text-[9px] text-orange-600 font-bold uppercase tracking-widest mt-1">
+                  </p>
+                  <p className="text-[9px] tracking-widest text-orange-600 font-bold uppercase">
                     Endüstriyel Güvenlik
-                  </span>
+                  </p>
                 </div>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 bg-slate-100  hover:bg-orange-100"
+                  className="p-2 bg-slate-100 hover:bg-orange-100 transition"
                 >
-                  <X size={20} className="text-slate-600" />
+                  <X size={20} />
                 </button>
               </div>
 
+              {/* Content */}
               <div className="flex-1 overflow-y-auto">
-                <div className="bg-white mb-4">
-                  <div className="px-5 py-3 border-b border-slate-50">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                      Kategoriler
-                    </span>
-                  </div>
+                {/* Categories */}
+                <div className="bg-white">
+                  <p className="px-5 py-3 text-[10px] font-black tracking-widest text-slate-400 uppercase border-b">
+                    Kategoriler
+                  </p>
+
                   {CATEGORIES.map((cat) => (
-                    <div
-                      key={cat.id}
-                      className="border-b border-slate-50 last:border-none"
-                    >
+                    <div key={cat.id} className="border-b last:border-none">
                       <div className="flex items-center justify-between px-5 py-4">
                         <Link
                           href={`/category/${cat.id}`}
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className="flex items-center gap-4 text-[13px] font-black text-slate-700 uppercase tracking-tight"
+                          className="flex items-center gap-4 text-[13px] font-black uppercase text-slate-700"
                         >
                           <span
                             className={
@@ -149,6 +149,7 @@ export default function CategoryBar({
                           </span>
                           {cat.label}
                         </Link>
+
                         {cat.megaMenu && (
                           <button
                             onClick={() =>
@@ -156,7 +157,11 @@ export default function CategoryBar({
                                 expandedCategory === cat.id ? null : cat.id,
                               )
                             }
-                            className={`p-1.5 transition-all ${expandedCategory === cat.id ? "bg-orange-600 text-white rotate-180" : "bg-slate-50 text-slate-400"}`}
+                            className={`p-1.5 transition ${
+                              expandedCategory === cat.id
+                                ? "bg-orange-600 text-white rotate-180"
+                                : "bg-slate-100 text-slate-400"
+                            }`}
                           >
                             {expandedCategory === cat.id ? (
                               <Minus size={16} />
@@ -166,6 +171,7 @@ export default function CategoryBar({
                           </button>
                         )}
                       </div>
+
                       <AnimatePresence>
                         {expandedCategory === cat.id &&
                           cat.megaMenu?.columns && (
@@ -173,25 +179,22 @@ export default function CategoryBar({
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: "auto", opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
-                              className="bg-slate-50 overflow-hidden border-t border-slate-100"
+                              className="bg-slate-100/70"
                             >
-                              {cat.megaMenu.columns.map((col, cIdx) => (
-                                <div
-                                  key={cIdx}
-                                  className="px-14 py-3 border-b border-slate-100/50"
-                                >
-                                  <p className="text-[10px] font-black text-orange-600 uppercase mb-3 tracking-widest">
+                              {cat.megaMenu.columns.map((col, i) => (
+                                <div key={i} className="px-12 py-4 border-t">
+                                  <p className="text-[10px] font-black uppercase tracking-widest text-orange-600 mb-3">
                                     {col.title}
                                   </p>
-                                  <div className="space-y-3">
-                                    {col.subItems?.map((sub, sIdx) => (
+                                  <div className="space-y-2">
+                                    {col.subItems?.map((sub, j) => (
                                       <Link
-                                        key={sIdx}
+                                        key={j}
                                         href="#"
                                         onClick={() =>
                                           setIsMobileMenuOpen(false)
                                         }
-                                        className="block text-[12px] font-bold text-slate-500 py-1"
+                                        className="block text-[12px] font-bold text-slate-600"
                                       >
                                         {sub}
                                       </Link>
@@ -206,67 +209,59 @@ export default function CategoryBar({
                   ))}
                 </div>
 
-                <div className="bg-white mb-4">
-                  <div className="px-5 py-3 border-b border-slate-50">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                      Hızlı Menü
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-px bg-slate-100">
+                {/* Quick Links */}
+                <div className="bg-white mt-4">
+                  <p className="px-5 py-3 text-[10px] font-black tracking-widest text-slate-400 uppercase border-b">
+                    Hızlı Menü
+                  </p>
+                  <div className="grid grid-cols-2 gap-px bg-slate-200">
                     {secondaryLinks.map((link, i) => (
                       <Link
                         key={i}
                         href={link.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex flex-col items-center justify-center p-6 bg-white transition-colors ${link.highlight ? "text-orange-600" : "text-slate-600"}`}
+                        className={`p-6 bg-white flex flex-col items-center gap-2 text-[10px] font-black uppercase ${
+                          link.highlight ? "text-orange-600" : "text-slate-600"
+                        }`}
                       >
-                        <span className="mb-2">{link.icon}</span>
-                        <span className="text-[10px] font-black uppercase tracking-tighter text-center">
-                          {link.label}
-                        </span>
+                        {link.icon}
+                        {link.label}
                       </Link>
                     ))}
                   </div>
                 </div>
 
+                {/* CTA */}
                 <div className="p-5 space-y-3">
                   <a
                     href="tel:+905343529420"
-                    className="flex items-center justify-center gap-3 w-full bg-slate-900 text-white py-4  font-black text-[11px] tracking-widest uppercase"
+                    className="flex items-center justify-center gap-3 bg-slate-900 text-white py-4 font-black text-[11px] tracking-widest uppercase"
                   >
                     <Phone size={16} /> 0534 352 94 20
                   </a>
                   <a
                     href="https://wa.me/905343529420"
-                    target="_blank"
-                    className="flex items-center justify-center gap-3 w-full bg-[#25D366] text-white py-4  font-black text-[11px] tracking-widest uppercase"
+                    className="flex items-center justify-center gap-3 bg-[#25D366] text-white py-4 font-black text-[11px] tracking-widest uppercase"
                   >
-                    <MessageCircleMore size={18} /> WHATSAPP HATTI
+                    <MessageCircleMore size={18} /> WhatsApp Hattı
                   </a>
                 </div>
               </div>
 
-              <div className="p-8 border-t bg-white flex justify-center gap-8 items-center shrink-0">
-                <a href="#" className="text-slate-400 hover:text-orange-600">
-                  <Instagram size={22} />
-                </a>
-                <a href="#" className="text-slate-400 hover:text-blue-600">
-                  <Facebook size={22} />
-                </a>
-                <a
-                  href="mailto:ispoolofficial@gmail.com"
-                  className="text-slate-400 hover:text-red-500"
-                >
-                  <Mail size={22} />
-                </a>
+              {/* Social */}
+              <div className="flex justify-center gap-8 p-6 bg-white border-t">
+                <Instagram />
+                <Facebook />
+                <Mail />
               </div>
-            </motion.div>
+            </motion.aside>
           </>
         )}
       </AnimatePresence>
 
+      {/* ================= DESKTOP ================= */}
       <nav
-        className="w-full bg-white/80 backdrop-blur-xl border-b border-slate-200 hidden lg:block sticky top-0 z-40"
+        className="hidden lg:block sticky top-0 z-40 bg-white/90 backdrop-blur-3xl border-b border-slate-200"
         onMouseLeave={() => setActiveCategory(null)}
       >
         <div className="max-w-[1600px] mx-auto px-6">
@@ -276,17 +271,17 @@ export default function CategoryBar({
                 key={cat.id}
                 href={`/category/${cat.id}`}
                 onMouseEnter={() => setActiveCategory(cat.id)}
-                className={`group relative flex items-center gap-2 h-full px-3 transition-all duration-300 ${activeCategory === cat.id ? "text-orange-600" : "text-slate-600 hover:text-slate-950"}`}
+                className={`relative flex items-center gap-2 px-3 h-full text-[10px] font-black uppercase tracking-widest transition ${
+                  activeCategory === cat.id
+                    ? "text-orange-600"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
               >
-                <CategoryIcon id={cat.id} size={17} />
-                <span
-                  className={`text-[10px] font-black tracking-widest uppercase ${cat.id === "indirim" ? "text-red-600" : ""}`}
-                >
-                  {cat.label}
-                </span>
+                <CategoryIcon id={cat.id} size={16} />
+                {cat.label}
                 {activeCategory === cat.id && (
-                  <motion.div
-                    layoutId="activeTab"
+                  <motion.span
+                    layoutId="activeCategory"
                     className="absolute bottom-0 left-0 right-0 h-[2px] bg-orange-600"
                   />
                 )}
@@ -295,53 +290,37 @@ export default function CategoryBar({
           </div>
         </div>
 
+        {/* Mega Menu */}
         <AnimatePresence>
           {activeCategory && currentCategory?.megaMenu && (
             <motion.div
-              initial={{ opacity: 0, y: -5 }}
+              initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
-              className="absolute top-full left-0 w-full bg-white shadow-2xl border-t border-slate-100 py-10"
+              exit={{ opacity: 0, y: -8 }}
+              className="absolute top-full left-0 w-full bg-white shadow-2xl border-t py-10"
             >
-              <div className="max-w-[1600px] mx-auto px-10">
-                {currentCategory.megaMenu.isBrands ? (
-                  <div className="grid grid-cols-6 gap-4">
-                    {currentCategory.megaMenu.images?.map((src, i) => (
-                      <div
-                        key={i}
-                        className="h-16 border border-slate-100 flex items-center justify-center p-3 grayscale hover:grayscale-0 cursor-pointer"
-                      >
-                        <img
-                          src={src}
-                          className="max-h-full object-contain"
-                          alt="Brand"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-x-16 gap-y-10">
-                    {currentCategory.megaMenu.columns?.map((col, idx) => (
-                      <div key={idx} className="min-w-[180px]">
-                        <h4 className="text-[11px] font-black text-orange-600 uppercase mb-5 tracking-[0.2em] border-b border-slate-50 pb-2">
-                          {col.title}
-                        </h4>
-                        <ul className="space-y-2">
-                          {col.subItems?.map((sub, i) => (
-                            <li key={i}>
-                              <Link
-                                href="#"
-                                className="text-[13px] font-bold text-slate-500 hover:text-orange-600 block"
-                              >
-                                {sub}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                )}
+              <div className="max-w-[1600px] mx-auto px-12">
+                <div className="flex gap-x-20 gap-y-10 flex-wrap">
+                  {currentCategory.megaMenu.columns?.map((col, i) => (
+                    <div key={i} className="min-w-[200px]">
+                      <h4 className="text-[11px] font-black uppercase tracking-widest text-orange-600 mb-5">
+                        {col.title}
+                      </h4>
+                      <ul className="space-y-2">
+                        {col.subItems?.map((sub, j) => (
+                          <li key={j}>
+                            <Link
+                              href="#"
+                              className="text-[13px] font-medium text-slate-600 hover:text-orange-600"
+                            >
+                              {sub}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
               </div>
             </motion.div>
           )}

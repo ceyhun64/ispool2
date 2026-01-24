@@ -61,10 +61,7 @@ export default function Products() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-slate-950 px-4 md:px-6 py-12 md:py-24 relative overflow-hidden">
-      {/* Arka Plan Dokusu */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
-
+    <div className="min-h-screen bg-slate-50 text-slate-950 px-4 md:px-6 py-12 md:py-24 relative overflow-hidden">
       <div className="max-w-[1400px] mx-auto relative z-10">
         {/* Header - Boyutlar Küçültüldü */}
         <header className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 md:mb-20 gap-8 md:gap-12">

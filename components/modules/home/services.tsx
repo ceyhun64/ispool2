@@ -57,10 +57,7 @@ const CardItem = ({ icon: Icon, title, desc, index }: any) => (
     </div>
 
     {/* Alt Link - Daha Sofistike */}
-    <div className="relative z-10 mt-8 opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-500 flex items-center text-[9px] font-black text-orange-500 tracking-[0.2em] uppercase">
-      KEŞFET{" "}
-      <ChevronRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
-    </div>
+   
 
     {/* Dekoratif Büyük Numara */}
     <span className="absolute -bottom-4 -right-2 text-7xl font-black text-slate-100 group-hover:text-white/[0.03] transition-colors duration-700 select-none pointer-events-none">
@@ -111,7 +108,7 @@ export default function ShopServices() {
         </div>
 
         {/* Grid Yapısı - Havada Asılı Panel Etkisi */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] rounded-none overflow-hidden border border-slate-100">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 rounded-none overflow-hidden border border-slate-100">
           {whyChooseUs.map((item, idx) => (
             <CardItem key={idx} index={idx} {...item} />
           ))}

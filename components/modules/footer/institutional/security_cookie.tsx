@@ -33,7 +33,7 @@ export default function CookiePolicy() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-orange-600 selection:text-white">
+    <div className="flex flex-col min-h-screen bg-slate-100 text-slate-900 font-sans selection:bg-orange-600 selection:text-white">
       {/* Endüstriyel Üst Şerit */}
       <div className="w-full h-2 bg-gradient-to-r from-slate-900 via-orange-600 to-slate-900" />
 
@@ -135,7 +135,7 @@ export default function CookiePolicy() {
                       {tag}
                     </span>
                   </div>
-                )
+                ),
               )}
             </div>
           </footer>

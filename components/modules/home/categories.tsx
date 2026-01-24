@@ -42,7 +42,7 @@ export default function CategoriesSection() {
   }, []);
 
   return (
-    <section className="bg-slate-50 py-12 md:py-24 relative overflow-hidden">
+    <section className="bg-slate-100 py-12 md:py-24 relative overflow-hidden">
       {/* Arka Plan Teknik Detaylar */}
       <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
@@ -96,7 +96,7 @@ function ModernCategoryCard({ category }: { category: CategoryData }) {
   return (
     <Link
       href={category.href}
-      className="group relative block overflow-hidden bg-black aspect-[4/3] sm:aspect-[16/9] border border-white/5 shadow-2xl"
+      className="group relative block overflow-hidden bg-black aspect-[4/3] sm:aspect-[16/9] border border-white/5 "
     >
       {/* Görsel Katmanı */}
       <div className="relative w-full h-full">
@@ -112,7 +112,7 @@ function ModernCategoryCard({ category }: { category: CategoryData }) {
       {/* İçerik Katmanı */}
       <div className="absolute inset-0 p-6 sm:p-10 md:p-14 flex flex-col justify-between z-20">
         <div className="flex justify-between items-start">
-          <div className="bg-orange-600 p-3 md:p-4 shadow-xl shadow-orange-900/20 -translate-y-1 md:-translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+          <div className="bg-orange-600 p-3 md:p-4  -translate-y-1 md:-translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
             {category.id === 1 ? (
               <Cpu className="w-5 h-5 md:w-6 md:h-6 text-white" />
             ) : (
@@ -139,7 +139,7 @@ function ModernCategoryCard({ category }: { category: CategoryData }) {
             />
           </div>
 
-          <p className="text-slate-300 text-xs md:text-base max-w-[280px] sm:max-w-sm font-semibold leading-snug tracking-tight">
+          <p className="text-slate-300 text-xs md:text-base max-w-[280px] sm:max-w-sm leading-snug tracking-tight">
             {category.subTitle}
           </p>
 
@@ -154,7 +154,7 @@ function ModernCategoryCard({ category }: { category: CategoryData }) {
       </div>
 
       {/* Tarayıcı Çizgisi Animasyonu */}
-      <div className="absolute top-0 left-0 w-full h-[2px] bg-orange-600/20 shadow-[0_0_15px_rgba(234,88,12,0.5)] -translate-y-full group-hover:animate-scan pointer-events-none" />
+      <div className="absolute top-0 left-0 w-full h-[2px] bg-orange-600/20  -translate-y-full group-hover:animate-scan pointer-events-none" />
 
       {/* Köşe Detayları */}
       <div className="absolute top-3 left-3 md:top-4 md:left-4 w-2 h-2 border-t border-l border-white/20" />

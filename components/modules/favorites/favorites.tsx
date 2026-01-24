@@ -13,7 +13,7 @@ export default function Favorites() {
   const { favorites, removeFavorite, loading } = useFavorite();
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 selection:bg-orange-600 selection:text-white">
+    <div className="min-h-screen bg-slate-100 text-slate-900 selection:bg-orange-600 selection:text-white">
       <div className="max-w-[1400px] mx-auto px-6 py-20 md:py-32">
         {/* HEADER: Minimalist & Clean */}
         {!loading && (

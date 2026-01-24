@@ -64,13 +64,14 @@ export default function UserMegaMenu({
 
   const menuItems = [
     { label: "Hesap Özeti", href: "/profile", icon: LayoutDashboard },
+    { label: "Adres Defteri", href: "/profile/addresses", icon: MapPin },
+
     { label: "Sipariş Geçmişi", href: "/profile/orders", icon: Package },
     {
       label: "Kargo ve Lojistik",
       href: "/profile/cargo_tracking",
       icon: Truck,
     },
-    { label: "Adres Defteri", href: "/profile/addresses", icon: MapPin },
   ];
 
   return (

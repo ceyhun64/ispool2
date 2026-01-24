@@ -205,10 +205,7 @@ export default function HeroSection() {
                 </Link>
               </button>
 
-              <button className="group px-8 py-4 border border-white/20 hover:border-white/60 text-white text-[11px] font-bold tracking-widest uppercase transition-all flex items-center gap-2 backdrop-blur-sm">
-                <Box size={16} className="text-orange-500" />
-                KATALOG
-              </button>
+             
             </motion.div>
           </div>
         </div>

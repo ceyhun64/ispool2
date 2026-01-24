@@ -72,7 +72,7 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-orange-600 selection:text-white">
+    <div className="min-h-screen bg-slate-100 text-slate-900 font-sans selection:bg-orange-600 selection:text-white">
       <main className="max-w-[1400px] mx-auto px-6 py-24 md:py-40">
         {/* HEADER */}
         <header className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-32">

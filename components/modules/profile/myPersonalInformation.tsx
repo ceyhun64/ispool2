@@ -134,7 +134,7 @@ export default function KisiselBilgilerim() {
   if (!user) return null;
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-[#F8FAFC] text-slate-900">
+    <div className="flex flex-col md:flex-row min-h-screen bg-slate-100 text-slate-900">
       <Sidebar />
 
       <main className="flex-1 px-6 py-12 md:px-16 lg:px-24">
