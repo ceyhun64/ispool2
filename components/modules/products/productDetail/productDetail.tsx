@@ -89,11 +89,13 @@ export default function ProductDetailPage() {
 
   const handleSaveDesign = (designUrl: string) => {
     setCustomDesign(designUrl);
+    setUploadedImage(null);
+    setUploadedImagePreview(null);
     setActiveIndex(0);
+    toast.success("Tasarımınız kaydedildi! Sepete ekleyebilirsiniz.");
   };
 
   const handleDirectUpload = () => {
-    // Dosya yükleme inputunu tetikle
     fileInputRef.current?.click();
   };
 
@@ -114,6 +116,7 @@ export default function ProductDetailPage() {
     }
 
     setUploadedImage(file);
+    setCustomDesign(null); // Tasarım panelinden gelen tasarımı temizle
 
     // Preview oluştur
     const reader = new FileReader();
@@ -135,29 +138,36 @@ export default function ProductDetailPage() {
     toast.info("Yüklenen resim kaldırıldı.");
   };
 
+  const handleRemoveCustomDesign = () => {
+    setCustomDesign(null);
+    toast.info("Özel tasarım kaldırıldı.");
+  };
+
   const handleAddToCart = async () => {
     if (!product) {
       toast.error("Ürün bilgisi bulunamadı.");
       return;
     }
 
+    const finalCustomImage = customDesign || uploadedImagePreview;
+
     // Misafir kullanıcılar için
     if (!isLoggedIn) {
       const item = {
         productId: product.id,
-        title: customDesign
+        title: finalCustomImage
           ? `${product.title} (Özelleştirilmiş)`
-          : uploadedImagePreview
-            ? `${product.title} (Özel Resim)`
-            : product.title,
+          : product.title,
         price: product.price,
-        image: customDesign || uploadedImagePreview || product.mainImage,
-        isCustom: !!(customDesign || uploadedImagePreview),
+        image: finalCustomImage || product.mainImage,
+        customImage: finalCustomImage,
+        isCustom: !!finalCustomImage,
+        category: product.category,
       };
 
       addToGuestCart(item, quantity);
       toast.success(
-        `${quantity} adet ${customDesign || uploadedImagePreview ? "özelleştirilmiş " : ""}ürün sepete eklendi!`,
+        `${quantity} adet ${finalCustomImage ? "özelleştirilmiş " : ""}ürün sepete eklendi!`,
       );
       window.dispatchEvent(new CustomEvent("cartUpdated"));
       return;
@@ -169,7 +179,7 @@ export default function ProductDetailPage() {
       formData.append("productId", product.id.toString());
       formData.append("quantity", quantity.toString());
 
-      // Öncelik: tasarım panelinden gelen resim
+      // Öncelik: tasarım panelinden gelen resim (base64)
       if (customDesign) {
         formData.append("customImage", customDesign);
       }
@@ -186,7 +196,7 @@ export default function ProductDetailPage() {
 
       if (res.ok) {
         toast.success(
-          `${quantity} adet ${customDesign || uploadedImage ? "özelleştirilmiş " : ""}ürün sepete eklendi!`,
+          `${quantity} adet ${finalCustomImage ? "özelleştirilmiş " : ""}ürün sepete eklendi!`,
         );
         window.dispatchEvent(new CustomEvent("cartUpdated"));
         cartDropdownRef.current?.open?.();
@@ -231,19 +241,18 @@ export default function ProductDetailPage() {
   ].filter(Boolean);
 
   const hasDiscount = product.oldPrice && product.oldPrice > product.price;
+  const finalCustomImage = customDesign || uploadedImagePreview;
 
-  // Önce özelleştirilmiş tasarım, sonra yüklenen resim, sonra orijinal görseller
-  const displayImages = customDesign
-    ? [customDesign, ...images]
-    : uploadedImagePreview
-      ? [uploadedImagePreview, ...images]
-      : images;
+  // Önce özelleştirilmiş tasarım/yüklenen resim, sonra orijinal görseller
+  const displayImages = finalCustomImage
+    ? [finalCustomImage, ...images]
+    : images;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-orange-100 selection:text-orange-900">
       {showPreview && (
         <DesignPanel
-          productImage={images[activeIndex]}
+          productImage={images[0] || product.mainImage}
           onClose={() => setShowPreview(false)}
           onSaveDesign={handleSaveDesign}
           onDirectUpload={handleDirectUpload}
@@ -271,11 +280,11 @@ export default function ProductDetailPage() {
               <div className="absolute top-4 left-4 z-10 flex flex-col gap-1.5">
                 {customDesign ? (
                   <span className="bg-gradient-to-r from-orange-600 to-pink-600 text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5 animate-pulse">
-                    <Sparkles size={11} /> Özelleştirilmiş Tasarım
+                    <Sparkles size={11} /> Tasarım Paneli ile Özelleştirildi
                   </span>
                 ) : uploadedImagePreview ? (
                   <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5">
-                    <ImagePlus size={11} /> Yüklenen Resim
+                    <ImagePlus size={11} /> Özel Resim Yüklendi
                   </span>
                 ) : (
                   <span className="bg-slate-900/90 backdrop-blur text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5">
@@ -296,7 +305,9 @@ export default function ProductDetailPage() {
                   className="bg-orange-600 text-white px-5 py-3 text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-2xl hover:bg-slate-900 transition-all scale-100 hover:scale-105 active:scale-95"
                 >
                   <Eye size={16} />{" "}
-                  {customDesign ? "Yeniden Tasarla" : "Logonu Ekle"}
+                  {customDesign || uploadedImagePreview
+                    ? "Yeniden Tasarla"
+                    : "Logonu Ekle"}
                 </button>
               </div>
 
@@ -327,7 +338,7 @@ export default function ProductDetailPage() {
                       : "border-transparent opacity-60",
                   )}
                 >
-                  {i === 0 && (customDesign || uploadedImagePreview) && (
+                  {i === 0 && finalCustomImage && (
                     <div className="absolute top-0 left-0 bg-orange-600 text-white text-[6px] font-bold px-1 py-0.5 uppercase z-10">
                       Özel
                     </div>
@@ -342,7 +353,7 @@ export default function ProductDetailPage() {
               ))}
             </div>
 
-            {/* Yüklenen resmi kaldırma seçeneği */}
+            {/* Yüklenen resmi veya tasarımı kaldırma seçeneği */}
             {uploadedImagePreview && (
               <div className="flex items-center justify-between bg-blue-50 border border-blue-200 p-3 rounded">
                 <div className="flex items-center gap-2 text-xs text-blue-700">
@@ -352,6 +363,25 @@ export default function ProductDetailPage() {
                 <button
                   onClick={handleRemoveUploadedImage}
                   className="text-blue-600 hover:text-red-600 transition-colors"
+                  title="Yüklenen resmi kaldır"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )}
+
+            {customDesign && (
+              <div className="flex items-center justify-between bg-orange-50 border border-orange-200 p-3 rounded">
+                <div className="flex items-center gap-2 text-xs text-orange-700">
+                  <Sparkles size={14} />
+                  <span className="font-semibold">
+                    Tasarım paneli ile özelleştirildi
+                  </span>
+                </div>
+                <button
+                  onClick={handleRemoveCustomDesign}
+                  className="text-orange-600 hover:text-red-600 transition-colors"
+                  title="Özel tasarımı kaldır"
                 >
                   <X size={16} />
                 </button>
@@ -371,7 +401,7 @@ export default function ProductDetailPage() {
                 </div>
                 <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 leading-tight">
                   {product.title}
-                  {(customDesign || uploadedImagePreview) && (
+                  {finalCustomImage && (
                     <span className="ml-2 text-sm font-normal text-orange-600">
                       (Özelleştirilmiş)
                     </span>
@@ -408,7 +438,7 @@ export default function ProductDetailPage() {
                 </div>
 
                 {/* Özelleştirme Bilgisi */}
-                {(customDesign || uploadedImagePreview) && (
+                {finalCustomImage && (
                   <div className="bg-gradient-to-r from-orange-50 to-pink-50 border border-orange-200 p-4 rounded space-y-2">
                     <div className="flex items-center gap-2 text-xs font-bold text-orange-700 uppercase tracking-wider">
                       <Sparkles size={14} />
@@ -444,7 +474,7 @@ export default function ProductDetailPage() {
                     ) : (
                       <>
                         <Upload size={16} className="text-slate-500" />
-                        Logolu Resmini Yükle
+                        Kendi Resmini Yükle
                       </>
                     )}
                   </button>

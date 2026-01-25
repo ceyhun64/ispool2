@@ -25,33 +25,22 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
     try {
       const response = await fetch("/api/send-mail", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          recipients: ["ispoolofficial@gmail.com"], // Mailin gideceği adres
+          recipients: ["ispoolofficial@gmail.com"],
           subject: `Yeni İletişim Formu: ${formData.name}`,
-          message: `
-            Gönderen: ${formData.name}
-            E-Posta: ${formData.email}
-            
-            Mesaj:
-            ${formData.message}
-          `,
+          message: `Gönderen: ${formData.name}\nE-Posta: ${formData.email}\n\nMesaj:\n${formData.message}`,
         }),
       });
-
       const result = await response.json();
-
       if (response.ok) {
         toast.success(
           "Mesajınız başarıyla iletildi. En kısa sürede döneceğiz.",
         );
-        setFormData({ name: "", email: "", message: "" }); // Formu sıfırla
+        setFormData({ name: "", email: "", message: "" });
       } else {
         throw new Error(result.error || "Bir hata oluştu.");
       }
@@ -74,7 +63,6 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans selection:bg-orange-600 selection:text-white">
       <main className="max-w-[1400px] mx-auto px-6 py-24 md:py-40">
-        {/* HEADER */}
         <header className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-32">
           <div className="lg:col-span-8">
             <motion.div
@@ -83,7 +71,7 @@ export default function Contact() {
               className="space-y-6"
             >
               <span className="text-[10px] tracking-[0.5em] text-orange-600 font-bold uppercase block">
-                // İletişim Kanalları
+                İletişim Kanalları
               </span>
               <h1 className="text-5xl md:text-7xl font-extralight tracking-tighter leading-[0.9]">
                 Sizin için <br />
@@ -100,7 +88,6 @@ export default function Contact() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-24">
-          {/* INFO CARDS */}
           <aside className="lg:col-span-4 space-y-16">
             <div className="space-y-12">
               <ContactItem
@@ -122,14 +109,12 @@ export default function Contact() {
                 href="mailto:ispoolofficial@gmail.com"
               />
             </div>
-
             <div className="pt-12 border-t border-slate-100 flex items-center gap-4 text-slate-400 text-[10px] tracking-widest uppercase font-bold">
               <Globe size={14} className="text-orange-600" />
               <span>Uşak, Türkiye — Global Shipping</span>
             </div>
           </aside>
 
-          {/* DİNAMİK FORM */}
           <section className="lg:col-span-8">
             <form
               onSubmit={handleSubmit}
@@ -149,7 +134,6 @@ export default function Contact() {
                   required
                 />
               </div>
-
               <div className="group space-y-2">
                 <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400 group-focus-within:text-orange-600 transition-colors">
                   E-Posta
@@ -164,7 +148,6 @@ export default function Contact() {
                   required
                 />
               </div>
-
               <div className="md:col-span-2 group space-y-2">
                 <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400 group-focus-within:text-orange-600 transition-colors">
                   Mesajınız
@@ -179,7 +162,6 @@ export default function Contact() {
                   required
                 />
               </div>
-
               <div className="md:col-span-2 pt-6">
                 <button
                   type="submit"
@@ -203,8 +185,7 @@ export default function Contact() {
           </section>
         </div>
 
-        {/* MAP SECTION */}
-        <section className="mt-40 transition-all duration-1000 border-t border-slate-100 pt-20">
+        <section className="mt-40 border-t border-slate-100 pt-20">
           <div className="flex justify-between items-center mb-10">
             <h5 className="text-[10px] uppercase tracking-[0.4em] font-bold text-slate-400 italic">
               Location Terminal v1.0
@@ -216,9 +197,9 @@ export default function Contact() {
           </div>
           <div className="aspect-[21/7] w-full bg-slate-50 relative overflow-hidden rounded-xl border border-slate-100 group">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3135.244365314781!2d29.4000!3d38.6700!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzjCsDQwJzEyLjAiTiAyOcKwMjQnMDAuMCJF!5e0!3m2!1str!2str!4v1700000000000"
-              className="absolute inset-0 w-full h-full grayscale contrast-125 opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
-              allowFullScreen={true}
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3131.796033873426!2d29.4184654!3d38.6534563!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14c87f872338d977%3A0xc3f34568868f7b3a!2sİspool%20İş%20Güvenliği!5e0!3m2!1str!2str!4v1700000000000!5m2!1str!2str"
+              className="absolute inset-0 w-full h-full grayscale contrast-125 opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 border-0"
+              allowFullScreen
               loading="lazy"
             />
           </div>
@@ -228,7 +209,6 @@ export default function Contact() {
   );
 }
 
-// Yardımcı Bileşen (Refactored)
 function ContactItem({ icon, title, content, subContent, href }: any) {
   return (
     <div className="group space-y-3">

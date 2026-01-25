@@ -45,11 +45,15 @@ export default function DesignPanel({
       }
       if (e.key === "v") setTool("select");
       if (e.key === "h") setTool("pan");
+      if (e.key === "Delete" && activeLayerId) {
+        e.preventDefault();
+        deleteLayer(activeLayerId);
+      }
     };
 
     window.addEventListener("keydown", handleKeyboard);
     return () => window.removeEventListener("keydown", handleKeyboard);
-  }, [historyIndex, history]);
+  }, [historyIndex, history, activeLayerId]);
 
   // History Management
   const saveHistory = (newLayers: LogoLayer[]) => {
@@ -76,19 +80,32 @@ export default function DesignPanel({
   // Layer Operations
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      const newLayer: LogoLayer = {
-        id: `layer-${Date.now()}`,
-        image: url,
-        name: `Logo ${layers.length + 1}`,
-        ...DEFAULT_LAYER_VALUES,
-      };
-      const newLayers = [...layers, newLayer];
-      setLayers(newLayers);
-      setActiveLayerId(newLayer.id);
-      saveHistory(newLayers);
+    if (!file) return;
+
+    // Dosya boyutu kontrolü (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Dosya boyutu 5MB'dan küçük olmalıdır.");
+      return;
     }
+
+    // Dosya tipi kontrolü
+    if (!file.type.startsWith("image/")) {
+      toast.error("Lütfen geçerli bir resim dosyası seçin.");
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    const newLayer: LogoLayer = {
+      id: `layer-${Date.now()}`,
+      image: url,
+      name: `Logo ${layers.length + 1}`,
+      ...DEFAULT_LAYER_VALUES,
+    };
+    const newLayers = [...layers, newLayer];
+    setLayers(newLayers);
+    setActiveLayerId(newLayer.id);
+    saveHistory(newLayers);
+    toast.success("Logo eklendi!");
   };
 
   const updateLayer = (id: string, updates: Partial<LogoLayer>) => {
@@ -104,6 +121,7 @@ export default function DesignPanel({
     setLayers(newLayers);
     setActiveLayerId(newLayers[0]?.id || null);
     saveHistory(newLayers);
+    toast.info("Katman silindi");
   };
 
   const duplicateLayer = (id: string) => {
@@ -119,6 +137,7 @@ export default function DesignPanel({
       setLayers(newLayers);
       setActiveLayerId(newLayer.id);
       saveHistory(newLayers);
+      toast.success("Katman kopyalandı!");
     }
   };
 
@@ -152,6 +171,7 @@ export default function DesignPanel({
         flipH: false,
         flipV: false,
       });
+      toast.success("Katman sıfırlandı!");
     }
   };
 
@@ -201,6 +221,11 @@ export default function DesignPanel({
   };
 
   const handleExport = async () => {
+    if (layers.length === 0) {
+      toast.error("Lütfen önce bir logo ekleyin.");
+      return;
+    }
+
     const designArea = document.getElementById("design-area");
     if (!designArea) return;
 
@@ -252,6 +277,9 @@ export default function DesignPanel({
   const handleSaveAndClose = async () => {
     // Logo eklenmediyse direkt dosya yükleme işlevini tetikle
     if (layers.length === 0) {
+      toast.info(
+        "Logo eklenmedi. Dosya yükleme ekranına yönlendiriliyorsunuz...",
+      );
       if (onDirectUpload) {
         onDirectUpload();
       }

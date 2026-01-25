@@ -29,6 +29,7 @@ export interface CartItemType {
   id: number;
   product: Product;
   quantity: number;
+  customImage?: string | null;
 }
 
 export default function Cart() {
@@ -50,9 +51,10 @@ export default function Cart() {
 
   const loadGuestCart = useCallback(() => {
     const cart = getCart();
-    const guestCart = cart.map((item: any) => ({
+    const guestCart = cart.map((item: GuestCartItem) => ({
       id: item.productId,
       quantity: item.quantity,
+      customImage: item.customImage,
       product: {
         id: item.productId,
         title: item.title,
@@ -86,17 +88,29 @@ export default function Cart() {
     })();
   }, [checkLogin, fetchCart, loadGuestCart]);
 
-  const handleQuantityChange = async (id: number, delta: number) => {
+  const handleQuantityChange = async (
+    id: number,
+    delta: number,
+    customImage?: string | null,
+  ) => {
     if (!isLoggedIn) {
-      updateGuestCartQuantity(id, delta);
+      updateGuestCartQuantity(id, delta, customImage);
       loadGuestCart();
       return;
     }
-    const item = cartItems.find((c) => c.id === id);
+
+    const item = cartItems.find((c) => {
+      if (customImage) {
+        return c.id === id && c.customImage === customImage;
+      }
+      return c.id === id && !c.customImage;
+    });
+
     if (!item) return;
     const newQuantity = Math.max(1, item.quantity + delta);
+
     try {
-      const res = await fetch(`/api/cart/${id}`, {
+      const res = await fetch(`/api/cart/${item.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ quantity: newQuantity }),
@@ -108,17 +122,22 @@ export default function Cart() {
     }
   };
 
-  const handleRemove = async (id: number) => {
+  const handleRemove = async (
+    cartItemId: number,
+    productId?: number,
+    customImage?: string | null,
+  ) => {
     if (!isLoggedIn) {
-      removeFromGuestCart(id);
+      removeFromGuestCart(productId || cartItemId, customImage);
       loadGuestCart();
       return;
     }
-    const res = await fetch(`/api/cart/${id}`, {
+
+    const res = await fetch(`/api/cart/${cartItemId}`, {
       method: "DELETE",
       credentials: "include",
     });
-    if (res.ok) setCartItems((prev) => prev.filter((c) => c.id !== id));
+    if (res.ok) setCartItems((prev) => prev.filter((c) => c.id !== cartItemId));
   };
 
   const subtotal = cartItems.reduce(
@@ -130,7 +149,7 @@ export default function Cart() {
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
-      <div className="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 py-16 md:py-28">
+      <div className="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 py-12 md:py-16">
         <AnimatePresence mode="wait">
           {cartItems.length === 0 ? (
             <motion.div
@@ -138,17 +157,17 @@ export default function Cart() {
               animate={{ opacity: 1 }}
               className="flex flex-col items-center justify-center min-h-[60vh] text-center"
             >
-              <div className="mb-10 relative">
+              <div className="mb-8 relative">
                 <div className="absolute inset-0 bg-slate-50 scale-[2] rounded-full -z-10 blur-3xl" />
                 <ShoppingBag
                   strokeWidth={0.5}
                   className="h-24 w-24 text-slate-200"
                 />
               </div>
-              <h1 className="text-3xl font-bold tracking-tighter text-slate-900 mb-4 uppercase">
+              <h1 className="text-3xl font-bold tracking-tighter text-slate-900 mb-3 uppercase">
                 SEPETİNİZ ŞU ANDA BOŞ
               </h1>
-              <p className="text-slate-500 text-sm max-w-[320px] mb-12 leading-relaxed font-medium">
+              <p className="text-slate-500 text-sm max-w-[320px] mb-10 leading-relaxed font-medium">
                 Profesyonel iş güvenliği standartlarına uygun ekipmanlarımızı
                 inceleyerek projenize hazırlanın.
               </p>
@@ -161,10 +180,10 @@ export default function Cart() {
           ) : (
             <div className="max-w-7xl mx-auto">
               {/* Sayfa Başlığı ve Navigasyon */}
-              <header className="flex flex-col items-start mb-16">
+              <header className="flex flex-col items-start mb-12">
                 <Link
                   href="/products"
-                  className="group flex items-center gap-3 text-slate-400 hover:text-slate-900 transition-colors mb-8 text-[10px] font-bold tracking-[0.2em]"
+                  className="group flex items-center gap-3 text-slate-400 hover:text-slate-900 transition-colors mb-6 text-[10px] font-bold tracking-[0.2em]"
                 >
                   <ArrowLeft
                     size={14}
@@ -172,11 +191,10 @@ export default function Cart() {
                   />
                   ÜRÜNLERE DÖN
                 </Link>
-                <div className="flex flex-col md:flex-row md:items-end gap-4 w-full justify-between border-b border-slate-100 pb-10">
+                <div className="flex flex-col md:flex-row md:items-end gap-4 w-full justify-between border-b border-slate-100 pb-6">
                   <div>
                     <h1 className="text-3xl font-black tracking-tighter text-slate-900 uppercase">
-                      SEPET{" "}
-                     
+                      SEPET
                     </h1>
                     <p className="text-slate-400 text-xs mt-2 font-medium tracking-widest uppercase">
                       Seçili Profesyonel Ekipmanlar / {cartItems.length} Kalem
@@ -185,7 +203,7 @@ export default function Cart() {
                 </div>
               </header>
 
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-20">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                 {/* Ürün Listesi Konteynırı */}
                 <div className="lg:col-span-7 xl:col-span-8">
                   <div className="flex flex-col">
@@ -198,14 +216,32 @@ export default function Cart() {
                           ease: [0.19, 1, 0.22, 1],
                           duration: 1,
                         }}
-                        key={item.id}
+                        key={`${item.id}-${item.customImage || "default"}`}
                         className="border-b border-slate-100"
                       >
                         <CartItem
                           item={item}
-                          onIncrease={() => handleQuantityChange(item.id, 1)}
-                          onDecrease={() => handleQuantityChange(item.id, -1)}
-                          onRemove={() => handleRemove(item.id)}
+                          onIncrease={() =>
+                            handleQuantityChange(
+                              isLoggedIn ? item.id : item.product.id,
+                              1,
+                              item.customImage,
+                            )
+                          }
+                          onDecrease={() =>
+                            handleQuantityChange(
+                              isLoggedIn ? item.id : item.product.id,
+                              -1,
+                              item.customImage,
+                            )
+                          }
+                          onRemove={() =>
+                            handleRemove(
+                              item.id,
+                              item.product.id,
+                              item.customImage,
+                            )
+                          }
                         />
                       </motion.div>
                     ))}
@@ -218,7 +254,7 @@ export default function Cart() {
                     <CartSummary subtotal={subtotal} />
 
                     {/* Güvenlik Notu Bölümü */}
-                    <div className="mt-8 p-6 bg-slate-50/50 border border-slate-100 flex items-start gap-4">
+                    <div className="mt-6 p-6 bg-slate-50/50 border border-slate-100 flex items-start gap-4">
                       <ShieldCheck className="h-5 w-5 text-slate-900 shrink-0 mt-0.5" />
                       <p className="text-[10px] text-slate-500 leading-relaxed font-medium uppercase tracking-wider">
                         Tedarik sürecimiz endüstriyel standartlarda takip
@@ -239,17 +275,17 @@ export default function Cart() {
 
 function CartLoadingSkeleton() {
   return (
-    <div className="max-w-[1600px] mx-auto px-6 py-24">
-      <Skeleton className="h-16 w-64 mb-16 bg-slate-100 rounded-none" />
-      <div className="flex flex-col lg:flex-row gap-20">
-        <div className="flex-1 space-y-10">
+    <div className="max-w-[1600px] mx-auto px-6 py-16">
+      <Skeleton className="h-16 w-64 mb-12 bg-slate-100 rounded-none" />
+      <div className="flex flex-col lg:flex-row gap-12">
+        <div className="flex-1 space-y-8">
           {[1, 2].map((i) => (
-            <div key={i} className="flex gap-8 pb-10 border-b border-slate-50">
+            <div key={i} className="flex gap-6 pb-8 border-b border-slate-50">
               <Skeleton className="w-40 h-40 bg-slate-50 rounded-none" />
-              <div className="flex-1 space-y-5 py-2">
+              <div className="flex-1 space-y-4 py-2">
                 <Skeleton className="h-6 w-1/2 bg-slate-50" />
                 <Skeleton className="h-4 w-1/4 bg-slate-50" />
-                <Skeleton className="h-10 w-32 mt-6 bg-slate-50 rounded-none" />
+                <Skeleton className="h-10 w-32 mt-4 bg-slate-50 rounded-none" />
               </div>
             </div>
           ))}

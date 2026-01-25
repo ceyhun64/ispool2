@@ -48,6 +48,7 @@ export interface CartItemType {
   productId: number;
   quantity: number;
   product: Product;
+  customImage?: string | null;
 }
 
 interface CartDropdownProps {
@@ -114,6 +115,7 @@ const CartDropdown = forwardRef(
           id: item.productId,
           productId: item.productId,
           quantity: item.quantity,
+          customImage: item.customImage,
           product: {
             id: item.productId,
             title: item.title,
@@ -161,20 +163,30 @@ const CartDropdown = forwardRef(
       return () => window.removeEventListener("cartUpdated", handleCartUpdate);
     }, [isLoggedIn, fetchCart, loadGuestCart, guest]);
 
-    const handleQuantityChange = async (id: number, delta: number) => {
+    const handleQuantityChange = async (
+      id: number,
+      delta: number,
+      customImage?: string | null,
+    ) => {
       if (!isLoggedIn) {
-        updateGuestCartQuantity(id, delta);
+        updateGuestCartQuantity(id, delta, customImage);
         loadGuestCart();
         return;
       }
 
-      const item = cartItems.find((c) => c.id === id);
+      const item = cartItems.find((c) => {
+        if (customImage) {
+          return c.id === id && c.customImage === customImage;
+        }
+        return c.id === id && !c.customImage;
+      });
+
       if (!item) return;
 
       const newQuantity = Math.max(1, item.quantity + delta);
 
       try {
-        const res = await fetch(`/api/cart/${id}`, {
+        const res = await fetch(`/api/cart/${item.id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ quantity: newQuantity }),
@@ -189,7 +201,7 @@ const CartDropdown = forwardRef(
         const updatedItem = await res.json();
         setCartItems((prev) =>
           prev.map((c) =>
-            c.id === id ? { ...c, quantity: updatedItem.quantity } : c,
+            c.id === item.id ? { ...c, quantity: updatedItem.quantity } : c,
           ),
         );
       } catch (err) {
@@ -197,19 +209,23 @@ const CartDropdown = forwardRef(
       }
     };
 
-    const handleRemove = async (id: number) => {
+    const handleRemove = async (
+      cartItemId: number,
+      productId?: number,
+      customImage?: string | null,
+    ) => {
       if (!isLoggedIn) {
-        removeFromGuestCart(id);
+        removeFromGuestCart(productId || cartItemId, customImage);
         loadGuestCart();
         return;
       }
       try {
-        const res = await fetch(`/api/cart/${id}`, {
+        const res = await fetch(`/api/cart/${cartItemId}`, {
           method: "DELETE",
           credentials: "include",
         });
         if (res.ok) {
-          setCartItems((prev) => prev.filter((c) => c.id !== id));
+          setCartItems((prev) => prev.filter((c) => c.id !== cartItemId));
           toast.success("Ürün kaldırıldı");
         }
       } catch {
@@ -250,11 +266,11 @@ const CartDropdown = forwardRef(
                 <span className="text-[10px] tracking-[0.4em] text-slate-400 uppercase font-black leading-none">
                   EKİPMAN SEÇİMİ
                 </span>
-                <span className="text-3xl font-black tracking-tighter text-slate-900 uppercase">
+                <span className="text-2xl font-black  text-slate-900 uppercase">
                   SEPETİM
                 </span>
               </SheetTitle>
-              <div className="flex items-center gap-2 bg-slate-900 px-4 py-2 text-white">
+              <div className="flex items-center gap-2 bg-slate-100 px-4 py-2 text-slate-900">
                 <Package className="h-3.5 w-3.5" strokeWidth={2.5} />
                 <span className="text-[10px] font-black uppercase tracking-widest font-mono">
                   {cartItems.length} ÜRÜN
@@ -312,7 +328,7 @@ const CartDropdown = forwardRef(
                 <AnimatePresence mode="popLayout">
                   {cartItems.map((item, index) => (
                     <motion.div
-                      key={item.id}
+                      key={`${item.id}-${item.customImage || "default"}`}
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
@@ -326,6 +342,7 @@ const CartDropdown = forwardRef(
                         item={item}
                         onQuantityChange={handleQuantityChange}
                         onRemove={handleRemove}
+                        isLoggedIn={isLoggedIn}
                       />
                     </motion.div>
                   ))}
@@ -365,7 +382,7 @@ const CartDropdown = forwardRef(
                       Vergiler Dahil Net Tutar
                     </span>
                   </div>
-                  <span className="text-3xl font-black text-slate-900 tracking-tighter font-mono leading-none">
+                  <span className="text-xl md:tex-2xl font-black text-slate-900 tracking-tighter font-mono leading-none">
                     ₺
                     {total.toLocaleString("tr-TR", {
                       minimumFractionDigits: 2,
