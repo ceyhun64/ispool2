@@ -74,7 +74,7 @@ export default function YeniUrunlerCarousel() {
   }
 
   return (
-    <div className="bg-white py-20 border-t px-12 border-slate-50 overflow-hidden">
+    <div className="bg-slate-50 py-20 border-t px-12 border-slate-50 overflow-hidden">
       <div className="container mx-auto relative">
         {/* Modern Header - Boyut Optimize Edildi */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">

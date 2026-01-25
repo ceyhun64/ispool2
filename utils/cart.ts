@@ -1,12 +1,13 @@
 // utils/cart.ts
-
 export interface GuestCartItem {
   productId: number;
   title: string;
-  price: number; // Prisma modelinizde 'Int price' olduğu için buna uyarladık
+  price: number;
   image: string;
   quantity: number;
   category?: string;
+  customImage?: string | null; // Özelleştirilmiş resim URL'si (base64 veya cloudinary URL)
+  isCustom?: boolean; // Ürünün özelleştirilmiş olup olmadığını belirtir
 }
 
 const CART_KEY = "guestCart";
@@ -27,18 +28,30 @@ export const getCart = (): GuestCartItem[] => {
 export const saveCart = (cart: GuestCartItem[]) => {
   if (typeof window !== "undefined") {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
-    // Navbar gibi bileşenlerin anlık güncellenmesi için custom event tetikler
     window.dispatchEvent(new CustomEvent("cartUpdated"));
   }
 };
 
-// Sepete ürün ekle
+// Sepete ürün ekle (özelleştirilmiş ürünler için destek)
 export const addToGuestCart = (
   product: Omit<GuestCartItem, "quantity">,
-  quantity = 1
+  quantity = 1,
 ) => {
   const cart = getCart();
-  const existing = cart.find((item) => item.productId === product.productId);
+
+  // Özelleştirilmiş ürünler için aynı productId + aynı customImage kontrolü
+  const existing = cart.find((item) => {
+    if (product.isCustom && product.customImage) {
+      // Özelleştirilmiş ürün: hem ID hem de customImage eşleşmeli
+      return (
+        item.productId === product.productId &&
+        item.customImage === product.customImage &&
+        item.isCustom === true
+      );
+    }
+    // Normal ürün: sadece ID eşleşmeli ve özelleştirilmiş olmamalı
+    return item.productId === product.productId && !item.isCustom;
+  });
 
   if (existing) {
     existing.quantity += quantity;
@@ -49,10 +62,26 @@ export const addToGuestCart = (
   saveCart(cart);
 };
 
-// Sepetteki ürün miktarını güncelle (+1 veya -1 için delta kullanılır)
-export const updateGuestCartQuantity = (productId: number, delta: number) => {
+// Sepetteki ürün miktarını güncelle
+export const updateGuestCartQuantity = (
+  productId: number,
+  delta: number,
+  customImage?: string | null,
+) => {
   const cart = getCart();
-  const index = cart.findIndex((c) => c.productId === productId);
+
+  const index = cart.findIndex((item) => {
+    // Özelleştirilmiş ürünler için hem ID hem customImage kontrolü
+    if (customImage) {
+      return (
+        item.productId === productId &&
+        item.customImage === customImage &&
+        item.isCustom === true
+      );
+    }
+    // Normal ürünler için sadece ID kontrolü ve özelleştirilmiş olmama kontrolü
+    return item.productId === productId && !item.isCustom;
+  });
 
   if (index !== -1) {
     cart[index].quantity = Math.max(1, cart[index].quantity + delta);
@@ -61,8 +90,25 @@ export const updateGuestCartQuantity = (productId: number, delta: number) => {
 };
 
 // Sepetten ürün çıkar
-export const removeFromGuestCart = (productId: number) => {
-  const newCart = getCart().filter((c) => c.productId !== productId);
+export const removeFromGuestCart = (
+  productId: number,
+  customImage?: string | null,
+) => {
+  const cart = getCart();
+
+  const newCart = cart.filter((item) => {
+    // Özelleştirilmiş ürünler için hem ID hem customImage kontrolü
+    if (customImage) {
+      return !(
+        item.productId === productId &&
+        item.customImage === customImage &&
+        item.isCustom === true
+      );
+    }
+    // Normal ürünler için sadece ID kontrolü ve özelleştirilmiş olmama kontrolü
+    return !(item.productId === productId && !item.isCustom);
+  });
+
   saveCart(newCart);
 };
 
@@ -71,6 +117,20 @@ export const getGuestCartCount = (): number => {
   if (typeof window === "undefined") return 0;
   const cart = getCart();
   return cart.length;
+};
+
+// Sepetteki toplam ürün adedini getir (adet bazlı)
+export const getGuestCartTotalItems = (): number => {
+  if (typeof window === "undefined") return 0;
+  const cart = getCart();
+  return cart.reduce((total, item) => total + item.quantity, 0);
+};
+
+// Sepetteki toplam tutarı hesapla
+export const getGuestCartTotal = (): number => {
+  if (typeof window === "undefined") return 0;
+  const cart = getCart();
+  return cart.reduce((total, item) => total + item.price * item.quantity, 0);
 };
 
 // Sepeti tamamen temizle

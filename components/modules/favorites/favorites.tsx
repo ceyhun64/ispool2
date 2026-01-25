@@ -14,11 +14,11 @@ export default function Favorites() {
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 selection:bg-orange-600 selection:text-white">
-      <div className="max-w-[1400px] mx-auto px-6 py-20 md:py-32">
+      <div className="max-w-[1400px] mx-auto px-6 py-16 md:py-20">
         {/* HEADER: Minimalist & Clean */}
         {!loading && (
-          <header className="mb-24 flex flex-col md:flex-row justify-between items-baseline gap-8 border-b border-slate-100 pb-12">
-            <div className="space-y-4">
+          <header className="mb-12 flex flex-col md:flex-row justify-between items-baseline gap-6 border-b border-slate-100 pb-8">
+            <div className="space-y-3">
               <div className="flex items-center gap-2 text-orange-600">
                 <Heart size={14} fill="currentColor" />
                 <span className="text-[10px] tracking-[0.4em] font-bold uppercase">
@@ -44,9 +44,9 @@ export default function Favorites() {
         )}
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="space-y-6">
+              <div key={i} className="space-y-4">
                 <Skeleton className="aspect-[3/4] w-full bg-slate-50 rounded-none" />
                 <Skeleton className="h-4 w-2/3 bg-slate-50" />
               </div>
@@ -57,7 +57,7 @@ export default function Favorites() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex flex-col items-center justify-center py-40 text-center space-y-10"
+            className="flex flex-col items-center justify-center py-32 text-center space-y-8"
           >
             <div className="relative">
               <Heart
@@ -67,7 +67,7 @@ export default function Favorites() {
               />
               <Minus className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-slate-300 w-12" />
             </div>
-            <div className="space-y-4">
+            <div className="space-y-3">
               <h3 className="text-2xl font-light tracking-tight">
                 Listeniz şu an boş.
               </h3>
@@ -89,7 +89,7 @@ export default function Favorites() {
           /* GRID: Boutique Gallery Look */
           <motion.div
             layout
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-16"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12"
           >
             <AnimatePresence mode="popLayout">
               {favorites
@@ -113,7 +113,7 @@ export default function Favorites() {
       </div>
 
       {/* FOOTER ACCENT: Editoryal Tipografi */}
-      <footer className="py-12 border-t border-slate-50">
+      <footer className="py-8 border-t border-slate-50">
         <div className="max-w-[1400px] mx-auto px-6 flex justify-between items-center text-[9px] tracking-[0.5em] text-slate-300 font-bold uppercase">
           <span>IsPool Performance</span>
           <span className="hidden md:block">Selection Series // 2026</span>

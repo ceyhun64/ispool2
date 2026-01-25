@@ -86,7 +86,7 @@ export default function SocialSidebar() {
                   }}
                   className="group relative"
                 >
-                  <div className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-950 hover:border-slate-400 hover:shadow-lg transition-all duration-300">
+                  <div className="w-10 h-10 rounded-full bg-slate-900/90 backdrop-blur-sm border border-slate-400 flex items-center justify-center text-slate-200 hover:text-slate-300 hover:border-slate-400 hover:shadow-lg transition-all duration-300">
                     <item.icon size={18} strokeWidth={1.2} />
                   </div>
 

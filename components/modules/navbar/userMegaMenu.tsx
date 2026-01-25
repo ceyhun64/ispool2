@@ -217,7 +217,7 @@ export default function UserMegaMenu({
                 </div>
               )}
               <Link
-                href="/help"
+                href="/help/contact"
                 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-900 transition-colors"
               >
                 Yardım Merkezi
