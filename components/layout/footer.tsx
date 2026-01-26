@@ -11,14 +11,23 @@ import {
   Mail,
   MapPin,
   MessageCircle,
+  ChevronDown, // Yeni ikon eklendi
 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils"; // Tailwind sınıflarını yönetmek için yardımcı
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Mobil accordion durumu için state
+  const [openSection, setOpenSection] = useState<string | null>(null);
+
+  const toggleSection = (key: string) => {
+    setOpenSection(openSection === key ? null : key);
+  };
 
   const whatsappNumber = "+90 546 225 56 59";
   const whatsappLink = `https://wa.me/${whatsappNumber.replace(/[^\d]/g, "")}`;
@@ -34,7 +43,6 @@ export default function Footer() {
     { icon: Phone, href: `tel:${whatsappNumber}`, label: "Telefon" },
   ];
 
-  // Görseldeki linklerin birebir kopyası
   const menuGroups = {
     kurumsal: {
       title: "Kurumsal",
@@ -104,33 +112,26 @@ export default function Footer() {
 
   return (
     <footer className="bg-slate-950 text-slate-400 relative border-t-4 border-orange-600 font-sans">
-      {/* Üst Bilgi Bantı */}
-      <div className="border-b border-white/5 bg-white/5">
+      {/* Üst Bilgi Bantı - Mobilde gizlendi, orta ve büyük ekranlarda görünür */}
+      <div className="hidden md:block border-b border-white/5 bg-white/5">
         <div className="container mx-auto px-6 md:px-12 py-6">
-          <div className="flex flex-wrap justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="text-orange-600" size={24} />
-              <span className="text-[11px] font-black tracking-widest text-white uppercase">
-                EN ISO Sertifikalı Ürünler
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Truck className="text-orange-600" size={24} />
-              <span className="text-[11px] font-black tracking-widest text-white uppercase">
-                Aynı Gün Lojistik Çıkışı
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <MapPin className="text-orange-600" size={24} />
-              <span className="text-[11px] font-black tracking-widest text-white uppercase">
-                Global Tedarik Ağı
-              </span>
-            </div>
+          <div className="flex flex-wrap justify-between items-center gap-6 md:gap-8">
+            {[
+              { Icon: ShieldCheck, text: "EN ISO Sertifikalı Ürünler" },
+              { Icon: Truck, text: "Aynı Gün Lojistik Çıkışı" },
+              { Icon: MapPin, text: "Global Tedarik Ağı" },
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-center gap-3 min-w-fit">
+                <item.Icon className="text-orange-600 shrink-0" size={24} />
+                <span className="text-[11px] font-black tracking-widest text-white uppercase whitespace-nowrap">
+                  {item.text}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
-
-      <div className="container mx-auto px-6 md:px-12 py-16">
+      <div className="container mx-auto px-6 md:px-12 py-12 md:py-16">
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-12">
           {/* 1. Kolon: Marka ve Bülten */}
           <div className="xl:col-span-3 space-y-8">
@@ -182,14 +183,36 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* 2. Orta Alan: Link Grupları (Görseldeki 4'lü yapı) */}
-          <div className="xl:col-span-9 grid grid-cols-2 md:grid-cols-4 gap-8">
+          {/* 2. Orta Alan: Accordion Link Grupları */}
+          <div className="xl:col-span-9 grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-8">
             {Object.entries(menuGroups).map(([key, group]) => (
-              <div key={key} className="space-y-6">
-                <h4 className="text-white text-[15px] font-bold">
-                  {group.title}
-                </h4>
-                <ul className="space-y-3">
+              <div key={key} className="border-b border-white/5 md:border-none">
+                {/* Accordion Başlığı (Mobilde buton, masaüstünde düz yazı) */}
+                <button
+                  onClick={() => toggleSection(key)}
+                  className="w-full md:cursor-default py-4 md:py-0 flex items-center justify-between text-left focus:outline-none group"
+                >
+                  <h4 className="text-white text-[15px] font-bold">
+                    {group.title}
+                  </h4>
+                  <ChevronDown
+                    size={18}
+                    className={cn(
+                      "text-slate-500 transition-transform md:hidden",
+                      openSection === key && "rotate-180",
+                    )}
+                  />
+                </button>
+
+                {/* Link Listesi (Mobilde gizlenip açılır, masaüstünde hep açık) */}
+                <ul
+                  className={cn(
+                    "space-y-3 overflow-hidden transition-all duration-300 ease-in-out md:max-h-none md:mt-6 md:pb-0",
+                    openSection === key
+                      ? "max-h-96 pb-6 mt-2"
+                      : "max-h-0 md:max-h-none",
+                  )}
+                >
                   {group.links.map((link) => (
                     <li key={link.label}>
                       <Link
@@ -210,7 +233,7 @@ export default function Footer() {
       {/* Alt Bar */}
       <div className="bg-black py-8 border-t border-white/5">
         <div className="container mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-600">
+          <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-600 text-center md:text-left">
             © {currentYear} İŞPOOL ENDÜSTRİYEL GÜVENLİK SİSTEMLERİ.
           </div>
           <Image

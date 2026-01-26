@@ -249,7 +249,7 @@ export default function ProductDetailPage() {
     : images;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-orange-100 selection:text-orange-900">
+    <div className="min-h-screen bg-slate-100 text-slate-900 font-sans selection:bg-orange-100 selection:text-orange-900">
       {showPreview && (
         <DesignPanel
           productImage={images[0] || product.mainImage}
@@ -299,12 +299,21 @@ export default function ProductDetailPage() {
                 )}
               </div>
 
-              <div className="absolute bottom-6 right-6 z-20 flex gap-2">
+              <div className="absolute bottom-3 right-3 md:bottom-6 md:right-6 z-20 flex gap-2">
                 <button
                   onClick={() => setShowPreview(true)}
-                  className="bg-orange-600 text-white px-5 py-3 text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-2xl hover:bg-slate-900 transition-all scale-100 hover:scale-105 active:scale-95"
+                  className="
+    bg-orange-600 text-white
+    px-3 py-2 text-[10px]
+    sm:px-5 sm:py-3 sm:text-[11px]
+    font-bold uppercase tracking-wider
+    flex items-center gap-1.5 sm:gap-2
+    shadow-xl
+    hover:bg-slate-900 transition-all
+    sm:scale-100 sm:hover:scale-105 sm:active:scale-95
+  "
                 >
-                  <Eye size={16} />{" "}
+                  <Eye size={14} className="sm:w-4 sm:h-4" />
                   {customDesign || uploadedImagePreview
                     ? "Yeniden Tasarla"
                     : "Logonu Ekle"}
@@ -479,7 +488,7 @@ export default function ProductDetailPage() {
                     )}
                   </button>
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center bg-slate-100 h-12 px-4 gap-5 border border-slate-200">
+                    <div className="flex items-center bg-white h-12 px-4 gap-5 border border-slate-200">
                       <button
                         onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                         className="text-slate-500 hover:text-orange-600 transition-colors"
@@ -571,7 +580,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        <div className="mt-20 pt-10 border-t border-slate-100">
+        <div className="mt-5 pt-5 border-t border-slate-100">
           <ProductTabs
             productId={product.id}
             productTitle={product.title}
