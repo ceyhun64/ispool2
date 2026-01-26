@@ -44,7 +44,7 @@ const Filter: React.FC<FilterProps> = ({
   const pathname = usePathname();
 
   return (
-    <div className=" bg-slate-50">
+    <div className="bg-slate-50">
       {/* 1. KATEGORİLER */}
       <section>
         <div className="flex items-center gap-2 mb-6">
@@ -64,7 +64,7 @@ const Filter: React.FC<FilterProps> = ({
                   "group relative flex items-center justify-between py-2.5 px-3 transition-all duration-300",
                   isActive
                     ? "bg-slate-950 text-white shadow-lg shadow-slate-200"
-                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-950"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-950",
                 )}
               >
                 <span className="text-[11px] font-bold tracking-tight uppercase">
@@ -76,7 +76,7 @@ const Filter: React.FC<FilterProps> = ({
                     "transition-transform duration-300",
                     isActive
                       ? "opacity-100 rotate-90"
-                      : "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"
+                      : "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0",
                   )}
                 />
               </button>
@@ -86,7 +86,7 @@ const Filter: React.FC<FilterProps> = ({
       </section>
 
       {/* 2. MARKALAR */}
-      <section className="pt-8 border-t border-slate-100">
+      <section className="pt-8 border-t border-slate-100 mt-8">
         <div className="flex items-center gap-2 mb-6">
           <Factory size={14} className="text-orange-600" />
           <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">
@@ -106,7 +106,7 @@ const Filter: React.FC<FilterProps> = ({
       </section>
 
       {/* 3. FİYAT ARALIĞI */}
-      <section className="pt-8 border-t border-slate-100">
+      <section className="pt-8 border-t border-slate-100 mt-8">
         <div className="flex items-center gap-2 mb-8">
           <Banknote size={14} className="text-orange-600" />
           <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">
@@ -126,7 +126,7 @@ const Filter: React.FC<FilterProps> = ({
           />
 
           <div className="flex items-center gap-3">
-            <div className="flex-1 p-3 bg-slate-50 border border-slate-100">
+            <div className="flex-1 p-3 bg-white border border-slate-100">
               <span className="block text-[8px] font-black text-slate-400 uppercase mb-1">
                 Min
               </span>
@@ -135,7 +135,7 @@ const Filter: React.FC<FilterProps> = ({
               </span>
             </div>
             <div className="w-2 h-[1px] bg-slate-300" />
-            <div className="flex-1 p-3 bg-slate-50 border border-slate-100">
+            <div className="flex-1 p-3 bg-white border border-slate-100">
               <span className="block text-[8px] font-black text-slate-400 uppercase mb-1">
                 Max
               </span>
@@ -154,14 +154,13 @@ const Filter: React.FC<FilterProps> = ({
           setMinPrice(0);
           setMaxPrice(300000);
         }}
-        className="group w-full mt-4 py-4 flex items-center justify-center gap-3 bg-white border-2 border-slate-950 overflow-hidden relative transition-all duration-500"
+        className="group w-full mt-8 py-4 flex items-center justify-center gap-3 bg-white border-2 border-slate-950 overflow-hidden relative transition-all duration-500 hover:bg-slate-950"
       >
-        <div className="absolute inset-0 bg-slate-950 translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500 ease-out" />
         <RotateCcw
           size={14}
-          className="relative z-10 group-hover:text-white transition-colors group-hover:rotate-[-180deg] duration-700"
+          className="relative z-10 text-slate-950 group-hover:text-white transition-colors group-hover:rotate-[-180deg] duration-700"
         />
-        <span className="relative z-10 text-[10px] font-black tracking-[0.2em] uppercase group-hover:text-white transition-colors">
+        <span className="relative z-10 text-[10px] font-black tracking-[0.2em] uppercase text-slate-950 group-hover:text-white transition-colors">
           Parametreleri Sıfırla
         </span>
       </button>

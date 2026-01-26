@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import {
@@ -11,6 +10,14 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import {
+  Grid2X2,
+  LayoutGrid,
+  ArrowDownAZ,
+  ArrowUpAZ,
+  TrendingUp,
+  TrendingDown,
+} from "lucide-react";
 
 interface MobileFilterProps {
   onClose?: () => void;
@@ -20,38 +27,46 @@ interface MobileFilterProps {
   maxPrice: number;
   setMinPrice: (val: number) => void;
   setMaxPrice: (val: number) => void;
-  gridCols: number;
-  setGridCols: (cols: any) => void;
+  mobileGridCols: 1 | 2;
+  setMobileGridCols: (cols: 1 | 2) => void;
   sort: string;
   setSort: (sort: any) => void;
 }
 
 const productCategories = [
   { label: "Tüm Koleksiyon", value: "all" },
-  { label: "Oturma Takımları", value: "seating_sets" },
-  { label: "Masa Takımları", value: "table_sets" },
-  { label: "Salıncaklar", value: "swing" },
-  { label: "Şezlonglar", value: "sunbed" },
-  { label: "Barbekü Serisi", value: "barbecue" },
+  { label: "İş Elbiseleri", value: "is-elbiseleri" },
+  { label: "Ayak Korumaları", value: "ayak-koruma" },
+  { label: "El Korumaları", value: "el-koruma" },
+  { label: "Teknik Ekipmanlar", value: "teknik" },
 ];
 
 const sortOptions = [
-  { id: "az", label: "A'dan Z'ye" },
-  { id: "za", label: "Z'den A'ya" },
-  { id: "priceLow", label: "Düşük Fiyat" },
-  { id: "priceHigh", label: "Yüksek Fiyat" },
+  { id: "az", label: "A'dan Z'ye", icon: ArrowDownAZ },
+  { id: "za", label: "Z'den A'ya", icon: ArrowUpAZ },
+  { id: "priceLow", label: "Düşük Fiyat", icon: TrendingDown },
+  { id: "priceHigh", label: "Yüksek Fiyat", icon: TrendingUp },
+];
+
+const brands = [
+  "U-Power",
+  "Base",
+  "3M",
+  "Delta Plus",
+  "Ansell",
+  "Portwest",
+  "Polyboot",
 ];
 
 const MobileFilter: React.FC<MobileFilterProps> = ({
-  onClose,
   selectedCategory,
   onSelectCategory,
   minPrice,
   maxPrice,
   setMinPrice,
   setMaxPrice,
-  gridCols,
-  setGridCols,
+  mobileGridCols,
+  setMobileGridCols,
   sort,
   setSort,
 }) => {
@@ -63,34 +78,92 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
   };
 
   const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-light mb-6">
+    <h3 className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-black mb-6">
       {children}
     </h3>
   );
 
   return (
-    <div className="flex flex-col gap-y-12 pb-10">
-      {/* BAŞLIK VE KAPATMA */}
-      <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-        <span className="text-[11px] uppercase tracking-[0.3em] font-medium text-slate-900">
-          Filtreleme
-        </span>
-        {onClose && (
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-slate-900 transition-colors"
-          >
-            <X strokeWidth={1.2} size={20} />
-          </button>
-        )}
-      </div>
+    <div className="flex flex-col gap-y-10 pb-10">
+      {/* 1. GÖRÜNÜM SEÇİMİ (MOBİL İÇİN 1-2 KOLON) */}
+      <section>
+        <SectionTitle>Görünüm Düzeni</SectionTitle>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { value: 1, label: "Tek Kolon", icon: LayoutGrid },
+            { value: 2, label: "İki Kolon", icon: Grid2X2 },
+          ].map((option) => {
+            const Icon = option.icon;
+            const isActive = mobileGridCols === option.value;
+            return (
+              <button
+                key={option.value}
+                onClick={() => setMobileGridCols(option.value as 1 | 2)}
+                className={cn(
+                  "py-5 border-2 transition-all flex flex-col items-center gap-3",
+                  isActive
+                    ? "border-slate-950 bg-slate-950 text-white"
+                    : "border-slate-200 bg-white text-slate-400 hover:border-slate-300",
+                )}
+              >
+                <Icon size={20} />
+                <span className="text-[10px] font-black uppercase tracking-tight">
+                  {option.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
-      {/* 1. KATEGORİ */}
+      {/* 2. SIRALAMA */}
+      <section>
+        <SectionTitle>Sıralama Kriteri</SectionTitle>
+        <div className="space-y-2">
+          {sortOptions.map((option) => {
+            const Icon = option.icon;
+            const isActive = sort === option.id;
+            return (
+              <button
+                key={option.id}
+                onClick={() => setSort(option.id)}
+                className={cn(
+                  "w-full flex items-center gap-4 p-4 border transition-all text-left group",
+                  isActive
+                    ? "border-orange-500 bg-orange-50/30"
+                    : "border-slate-100 hover:border-slate-200 bg-white",
+                )}
+              >
+                <div
+                  className={cn(
+                    "p-2 transition-colors",
+                    isActive
+                      ? "bg-orange-500 text-white"
+                      : "bg-slate-100 text-slate-400 group-hover:bg-slate-200",
+                  )}
+                >
+                  <Icon size={16} />
+                </div>
+                <span
+                  className={cn(
+                    "text-[12px] font-bold uppercase tracking-tight",
+                    isActive ? "text-slate-900" : "text-slate-500",
+                  )}
+                >
+                  {option.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 3. KATEGORİ */}
       <section>
         <SectionTitle>Koleksiyon</SectionTitle>
         <Select value={selectedCategory} onValueChange={handleCategoryChange}>
-          <SelectTrigger className="w-full border-none bg-slate-50/50 h-12 rounded-none px-4 focus:ring-0 border-b border-slate-200">
-            <div className="text-[14px] text-slate-800 font-light italic">
+          <SelectTrigger className="w-full border-none bg-white h-12 rounded-none px-4 focus:ring-0 border border-slate-200 text-left">
+            <div className="text-[13px] text-slate-800 font-medium">
               <SelectValue placeholder="Seçiniz" />
             </div>
           </SelectTrigger>
@@ -108,7 +181,22 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
         </Select>
       </section>
 
-      {/* 2. FİYAT */}
+      {/* 4. MARKALAR */}
+      <section>
+        <SectionTitle>Çözüm Ortakları</SectionTitle>
+        <div className="grid grid-cols-2 gap-2">
+          {brands.map((brand) => (
+            <button
+              key={brand}
+              className="py-3 px-3 border border-slate-200 bg-white text-[10px] font-bold text-slate-600 hover:border-orange-500 hover:text-orange-600 transition-all uppercase text-left"
+            >
+              {brand}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* 5. FİYAT */}
       <section>
         <SectionTitle>Fiyat Aralığı</SectionTitle>
         <div className="px-1">
@@ -122,45 +210,38 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
             step={5000}
             className="mb-6"
           />
-          <div className="flex justify-between text-[11px] tracking-widest text-slate-500 font-light">
-            <span>{minPrice.toLocaleString()} ₺</span>
-            <span>{maxPrice.toLocaleString()} ₺</span>
+          <div className="flex items-center gap-3">
+            <div className="flex-1 p-3 bg-white border border-slate-100">
+              <span className="block text-[8px] font-black text-slate-400 uppercase mb-1">
+                Min
+              </span>
+              <span className="text-[12px] font-bold text-slate-900 font-mono">
+                {minPrice.toLocaleString()}₺
+              </span>
+            </div>
+            <div className="w-2 h-[1px] bg-slate-300" />
+            <div className="flex-1 p-3 bg-white border border-slate-100">
+              <span className="block text-[8px] font-black text-slate-400 uppercase mb-1">
+                Max
+              </span>
+              <span className="text-[12px] font-bold text-slate-900 font-mono">
+                {maxPrice.toLocaleString()}₺
+              </span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 4. SIRALAMA */}
-      <section>
-        <SectionTitle>Sıralama</SectionTitle>
-        <div className="space-y-1">
-          {sortOptions.map((option) => (
-            <button
-              key={option.id}
-              onClick={() => setSort(option.id)}
-              className={cn(
-                "w-full flex justify-between items-center py-3 text-[13px] transition-colors",
-                sort === option.id
-                  ? "text-slate-900"
-                  : "text-slate-400 font-light"
-              )}
-            >
-              <span>{option.label}</span>
-              {sort === option.id && (
-                <div className="w-1 h-1 bg-slate-900 rounded-full" />
-              )}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* 5. SIFIRLA */}
+      {/* 6. SIFIRLA */}
       <button
         onClick={() => {
           setMinPrice(0);
           setMaxPrice(300000);
           setSort("az");
+          setMobileGridCols(2);
+          onSelectCategory("all");
         }}
-        className="text-[10px] tracking-[0.2em] uppercase text-slate-300 hover:text-slate-800 transition-colors underline underline-offset-8 text-left"
+        className="text-[10px] tracking-[0.2em] uppercase text-slate-400 hover:text-slate-900 transition-colors underline underline-offset-8 text-left font-bold"
       >
         Ayarları Temizle
       </button>

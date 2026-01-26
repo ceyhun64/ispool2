@@ -14,7 +14,6 @@ import {
   ShieldCheck,
   Zap,
   Cog,
-  Layers,
 } from "lucide-react";
 import MobileFilter from "./mobileFilter";
 
@@ -23,9 +22,10 @@ export default function Products() {
   const [maxPrice, setMaxPrice] = useState<number>(300000);
   const [minPrice, setMinPrice] = useState<number>(0);
   const [sort, setSort] = useState<"az" | "za" | "priceLow" | "priceHigh">(
-    "az"
+    "az",
   );
-  const [gridCols, setGridCols] = useState<1 | 2 | 3 | 4>(3);
+  const [gridCols, setGridCols] = useState<2 | 3 | 4>(2);
+  const [mobileGridCols, setMobileGridCols] = useState<1 | 2>(2);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(true);
@@ -80,34 +80,32 @@ export default function Products() {
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 selection:bg-orange-500 selection:text-white relative font-sans overflow-x-hidden">
-      {/* TEKNİK ARKA PLAN: Blueprint Grid */}
-    
       {/* Radial Gradient Glow */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-500/5 blur-[120px]  -z-10" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-500/5 blur-[120px] -z-10" />
 
-      <main className="max-w-[1600px] mx-auto px-6 md:px-12 py-12 relative z-10">
+      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-12 py-6 sm:py-12 relative z-10">
         {/* --- HEADER: OPERASYONEL GÖRÜNÜM --- */}
-        <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10 mb-16">
-          <div className="relative">
-            <div className="flex items-center gap-3 mb-4">
+        <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 lg:gap-10 mb-8 sm:mb-16">
+          <div className="relative w-full lg:w-auto">
+            <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
               <div className="flex gap-1">
-                <span className="w-2 h-2 bg-orange-600  animate-pulse" />
-                <span className="w-2 h-2 bg-slate-300 " />
-                <span className="w-2 h-2 bg-slate-300 " />
+                <span className="w-2 h-2 bg-orange-600 animate-pulse" />
+                <span className="w-2 h-2 bg-slate-300" />
+                <span className="w-2 h-2 bg-slate-300" />
               </div>
-              <span className="text-[10px] font-black tracking-[0.3em] uppercase text-slate-400 border-l border-slate-300 pl-3">
+              <span className="text-[9px] sm:text-[10px] font-black tracking-[0.2em] sm:tracking-[0.3em] uppercase text-slate-400 border-l border-slate-300 pl-2 sm:pl-3">
                 Industrial Safety Inventory v4.0
               </span>
             </div>
 
-            <h1 className="text-4xl md:text-2xl font-black tracking-tighter leading-none uppercase ">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter leading-none uppercase">
               EKİPMAN <br />
               <span className="text-orange-600">KATALOĞU</span>
             </h1>
 
-            <div className="mt-6 flex items-center gap-4">
-              <div className="h-[2px] w-12 bg-orange-600" />
-              <p className="text-slate-500 text-xs font-bold uppercase tracking-widest leading-relaxed">
+            <div className="mt-4 sm:mt-6 flex items-center gap-3 sm:gap-4">
+              <div className="h-[2px] w-8 sm:w-12 bg-orange-600" />
+              <p className="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-widest leading-relaxed">
                 Saha Standartlarına Uygun{" "}
                 <span className="text-slate-900">
                   {filteredProducts.length}
@@ -117,8 +115,8 @@ export default function Products() {
             </div>
           </div>
 
-          {/* İstatistikler: Daha Modern ve Endüstriyel */}
-          <div className="flex gap-4 w-full lg:w-auto">
+          {/* İstatistikler: Modern ve Endüstriyel */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full lg:w-auto">
             {[
               {
                 label: "Güvenlik Skoru",
@@ -141,16 +139,16 @@ export default function Products() {
             ].map((stat, i) => (
               <div
                 key={i}
-                className="flex-1 lg:flex-none bg-slate-50  p-5   min-w-[140px] group hover:border-b-orange-600 transition-all duration-300"
+                className="bg-slate-50 p-3 sm:p-5 min-w-[100px] sm:min-w-[140px] group hover:border-b-2 hover:border-b-orange-600 transition-all duration-300"
               >
                 <stat.icon
-                  size={18}
-                  className={`${stat.color} mb-3 group-hover:rotate-180 transition-transform duration-500`}
+                  size={16}
+                  className={`${stat.color} mb-2 sm:mb-3 group-hover:rotate-180 transition-transform duration-500`}
                 />
-                <div className="text-2xl font-black tracking-tight text-slate-900 mb-1">
+                <div className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 mb-1">
                   {stat.val}
                 </div>
-                <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                <div className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest">
                   {stat.label}
                 </div>
               </div>
@@ -159,15 +157,28 @@ export default function Products() {
         </header>
 
         {/* --- TOOLBAR: KONTROL MERKEZİ --- */}
-        <div className="sticky top-24 z-40 mb-12 flex items-center justify-between gap-4 p-2 ">
+        <div className="lg:hidden sticky top-0 z-40 mb-6 bg-slate-100/95 backdrop-blur-sm py-3 -mx-4 px-4 sm:-mx-6 sm:px-6">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIsMobileFilterOpen(true)}
+              className="flex-1 flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-slate-900 text-white text-[10px] sm:text-[11px] font-black tracking-widest uppercase"
+            >
+              <SlidersHorizontal size={14} className="text-orange-500" />
+              PARAMETRELER
+            </button>
+          </div>
+        </div>
+
+        {/* Desktop Toolbar */}
+        <div className="hidden lg:flex sticky top-24 z-40 mb-12 items-center justify-between gap-4 p-2">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               className={cn(
-                "hidden lg:flex items-center gap-4 px-8 py-4 transition-all font-black text-[11px] tracking-[0.2em] uppercase",
+                "flex items-center gap-4 px-8 py-4 transition-all font-black text-[11px] tracking-[0.2em] uppercase",
                 isFilterOpen
-                  ? "bg-slate-900 text-white  "
-                  : "bg-transparent text-slate-600 hover:bg-slate-100"
+                  ? "bg-slate-900 text-white"
+                  : "bg-transparent text-slate-600 hover:bg-slate-100",
               )}
             >
               <SlidersHorizontal
@@ -175,14 +186,6 @@ export default function Products() {
                 className={isFilterOpen ? "text-orange-500" : "text-slate-400"}
               />
               {isFilterOpen ? "Filtreyi Kapat" : "Filtrele"}
-            </button>
-
-            <button
-              onClick={() => setIsMobileFilterOpen(true)}
-              className="lg:hidden flex items-center gap-3 px-6 py-4 bg-slate-900 text-white text-[11px] font-black tracking-widest uppercase"
-            >
-              <SlidersHorizontal size={14} className="text-orange-500" />
-              PARAMETRELER
             </button>
           </div>
 
@@ -198,17 +201,18 @@ export default function Products() {
 
         <div className="flex flex-row items-start gap-8">
           {/* --- SIDEBAR: TEKNİK FİLTRELEME --- */}
-          <AnimatePresence initial={false}>
+          <AnimatePresence initial={false} mode="wait">
+            {/* mode="wait" eklemek geçişi pürüzsüzleştirir */}
             {isFilterOpen && (
               <motion.aside
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: 320, opacity: 1 }}
-                exit={{ width: 0, opacity: 0 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="hidden lg:block sticky top-48 overflow-hidden flex-shrink-0 h-fit"
+                initial={{ width: 0, opacity: 0, marginRight: 0 }}
+                animate={{ width: 320, opacity: 1, marginRight: 32 }} // gap-8'e denk gelmesi için marginRight ekledik
+                exit={{ width: 0, opacity: 0, marginRight: 0 }}
+                transition={{ duration: 0.3, ease: "circOut" }}
+                className="hidden lg:block sticky top-48 self-start overflow-hidden flex-shrink-0"
               >
-                <div className="w-[320px] bg-slate-50 border border-slate-200  p-8  relative overflow-hidden">
-                 
+                {/* Genişliği burada sabitlemek yerine üstteki motion.aside kontrol etmeli */}
+                <div className="w-[320px] bg-slate-50 border border-slate-200 p-8 relative overflow-hidden">
                   <Filter
                     colorFilter={colorFilter}
                     setColorFilter={setColorFilter}
@@ -227,14 +231,15 @@ export default function Products() {
             {filteredProducts.length > 0 ? (
               <div
                 className={cn(
-                  "grid gap-x-8 gap-y-16 transition-all duration-500",
-                  gridCols === 1
-                    ? "grid-cols-1"
-                    : gridCols === 2
-                    ? "grid-cols-1 sm:grid-cols-2"
-                    : gridCols === 3
-                    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-                    : "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
+                  "grid gap-4 sm:gap-6 lg:gap-8 transition-all duration-500",
+                  // Mobil için mobileGridCols state'ine bakıyoruz
+                  mobileGridCols === 1 ? "grid-cols-1" : "grid-cols-2",
+                  // Tablet ve üstü için default 2 kolon
+                  "sm:grid-cols-2",
+                  // Desktop için gridCols state'ine bakıyoruz
+                  gridCols === 2 && "lg:grid-cols-2",
+                  gridCols === 3 && "lg:grid-cols-3",
+                  gridCols === 4 && "lg:grid-cols-4",
                 )}
               >
                 {filteredProducts.map((product, index) => (
@@ -250,7 +255,7 @@ export default function Products() {
                 ))}
               </div>
             ) : (
-              <div className="h-[60vh] flex flex-col items-center justify-center border-2 border-dashed border-slate-200 bg-white/50 ">
+              <div className="h-[60vh] flex flex-col items-center justify-center border-2 border-dashed border-slate-200 bg-white/50">
                 <div className="relative mb-6">
                   <Zap size={64} className="text-slate-200" />
                   <X
@@ -278,8 +283,8 @@ export default function Products() {
             transition={{ type: "tween", duration: 0.4 }}
             className="lg:hidden fixed inset-0 z-[100] bg-white flex flex-col"
           >
-            <div className="px-8 py-8 border-b-2 border-slate-900 flex items-center justify-between bg-white">
-              <div className="flex items-center gap-4">
+            <div className="px-6 sm:px-8 py-6 sm:py-8 border-b-2 border-slate-900 flex items-center justify-between bg-white">
+              <div className="flex items-center gap-3 sm:gap-4">
                 <div className="w-10 h-10 bg-slate-900 flex items-center justify-center">
                   <SlidersHorizontal size={18} className="text-orange-500" />
                 </div>
@@ -300,7 +305,7 @@ export default function Products() {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-8">
+            <div className="flex-1 overflow-y-auto p-6 sm:p-8">
               <MobileFilter
                 selectedCategory={selectedCategory}
                 onSelectCategory={setSelectedCategory}
@@ -308,17 +313,17 @@ export default function Products() {
                 maxPrice={maxPrice}
                 setMinPrice={setMinPrice}
                 setMaxPrice={setMaxPrice}
-                gridCols={gridCols}
-                setGridCols={setGridCols}
+                mobileGridCols={mobileGridCols}
+                setMobileGridCols={setMobileGridCols}
                 sort={sort}
                 setSort={setSort}
               />
             </div>
 
-            <div className="p-8 border-t bg-slate-50">
+            <div className="p-6 sm:p-8 border-t bg-slate-50">
               <button
                 onClick={() => setIsMobileFilterOpen(false)}
-                className="w-full py-6 bg-slate-900 text-white font-black uppercase tracking-[0.3em] text-xs hover:bg-orange-600 transition-colors duration-500"
+                className="w-full py-5 sm:py-6 bg-slate-900 text-white font-black uppercase tracking-[0.3em] text-xs hover:bg-orange-600 transition-colors duration-500"
               >
                 Sistemleri Güncelle
               </button>

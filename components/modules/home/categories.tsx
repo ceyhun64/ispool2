@@ -93,7 +93,7 @@ function ModernCategoryCard({ category }: { category: CategoryData }) {
   return (
     <Link
       href={category.href}
-      className="group relative block overflow-hidden bg-slate-900 aspect-[4/3] sm:aspect-[11/9] border border-white/5 shadow-2xl"
+      className="group relative block overflow-hidden bg-slate-900 aspect-[11/9] sm:aspect-[11/9] border border-white/5 shadow-2xl"
     >
       {/* Görsel Katmanı */}
       <div className="relative w-full h-full">
