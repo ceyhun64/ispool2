@@ -129,7 +129,7 @@ export default function TopBar() {
                   href={item.href}
                   className="group h-full px-4 flex items-center gap-2
                              text-[9px] font-semibold tracking-[0.18em] uppercase
-                             text-slate-500 hover:text-white
+                             text-slate-400 hover:text-white
                              border-r border-white/[0.04] last:border-r-0 transition-colors"
                 >
                   <span className="text-orange-600 opacity-70 group-hover:opacity-100">
