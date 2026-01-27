@@ -17,20 +17,14 @@ import {
   Cog,
 } from "lucide-react";
 import MobileFilter from "./mobileFilter";
-import { CATEGORIES } from "@/data/categories";
 
 interface ProductsContentProps {
-  categorySlug?: string; // undefined ise tüm ürünler
+  id?: number; // undefined ise tüm ürünler
 }
 
-export default function ProductsContent({
-  categorySlug,
-}: ProductsContentProps) {
-  // Mevcut kategoriyi bul (categorySlug varsa)
-  const currentCategory = categorySlug
-    ? CATEGORIES.find((cat) => cat.id === categorySlug)
-    : null;
-
+export default function ProductsContent({ id }: ProductsContentProps) {
+  // Mevcut kategoriyi bul (id varsa)
+  const [currentCategory, setCurrentCategory] = useState<any>(null);
 
   const [subCategoryFilter, setSubCategoryFilter] = useState<string>("all");
   const [brandFilter, setBrandFilter] = useState<string>("all");
@@ -46,15 +40,34 @@ export default function ProductsContent({
   const [isFilterOpen, setIsFilterOpen] = useState(true);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
+  // Kategori bilgisini API'den çek
+  useEffect(() => {
+    async function fetchCategory() {
+      if (!id) {
+        setCurrentCategory(null);
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/category/${id}`);
+        const data = await res.json();
+        if (data) {
+          setCurrentCategory(data);
+        }
+      } catch (error) {
+        console.error("Error fetching category:", error);
+      }
+    }
+
+    fetchCategory();
+  }, [id]);
+
   useEffect(() => {
     async function fetchProducts() {
       try {
         setLoading(true);
-        // categorySlug yoksa veya "all" ise tüm ürünleri getir
-        const url =
-          !categorySlug || categorySlug === "all"
-            ? "/api/products"
-            : `/api/products/category/${categorySlug}`;
+        // id yoksa tüm ürünleri getir
+        const url = !id ? "/api/products" : `/api/products/category/${id}`;
 
         const res = await fetch(url);
         const data = await res.json();
@@ -66,7 +79,7 @@ export default function ProductsContent({
       }
     }
     fetchProducts();
-  }, [categorySlug]);
+  }, [id]);
 
   useEffect(() => {
     document.body.style.overflow = isMobileFilterOpen ? "hidden" : "unset";
@@ -79,7 +92,8 @@ export default function ProductsContent({
     let result = products.filter((p) => {
       const subCategoryCheck =
         subCategoryFilter === "all" || p.subCategory === subCategoryFilter;
-      const brandCheck = brandFilter === "all" || p.brand === brandFilter;
+      const brandCheck =
+        brandFilter === "all" || p.brandId === Number(brandFilter); // brandId number olarak karşılaştır
       return (
         p.price >= minPrice &&
         p.price <= maxPrice &&
@@ -106,8 +120,8 @@ export default function ProductsContent({
 
   if (loading) return <ProductSkeleton />;
 
-  // Kategori bulunamadıysa (categorySlug varsa ama kategori yoksa)
-  if (categorySlug && !currentCategory && categorySlug !== "all") {
+  // Kategori bulunamadıysa (id varsa ama kategori yoksa)
+  if (id && !currentCategory) {
     return (
       <div className="min-h-screen bg-slate-100 flex items-center justify-center">
         <div className="text-center">
@@ -139,7 +153,7 @@ export default function ProductsContent({
             </div>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter leading-none uppercase">
-              {currentCategory?.label || "TÜM ÜRÜNLER"} <br />
+              {currentCategory?.name || "TÜM ÜRÜNLER"} <br />
               <span className="text-orange-600">KATALOĞU</span>
             </h1>
 
