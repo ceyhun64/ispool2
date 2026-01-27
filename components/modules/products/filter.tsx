@@ -146,7 +146,7 @@ const Filter: React.FC<FilterProps> = ({
                       router.push(`/products/category/${cat.id}`);
                       setSubCategoryFilter("all");
                     }}
-                    className="flex-1 flex items-center justify-between py-2.5 px-3 text-left"
+                    className="flex-1 flex items-center justify-between py-2.5 px-3 text-left rounded-sm"
                   >
                     <span className="text-[11px] font-bold tracking-tight uppercase">
                       {cat.name}
@@ -156,7 +156,7 @@ const Filter: React.FC<FilterProps> = ({
                   {hasMiddle && (
                     <button
                       onClick={(e) => toggleCategory(cat.id, e)}
-                      className="px-3 py-2.5 hover:bg-orange-100 transition-colors"
+                      className="px-3 py-2.5 hover:bg-orange-100 transition-colors rounded-sm"
                     >
                       {isExpanded ? (
                         <ChevronUp size={14} className="text-orange-600" />

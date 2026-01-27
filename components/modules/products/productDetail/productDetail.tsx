@@ -71,6 +71,8 @@ export default function ProductDetailPage() {
     if (productId) fetchProduct();
   }, [productId]);
 
+  console.log("product", product);
+
   useEffect(() => {
     const checkLogin = async () => {
       try {
