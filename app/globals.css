@@ -116,14 +116,31 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+  /* Webkit tarayıcılar için (Chrome, Safari, Edge, yeni Opera) */
+  ::-webkit-scrollbar {
+    width: 5px; /* Dikey scrollbar genişliği */
+    height: 8px; /* Yatay scrollbar yüksekliği */
   }
-  body {
-    @apply bg-background text-foreground;
+
+  ::-webkit-scrollbar-track {
+    background: #ffffff; /* Arkaplan beyaz */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #f97316; /* Tailwind orange-500 rengi */
+    border-radius: 2px; /* rounded-sm karşılığı */
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #db5e1b; /* Hover durumunda biraz daha koyu turuncu (orange-600) */
+  }
+
+  /* Firefox için standart (Sınırlı özelleştirme sunar) */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #f97316 #ffffff;
   }
 }
-
 
 button {
   @apply cursor-pointer;

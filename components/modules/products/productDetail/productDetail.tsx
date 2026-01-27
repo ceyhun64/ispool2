@@ -310,7 +310,7 @@ export default function ProductDetailPage() {
     flex items-center gap-1.5 sm:gap-2
     shadow-xl
     hover:bg-slate-900 transition-all
-    sm:scale-100 sm:hover:scale-105 sm:active:scale-95
+    sm:scale-100 sm:hover:scale-105 sm:active:scale-95 rounded-sm
   "
                 >
                   <Eye size={14} className="sm:w-4 sm:h-4" />
@@ -469,7 +469,7 @@ export default function ProductDetailPage() {
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     className={cn(
-                      "h-12 w-full text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-sm border",
+                      "h-12 w-full text-[11px] rounded-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-sm border",
                       uploadedImagePreview
                         ? "bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100"
                         : "bg-white border-slate-200 text-slate-700 hover:border-slate-900 hover:bg-slate-50",
@@ -487,8 +487,8 @@ export default function ProductDetailPage() {
                       </>
                     )}
                   </button>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center bg-white h-12 px-4 gap-5 border border-slate-200">
+                  <div className="flex items-center gap-3 ">
+                    <div className="flex items-center bg-white h-12 px-4 gap-5 border border-slate-200 rounded-sm">
                       <button
                         onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                         className="text-slate-500 hover:text-orange-600 transition-colors"
@@ -508,7 +508,7 @@ export default function ProductDetailPage() {
 
                     <button
                       onClick={handleAddToCart}
-                      className="flex-1 h-12 bg-slate-900 text-white text-[11px] font-bold uppercase tracking-wider hover:bg-orange-600 transition-all shadow-sm flex items-center justify-center gap-2"
+                      className="flex-1 h-12 bg-slate-900 rounded-sm text-white text-[11px] font-bold uppercase tracking-wider hover:bg-orange-600 transition-all shadow-sm flex items-center justify-center gap-2"
                     >
                       <ShoppingCart size={14} fill="currentColor" /> Sepete Ekle
                     </button>
@@ -522,7 +522,7 @@ export default function ProductDetailPage() {
                           : addFavorite(product.id)
                       }
                       className={cn(
-                        "flex-1 h-11 border flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider transition-all",
+                        "flex-1 h-11 border rounded-sm flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider transition-all",
                         isFavorited(product.id)
                           ? "bg-slate-50 border-slate-200 text-slate-900"
                           : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50",
@@ -539,7 +539,7 @@ export default function ProductDetailPage() {
                     </button>
                     <button
                       onClick={handleShare}
-                      className="w-11 h-11 bg-white border border-slate-200 flex items-center justify-center hover:border-orange-600 hover:text-orange-600 transition-all shadow-sm"
+                      className="w-11 h-11 rounded-sm bg-white border border-slate-200 flex items-center justify-center hover:border-orange-600 hover:text-orange-600 transition-all shadow-sm"
                     >
                       <Share2 size={14} />
                     </button>

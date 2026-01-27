@@ -18,7 +18,6 @@ interface ProductData {
   subImage4?: string;
   category: string;
   subCategory?: string;
-  room?: string;
 }
 
 export async function GET(

@@ -1,15 +1,9 @@
+// /components/modules/products/mobileFilter.tsx
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 import {
   Grid2X2,
   LayoutGrid,
@@ -17,12 +11,17 @@ import {
   ArrowUpAZ,
   TrendingUp,
   TrendingDown,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
+import { CATEGORIES } from "@/data/categories";
 
 interface MobileFilterProps {
-  onClose?: () => void;
-  selectedCategory: string;
-  onSelectCategory: (cat: string) => void;
+  currentCategory: any;
+  subCategoryFilter: string;
+  setSubCategoryFilter: (val: string) => void;
+  brandFilter: string;
+  setBrandFilter: (val: string) => void;
   minPrice: number;
   maxPrice: number;
   setMinPrice: (val: number) => void;
@@ -32,14 +31,6 @@ interface MobileFilterProps {
   sort: string;
   setSort: (sort: any) => void;
 }
-
-const productCategories = [
-  { label: "Tüm Koleksiyon", value: "all" },
-  { label: "İş Elbiseleri", value: "is-elbiseleri" },
-  { label: "Ayak Korumaları", value: "ayak-koruma" },
-  { label: "El Korumaları", value: "el-koruma" },
-  { label: "Teknik Ekipmanlar", value: "teknik" },
-];
 
 const sortOptions = [
   { id: "az", label: "A'dan Z'ye", icon: ArrowDownAZ },
@@ -59,8 +50,11 @@ const brands = [
 ];
 
 const MobileFilter: React.FC<MobileFilterProps> = ({
-  selectedCategory,
-  onSelectCategory,
+  currentCategory,
+  subCategoryFilter,
+  setSubCategoryFilter,
+  brandFilter,
+  setBrandFilter,
   minPrice,
   maxPrice,
   setMinPrice,
@@ -71,11 +65,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
   setSort,
 }) => {
   const router = useRouter();
-
-  const handleCategoryChange = (value: string) => {
-    onSelectCategory(value);
-    router.push(`/products/${value === "all" ? "" : value}`);
-  };
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
 
   const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     <h3 className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-black mb-6">
@@ -83,9 +73,41 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
     </h3>
   );
 
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategories((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId],
+    );
+  };
+
+  const sectionTitle = currentCategory ? "Alt Kategori" : "Kategori";
+  const mainCategories = CATEGORIES.filter(
+    (cat) => cat.megaMenu && !cat.megaMenu.isBrands,
+  );
+
+  // Alt kategoriler (kategori sayfasında)
+  const subCategories = currentCategory?.megaMenu?.columns
+    ? currentCategory.megaMenu.columns.flatMap(
+        (col: any) =>
+          col.subItems?.map((item: string) => ({
+            label: item,
+            value: item
+              .toLowerCase()
+              .replace(/\s+/g, "-")
+              .replace(/ğ/g, "g")
+              .replace(/ü/g, "u")
+              .replace(/ş/g, "s")
+              .replace(/ı/g, "i")
+              .replace(/ö/g, "o")
+              .replace(/ç/g, "c"),
+          })) || [],
+      )
+    : [];
+
   return (
     <div className="flex flex-col gap-y-10 pb-10">
-      {/* 1. GÖRÜNÜM SEÇİMİ (MOBİL İÇİN 1-2 KOLON) */}
+      {/* 1. GÖRÜNÜM SEÇİMİ */}
       <section>
         <SectionTitle>Görünüm Düzeni</SectionTitle>
         <div className="grid grid-cols-2 gap-3">
@@ -100,7 +122,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
                 key={option.value}
                 onClick={() => setMobileGridCols(option.value as 1 | 2)}
                 className={cn(
-                  "py-5 border-2 transition-all flex flex-col items-center gap-3",
+                  "py-5 border-2 rounded-sm transition-all flex flex-col items-center gap-3",
                   isActive
                     ? "border-slate-950 bg-slate-950 text-white"
                     : "border-slate-200 bg-white text-slate-400 hover:border-slate-300",
@@ -128,7 +150,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
                 key={option.id}
                 onClick={() => setSort(option.id)}
                 className={cn(
-                  "w-full flex items-center gap-4 p-4 border transition-all text-left group",
+                  "w-full flex rounded-sm items-center gap-4 p-4 border transition-all text-left group",
                   isActive
                     ? "border-orange-500 bg-orange-50/30"
                     : "border-slate-100 hover:border-slate-200 bg-white",
@@ -158,37 +180,169 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
         </div>
       </section>
 
-      {/* 3. KATEGORİ */}
+      {/* 3. KATEGORİ / ALT KATEGORİ */}
       <section>
-        <SectionTitle>Koleksiyon</SectionTitle>
-        <Select value={selectedCategory} onValueChange={handleCategoryChange}>
-          <SelectTrigger className="w-full border-none bg-white h-12 rounded-none px-4 focus:ring-0 border border-slate-200 text-left">
-            <div className="text-[13px] text-slate-800 font-medium">
-              <SelectValue placeholder="Seçiniz" />
-            </div>
-          </SelectTrigger>
-          <SelectContent className="border-slate-100 rounded-none shadow-xl">
-            {productCategories.map((cat) => (
-              <SelectItem
-                key={cat.value}
-                value={cat.value}
-                className="py-3 text-[13px]"
+        <SectionTitle>{sectionTitle}</SectionTitle>
+
+        {/* Tüm Ürünler Sayfası - Kategoriler */}
+        {!currentCategory && (
+          <div className="space-y-2">
+            <button
+              onClick={() => router.push("/products")}
+              className="rounded-sm w-full text-left py-3 px-4 bg-white border border-slate-200 text-[12px] font-bold text-slate-900 hover:border-orange-500 transition-colors"
+            >
+              TÜMÜ
+            </button>
+
+            {mainCategories.map((cat) => {
+              const isExpanded = expandedCategories.includes(cat.id);
+              const hasSubItems =
+                cat.megaMenu?.columns?.some(
+                  (col: any) => col.subItems && col.subItems.length > 0,
+                ) ?? false;
+
+              return (
+                <div key={cat.id} className="bg-white border border-slate-200">
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => router.push(`/products/category/${cat.id}`)}
+                      className="flex-1 rounded-sm text-left py-3 px-4 text-[12px] font-bold text-slate-700 hover:text-orange-600 transition-colors"
+                    >
+                      {cat.label}
+                    </button>
+
+                    {hasSubItems && (
+                      <button
+                        onClick={() => toggleCategory(cat.id)}
+                        className="px-4 py-3 hover:bg-orange-50 transition-colors rounded-sm"
+                      >
+                        <ChevronDown
+                          size={16}
+                          className={cn(
+                            "transition-transform duration-200",
+                            isExpanded
+                              ? "rotate-180 text-orange-600"
+                              : "text-slate-400",
+                          )}
+                        />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Alt Kategoriler */}
+                  {isExpanded && hasSubItems && cat.megaMenu?.columns && (
+                    <div className="border-t border-slate-100 bg-slate-50 p-3 space-y-3">
+                      {cat.megaMenu.columns.map(
+                        (col: any, colIndex: number) => (
+                          <div key={colIndex}>
+                            {col.subItems && col.subItems.length > 0 && (
+                              <>
+                                <div className="text-[9px] font-black uppercase tracking-wider text-orange-600 mb-2">
+                                  {col.title}
+                                </div>
+                                <div className="space-y-1">
+                                  {col.subItems.map(
+                                    (item: string, itemIndex: number) => {
+                                      const itemValue = item
+                                        .toLowerCase()
+                                        .replace(/\s+/g, "-")
+                                        .replace(/ğ/g, "g")
+                                        .replace(/ü/g, "u")
+                                        .replace(/ş/g, "s")
+                                        .replace(/ı/g, "i")
+                                        .replace(/ö/g, "o")
+                                        .replace(/ç/g, "c");
+
+                                      return (
+                                        <button
+                                          key={itemIndex}
+                                          onClick={() => {
+                                            router.push(`/products/category/${cat.id}`);
+                                            setSubCategoryFilter(itemValue);
+                                          }}
+                                          className="w-full rounded-sm text-left py-2 px-3 text-[11px] font-semibold text-slate-600 hover:text-orange-600 hover:bg-white transition-colors rounded flex items-center gap-2"
+                                        >
+                                          <ChevronRight
+                                            size={12}
+                                            className="opacity-50"
+                                          />
+                                          {item}
+                                        </button>
+                                      );
+                                    },
+                                  )}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Kategori Sayfası - Alt Kategoriler */}
+        {currentCategory && subCategories.length > 0 && (
+          <div className="space-y-2">
+            <button
+              onClick={() => setSubCategoryFilter("all")}
+              className={cn(
+                "w-full text-left rounded-sm py-3 px-4 border text-[12px] font-bold transition-colors",
+                subCategoryFilter === "all"
+                  ? "bg-orange-50 border-orange-500 text-orange-600"
+                  : "bg-white border-slate-200 text-slate-700 hover:border-orange-500",
+              )}
+            >
+              TÜMÜ
+            </button>
+
+            {subCategories.map((subCat: any) => (
+              <button
+                key={subCat.value}
+                onClick={() => setSubCategoryFilter(subCat.value)}
+                className={cn(
+                  "w-full text-left py-3 rounded-sm px-4 border text-[12px] font-bold transition-colors",
+                  subCategoryFilter === subCat.value
+                    ? "bg-orange-50 border-orange-500 text-orange-600"
+                    : "bg-white border-slate-200 text-slate-700 hover:border-orange-500",
+                )}
               >
-                {cat.label}
-              </SelectItem>
+                {subCat.label}
+              </button>
             ))}
-          </SelectContent>
-        </Select>
+          </div>
+        )}
       </section>
 
       {/* 4. MARKALAR */}
       <section>
         <SectionTitle>Çözüm Ortakları</SectionTitle>
         <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={() => setBrandFilter("all")}
+            className={cn(
+              "py-3 px-3 border rounded-sm bg-white text-[10px] font-bold transition-all uppercase text-left",
+              brandFilter === "all"
+                ? "border-orange-500 text-orange-600"
+                : "border-slate-200 text-slate-600 hover:border-orange-500 hover:text-orange-600",
+            )}
+          >
+            TÜMÜ
+          </button>
           {brands.map((brand) => (
             <button
               key={brand}
-              className="py-3 px-3 border border-slate-200 bg-white text-[10px] font-bold text-slate-600 hover:border-orange-500 hover:text-orange-600 transition-all uppercase text-left"
+              onClick={() => setBrandFilter(brand)}
+              className={cn(
+                "py-3 px-3 border rounded-sm bg-white text-[10px] font-bold transition-all uppercase text-left",
+                brandFilter === brand
+                  ? "border-orange-500 text-orange-600"
+                  : "border-slate-200 text-slate-600 hover:border-orange-500 hover:text-orange-600",
+              )}
             >
               {brand}
             </button>
@@ -239,9 +393,11 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
           setMaxPrice(300000);
           setSort("az");
           setMobileGridCols(2);
-          onSelectCategory("all");
+          setSubCategoryFilter("all");
+          setBrandFilter("all");
+          setExpandedCategories([]);
         }}
-        className="text-[10px] tracking-[0.2em] uppercase text-slate-400 hover:text-slate-900 transition-colors underline underline-offset-8 text-left font-bold"
+        className="text-[10px] rounded-sm tracking-[0.2em] uppercase text-slate-400 hover:text-slate-900 transition-colors underline underline-offset-8 text-left font-bold"
       >
         Ayarları Temizle
       </button>

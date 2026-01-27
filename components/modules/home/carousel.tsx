@@ -193,7 +193,7 @@ export default function HeroSection() {
               transition={{ delay: 0.5 }}
               className="flex flex-wrap items-center gap-4 pt-4"
             >
-              <button className="group relative bg-white text-black px-8 py-4 text-[11px] font-bold tracking-widest uppercase transition-all duration-300 hover:bg-orange-600 hover:text-white">
+              <button className="group rounded-sm relative bg-white text-black px-8 py-4 text-[11px] font-bold tracking-widest uppercase transition-all duration-300 hover:bg-orange-600 hover:text-white">
                 <Link href="/products">
                   <span className="flex items-center gap-2">
                     İNCELE
@@ -221,20 +221,20 @@ export default function HeroSection() {
                 setCurrent(i);
                 setProgress(0);
               }}
-              className={`w-1 transition-all duration-500 ${current === i ? "h-8 bg-orange-600" : "h-4 bg-white/20 hover:bg-white/40"}`}
+              className={`w-1 rounded-sm transition-all duration-500 ${current === i ? "h-8 bg-orange-600" : "h-4 bg-white/20 hover:bg-white/40"}`}
             />
           ))}
         </div>
         <div className="flex flex-col gap-2">
           <button
             onClick={prevSlide}
-            className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
+            className="w-10 h-10 rounded-sm border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
           >
             <ChevronLeft size={18} />
           </button>
           <button
             onClick={nextSlide}
-            className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
+            className="w-10 h-10 rounded-sm border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
           >
             <ChevronRight size={18} />
           </button>

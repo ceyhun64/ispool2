@@ -74,6 +74,18 @@ export default function Navbar() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  useEffect(() => {
+    const handleCartSheetChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ isOpen: boolean }>;
+      setIsCartOpen(customEvent.detail.isOpen);
+    };
+
+    window.addEventListener("cartSheetStateChange", handleCartSheetChange);
+
+    return () =>
+      window.removeEventListener("cartSheetStateChange", handleCartSheetChange);
+  }, []);
+
   // Sayfa değişiminde aramayı kapat
   useEffect(() => {
     setSearchOpen(false);
@@ -147,7 +159,7 @@ export default function Navbar() {
               <div className="hidden lg:flex flex-1 max-w-2xl px-4">
                 <button
                   onClick={() => setSearchOpen(true)}
-                  className="w-full h-12 flex items-center justify-between px-6 bg-slate-50 border border-slate-100 hover:border-orange-600/30 transition-all group "
+                  className="w-full h-12 flex rounded-sm items-center justify-between px-6 bg-slate-50 border border-slate-100 hover:border-orange-600/30 transition-all group "
                 >
                   <div className="flex items-center gap-4">
                     <Search
@@ -191,9 +203,9 @@ export default function Navbar() {
 
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="group flex items-center gap-4 pl-2 pr-1 md:pr-4 py-2 hover:bg-slate-50 transition-all"
+                  className="group flex items-center gap-4  pl-2 pr-1 md:pr-4 py-2 hover:bg-slate-50 transition-all"
                 >
-                  <div className="w-9 h-9 md:w-10 md:h-10 text-slate-900 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                  <div className="w-9 h-9 rounded-sm md:w-10 md:h-10 text-slate-900 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
                     <User size={18} strokeWidth={2.5} />
                   </div>
                   <div className="hidden xl:flex flex-col items-start leading-none">
@@ -221,7 +233,7 @@ export default function Navbar() {
             <div className="lg:hidden w-full pb-4">
               <button
                 onClick={() => setSearchOpen(true)}
-                className="w-full h-11 flex items-center gap-3 px-4 bg-slate-100 border border-slate-100 text-slate-500 "
+                className="w-full h-11 rounded-sm flex items-center gap-3 px-4 bg-slate-100 border border-slate-100 text-slate-500 "
               >
                 <Search size={18} className="text-slate-400" />
                 <span className="text-[11px] font-bold uppercase tracking-wider">
@@ -245,7 +257,7 @@ export default function Navbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-md flex justify-center pt-[5vh] md:pt-[10vh] px-4"
+            className="fixed inset-0 z-[200]  bg-slate-950/80 backdrop-blur-md flex justify-center pt-[5vh] md:pt-[10vh] px-4"
             onClick={() => setSearchOpen(false)}
           >
             <motion.div
@@ -276,7 +288,7 @@ export default function Navbar() {
                     setSearchOpen(false);
                     setSearchQuery("");
                   }}
-                  className="p-2 bg-slate-100  hover:bg-slate-200 transition-all"
+                  className="p-2 bg-slate-100 rounded-sm  hover:bg-slate-200 transition-all"
                 >
                   <X size={20} />
                 </button>
@@ -350,8 +362,6 @@ export default function Navbar() {
                   </div>
                 )}
               </div>
-
-            
             </motion.div>
           </motion.div>
         )}

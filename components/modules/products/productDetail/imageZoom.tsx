@@ -93,7 +93,7 @@ export function CustomImageZoom({ src, alt }: Props) {
           onClick={() => setIsModalOpen(false)}
         >
           <button
-            className="absolute top-6 right-6 text-white hover:rotate-90 transition-transform duration-300 z-[10000] p-2 hover:bg-white/10 rounded-full"
+            className="rounded-sm absolute top-6 right-6 text-white hover:rotate-90 transition-transform duration-300 z-[10000] p-2 hover:bg-white/10 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
               setIsModalOpen(false);

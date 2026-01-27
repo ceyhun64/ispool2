@@ -109,7 +109,7 @@ export default function ÇokSatanlarCarousel() {
           <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-sm">
             <button
               onClick={() => api?.scrollPrev()}
-              className="group flex items-center justify-center w-14 h-14 bg-white hover:bg-orange-600 transition-all duration-500 shadow-sm"
+              className="group flex items-center rounded-sm justify-center w-14 h-14 bg-white hover:bg-orange-600 transition-all duration-500 shadow-sm"
               aria-label="Geri"
             >
               <ChevronLeft
@@ -119,7 +119,7 @@ export default function ÇokSatanlarCarousel() {
             </button>
             <button
               onClick={() => api?.scrollNext()}
-              className="group flex items-center justify-center w-14 h-14 bg-white hover:bg-orange-600 transition-all duration-500 shadow-sm"
+              className="group flex items-center rounded-sm justify-center w-14 h-14 bg-white hover:bg-orange-600 transition-all duration-500 shadow-sm"
               aria-label="İleri"
             >
               <ChevronRight

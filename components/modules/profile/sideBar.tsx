@@ -97,7 +97,7 @@ export default function Sidebar() {
               {user && (
                 <button
                   onClick={handleLogout}
-                  className="mt-4 flex items-center gap-2 text-[10px] tracking-widest text-slate-500 hover:text-red-600 transition-colors uppercase w-fit font-bold"
+                  className="mt-4 rounded-sm flex items-center gap-2 text-[10px] tracking-widest text-slate-500 hover:text-red-600 transition-colors uppercase w-fit font-bold"
                 >
                   <LogOut size={12} className="stroke-[2.5px]" />
                   <span>Güvenli Çıkış</span>
@@ -126,7 +126,7 @@ export default function Sidebar() {
                       <Link
                         href={item.path}
                         className={cn(
-                          "group flex items-center gap-3 px-4 py-3 text-[13px] font-bold transition-all duration-300  relative",
+                          "group flex items-center rounded-sm gap-3 px-4 py-3 text-[13px] font-bold transition-all duration-300  relative",
                           isActive
                             ? "bg-slate-50 text-slate-950 shadow-sm border border-slate-100"
                             : "text-slate-500 hover:text-slate-900 hover:bg-slate-50/50"

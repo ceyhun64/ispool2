@@ -84,7 +84,7 @@ export default function TopBar() {
                 href="tel:+905343529420"
                 className="flex items-center gap-3 group"
               >
-                <span className="w-7 h-7 rounded-md bg-white/5 flex items-center justify-center group-hover:bg-orange-600 transition-colors">
+                <span className="w-7 h-7 rounded-sm bg-white/5 flex items-center justify-center group-hover:bg-orange-600 transition-colors">
                   <Phone
                     size={12}
                     className="text-orange-500 group-hover:text-white"
@@ -105,9 +105,9 @@ export default function TopBar() {
                 href="https://wa.me/900534359420"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 group"
+                className="flex items-center gap-2 group rounded-sm"
               >
-                <span className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center group-hover:bg-[#25D366] transition-colors">
+                <span className="w-6 h-6 rounded-sm bg-white/5 flex items-center justify-center group-hover:bg-[#25D366] transition-colors">
                   <MessageCircleMore
                     size={12}
                     className="text-[#25D366] group-hover:text-white"
@@ -151,7 +151,7 @@ export default function TopBar() {
                            px-4 h-7 text-[9px] font-semibold tracking-[0.2em]
                            border border-orange-600/50 text-orange-500
                            hover:bg-orange-600 hover:text-white
-                           transition-all"
+                           transition-all rounded-sm"
               >
                 <Briefcase size={11} />
                 KARİYER

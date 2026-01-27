@@ -97,7 +97,7 @@ export default function CartItem({
 
           <button
             onClick={onRemove}
-            className="text-slate-300 hover:text-red-600 transition-colors p-1"
+            className="text-slate-300 hover:text-red-600 transition-colors p-1 rounded-sm"
             aria-label="Kaldır"
           >
             <X size={16} className="md:w-5 md:h-5" strokeWidth={2} />
@@ -108,7 +108,7 @@ export default function CartItem({
         <div className="flex flex-row justify-between items-end mt-2 md:mt-4">
           {/* Kompakt Adet Kontrolü */}
           <div
-            className={`flex items-center border ${
+            className={`flex items-center border rounded-sm ${
               isCustomized
                 ? "bg-orange-50 border-orange-200"
                 : "bg-slate-50 border-slate-200"
@@ -117,7 +117,7 @@ export default function CartItem({
             <button
               onClick={onDecrease}
               disabled={quantity <= 1}
-              className={`px-1.5 md:px-2 py-1 transition-all ${
+              className={`px-1.5 md:px-2 py-1 transition-all rounded-sm ${
                 isCustomized
                   ? "text-orange-600 hover:bg-orange-100"
                   : "text-slate-500 hover:bg-slate-100"
@@ -134,7 +134,7 @@ export default function CartItem({
             </span>
             <button
               onClick={onIncrease}
-              className={`px-1.5 md:px-2 py-1 transition-all ${
+              className={`px-1.5 md:px-2 py-1 transition-all rounded-sm ${
                 isCustomized
                   ? "text-orange-600 hover:bg-orange-100"
                   : "text-slate-500 hover:bg-slate-100"

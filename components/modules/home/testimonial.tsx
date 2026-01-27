@@ -110,7 +110,7 @@ const Testimonials: React.FC = () => {
                           />
                         ))}
                       </div>
-                      <span className="text-[8px] font-bold text-slate-400 border border-slate-100 px-1.5 py-0.5 rounded tracking-wider uppercase">
+                      <span className="text-[8px] font-bold text-slate-400 border border-slate-100 px-1.5 py-0.5 tracking-wider uppercase">
                         {t.tag}
                       </span>
                     </div>
@@ -121,7 +121,7 @@ const Testimonials: React.FC = () => {
                   </div>
 
                   <div className="mt-8 flex items-center gap-4 pt-6 border-t border-slate-50">
-                    <div className="w-10 h-10 rounded bg-slate-900 text-white flex items-center justify-center text-[14px] font-bold">
+                    <div className="w-10 h-10 bg-slate-900 text-white flex items-center justify-center text-[14px] font-bold">
                       {t.avatarLetter}
                     </div>
                     <div className="flex flex-col">

@@ -1,13 +1,14 @@
-// /components/modules/products/ProductsContent.tsx
+// /app/products/[categorySlug]/page.tsx
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import ProductCard from "./productCard";
-import Filter from "./filter";
-import ProductTopBar from "./productTopbar";
+import ProductCard from "@/components/modules/products/productCard";
+import Filter from "@/components/modules/products/filter";
+import ProductTopBar from "@/components/modules/products/productTopbar";
 import { cn } from "@/lib/utils";
-import ProductSkeleton from "./productSkeleton";
+import ProductSkeleton from "@/components/modules/products/productSkeleton";
 import {
   SlidersHorizontal,
   X,
@@ -16,29 +17,21 @@ import {
   Zap,
   Cog,
 } from "lucide-react";
-import MobileFilter from "./mobileFilter";
+import MobileFilter from "@/components/modules/products/mobileFilter";
 import { CATEGORIES } from "@/data/categories";
 
-interface ProductsContentProps {
-  categorySlug?: string; // undefined ise tüm ürünler
-}
-
-export default function ProductsContent({
-  categorySlug,
-}: ProductsContentProps) {
-  // Mevcut kategoriyi bul (categorySlug varsa)
-  const currentCategory = categorySlug
-    ? CATEGORIES.find((cat) => cat.id === categorySlug)
-    : null;
-
-
+export default function CategoryProducts() {
+  const params = useParams();
+  const categorySlug = params.categorySlug as string;
+  
+  // Mevcut kategoriyi bul
+  const currentCategory = CATEGORIES.find(cat => cat.id === categorySlug);
+  
   const [subCategoryFilter, setSubCategoryFilter] = useState<string>("all");
   const [brandFilter, setBrandFilter] = useState<string>("all");
   const [maxPrice, setMaxPrice] = useState<number>(300000);
   const [minPrice, setMinPrice] = useState<number>(0);
-  const [sort, setSort] = useState<"az" | "za" | "priceLow" | "priceHigh">(
-    "az",
-  );
+  const [sort, setSort] = useState<"az" | "za" | "priceLow" | "priceHigh">("az");
   const [gridCols, setGridCols] = useState<2 | 3 | 4>(2);
   const [mobileGridCols, setMobileGridCols] = useState<1 | 2>(2);
   const [products, setProducts] = useState<any[]>([]);
@@ -50,12 +43,11 @@ export default function ProductsContent({
     async function fetchProducts() {
       try {
         setLoading(true);
-        // categorySlug yoksa veya "all" ise tüm ürünleri getir
-        const url =
-          !categorySlug || categorySlug === "all"
-            ? "/api/products"
-            : `/api/products/category/${categorySlug}`;
-
+        // Eğer categorySlug "all" ise tüm ürünleri getir
+        const url = categorySlug === "all" 
+          ? "/api/products"
+          : `/api/products/category/${categorySlug}`;
+        
         const res = await fetch(url);
         const data = await res.json();
         if (data.products) setProducts(data.products);
@@ -77,15 +69,9 @@ export default function ProductsContent({
 
   const filteredProducts = useMemo(() => {
     let result = products.filter((p) => {
-      const subCategoryCheck =
-        subCategoryFilter === "all" || p.subCategory === subCategoryFilter;
+      const subCategoryCheck = subCategoryFilter === "all" || p.subCategory === subCategoryFilter;
       const brandCheck = brandFilter === "all" || p.brand === brandFilter;
-      return (
-        p.price >= minPrice &&
-        p.price <= maxPrice &&
-        subCategoryCheck &&
-        brandCheck
-      );
+      return p.price >= minPrice && p.price <= maxPrice && subCategoryCheck && brandCheck;
     });
 
     return result.sort((a, b) => {
@@ -106,14 +92,12 @@ export default function ProductsContent({
 
   if (loading) return <ProductSkeleton />;
 
-  // Kategori bulunamadıysa (categorySlug varsa ama kategori yoksa)
-  if (categorySlug && !currentCategory && categorySlug !== "all") {
+  // Kategori bulunamadıysa
+  if (!currentCategory && categorySlug !== "all") {
     return (
       <div className="min-h-screen bg-slate-100 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-3xl font-black text-slate-900 mb-4">
-            Kategori Bulunamadı
-          </h1>
+          <h1 className="text-3xl font-black text-slate-900 mb-4">Kategori Bulunamadı</h1>
           <p className="text-slate-600">Aradığınız kategori mevcut değil.</p>
         </div>
       </div>
@@ -147,10 +131,7 @@ export default function ProductsContent({
               <div className="h-[2px] w-8 sm:w-12 bg-orange-600" />
               <p className="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-widest leading-relaxed">
                 Saha Standartlarına Uygun{" "}
-                <span className="text-slate-900">
-                  {filteredProducts.length}
-                </span>{" "}
-                Birim Listeleniyor
+                <span className="text-slate-900">{filteredProducts.length}</span> Birim Listeleniyor
               </p>
             </div>
           </div>
@@ -199,7 +180,7 @@ export default function ProductsContent({
           <div className="flex gap-2">
             <button
               onClick={() => setIsMobileFilterOpen(true)}
-              className="flex-1 flex items-center rounded-sm justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-slate-900 text-white text-[10px] sm:text-[11px] font-black tracking-widest uppercase"
+              className="flex-1 flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-slate-900 text-white text-[10px] sm:text-[11px] font-black tracking-widest uppercase"
             >
               <SlidersHorizontal size={14} className="text-orange-500" />
               PARAMETRELER
@@ -212,10 +193,10 @@ export default function ProductsContent({
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               className={cn(
-                "flex items-center gap-4 px-8 py-4 rounded-sm transition-all font-black text-[11px] tracking-[0.2em] uppercase",
+                "flex items-center gap-4 px-8 py-4 transition-all font-black text-[11px] tracking-[0.2em] uppercase",
                 isFilterOpen
                   ? "bg-slate-900 text-white"
-                  : "bg-transparent text-slate-600 hover:bg-slate-100",
+                  : "bg-transparent text-slate-600 hover:bg-slate-100"
               )}
             >
               <SlidersHorizontal
@@ -272,7 +253,7 @@ export default function ProductsContent({
                   "sm:grid-cols-2",
                   gridCols === 2 && "lg:grid-cols-2",
                   gridCols === 3 && "lg:grid-cols-3",
-                  gridCols === 4 && "lg:grid-cols-4",
+                  gridCols === 4 && "lg:grid-cols-4"
                 )}
               >
                 {filteredProducts.map((product, index) => (
@@ -297,8 +278,7 @@ export default function ProductsContent({
                   />
                 </div>
                 <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-[10px] text-center max-w-xs leading-loose">
-                  Hata: Arama kriterlerine uygun teknik spesifikasyon
-                  bulunamadı.
+                  Hata: Arama kriterlerine uygun teknik spesifikasyon bulunamadı.
                 </p>
               </div>
             )}
@@ -331,7 +311,7 @@ export default function ProductsContent({
               </div>
               <button
                 onClick={() => setIsMobileFilterOpen(false)}
-                className="w-10 rounded-sm h-10 border border-slate-200 flex items-center justify-center hover:bg-slate-50"
+                className="w-10 h-10 border border-slate-200 flex items-center justify-center hover:bg-slate-50"
               >
                 <X size={24} />
               </button>
@@ -358,7 +338,7 @@ export default function ProductsContent({
             <div className="p-6 sm:p-8 border-t bg-slate-50">
               <button
                 onClick={() => setIsMobileFilterOpen(false)}
-                className="w-full rounded-sm py-5 sm:py-6 bg-slate-900 text-white font-black uppercase tracking-[0.3em] text-xs hover:bg-orange-600 transition-colors duration-500"
+                className="w-full py-5 sm:py-6 bg-slate-900 text-white font-black uppercase tracking-[0.3em] text-xs hover:bg-orange-600 transition-colors duration-500"
               >
                 Sistemleri Güncelle
               </button>

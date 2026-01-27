@@ -157,7 +157,7 @@ export default function Products() {
             {/* Yönlendirme Butonu */}
             <div className="w-full lg:w-auto flex flex-col items-center gap-4">
               <Link href="/products/wholesale" className="w-full md:w-auto">
-                <button className="w-full md:w-auto flex items-center justify-center gap-4 bg-white text-slate-950 px-8 md:px-14 py-5 md:py-7 font-black text-[11px] md:text-[12px] tracking-[0.15em] transition-all duration-500 hover:bg-orange-600 hover:text-white shadow-2xl hover:shadow-orange-900/20 group">
+                <button className="w-full rounded-sm md:w-auto flex items-center justify-center gap-4 bg-white text-slate-950 px-8 md:px-14 py-5 md:py-7 font-black text-[11px] md:text-[12px] tracking-[0.15em] transition-all duration-500 hover:bg-orange-600 hover:text-white shadow-2xl hover:shadow-orange-900/20 group">
                   TOPTAN SATIŞ MERKEZİ
                   <ArrowRight className="w-5 h-5 transition-transform duration-500 group-hover:translate-x-2" />
                 </button>

@@ -39,7 +39,7 @@ export interface AddressFormProps {
 
 // Endüstriyel Modern Stil Tanımlaması
 const inputStyles =
-  "border-2 border-slate-100  px-4 focus-visible:ring-4 focus-visible:ring-orange-500/10 focus-visible:border-orange-500 transition-all bg-slate-50/50 h-12 font-bold shadow-none w-full placeholder:text-slate-300 text-sm";
+  "border-2 border-slate-100 rounded-sm  px-4 focus-visible:ring-4 focus-visible:ring-orange-500/10 focus-visible:border-orange-500 transition-all bg-slate-50/50 h-12 font-bold shadow-none w-full placeholder:text-slate-300 text-sm";
 
 export default function AdresForm({
   formData,
@@ -240,15 +240,16 @@ export default function AdresForm({
               }));
             }}
           >
-            <SelectTrigger className="border-2 border-slate-100  px-4 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all bg-slate-50/50 h-12 font-bold shadow-none">
+            
+            <SelectTrigger className="border-2 border-slate-100 w-full rounded-sm  px-4 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all bg-slate-50/50 font-bold shadow-none">
               <SelectValue placeholder="Şehir Seçiniz" />
             </SelectTrigger>
-            <SelectContent className=" border-slate-200">
+            <SelectContent className=" border-slate-200 rounded-sm">
               {cities.map((c) => (
                 <SelectItem
                   key={c.id}
                   value={c.id}
-                  className="text-xs font-bold focus:bg-orange-50 focus:text-orange-700"
+                  className="text-xs font-bold focus:bg-orange-50 focus:text-orange-700 rounded-sm"
                 >
                   {c.name}
                 </SelectItem>
@@ -279,15 +280,15 @@ export default function AdresForm({
             }}
             disabled={!formData.city}
           >
-            <SelectTrigger className="border-2 border-slate-100  px-4 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all bg-slate-50/50 h-12 font-bold shadow-none disabled:opacity-40">
+            <SelectTrigger className="border-2 w-full rounded-sm border-slate-100  px-4 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all bg-slate-50/50 font-bold shadow-none disabled:opacity-40">
               <SelectValue placeholder="İlçe Seçiniz" />
             </SelectTrigger>
-            <SelectContent className=" border-slate-200">
+            <SelectContent className=" border-slate-200 rounded-sm">
               {districts.map((d) => (
                 <SelectItem
                   key={d.id}
                   value={d.id.toString()}
-                  className="text-xs font-bold focus:bg-orange-50 focus:text-orange-700"
+                  className="text-xs font-bold focus:bg-orange-50 focus:text-orange-700 rounded-sm"
                 >
                   {d.name}
                 </SelectItem>
@@ -355,7 +356,7 @@ export default function AdresForm({
       <div className="pt-8 border-t border-slate-100">
         <Button
           type="submit"
-          className="w-full md:w-auto bg-slate-900 hover:bg-orange-600 text-white  px-12 py-7 text-[11px] font-black tracking-[0.2em] uppercase transition-all duration-300 shadow-xl shadow-slate-200 active:scale-95"
+          className="w-full rounded-sm md:w-auto bg-slate-900 hover:bg-orange-600 text-white  px-12 py-7 text-[11px] font-black tracking-[0.2em] uppercase transition-all duration-300 shadow-xl shadow-slate-200 active:scale-95"
         >
           ADRESİ SİSTEME KAYDET
         </Button>

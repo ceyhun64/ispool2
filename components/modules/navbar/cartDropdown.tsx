@@ -243,7 +243,7 @@ const CartDropdown = forwardRef(
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
-          <button className="relative p-2.5 text-slate-900 hover:text-slate-500 transition-colors duration-300">
+          <button className="relative p-2.5 text-slate-900 rounded-sm hover:text-slate-500 transition-colors duration-300">
             <div className="w-9 h-9 md:w-10 md:h-10 text-slate-900 flex items-center justify-center group-hover:bg-orange-600 transition-all">
               <ShoppingCart size={18} strokeWidth={2.5} />
             </div>{" "}
@@ -285,11 +285,11 @@ const CartDropdown = forwardRef(
               <div className="space-y-10 pt-4">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="flex gap-6">
-                    <Skeleton className="w-24 h-24 bg-slate-50 rounded-none border border-slate-100" />
+                    <Skeleton className="w-24 h-24 bg-slate-50 border border-slate-100" />
                     <div className="flex-1 space-y-4 py-1">
-                      <Skeleton className="h-4 w-3/4 bg-slate-50 rounded-none" />
-                      <Skeleton className="h-3 w-1/4 bg-slate-50 rounded-none" />
-                      <Skeleton className="h-8 w-20 bg-slate-50 rounded-none" />
+                      <Skeleton className="h-4 w-3/4 bg-slate-50 " />
+                      <Skeleton className="h-3 w-1/4 bg-slate-50 " />
+                      <Skeleton className="h-8 w-20 bg-slate-50 " />
                     </div>
                   </div>
                 ))}
@@ -316,7 +316,7 @@ const CartDropdown = forwardRef(
                   <Link href="/products">
                     <Button
                       variant="outline"
-                      className="border-slate-900 text-slate-900 rounded-none font-black text-[10px] uppercase tracking-[0.2em] px-10 h-14 hover:bg-slate-900 hover:text-white transition-all duration-500 shadow-lg"
+                      className="border-slate-900 rounded-sm text-slate-900  font-black text-[10px] uppercase tracking-[0.2em] px-10 h-14 hover:bg-slate-900 hover:text-white transition-all duration-500 shadow-lg"
                     >
                       KATALOĞU İNCELE
                     </Button>
@@ -394,7 +394,7 @@ const CartDropdown = forwardRef(
               <div className="flex flex-col gap-3">
                 <SheetClose asChild>
                   <Link href="/checkout" className="w-full">
-                    <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white h-16 rounded-none font-bold text-[11px] uppercase tracking-[0.25em] transition-all duration-500 group relative overflow-hidden">
+                    <Button className="w-full rounded-sm bg-slate-900 hover:bg-slate-800 text-white h-16 font-bold text-[11px] uppercase tracking-[0.25em] transition-all duration-500 group relative overflow-hidden">
                       <span className="relative z-10 flex items-center">
                         GÜVENLİ ÖDEMEYE GEÇ
                         <ArrowRight className="ml-3 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -406,7 +406,7 @@ const CartDropdown = forwardRef(
                   <Link href="/cart" className="w-full">
                     <Button
                       variant="ghost"
-                      className="w-full bg-transparent hover:bg-slate-100 text-slate-500 hover:text-slate-900 h-12 rounded-none font-bold text-[10px] uppercase tracking-[0.2em] transition-all duration-300"
+                      className="w-full rounded-sm bg-transparent hover:bg-slate-100 text-slate-500 hover:text-slate-900 h-12 font-bold text-[10px] uppercase tracking-[0.2em] transition-all duration-300"
                     >
                       SEPETE DETAYLI GÖZ AT
                     </Button>
