@@ -121,13 +121,13 @@ export default function HorozCargoTracking() {
                 value={requestNumber}
                 onChange={(e) => setRequestNumber(e.target.value)}
                 placeholder="Takip Numarası veya Sipariş Kodu"
-                className="w-full bg-white border-2 border-slate-200  py-6 pl-16 pr-44 text-lg font-bold shadow-sm focus:outline-none focus:border-orange-500 transition-all placeholder:text-slate-300 shadow-slate-100"
+                className="w-full bg-white border-2 rounded-sm border-slate-200  py-6 pl-16 pr-44 text-lg font-bold shadow-sm focus:outline-none focus:border-orange-500 transition-all placeholder:text-slate-300 shadow-slate-100"
                 disabled={loading}
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-slate-900 hover:bg-orange-600 text-white px-8 py-3.5  text-xs font-black tracking-widest uppercase transition-all shadow-lg active:scale-95 disabled:bg-slate-300"
+                className="absolute right-3 rounded-sm top-1/2 -translate-y-1/2 bg-slate-900 hover:bg-orange-600 text-white px-8 py-3.5  text-xs font-black tracking-widest uppercase transition-all shadow-lg active:scale-95 disabled:bg-slate-300"
               >
                 {loading ? "Sorgulanıyor..." : "Sorgula"}
               </button>

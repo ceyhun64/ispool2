@@ -422,7 +422,7 @@ export default function ProductTabs({
               onClick={handleSendSuggestion}
               disabled={isSending}
               className={cn(
-                "w-full sm:w-auto bg-slate-900 text-white px-8 md:px-10 py-3 md:py-4 text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-4 mx-auto hover:bg-orange-600 transition-all shadow-xl shadow-slate-200",
+                "w-full sm:w-auto bg-slate-900 rounded-sm text-white px-8 md:px-10 py-3 md:py-4 text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-4 mx-auto hover:bg-orange-600 transition-all shadow-xl shadow-slate-200",
                 isSending && "opacity-50 cursor-not-allowed",
               )}
             >

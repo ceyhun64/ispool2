@@ -125,7 +125,7 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
           <div className="relative z-10 space-y-6">
             <Link
               href="/auth/login"
-              className="group flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 p-5 transition-all duration-300"
+              className="group rounded-sm flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 p-5 transition-all duration-300"
             >
               <div className="flex flex-col">
                 <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">
@@ -163,7 +163,7 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
                     onChange={(e) => setName(e.target.value)}
                     required
                     placeholder="Ahmet"
-                    className="h-11 bg-white border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
+                    className="h-11 rounded-sm bg-white border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
                   />
                 </div>
                 <div className="space-y-2">
@@ -175,7 +175,7 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
                     onChange={(e) => setSurname(e.target.value)}
                     required
                     placeholder="Yılmaz"
-                    className="h-11 bg-white border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
+                    className="h-11 rounded-sm bg-white border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
                   />
                 </div>
               </div>
@@ -190,7 +190,7 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="ad.soyad@sirket.com"
-                  className="h-11 bg-white border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
+                  className="h-11 bg-white rounded-sm border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
                 />
               </div>
 
@@ -205,7 +205,7 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     placeholder="••••••••"
-                    className="h-11 bg-white border-slate-200 px-4 pr-12 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
+                    className="h-11 rounded-sm bg-white border-slate-200 px-4 pr-12 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
                   />
                   <button
                     type="button"
@@ -227,7 +227,7 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   placeholder="••••••••"
-                  className="h-11 bg-white border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
+                  className="h-11 rounded-sm bg-white border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
                 />
               </div>
 
@@ -235,7 +235,7 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full h-12 bg-[#0f172a] text-white hover:bg-orange-600 transition-all duration-300 shadow-lg shadow-slate-200"
+                  className="w-full h-12 rounded-sm bg-[#0f172a] text-white hover:bg-orange-600 transition-all duration-300 shadow-lg shadow-slate-200"
                 >
                   {isLoading ? (
                     <Loader2 className="animate-spin" size={20} />

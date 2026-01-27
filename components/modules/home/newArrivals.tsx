@@ -102,7 +102,7 @@ export default function YeniUrunlerCarousel() {
           <div className="flex items-center gap-2 self-end sm:self-auto">
             <button
               onClick={() => api?.scrollPrev()}
-              className="group flex items-center justify-center w-10 h-10 md:w-12 md:h-12 border border-slate-200 bg-white hover:bg-slate-950 transition-all duration-300 active:scale-95"
+              className="group flex rounded-sm items-center justify-center w-10 h-10 md:w-12 md:h-12 border border-slate-200 bg-white hover:bg-slate-950 transition-all duration-300 active:scale-95"
               aria-label="Geri"
             >
               <ChevronLeft
@@ -112,7 +112,7 @@ export default function YeniUrunlerCarousel() {
             </button>
             <button
               onClick={() => api?.scrollNext()}
-              className="group flex items-center justify-center w-10 h-10 md:w-12 md:h-12 border border-slate-200 bg-white hover:bg-slate-950 transition-all duration-300 active:scale-95"
+              className="group flex rounded-sm items-center justify-center w-10 h-10 md:w-12 md:h-12 border border-slate-200 bg-white hover:bg-slate-950 transition-all duration-300 active:scale-95"
               aria-label="İleri"
             >
               <ChevronRight

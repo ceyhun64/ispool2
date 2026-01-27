@@ -106,14 +106,14 @@ export default function ForgotPasswordPage() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       placeholder="ad.soyad@sirket.com"
-                      className="h-12 bg-white border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none rounded-none"
+                      className="h-12 rounded-sm bg-white border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none rounded-none"
                     />
                   </div>
 
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full h-12 bg-[#0f172a] text-white hover:bg-orange-600 transition-all duration-300 shadow-lg shadow-slate-200 rounded-none group"
+                    className="w-full h-12 rounded-sm bg-[#0f172a] text-white hover:bg-orange-600 transition-all duration-300 shadow-lg shadow-slate-200  group"
                   >
                     {isLoading ? (
                       <Loader2 className="animate-spin" size={20} />

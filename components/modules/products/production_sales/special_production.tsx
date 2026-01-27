@@ -92,7 +92,7 @@ const OzelUretimPremium = () => {
           <div className="relative bg-white w-full max-w-2xl border-t-[8px] sm:border-t-[12px] border-amber-600 p-6 sm:p-10 md:p-16 shadow-2xl animate-in fade-in zoom-in duration-300 max-h-[95vh] overflow-y-auto">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-950 p-2 border border-slate-100"
+              className="absolute rounded-sm top-4 right-4 text-slate-400 hover:text-slate-950 p-2 border border-slate-100"
             >
               <X size={20} />
             </button>
@@ -113,7 +113,7 @@ const OzelUretimPremium = () => {
                   onChange={handleInputChange}
                   type="text"
                   placeholder="AD SOYAD"
-                  className="w-full border-b-2 border-slate-200 p-3 focus:border-amber-600 outline-none transition-colors font-bold text-sm uppercase bg-slate-50"
+                  className="w-full border-b-2 rounded-sm border-slate-200 p-3 focus:border-amber-600 outline-none transition-colors font-bold text-sm uppercase bg-slate-50"
                 />
                 <input
                   required
@@ -122,7 +122,7 @@ const OzelUretimPremium = () => {
                   onChange={handleInputChange}
                   type="text"
                   placeholder="ŞİRKET ÜNVANI"
-                  className="w-full border-b-2 border-slate-200 p-3 focus:border-amber-600 outline-none transition-colors font-bold text-sm uppercase bg-slate-50"
+                  className="w-full rounded-sm border-b-2 border-slate-200 p-3 focus:border-amber-600 outline-none transition-colors font-bold text-sm uppercase bg-slate-50"
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -133,7 +133,7 @@ const OzelUretimPremium = () => {
                   onChange={handleInputChange}
                   type="email"
                   placeholder="E-POSTA"
-                  className="w-full border-b-2 border-slate-200 p-3 focus:border-amber-600 outline-none transition-colors font-bold text-sm uppercase bg-slate-50"
+                  className="w-full rounded-sm border-b-2 border-slate-200 p-3 focus:border-amber-600 outline-none transition-colors font-bold text-sm uppercase bg-slate-50"
                 />
                 <input
                   required
@@ -142,7 +142,7 @@ const OzelUretimPremium = () => {
                   onChange={handleInputChange}
                   type="tel"
                   placeholder="İRTİBAT NO"
-                  className="w-full border-b-2 border-slate-200 p-3 focus:border-amber-600 outline-none transition-colors font-bold text-sm uppercase bg-slate-50"
+                  className="w-full rounded-sm border-b-2 border-slate-200 p-3 focus:border-amber-600 outline-none transition-colors font-bold text-sm uppercase bg-slate-50"
                 />
               </div>
               <textarea
@@ -152,11 +152,11 @@ const OzelUretimPremium = () => {
                 onChange={handleInputChange}
                 placeholder="PROJE DETAYLARI VE ADET BİLGİSİ"
                 rows={4}
-                className="w-full border-b-2 border-slate-200 p-3 focus:border-amber-600 outline-none transition-colors font-bold text-sm uppercase bg-slate-50 resize-none"
+                className="w-full rounded-sm border-b-2 border-slate-200 p-3 focus:border-amber-600 outline-none transition-colors font-bold text-sm uppercase bg-slate-50 resize-none"
               />
               <button
                 disabled={isLoading}
-                className="w-full bg-slate-950 text-white py-5 font-black uppercase text-xs tracking-[0.4em] hover:bg-amber-600 transition-all flex items-center justify-center gap-3 disabled:bg-slate-400"
+                className="w-full rounded-sm bg-slate-950 text-white py-5 font-black uppercase text-xs tracking-[0.4em] hover:bg-amber-600 transition-all flex items-center justify-center gap-3 disabled:bg-slate-400"
               >
                 {isLoading ? (
                   <Loader2 className="animate-spin" />
@@ -207,7 +207,7 @@ const OzelUretimPremium = () => {
               </p>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="w-full sm:w-auto bg-white text-slate-950 px-10 py-5 sm:px-12 sm:py-6 font-black uppercase text-xs tracking-widest hover:bg-amber-600 hover:text-white transition-all shadow-xl"
+                className="w-full rounded-sm sm:w-auto bg-white text-slate-950 px-10 py-5 sm:px-12 sm:py-6 font-black uppercase text-xs tracking-widest hover:bg-amber-600 hover:text-white transition-all shadow-xl"
               >
                 PROJE BAŞLAT
               </button>
@@ -301,7 +301,7 @@ const OzelUretimPremium = () => {
             <h2 className="text-5xl sm:text-6xl md:text-8xl font-black text-slate-950 tracking-tighter uppercase leading-[0.8] mb-12 sm:mb-16">
               V.I.P <br /> ÇÖZÜM ORTAĞI
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 border-2 border-slate-950 shadow-2xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 border-2 border-slate-950 shadow-2xl ">
               <a
                 href="tel:+902164727300"
                 className="bg-white p-10 sm:p-12 hover:bg-slate-950 hover:text-white transition-all group border-b-2 sm:border-b-0 sm:border-r-2 border-slate-950"
@@ -315,7 +315,7 @@ const OzelUretimPremium = () => {
               </a>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-amber-600 p-10 sm:p-12 text-slate-950 hover:bg-slate-950 hover:text-white transition-all group"
+                className="bg-amber-600  p-10 sm:p-12 text-slate-950 hover:bg-slate-950 hover:text-white transition-all group"
               >
                 <span className="block text-[10px] font-black uppercase text-slate-900/60 group-hover:text-amber-600 mb-4">
                   TEKLİF FORMU

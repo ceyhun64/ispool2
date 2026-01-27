@@ -1,6 +1,4 @@
-import { sub } from "date-fns";
-
-// src/data/categories.ts
+//data/categories.ts
 export const CATEGORIES = [
   {
     id: "is_elbiseleri",

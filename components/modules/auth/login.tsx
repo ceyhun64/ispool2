@@ -130,7 +130,7 @@ export default function LoginForm() {
 
             <Link
               href="/auth/register"
-              className="group flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 p-5  transition-all duration-300"
+              className="group rounded-sm flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 p-5  transition-all duration-300"
             >
               <div className="flex flex-col">
                 <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">
@@ -168,7 +168,7 @@ export default function LoginForm() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="ad.soyad@sirket.com"
-                  className="h-12 bg-white border-slate-200  px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
+                  className="h-12 bg-white rounded-sm border-slate-200  px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
                 />
               </div>
 
@@ -191,12 +191,12 @@ export default function LoginForm() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     placeholder="••••••••"
-                    className="h-12 bg-white border-slate-200  px-4 pr-12 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
+                    className="h-12 bg-white rounded-sm border-slate-200  px-4 pr-12 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    className="absolute rounded-sm right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -206,7 +206,7 @@ export default function LoginForm() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-12 bg-[#0f172a] text-white hover:bg-orange-600  transition-all duration-300 shadow-lg shadow-slate-200"
+                className="w-full h-12 rounded-sm bg-[#0f172a] text-white hover:bg-orange-600  transition-all duration-300 shadow-lg shadow-slate-200"
               >
                 {isLoading ? (
                   <Loader2 className="animate-spin" size={20} />

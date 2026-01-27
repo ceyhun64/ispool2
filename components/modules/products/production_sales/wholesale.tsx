@@ -76,7 +76,7 @@ const ToptanSatisPremium = () => {
           <div className="relative bg-white w-full max-w-2xl border-t-[8px] sm:border-t-[12px] border-amber-600 p-6 sm:p-10 md:p-16 shadow-2xl animate-in fade-in zoom-in duration-300 overflow-y-auto max-h-[95vh]">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-950 p-2 border border-slate-100"
+              className="absolute rounded-sm top-4 right-4 text-slate-400 hover:text-slate-950 p-2 border border-slate-100"
             >
               <X size={18} />
             </button>
@@ -99,7 +99,7 @@ const ToptanSatisPremium = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full border-b border-slate-200 p-2 sm:p-3 focus:border-amber-600 outline-none font-bold text-sm bg-slate-50"
+                    className="w-full border-b rounded-sm border-slate-200 p-2 sm:p-3 focus:border-amber-600 outline-none font-bold text-sm bg-slate-50"
                   />
                 </div>
                 <div className="space-y-1">
@@ -111,7 +111,7 @@ const ToptanSatisPremium = () => {
                     name="company"
                     value={formData.company}
                     onChange={handleInputChange}
-                    className="w-full border-b border-slate-200 p-2 sm:p-3 focus:border-amber-600 outline-none font-bold text-sm bg-slate-50"
+                    className="w-full border-b rounded-sm border-slate-200 p-2 sm:p-3 focus:border-amber-600 outline-none font-bold text-sm bg-slate-50"
                   />
                 </div>
               </div>
@@ -126,7 +126,7 @@ const ToptanSatisPremium = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full border-b border-slate-200 p-2 sm:p-3 focus:border-amber-600 outline-none font-bold text-sm bg-slate-50"
+                    className="w-full border-b rounded-sm border-slate-200 p-2 sm:p-3 focus:border-amber-600 outline-none font-bold text-sm bg-slate-50"
                   />
                 </div>
                 <div className="space-y-1">
@@ -139,7 +139,7 @@ const ToptanSatisPremium = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full border-b border-slate-200 p-2 sm:p-3 focus:border-amber-600 outline-none font-bold text-sm bg-slate-50"
+                    className="w-full border-b rounded-sm border-slate-200 p-2 sm:p-3 focus:border-amber-600 outline-none font-bold text-sm bg-slate-50"
                   />
                 </div>
               </div>
@@ -153,12 +153,12 @@ const ToptanSatisPremium = () => {
                   value={formData.details}
                   onChange={handleInputChange}
                   rows={3}
-                  className="w-full border-b border-slate-200 p-2 sm:p-3 focus:border-amber-600 outline-none font-bold text-sm bg-slate-50 resize-none"
+                  className="w-full border-b rounded-sm border-slate-200 p-2 sm:p-3 focus:border-amber-600 outline-none font-bold text-sm bg-slate-50 resize-none"
                 />
               </div>
               <button
                 disabled={isLoading}
-                className="w-full bg-slate-950 text-white py-4 sm:py-6 font-black uppercase text-[10px] tracking-[0.3em] hover:bg-amber-600 transition-all flex items-center justify-center gap-2"
+                className="w-full bg-slate-950 rounded-sm text-white py-4 sm:py-6 font-black uppercase text-[10px] tracking-[0.3em] hover:bg-amber-600 transition-all flex items-center justify-center gap-2"
               >
                 {isLoading ? (
                   <Loader2 className="animate-spin" />
@@ -207,7 +207,7 @@ const ToptanSatisPremium = () => {
               <div className="flex flex-col gap-4 w-full sm:w-auto">
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="bg-white text-slate-950 px-8 py-4 sm:px-12 sm:py-5 font-black uppercase text-xs tracking-widest hover:bg-amber-600 hover:text-white transition-all w-full sm:w-auto"
+                  className="bg-white rounded-sm text-slate-950 px-8 py-4 sm:px-12 sm:py-5 font-black uppercase text-xs tracking-widest hover:bg-amber-600 hover:text-white transition-all w-full sm:w-auto"
                 >
                   Hızlı Teklif Al
                 </button>
@@ -313,7 +313,7 @@ const ToptanSatisPremium = () => {
                 href="/help/printing"
                 className="inline-block w-full sm:w-auto"
               >
-                <button className="w-full sm:w-auto border-2 border-slate-950 px-10 py-4 font-black text-[10px] tracking-[0.3em] uppercase hover:bg-slate-950 hover:text-white transition-all">
+                <button className="w-full rounded-sm sm:w-auto border-2 border-slate-950 px-10 py-4 font-black text-[10px] tracking-[0.3em] uppercase hover:bg-slate-950 hover:text-white transition-all">
                   Teknikleri İncele
                 </button>
               </Link>

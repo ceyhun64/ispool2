@@ -158,12 +158,12 @@ export default function Footer() {
                   placeholder="E-posta adresiniz"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 p-3 pr-12 text-[13px] text-white focus:outline-none focus:border-orange-600 transition-all"
+                  className="w-full rounded-sm bg-slate-900 border border-slate-800 p-3 pr-12 text-[13px] text-white focus:outline-none focus:border-orange-600 transition-all"
                 />
                 <button
                   type="submit"
                   disabled={loading}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-orange-600 hover:text-white transition-colors"
+                  className="absolute rounded-sm right-4 top-1/2 -translate-y-1/2 text-orange-600 hover:text-white transition-colors"
                 >
                   <Mail size={20} />
                 </button>
@@ -175,7 +175,7 @@ export default function Footer() {
                 <a
                   key={i}
                   href={social.href}
-                  className="w-9 h-9 flex items-center justify-center bg-white/5 text-slate-400 hover:bg-orange-600 hover:text-white transition-all"
+                  className="w-9 h-9 flex rounded-sm items-center justify-center bg-white/5 text-slate-400 hover:bg-orange-600 hover:text-white transition-all"
                 >
                   <social.icon size={16} />
                 </a>
@@ -190,7 +190,7 @@ export default function Footer() {
                 {/* Accordion Başlığı (Mobilde buton, masaüstünde düz yazı) */}
                 <button
                   onClick={() => toggleSection(key)}
-                  className="w-full md:cursor-default py-4 md:py-0 flex items-center justify-between text-left focus:outline-none group"
+                  className="w-full rounded-sm md:cursor-default py-4 md:py-0 flex items-center justify-between text-left focus:outline-none group"
                 >
                   <h4 className="text-white text-[15px] font-bold">
                     {group.title}
@@ -231,7 +231,7 @@ export default function Footer() {
       </div>
 
       {/* Alt Bar */}
-      <div className="bg-black py-8 border-t border-white/5">
+      <div className="bg-white py-4 border-t border-white/5">
         <div className="container mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-600 text-center md:text-left">
             © {currentYear} İŞPOOL ENDÜSTRİYEL GÜVENLİK SİSTEMLERİ.
@@ -239,8 +239,8 @@ export default function Footer() {
           <Image
             src="/iyzico/logo_band_colored@3x.webp"
             alt="Güvenli Ödeme"
-            width={200}
-            height={35}
+            width={300}
+            height={53}
             className="object-contain"
           />
         </div>

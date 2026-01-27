@@ -131,7 +131,7 @@ export default function Banner() {
             <button
               onClick={() => setIsModalOpen(false)}
               disabled={isFormLoading}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-950 p-2 border border-slate-100 disabled:opacity-50"
+              className="absolute rounded-sm top-4 right-4 text-slate-400 hover:text-slate-950 p-2 border border-slate-100 disabled:opacity-50"
             >
               <X size={18} />
             </button>
@@ -220,7 +220,7 @@ export default function Banner() {
               <button
                 type="submit"
                 disabled={isFormLoading}
-                className="w-full bg-slate-950 text-white py-4 sm:py-6 font-black uppercase text-[10px] tracking-[0.3em] hover:bg-orange-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full rounded-sm bg-slate-950 text-white py-4 sm:py-6 font-black uppercase text-[10px] tracking-[0.3em] hover:bg-orange-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isFormLoading ? (
                   <>
@@ -315,7 +315,7 @@ export default function Banner() {
               >
                 <Link
                   href="/products"
-                  className="group relative flex items-center justify-center gap-4 px-10 py-5 bg-orange-600 hover:bg-white transition-all duration-500 shadow-[0_0_30px_rgba(234,88,12,0.2)]"
+                  className="group rounded-sm relative flex items-center justify-center gap-4 px-10 py-5 bg-orange-600 hover:bg-white transition-all duration-500 shadow-[0_0_30px_rgba(234,88,12,0.2)]"
                 >
                   <span className="text-[11px] tracking-[0.2em] uppercase text-white group-hover:text-black font-black">
                     Koleksiyonu Keşfet
@@ -328,7 +328,7 @@ export default function Banner() {
 
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="group flex items-center justify-center gap-4 px-10 py-5 border border-white/10 bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-all duration-500"
+                  className="group rounded-sm flex items-center justify-center gap-4 px-10 py-5 border border-white/10 bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-all duration-500"
                 >
                   <span className="text-[11px] tracking-[0.2em] uppercase text-slate-300 group-hover:text-white font-black">
                     Kurumsal Teklif Al

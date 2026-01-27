@@ -108,7 +108,7 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
                 )
               }
               disabled={item.quantity <= 1}
-              className={`p-1 rounded-md disabled:opacity-30 transition-colors ${
+              className={`p-1 rounded-sm disabled:opacity-30 transition-colors ${
                 isCustomized ? "hover:bg-orange-100" : "hover:bg-white"
               }`}
             >
@@ -133,7 +133,7 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
                   item.customImage,
                 )
               }
-              className={`p-1 rounded-md transition-colors ${
+              className={`p-1 rounded-sm transition-colors ${
                 isCustomized ? "hover:bg-orange-100" : "hover:bg-white"
               }`}
             >
@@ -150,7 +150,7 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
       {/* Kaldır Butonu - Sadece hover durumunda daha belirgin */}
       <button
         onClick={() => onRemove(item.id, item.productId, item.customImage)}
-        className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all duration-200"
+        className="p-2 text-slate-300  hover:text-red-500 hover:bg-red-50 rounded-sm transition-all duration-200"
         title="Kaldır"
       >
         <Trash2 className="h-4 w-4" />

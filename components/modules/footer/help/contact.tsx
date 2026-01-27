@@ -166,7 +166,7 @@ export default function Contact() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="group relative flex items-center gap-4 bg-slate-900 text-white px-12 py-6 overflow-hidden transition-all hover:bg-orange-600 disabled:bg-slate-200 disabled:cursor-not-allowed"
+                  className="group rounded-sm relative flex items-center gap-4 bg-slate-900 text-white px-12 py-6 overflow-hidden transition-all hover:bg-orange-600 disabled:bg-slate-200 disabled:cursor-not-allowed"
                 >
                   <span className="relative z-10 text-[11px] font-bold uppercase tracking-[0.3em]">
                     {isLoading ? "Gönderiliyor..." : "Mesajı İletin"}

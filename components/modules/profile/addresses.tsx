@@ -220,7 +220,7 @@ export default function Adreslerim() {
                   setDuzenleForm(false);
                   setEkleFormData(initialFormData);
                 }}
-                className={`flex items-center gap-3 px-8 py-4 text-[11px] font-black uppercase tracking-widest transition-all shadow-xl active:scale-95 ${
+                className={`flex items-center rounded-sm gap-3 px-8 py-4 text-[11px] font-black uppercase tracking-widest transition-all shadow-xl active:scale-95 ${
                   yeniAdresForm
                     ? "bg-white text-slate-900 border border-slate-200 shadow-slate-200/50"
                     : "bg-slate-950 text-white shadow-slate-900/30 hover:bg-orange-600 hover:-translate-y-1"

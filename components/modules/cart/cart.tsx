@@ -172,7 +172,7 @@ export default function Cart() {
                 inceleyerek projenize hazırlanın.
               </p>
               <Link href="/products">
-                <Button className="bg-slate-900 hover:bg-slate-800 text-white rounded-none px-12 py-7 text-[11px] font-bold tracking-[0.2em] transition-all duration-500 shadow-xl">
+                <Button className="bg-slate-900 rounded-sm hover:bg-slate-800 text-white px-12 py-7 text-[11px] font-bold tracking-[0.2em] transition-all duration-500 shadow-xl">
                   KOLEKSİYONU GÖR
                 </Button>
               </Link>

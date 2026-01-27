@@ -178,7 +178,7 @@ export default function KisiselBilgilerim() {
                       onChange={(e) =>
                         setFormData({ ...formData, firstName: e.target.value })
                       }
-                      className="border-2 border-slate-100  px-4 focus-visible:ring-4 focus-visible:ring-orange-500/10 focus-visible:border-orange-500 transition-all bg-slate-50/50 h-12 font-bold shadow-none"
+                      className="border-2 rounded-sm border-slate-100  px-4 focus-visible:ring-4 focus-visible:ring-orange-500/10 focus-visible:border-orange-500 transition-all bg-slate-50/50 h-12 font-bold shadow-none"
                       placeholder="Adınız"
                     />
                   </div>
@@ -198,7 +198,7 @@ export default function KisiselBilgilerim() {
                     onChange={(e) =>
                       setFormData({ ...formData, lastName: e.target.value })
                     }
-                    className="border-2 border-slate-100  px-4 focus-visible:ring-4 focus-visible:ring-orange-500/10 focus-visible:border-orange-500 transition-all bg-slate-50/50 h-12 font-bold shadow-none"
+                    className="border-2 rounded-sm border-slate-100  px-4 focus-visible:ring-4 focus-visible:ring-orange-500/10 focus-visible:border-orange-500 transition-all bg-slate-50/50 h-12 font-bold shadow-none"
                     placeholder="Soyadınız"
                   />
                 </div>
@@ -217,7 +217,7 @@ export default function KisiselBilgilerim() {
                       id="email"
                       value={formData.email}
                       disabled
-                      className="border-2 border-slate-100  px-4 bg-slate-100/50 text-slate-400 cursor-not-allowed h-12 font-medium shadow-none"
+                      className="border-2 rounded-sm border-slate-100  px-4 bg-slate-100/50 text-slate-400 cursor-not-allowed h-12 font-medium shadow-none"
                     />
                   </div>
                 </div>
@@ -247,7 +247,7 @@ export default function KisiselBilgilerim() {
                           phone: e.target.value.replace(/\D/g, ""),
                         })
                       }
-                      className="border-2 border-slate-100  pl-20 pr-4 focus-visible:ring-4 focus-visible:ring-orange-500/10 focus-visible:border-orange-500 transition-all bg-slate-50/50 h-12 font-bold shadow-none"
+                      className="border-2 rounded-sm border-slate-100  pl-20 pr-4 focus-visible:ring-4 focus-visible:ring-orange-500/10 focus-visible:border-orange-500 transition-all bg-slate-50/50 h-12 font-bold shadow-none"
                       placeholder="5xx xxx xx xx"
                     />
                   </div>
@@ -262,7 +262,7 @@ export default function KisiselBilgilerim() {
                 <Button
                   type="submit"
                   disabled={saving}
-                  className="bg-slate-900 hover:bg-orange-600 text-white  px-10 py-6 text-xs tracking-[0.2em] font-black uppercase transition-all duration-300 disabled:opacity-30 active:scale-[0.98] shadow-xl shadow-slate-200 w-full md:w-auto"
+                  className="bg-slate-900 rounded-sm hover:bg-orange-600 text-white  px-10 py-6 text-xs tracking-[0.2em] font-black uppercase transition-all duration-300 disabled:opacity-30 active:scale-[0.98] shadow-xl shadow-slate-200 w-full md:w-auto"
                 >
                   {saving ? "VERİLER İŞLENİYOR..." : "VERİLERİ GÜNCELLE"}
                 </Button>

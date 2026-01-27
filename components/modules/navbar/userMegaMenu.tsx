@@ -104,7 +104,7 @@ export default function UserMegaMenu({
               </div>
               <button
                 onClick={() => setUserMenuOpen(false)}
-                className="p-2 hover:bg-white transition-colors border border-transparent hover:border-slate-200"
+                className="p-2 rounded-sm hover:bg-white transition-colors border border-transparent hover:border-slate-200"
               >
                 <X size={20} className="text-slate-400" />
               </button>
@@ -136,9 +136,9 @@ export default function UserMegaMenu({
                         key={i}
                         href={item.href}
                         onClick={() => setUserMenuOpen(false)}
-                        className="group flex items-center gap-4 p-4  border border-slate-100 hover:border-orange-200 hover:bg-orange-50/30 transition-all"
+                        className="group rounded-sm flex items-center gap-4 p-4  border border-slate-100 hover:border-orange-200 hover:bg-orange-50/30 transition-all"
                       >
-                        <div className="w-10 h-10 bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:text-orange-600 transition-colors border border-slate-100">
+                        <div className="w-10 h-10 bg-slate-50 rounded-sm flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:text-orange-600 transition-colors border border-slate-100">
                           <item.icon size={18} />
                         </div>
                         <div className="flex-1">
@@ -171,7 +171,7 @@ export default function UserMegaMenu({
                     <Link
                       href="/auth/login"
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center justify-between p-6 bg-slate-900 text-white hover:bg-orange-600 transition-all group"
+                      className="flex rounded-sm items-center justify-between p-6 bg-slate-900 text-white hover:bg-orange-600 transition-all group"
                     >
                       <span className=" uppercase tracking-widest text-sm">
                         Oturum Aç
@@ -185,7 +185,7 @@ export default function UserMegaMenu({
                     <Link
                       href="/auth/register"
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center justify-between p-6 bg-white border border-slate-200 text-slate-900 hover:border-slate-900 transition-all group"
+                      className="flex rounded-sm items-center justify-between p-6 bg-white border border-slate-200 text-slate-900 hover:border-slate-900 transition-all group"
                     >
                       <span className=" uppercase tracking-widest text-sm">
                         Yeni Kayıt
@@ -205,7 +205,7 @@ export default function UserMegaMenu({
               {user ? (
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-red-600 transition-colors"
+                  className="flex rounded-sm items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-red-600 transition-colors"
                 >
                   <LogOut size={14} />
                   Güvenli Çıkış
@@ -218,7 +218,7 @@ export default function UserMegaMenu({
               )}
               <Link
                 href="/help/contact"
-                className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-900 transition-colors"
+                className="text-[10px] rounded-sm font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-900 transition-colors"
               >
                 Yardım Merkezi
               </Link>

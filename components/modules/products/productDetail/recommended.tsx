@@ -103,7 +103,7 @@ export default function ÖnerilenÜrünlerCarousel() {
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => api?.scrollPrev()}
-              className="group flex items-center justify-center w-9 h-9 md:w-11 md:h-11 border border-slate-200 bg-white hover:bg-slate-950 transition-all duration-300 active:scale-95"
+              className="group rounded-sm flex items-center justify-center w-9 h-9 md:w-11 md:h-11 border border-slate-200 bg-white hover:bg-slate-950 transition-all duration-300 active:scale-95"
               aria-label="Geri"
             >
               <ChevronLeft
@@ -113,7 +113,7 @@ export default function ÖnerilenÜrünlerCarousel() {
             </button>
             <button
               onClick={() => api?.scrollNext()}
-              className="group flex items-center justify-center w-9 h-9 md:w-11 md:h-11 border border-slate-200 bg-white hover:bg-slate-950 transition-all duration-300 active:scale-95"
+              className="group rounded-sm flex items-center justify-center w-9 h-9 md:w-11 md:h-11 border border-slate-200 bg-white hover:bg-slate-950 transition-all duration-300 active:scale-95"
               aria-label="İleri"
             >
               <ChevronRight

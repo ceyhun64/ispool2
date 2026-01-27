@@ -63,7 +63,7 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
                     key={option.value}
                     onClick={() => setGridCols(option.value)}
                     className={cn(
-                      "relative px-4 py-1.5 transition-all duration-300 flex items-center gap-2",
+                      "relative px-4 py-1.5 rounded-sm transition-all duration-300 flex items-center gap-2",
                       isActive
                         ? "text-slate-950 shadow-sm"
                         : "text-slate-400 hover:text-slate-600",
@@ -72,7 +72,7 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
                     {isActive && (
                       <motion.div
                         layoutId="activeGrid"
-                        className="absolute inset-0 bg-white"
+                        className="absolute inset-0 rounded-sm bg-white"
                         transition={{
                           type: "spring",
                           bounce: 0.2,
@@ -82,7 +82,7 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
                     )}
                     <Icon className="w-3.5 h-3.5 relative z-10" />
                     {isActive && (
-                      <span className="text-[10px] font-bold relative z-10">
+                      <span className="text-[10px]  font-bold relative z-10">
                         {option.label}
                       </span>
                     )}
@@ -98,18 +98,18 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
               Sıralama
             </span>
             <Select value={sort} onValueChange={(value: any) => setSort(value)}>
-              <SelectTrigger className="w-[200px] h-9 border-none bg-white hover:bg-slate-50 text-[11px] font-bold tracking-tight transition-all focus:ring-0">
+              <SelectTrigger className="w-[200px] h-9 rounded-sm border-none bg-white hover:bg-slate-50 text-[11px] font-bold tracking-tight transition-all focus:ring-0">
                 <SelectValue placeholder="Sıralama" />
               </SelectTrigger>
               <SelectContent
                 align="end"
-                className="border-slate-100 shadow-2xl p-2 bg-white/95 backdrop-blur-md"
+                className="border-slate-100 shadow-2xl p-2 bg-white/95 backdrop-blur-md rounded-sm"
               >
                 {sortOptions.map((opt) => (
                   <SelectItem
                     key={opt.id}
                     value={opt.id}
-                    className="py-3 px-4 focus:bg-slate-950 focus:text-white cursor-pointer transition-colors group rounded-none"
+                    className="py-3 px-4 focus:bg-slate-950 rounded-sm focus:text-white cursor-pointer transition-colors group"
                   >
                     <div className="flex items-center gap-3">
                       <opt.icon
