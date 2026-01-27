@@ -1,6 +1,5 @@
-// /components/modules/products/mobileFilter.tsx
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
@@ -13,15 +12,39 @@ import {
   TrendingDown,
   ChevronDown,
   ChevronRight,
+  Factory,
 } from "lucide-react";
-import { CATEGORIES } from "@/data/categories";
+
+// Veritabanı tipi tanımlamaları
+interface DbSubCategory {
+  id: number;
+  name: string;
+}
+
+interface DbMiddleCategory {
+  id: number;
+  name: string;
+  subCategories: DbSubCategory[];
+}
+
+interface DbCategory {
+  id: number;
+  name: string;
+  middleCategories: DbMiddleCategory[];
+}
+
+interface DbBrand {
+  id: number;
+  name: string;
+  image?: string;
+}
 
 interface MobileFilterProps {
-  currentCategory: any;
+  currentCategory: DbCategory | null;
   subCategoryFilter: string;
   setSubCategoryFilter: (val: string) => void;
   brandFilter: string;
-  setBrandFilter: (val: string) => void;
+  setBrandFilter: (brandId: string) => void; // brandId olarak güncellendi
   minPrice: number;
   maxPrice: number;
   setMinPrice: (val: number) => void;
@@ -37,16 +60,6 @@ const sortOptions = [
   { id: "za", label: "Z'den A'ya", icon: ArrowUpAZ },
   { id: "priceLow", label: "Düşük Fiyat", icon: TrendingDown },
   { id: "priceHigh", label: "Yüksek Fiyat", icon: TrendingUp },
-];
-
-const brands = [
-  "U-Power",
-  "Base",
-  "3M",
-  "Delta Plus",
-  "Ansell",
-  "Portwest",
-  "Polyboot",
 ];
 
 const MobileFilter: React.FC<MobileFilterProps> = ({
@@ -65,15 +78,41 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
   setSort,
 }) => {
   const router = useRouter();
-  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+  const [expandedCategories, setExpandedCategories] = useState<number[]>([]);
+  const [allCategories, setAllCategories] = useState<DbCategory[]>([]);
+  const [dbBrands, setDbBrands] = useState<DbBrand[]>([]);
 
-  const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-black mb-6">
-      {children}
-    </h3>
+  // API'den tüm verileri çek
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("/api/category");
+        const data = await res.json();
+        setAllCategories(data.categories || []);
+        setDbBrands(data.brands || []);
+      } catch (error) {
+        console.error("Mobil filtre verileri çekilemedi:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const SectionTitle = ({
+    children,
+    icon: Icon,
+  }: {
+    children: React.ReactNode;
+    icon?: any;
+  }) => (
+    <div className="flex items-center gap-2 mb-6 text-slate-400">
+      {Icon && <Icon size={12} className="text-orange-600" />}
+      <h3 className="text-[10px] uppercase tracking-[0.2em] font-black">
+        {children}
+      </h3>
+    </div>
   );
 
-  const toggleCategory = (categoryId: string) => {
+  const toggleCategory = (categoryId: number) => {
     setExpandedCategories((prev) =>
       prev.includes(categoryId)
         ? prev.filter((id) => id !== categoryId)
@@ -81,29 +120,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
     );
   };
 
-  const sectionTitle = currentCategory ? "Alt Kategori" : "Kategori";
-  const mainCategories = CATEGORIES.filter(
-    (cat) => cat.megaMenu && !cat.megaMenu.isBrands,
-  );
-
-  // Alt kategoriler (kategori sayfasında)
-  const subCategories = currentCategory?.megaMenu?.columns
-    ? currentCategory.megaMenu.columns.flatMap(
-        (col: any) =>
-          col.subItems?.map((item: string) => ({
-            label: item,
-            value: item
-              .toLowerCase()
-              .replace(/\s+/g, "-")
-              .replace(/ğ/g, "g")
-              .replace(/ü/g, "u")
-              .replace(/ş/g, "s")
-              .replace(/ı/g, "i")
-              .replace(/ö/g, "o")
-              .replace(/ç/g, "c"),
-          })) || [],
-      )
-    : [];
+  const sectionTitle = "Kategori";
 
   return (
     <div className="flex flex-col gap-y-10 pb-10">
@@ -124,7 +141,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
                 className={cn(
                   "py-5 border-2 rounded-sm transition-all flex flex-col items-center gap-3",
                   isActive
-                    ? "border-slate-950 bg-slate-950 text-white"
+                    ? "border-slate-950 bg-slate-950 text-white shadow-lg shadow-slate-200"
                     : "border-slate-200 bg-white text-slate-400 hover:border-slate-300",
                 )}
               >
@@ -183,168 +200,144 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
       {/* 3. KATEGORİ / ALT KATEGORİ */}
       <section>
         <SectionTitle>{sectionTitle}</SectionTitle>
-
-        {/* Tüm Ürünler Sayfası - Kategoriler */}
-        {!currentCategory && (
-          <div className="space-y-2">
-            <button
-              onClick={() => router.push("/products")}
-              className="rounded-sm w-full text-left py-3 px-4 bg-white border border-slate-200 text-[12px] font-bold text-slate-900 hover:border-orange-500 transition-colors"
-            >
-              TÜMÜ
-            </button>
-
-            {mainCategories.map((cat) => {
-              const isExpanded = expandedCategories.includes(cat.id);
-              const hasSubItems =
-                cat.megaMenu?.columns?.some(
-                  (col: any) => col.subItems && col.subItems.length > 0,
-                ) ?? false;
-
-              return (
-                <div key={cat.id} className="bg-white border border-slate-200">
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => router.push(`/products/category/${cat.id}`)}
-                      className="flex-1 rounded-sm text-left py-3 px-4 text-[12px] font-bold text-slate-700 hover:text-orange-600 transition-colors"
-                    >
-                      {cat.label}
-                    </button>
-
-                    {hasSubItems && (
-                      <button
-                        onClick={() => toggleCategory(cat.id)}
-                        className="px-4 py-3 hover:bg-orange-50 transition-colors rounded-sm"
-                      >
-                        <ChevronDown
-                          size={16}
-                          className={cn(
-                            "transition-transform duration-200",
-                            isExpanded
-                              ? "rotate-180 text-orange-600"
-                              : "text-slate-400",
-                          )}
-                        />
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Alt Kategoriler */}
-                  {isExpanded && hasSubItems && cat.megaMenu?.columns && (
-                    <div className="border-t border-slate-100 bg-slate-50 p-3 space-y-3">
-                      {cat.megaMenu.columns.map(
-                        (col: any, colIndex: number) => (
-                          <div key={colIndex}>
-                            {col.subItems && col.subItems.length > 0 && (
-                              <>
-                                <div className="text-[9px] font-black uppercase tracking-wider text-orange-600 mb-2">
-                                  {col.title}
-                                </div>
-                                <div className="space-y-1">
-                                  {col.subItems.map(
-                                    (item: string, itemIndex: number) => {
-                                      const itemValue = item
-                                        .toLowerCase()
-                                        .replace(/\s+/g, "-")
-                                        .replace(/ğ/g, "g")
-                                        .replace(/ü/g, "u")
-                                        .replace(/ş/g, "s")
-                                        .replace(/ı/g, "i")
-                                        .replace(/ö/g, "o")
-                                        .replace(/ç/g, "c");
-
-                                      return (
-                                        <button
-                                          key={itemIndex}
-                                          onClick={() => {
-                                            router.push(`/products/category/${cat.id}`);
-                                            setSubCategoryFilter(itemValue);
-                                          }}
-                                          className="w-full rounded-sm text-left py-2 px-3 text-[11px] font-semibold text-slate-600 hover:text-orange-600 hover:bg-white transition-colors rounded flex items-center gap-2"
-                                        >
-                                          <ChevronRight
-                                            size={12}
-                                            className="opacity-50"
-                                          />
-                                          {item}
-                                        </button>
-                                      );
-                                    },
-                                  )}
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        ),
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Kategori Sayfası - Alt Kategoriler */}
-        {currentCategory && subCategories.length > 0 && (
-          <div className="space-y-2">
-            <button
-              onClick={() => setSubCategoryFilter("all")}
-              className={cn(
-                "w-full text-left rounded-sm py-3 px-4 border text-[12px] font-bold transition-colors",
-                subCategoryFilter === "all"
-                  ? "bg-orange-50 border-orange-500 text-orange-600"
-                  : "bg-white border-slate-200 text-slate-700 hover:border-orange-500",
-              )}
-            >
-              TÜMÜ
-            </button>
-
-            {subCategories.map((subCat: any) => (
-              <button
-                key={subCat.value}
-                onClick={() => setSubCategoryFilter(subCat.value)}
-                className={cn(
-                  "w-full text-left py-3 rounded-sm px-4 border text-[12px] font-bold transition-colors",
-                  subCategoryFilter === subCat.value
-                    ? "bg-orange-50 border-orange-500 text-orange-600"
-                    : "bg-white border-slate-200 text-slate-700 hover:border-orange-500",
-                )}
-              >
-                {subCat.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* 4. MARKALAR */}
-      <section>
-        <SectionTitle>Çözüm Ortakları</SectionTitle>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-2">
           <button
-            onClick={() => setBrandFilter("all")}
+            onClick={() => {
+              router.push("/products");
+              setSubCategoryFilter("all");
+            }}
             className={cn(
-              "py-3 px-3 border rounded-sm bg-white text-[10px] font-bold transition-all uppercase text-left",
-              brandFilter === "all"
-                ? "border-orange-500 text-orange-600"
-                : "border-slate-200 text-slate-600 hover:border-orange-500 hover:text-orange-600",
+              "rounded-sm w-full text-left py-3 px-4 border text-[12px] font-bold transition-colors uppercase",
+              !currentCategory && subCategoryFilter === "all"
+                ? "bg-orange-50 border-orange-500 text-orange-600"
+                : "bg-white border-slate-200 text-slate-900 shadow-sm",
             )}
           >
             TÜMÜ
           </button>
-          {brands.map((brand) => (
+          {allCategories.map((cat) => {
+            const isExpanded = expandedCategories.includes(cat.id);
+            const hasMiddle = cat.middleCategories?.length > 0;
+            const isActive = currentCategory?.id === cat.id;
+
+            return (
+              <div
+                key={cat.id}
+                className={cn(
+                  "bg-white border rounded-sm overflow-hidden",
+                  isActive ? "border-orange-500" : "border-slate-200",
+                )}
+              >
+                <div className="flex items-center">
+                  <button
+                    onClick={() => {
+                      router.push(`/products/category/${cat.id}`);
+                      setSubCategoryFilter("all");
+                    }}
+                    className={cn(
+                      "flex-1 text-left py-3 px-4 text-[12px] font-bold uppercase transition-colors",
+                      isActive
+                        ? "text-orange-600 bg-orange-50/30"
+                        : "text-slate-700 hover:text-orange-600",
+                    )}
+                  >
+                    {cat.name}
+                  </button>
+                  {hasMiddle && (
+                    <button
+                      onClick={() => toggleCategory(cat.id)}
+                      className="px-4 py-3 hover:bg-orange-50 transition-colors"
+                    >
+                      <ChevronDown
+                        size={16}
+                        className={cn(
+                          "transition-transform duration-200",
+                          isExpanded && "rotate-180 text-orange-600",
+                        )}
+                      />
+                    </button>
+                  )}
+                </div>
+                {isExpanded && hasMiddle && (
+                  <div className="bg-slate-50 border-t border-slate-100 p-3 space-y-3">
+                    {cat.middleCategories.map((mid) => (
+                      <div key={mid.id}>
+                        <p className="text-[9px] font-black uppercase tracking-wider text-orange-600 mb-2">
+                          {mid.name}
+                        </p>
+                        <div className="space-y-1">
+                          {mid.subCategories.map((sub) => (
+                            <button
+                              key={sub.id}
+                              onClick={() => {
+                                router.push(`/products/category/${cat.id}`);
+                                setSubCategoryFilter(sub.name);
+                              }}
+                              className={cn(
+                                "w-full text-left py-2 px-3 text-[11px] font-semibold transition-colors flex items-center gap-2 rounded-sm",
+                                subCategoryFilter === sub.name
+                                  ? "text-orange-600 bg-white border border-orange-100"
+                                  : "text-slate-600 hover:bg-white",
+                              )}
+                            >
+                              <ChevronRight size={12} className="opacity-30" />
+                              {sub.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 4. MARKALAR (DİNAMİK) - brandId kullanarak */}
+      <section>
+        <SectionTitle icon={Factory}>Çözüm Ortakları</SectionTitle>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={() => setBrandFilter("all")}
+            className={cn(
+              "flex items-center gap-2 py-3 px-3 border rounded-sm bg-white text-[10px] font-bold uppercase transition-all",
+              brandFilter === "all"
+                ? "border-orange-500 text-orange-600 bg-orange-50/50"
+                : "border-slate-200 text-slate-600",
+            )}
+          >
+            <div className="w-6 h-6 flex items-center justify-center border border-dashed border-slate-300 rounded-full text-[10px]">
+              ∞
+            </div>
+            TÜMÜ
+          </button>
+          {dbBrands.map((brand) => (
             <button
-              key={brand}
-              onClick={() => setBrandFilter(brand)}
+              key={brand.id}
+              onClick={() => setBrandFilter(String(brand.id))} // brandId string olarak gönderiliyor
               className={cn(
-                "py-3 px-3 border rounded-sm bg-white text-[10px] font-bold transition-all uppercase text-left",
-                brandFilter === brand
-                  ? "border-orange-500 text-orange-600"
-                  : "border-slate-200 text-slate-600 hover:border-orange-500 hover:text-orange-600",
+                "flex items-center gap-2 py-3 px-3 border rounded-sm bg-white text-[10px] font-bold uppercase transition-all",
+                brandFilter === String(brand.id)
+                  ? "border-orange-500 text-orange-600 bg-orange-50/50 shadow-sm"
+                  : "border-slate-200 text-slate-600 hover:border-slate-300",
               )}
             >
-              {brand}
+              <div className="relative w-6 h-6 shrink-0">
+                {brand.image ? (
+                  <img
+                    src={brand.image}
+                    alt={brand.name}
+                    className="w-full h-full object-contain transition-all"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-slate-100 rounded-full flex items-center justify-center text-[8px] text-slate-400">
+                    {brand.name[0]}
+                  </div>
+                )}
+              </div>
+              <span className="truncate">{brand.name}</span>
             </button>
           ))}
         </div>
@@ -353,7 +346,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
       {/* 5. FİYAT */}
       <section>
         <SectionTitle>Fiyat Aralığı</SectionTitle>
-        <div className="px-1">
+        <div className="px-1 pt-4">
           <Slider
             value={[minPrice, maxPrice]}
             onValueChange={([min, max]) => {
@@ -361,24 +354,24 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
               setMaxPrice(max);
             }}
             max={300000}
-            step={5000}
-            className="mb-6"
+            step={100}
+            className="mb-8"
           />
           <div className="flex items-center gap-3">
-            <div className="flex-1 p-3 bg-white border border-slate-100">
+            <div className="flex-1 p-4 bg-slate-100/50 border border-slate-200 rounded-sm">
               <span className="block text-[8px] font-black text-slate-400 uppercase mb-1">
                 Min
               </span>
-              <span className="text-[12px] font-bold text-slate-900 font-mono">
+              <span className="text-[13px] font-bold text-slate-900">
                 {minPrice.toLocaleString()}₺
               </span>
             </div>
-            <div className="w-2 h-[1px] bg-slate-300" />
-            <div className="flex-1 p-3 bg-white border border-slate-100">
+            <div className="w-4 h-[1px] bg-slate-300" />
+            <div className="flex-1 p-4 bg-slate-100/50 border border-slate-200 rounded-sm">
               <span className="block text-[8px] font-black text-slate-400 uppercase mb-1">
                 Max
               </span>
-              <span className="text-[12px] font-bold text-slate-900 font-mono">
+              <span className="text-[13px] font-bold text-slate-900">
                 {maxPrice.toLocaleString()}₺
               </span>
             </div>
@@ -387,20 +380,22 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
       </section>
 
       {/* 6. SIFIRLA */}
-      <button
-        onClick={() => {
-          setMinPrice(0);
-          setMaxPrice(300000);
-          setSort("az");
-          setMobileGridCols(2);
-          setSubCategoryFilter("all");
-          setBrandFilter("all");
-          setExpandedCategories([]);
-        }}
-        className="text-[10px] rounded-sm tracking-[0.2em] uppercase text-slate-400 hover:text-slate-900 transition-colors underline underline-offset-8 text-left font-bold"
-      >
-        Ayarları Temizle
-      </button>
+      <div className="pt-4">
+        <button
+          onClick={() => {
+            setMinPrice(0);
+            setMaxPrice(300000);
+            setSort("az");
+            setMobileGridCols(2);
+            setSubCategoryFilter("all");
+            setBrandFilter("all");
+            setExpandedCategories([]);
+          }}
+          className="w-full flex items-center justify-center gap-3 py-5 bg-slate-50 border-2 border-dashed border-slate-200 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-orange-600 hover:border-orange-200 transition-all"
+        >
+          AYARLARI SIFIRLA
+        </button>
+      </div>
     </div>
   );
 };

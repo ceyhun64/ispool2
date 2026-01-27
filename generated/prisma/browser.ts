@@ -33,6 +33,11 @@ export type MiddleCategory = Prisma.MiddleCategoryModel
  */
 export type SubCategory = Prisma.SubCategoryModel
 /**
+ * Model Brand
+ * 
+ */
+export type Brand = Prisma.BrandModel
+/**
  * Model product
  * 
  */

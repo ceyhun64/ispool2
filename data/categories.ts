@@ -368,7 +368,7 @@ export const CATEGORIES = [
     label: "MARKALAR",
     megaMenu: {
       isBrands: true,
-      images: Array.from({ length: 11 }, (_, i) => `/brands/${i + 1}.png`),
+      images: Array.from({ length: 10 }, (_, i) => `/brands/${i + 1}.png`),
     },
   },
   { id: "en_yeniler", label: "EN YENİLER", megaMenu: null },

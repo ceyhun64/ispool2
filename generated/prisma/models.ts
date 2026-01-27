@@ -11,6 +11,7 @@
 export type * from './models/Category'
 export type * from './models/MiddleCategory'
 export type * from './models/SubCategory'
+export type * from './models/Brand'
 export type * from './models/product'
 export type * from './models/User'
 export type * from './models/Address'

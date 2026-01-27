@@ -45,6 +45,17 @@ model SubCategory {
   @@map("sub_category")
 }
 
+model Brand {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  image     String? // Marka logosu için
+  products  product[] // Bu markaya ait ürünler
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("brand")
+}
+
 // --- ÜRÜN MODELİ ---
 
 model product {
@@ -61,6 +72,10 @@ model product {
   subImage3          String?
   subImage4          String?
   description        String  @db.Text
+
+  // Marka İlişkisi
+  brandId Int?
+  brand   Brand? @relation(fields: [brandId], references: [id])
 
   // Hiyerarşik İlişkiler
   categoryId       Int
