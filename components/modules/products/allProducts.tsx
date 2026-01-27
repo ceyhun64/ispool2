@@ -33,7 +33,7 @@ export default function ProductsContent({ id }: ProductsContentProps) {
   const [sort, setSort] = useState<"az" | "za" | "priceLow" | "priceHigh">(
     "az",
   );
-  const [gridCols, setGridCols] = useState<2 | 3 | 4>(2);
+  const [gridCols, setGridCols] = useState<2 | 3 | 4>(4);
   const [mobileGridCols, setMobileGridCols] = useState<1 | 2>(2);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

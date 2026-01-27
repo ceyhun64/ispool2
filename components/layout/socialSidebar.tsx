@@ -15,7 +15,7 @@ export default function SocialSidebar() {
         rel="noopener noreferrer"
         whileHover={{ x: 3 }}
         whileTap={{ scale: 0.96 }}
-        className="flex items-center gap-2 bg-white pl-2 pr-3 py-1.5 shadow-[0_2px_15px_rgba(0,0,0,0.06)] border border-slate-100 rounded-r-sm transition-all duration-300 group"
+        className="flex items-center gap-2 bg-slate-50 pl-2 pr-3 py-1.5 shadow-[0_2px_15px_rgba(0,0,0,0.06)] border border-slate-100 rounded-r-sm transition-all duration-300 group"
       >
         {/* Özel WhatsApp SVG İkonu */}
         <div className="relative">
