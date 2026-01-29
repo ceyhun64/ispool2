@@ -18,161 +18,157 @@ import Link from "next/link";
 export default function TopBar() {
   const socialMedia = [
     {
-      icon: <Instagram size={14} strokeWidth={2} />,
+      icon: <Instagram size={15} />,
       href: "https://www.instagram.com/ispool_is_kyafetleri",
     },
     {
-      icon: <Facebook size={14} strokeWidth={2} />,
+      icon: <Facebook size={15} />,
+      href: "#",
     },
   ];
 
   const menuItems = [
-    { label: "İletişim", icon: <Mail size={13} />, href: "/help/contact" },
+    { label: "İletişim", icon: <Mail size={14} />, href: "/help/contact" },
+    {
+      label: "Hakkımızda",
+      icon: <Info size={14} />,
+      href: "/institutional/about",
+    },
+    {
+      label: "Kargo Takibi",
+      icon: <Truck size={14} />,
+      href: "/profile/cargo_tracking",
+    },
+  ];
+
+  const highlightItems = [
     {
       label: "Toptan Satış",
       icon: <Package size={14} />,
       href: "/products/wholesale",
-      highlight: true,
-      className:
-        "bg-white text-orange-700 hover:bg-orange-100 shadow-[0_0_15px_rgba(0,0,0,0.35)]",
+      color: "bg-orange-600 hover:bg-orange-700",
     },
     {
       label: "Özel Üretim",
       icon: <Ruler size={14} />,
       href: "/products/special_production",
-      highlight: true,
-      className:
-        "bg-white text-orange-700 hover:bg-orange-100 shadow-[0_0_15px_rgba(255,115,0,0.45)]",
-    },
-    {
-      label: "Hakkımızda",
-      icon: <Info size={13} />,
-      href: "/institutional/about",
-    },
-    {
-      label: "Kargo Takibi",
-      icon: <Truck size={13} />,
-      href: "/profile/cargo_tracking",
+      color: "bg-slate-800 hover:bg-slate-900",
     },
   ];
 
-  // Sadece Mobil İçin Filtrelenmiş Butonlar
-  const mobileButtons = menuItems.filter((item) => item.highlight);
-
   return (
-    <div className="w-full bg-amber-500 lg:bg-amber-500  relative z-50">
-      {/* MOBILE TOPBAR - Arkaplan Beyaz, Butonlar Turuncu */}
-      <div className="lg:hidden flex items-center justify-center gap-3 py-2 px-4 bg-white">
-        {mobileButtons.map((item, i) => (
+    <div className="w-full relative z-50 shadow-sm border-b border-white/10">
+      {/* MOBILE TOPBAR - Yatay Kaydırılabilir Modern Tasarım */}
+      <div className="lg:hidden bg-slate-950 px-4 py-2.5 flex items-center gap-3 overflow-x-auto no-scrollbar">
+        {highlightItems.map((item, i) => (
           <Link
             key={i}
             href={item.href}
-            className="flex-1 flex items-center justify-center gap-2 h-10 text-[10px] font-black uppercase rounded-lg transition-all bg-amber-500 text-white shadow-md active:scale-95"
+            className={`flex-none flex items-center gap-2 px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider text-white shadow-lg active:scale-95 transition-all ${item.color}`}
           >
             {item.icon}
             {item.label}
           </Link>
         ))}
+        <div className="h-6 w-[1px] bg-white/20 flex-none" />
+        <a href="tel:+905343529420" className="flex-none text-white p-2">
+          <Phone size={18} />
+        </a>
       </div>
 
       {/* DESKTOP TOPBAR */}
-      <div className="hidden lg:block max-w-[1700px] mx-auto px-8">
-        <div className="flex items-center justify-between h-12 text-[10px]">
-          {/* LEFT */}
-          <div className="flex items-center gap-10">
-            {/* SOCIAL */}
-            <div className="flex items-center gap-4">
+      <div className="hidden lg:block bg-slate-950 text-white">
+        <div className="max-w-[1400px] mx-auto px-6 flex items-center justify-between h-11">
+          {/* LEFT: Sosyal Medya ve İletişim */}
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
               {socialMedia.map((social, i) => (
                 <a
                   key={i}
                   href={social.href}
+                  className="text-slate-400 hover:text-orange-500 transition-colors duration-300"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-orange-950 hover:text-black hover:scale-110 transition-all duration-300"
                 >
                   {social.icon}
                 </a>
               ))}
             </div>
 
-            <span className="w-px h-5 bg-black/20" />
+            <div className="h-4 w-[1px] bg-white/10" />
 
-            {/* CONTACT */}
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-5">
               <a
                 href="tel:+905343529420"
-                className="flex items-center gap-3 group"
+                className="group flex items-center gap-2"
               >
-                <span className="w-8 h-8 rounded-full bg-white/60 flex items-center justify-center group-hover:bg-black transition-all duration-300 shadow">
-                  <Phone
-                    size={13}
-                    className="text-orange-950 group-hover:text-white transition-colors"
-                  />
+                <Phone
+                  size={13}
+                  className="text-orange-500 group-hover:animate-pulse"
+                />
+                <span className="text-[11px] font-medium tracking-tight text-slate-300 group-hover:text-white transition-colors">
+                  0534 352 94 20
                 </span>
-                <div className="flex flex-col">
-                  <span className="text-[7.5px] tracking-[0.15em] uppercase text-orange-950 font-bold">
-                    Destek Hattı
-                  </span>
-                  <span className="text-[12px] font-bold text-black tracking-tight tabular-nums">
-                    0534 352 94 20
-                  </span>
-                </div>
               </a>
 
               <a
                 href="https://wa.me/900534359420"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 px-4 py-2 rounded-full bg-white border border-green-500/40 shadow-[0_0_15px_rgba(37,211,102,0.25)] hover:bg-green-500 hover:text-white transition-all duration-300"
+                className="flex items-center gap-1.5 text-[11px] font-bold text-green-500 hover:text-green-400 transition-colors"
               >
-                <MessageCircleMore size={14} className="text-green-600" />
-                <span className="text-[10px] font-bold tracking-widest text-green-700">
-                  WHATSAPP
-                </span>
+                <MessageCircleMore size={14} />
+                WHATSAPP DESTEK
               </a>
             </div>
           </div>
 
-          {/* RIGHT */}
-          <div className="flex items-center h-full gap-2">
-            <nav className="flex items-center h-full">
+          {/* RIGHT: Navigasyon ve Özel Butonlar */}
+          <div className="flex items-center gap-2 h-full">
+            <nav className="flex items-center gap-1">
               {menuItems.map((item, i) => (
                 <Link
                   key={i}
                   href={item.href}
-                  className={`group relative flex items-center gap-2.5 px-5 h-8 text-[10px] font-bold tracking-wider uppercase transition-all duration-300
-                    ${item.highlight ? `rounded-md ${item.className} mx-1` : "text-slate-950 hover:text-black hover:bg-white/40"}
-                  `}
+                  className="px-3 py-1 text-[11px] font-medium text-slate-300 hover:text-white transition-all rounded-md hover:bg-white/5"
                 >
-                  <span
-                    className={`transition-transform ${item.highlight ? "scale-110 group-hover:scale-125" : "group-hover:scale-110"}`}
-                  >
-                    {item.icon}
-                  </span>
                   {item.label}
-                  {!item.highlight && (
-                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-black scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
-                  )}
                 </Link>
               ))}
             </nav>
 
-            <div className="ml-4 h-full flex items-center">
+            <div className="flex items-center gap-2 ml-4">
+              {highlightItems.map((item, i) => (
+                <Link
+                  key={i}
+                  href={item.href}
+                  className={`flex items-center gap-2 px-4 h-8 text-[10px] font-extrabold uppercase tracking-widest text-white rounded-md transition-all duration-300 shadow-sm ${item.color}`}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              ))}
+
               <Link
                 href="/institutional/career"
-                className="group flex items-center gap-2 px-5 h-8 text-[10px] font-black tracking-[0.15em] bg-orange-500 text-white hover:bg-black hover:text-white transition-all duration-300 rounded-md shadow-[0_0_20px_rgba(0,0,0,0.25)]"
+                className="flex items-center gap-2 px-4 h-8 text-[10px] font-extrabold bg-white text-slate-950 hover:bg-orange-500 hover:text-white transition-all duration-300 rounded-md ml-2"
               >
-                <Briefcase size={12} strokeWidth={2.5} />
+                <Briefcase size={13} />
                 KARİYER
-                <ChevronRight
-                  size={12}
-                  className="group-hover:translate-x-1 transition-transform"
-                />
+                <ChevronRight size={13} />
               </Link>
             </div>
           </div>
         </div>
       </div>
+
+      <style jsx global>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
   );
 }
