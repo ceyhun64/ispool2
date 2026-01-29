@@ -15,9 +15,14 @@ import { motion, AnimatePresence } from "framer-motion";
 interface ProductData {
   id: number;
   title: string;
-  mainImage: string;
   price: number;
+  oldPrice: number | null;
+  discountPercentage?: number;
+  mainImage: string;
   category: string;
+  subImage?: string;
+  brand?: string | null;
+  hasDiscount?: boolean;
 }
 
 const CarouselSkeleton = () => (
