@@ -7,23 +7,22 @@ import {
   Truck,
   ChevronRight,
   Mail,
-  Users,
-  Settings,
   Info,
   Briefcase,
   MessageCircleMore,
+  Package,
+  Ruler,
 } from "lucide-react";
 import Link from "next/link";
 
 export default function TopBar() {
   const socialMedia = [
     {
-      icon: <Instagram size={14} strokeWidth={1.8} />,
+      icon: <Instagram size={14} strokeWidth={2} />,
       href: "https://www.instagram.com/ispool_is_kyafetleri",
     },
     {
-      icon: <Facebook size={14} strokeWidth={1.8} />,
-      href: "https://www.facebook.com/is.pool.is.k.yafetleri",
+      icon: <Facebook size={14} strokeWidth={2} />,
     },
   ];
 
@@ -31,13 +30,19 @@ export default function TopBar() {
     { label: "İletişim", icon: <Mail size={13} />, href: "/help/contact" },
     {
       label: "Toptan Satış",
-      icon: <Users size={13} />,
+      icon: <Package size={14} />,
       href: "/products/wholesale",
+      highlight: true,
+      className:
+        "bg-white text-orange-700 hover:bg-orange-100 shadow-[0_0_15px_rgba(0,0,0,0.35)]",
     },
     {
       label: "Özel Üretim",
-      icon: <Settings size={13} />,
+      icon: <Ruler size={14} />,
       href: "/products/special_production",
+      highlight: true,
+      className:
+        "bg-white text-orange-700 hover:bg-orange-100 shadow-[0_0_15px_rgba(255,115,0,0.45)]",
     },
     {
       label: "Hakkımızda",
@@ -51,15 +56,30 @@ export default function TopBar() {
     },
   ];
 
-  return (
-    <div className="hidden lg:block w-full bg-[#0E1116] text-slate-400 border-b border-white/[0.04]">
-      {/* subtle top glow */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-orange-600/20 to-transparent" />
+  // Sadece Mobil İçin Filtrelenmiş Butonlar
+  const mobileButtons = menuItems.filter((item) => item.highlight);
 
-      <div className="max-w-[1700px] mx-auto px-8">
-        <div className="flex items-center justify-between h-11 text-[10px]">
+  return (
+    <div className="w-full bg-amber-500 lg:bg-amber-500  relative z-50">
+      {/* MOBILE TOPBAR - Arkaplan Beyaz, Butonlar Turuncu */}
+      <div className="lg:hidden flex items-center justify-center gap-3 py-2 px-4 bg-white">
+        {mobileButtons.map((item, i) => (
+          <Link
+            key={i}
+            href={item.href}
+            className="flex-1 flex items-center justify-center gap-2 h-10 text-[10px] font-black uppercase rounded-lg transition-all bg-amber-500 text-white shadow-md active:scale-95"
+          >
+            {item.icon}
+            {item.label}
+          </Link>
+        ))}
+      </div>
+
+      {/* DESKTOP TOPBAR */}
+      <div className="hidden lg:block max-w-[1700px] mx-auto px-8">
+        <div className="flex items-center justify-between h-12 text-[10px]">
           {/* LEFT */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-10">
             {/* SOCIAL */}
             <div className="flex items-center gap-4">
               {socialMedia.map((social, i) => (
@@ -68,52 +88,45 @@ export default function TopBar() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-500 hover:text-white transition-colors"
+                  className="text-orange-950 hover:text-black hover:scale-110 transition-all duration-300"
                 >
                   {social.icon}
                 </a>
               ))}
             </div>
 
-            <span className="w-px h-4 bg-white/10" />
+            <span className="w-px h-5 bg-black/20" />
 
             {/* CONTACT */}
-            <div className="flex items-center gap-6">
-              {/* PHONE */}
+            <div className="flex items-center gap-8">
               <a
                 href="tel:+905343529420"
                 className="flex items-center gap-3 group"
               >
-                <span className="w-7 h-7 rounded-sm bg-white/5 flex items-center justify-center group-hover:bg-orange-600 transition-colors">
+                <span className="w-8 h-8 rounded-full bg-white/60 flex items-center justify-center group-hover:bg-black transition-all duration-300 shadow">
                   <Phone
-                    size={12}
-                    className="text-orange-500 group-hover:text-white"
+                    size={13}
+                    className="text-orange-950 group-hover:text-white transition-colors"
                   />
                 </span>
-                <div className="leading-tight">
-                  <div className="text-[8px] tracking-widest uppercase text-slate-500 group-hover:text-orange-500">
+                <div className="flex flex-col">
+                  <span className="text-[7.5px] tracking-[0.15em] uppercase text-orange-950 font-bold">
                     Destek Hattı
-                  </div>
-                  <div className="text-[11px] font-semibold tracking-wide text-slate-200 tabular-nums">
+                  </span>
+                  <span className="text-[12px] font-bold text-black tracking-tight tabular-nums">
                     0534 352 94 20
-                  </div>
+                  </span>
                 </div>
               </a>
 
-              {/* WHATSAPP */}
               <a
                 href="https://wa.me/900534359420"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 group rounded-sm"
+                className="flex items-center gap-3 px-4 py-2 rounded-full bg-white border border-green-500/40 shadow-[0_0_15px_rgba(37,211,102,0.25)] hover:bg-green-500 hover:text-white transition-all duration-300"
               >
-                <span className="w-6 h-6 rounded-sm bg-white/5 flex items-center justify-center group-hover:bg-[#25D366] transition-colors">
-                  <MessageCircleMore
-                    size={12}
-                    className="text-[#25D366] group-hover:text-white"
-                  />
-                </span>
-                <span className="text-[10px] font-semibold tracking-widest text-slate-400 group-hover:text-white">
+                <MessageCircleMore size={14} className="text-green-600" />
+                <span className="text-[10px] font-bold tracking-widest text-green-700">
                   WHATSAPP
                 </span>
               </a>
@@ -121,43 +134,39 @@ export default function TopBar() {
           </div>
 
           {/* RIGHT */}
-          <div className="flex items-center h-full">
+          <div className="flex items-center h-full gap-2">
             <nav className="flex items-center h-full">
               {menuItems.map((item, i) => (
                 <Link
                   key={i}
                   href={item.href}
-                  className="group h-full px-4 flex items-center gap-2
-                             text-[9px] font-semibold tracking-[0.18em] uppercase
-                             text-slate-400 hover:text-white
-                             border-r border-white/[0.04] last:border-r-0 transition-colors"
+                  className={`group relative flex items-center gap-2.5 px-5 h-8 text-[10px] font-bold tracking-wider uppercase transition-all duration-300
+                    ${item.highlight ? `rounded-md ${item.className} mx-1` : "text-slate-950 hover:text-black hover:bg-white/40"}
+                  `}
                 >
-                  <span className="text-orange-600 opacity-70 group-hover:opacity-100">
+                  <span
+                    className={`transition-transform ${item.highlight ? "scale-110 group-hover:scale-125" : "group-hover:scale-110"}`}
+                  >
                     {item.icon}
                   </span>
-                  <span className="relative">
-                    {item.label}
-                    <span className="absolute -bottom-1 left-0 h-px w-0 bg-orange-600 transition-all duration-300 group-hover:w-full" />
-                  </span>
+                  {item.label}
+                  {!item.highlight && (
+                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-black scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+                  )}
                 </Link>
               ))}
             </nav>
 
-            {/* CAREER CTA */}
-            <div className="ml-4 pl-4 h-full flex items-center border-l border-white/10">
+            <div className="ml-4 h-full flex items-center">
               <Link
                 href="/institutional/career"
-                className="group inline-flex items-center gap-2
-                           px-4 h-7 text-[9px] font-semibold tracking-[0.2em]
-                           border border-orange-600/50 text-orange-500
-                           hover:bg-orange-600 hover:text-white
-                           transition-all rounded-sm"
+                className="group flex items-center gap-2 px-5 h-8 text-[10px] font-black tracking-[0.15em] bg-orange-500 text-white hover:bg-black hover:text-white transition-all duration-300 rounded-md shadow-[0_0_20px_rgba(0,0,0,0.25)]"
               >
-                <Briefcase size={11} />
+                <Briefcase size={12} strokeWidth={2.5} />
                 KARİYER
                 <ChevronRight
-                  size={11}
-                  className="transition-transform group-hover:translate-x-1"
+                  size={12}
+                  className="group-hover:translate-x-1 transition-transform"
                 />
               </Link>
             </div>
