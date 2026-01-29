@@ -22,6 +22,14 @@ import {
   Upload,
   X,
   ImagePlus,
+  Package,
+  Award,
+  Clock,
+  TrendingUp,
+  Users,
+  Zap,
+  CheckCircle,
+  Receipt,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -32,12 +40,87 @@ import { useFavorite } from "@/contexts/favoriteContext";
 import { addToGuestCart } from "@/utils/cart";
 import Link from "next/link";
 import DesignPanel from "@/components/modules/products/productDetail/design/designPanel";
+import ProductCard from "../productCard";
+
+interface ProductData {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  oldPrice: number | null;
+  discountPercentage: number;
+  hasDiscount: boolean;
+  discountAmount: number;
+  mainImage: string;
+  images: string[];
+  category: { id: number; name: string };
+  middleCategory: { id: number; name: string } | null;
+  subCategory: { id: number; name: string } | null;
+  brand: { id: number; name: string; image: string | null } | null;
+  rating: number;
+  reviewCount: number;
+  ratingDistribution: { [key: number]: number };
+  reviews: Array<{
+    id: number;
+    rating: number;
+    title: string | null;
+    comment: string | null;
+    createdAt: string;
+    user: { name: string; surname: string };
+  }>;
+  stock: {
+    inStock: boolean;
+    quantity: number;
+    lowStock: boolean;
+  };
+  shipping: {
+    freeShipping: boolean;
+    estimatedDelivery: string;
+    shippingCost: number;
+    expressAvailable: boolean;
+    expressDelivery: string;
+    expressCost: number;
+  };
+  specifications: {
+    weight: string | null;
+    dimensions: string | null;
+    material: string | null;
+    warranty: string;
+    origin: string;
+    certifications: string[];
+  };
+  relatedProducts: Array<{
+    id: number;
+    title: string;
+    price: number;
+    oldPrice: number | null;
+    mainImage: string;
+    category: string;
+    brand: string | null;
+    hasDiscount: boolean;
+  }>;
+  brandProducts: Array<{
+    id: number;
+    title: string;
+    price: number;
+    oldPrice: number | null;
+    mainImage: string;
+    category: string;
+    hasDiscount: boolean;
+  }>;
+  meta: {
+    views: number;
+    favorites: number;
+    purchaseCount: number;
+    lastUpdated: string;
+  };
+}
 
 export default function ProductDetailPage() {
   const params = useParams() as { id?: string };
   const productId = Number(params.id);
 
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<ProductData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -61,7 +144,11 @@ export default function ProductDetailPage() {
       try {
         const res = await fetch(`/api/products/${productId}`);
         const data = await res.json();
-        setProduct(data.product);
+        if (data.success) {
+          setProduct(data.product);
+        } else {
+          setProduct(null);
+        }
       } catch (error) {
         setProduct(null);
       } finally {
@@ -70,8 +157,6 @@ export default function ProductDetailPage() {
     };
     if (productId) fetchProduct();
   }, [productId]);
-
-  console.log("product", product);
 
   useEffect(() => {
     const checkLogin = async () => {
@@ -105,22 +190,19 @@ export default function ProductDetailPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Dosya boyutu kontrolü (5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Dosya boyutu 5MB'dan küçük olmalıdır.");
       return;
     }
 
-    // Dosya tipi kontrolü
     if (!file.type.startsWith("image/")) {
       toast.error("Lütfen geçerli bir resim dosyası seçin.");
       return;
     }
 
     setUploadedImage(file);
-    setCustomDesign(null); // Tasarım panelinden gelen tasarımı temizle
+    setCustomDesign(null);
 
-    // Preview oluştur
     const reader = new FileReader();
     reader.onload = (e) => {
       setUploadedImagePreview(e.target?.result as string);
@@ -153,7 +235,6 @@ export default function ProductDetailPage() {
 
     const finalCustomImage = customDesign || uploadedImagePreview;
 
-    // Misafir kullanıcılar için
     if (!isLoggedIn) {
       const item = {
         productId: product.id,
@@ -164,7 +245,7 @@ export default function ProductDetailPage() {
         image: finalCustomImage || product.mainImage,
         customImage: finalCustomImage,
         isCustom: !!finalCustomImage,
-        category: product.category,
+        category: product.category.name,
       };
 
       addToGuestCart(item, quantity);
@@ -175,18 +256,14 @@ export default function ProductDetailPage() {
       return;
     }
 
-    // Kayıtlı kullanıcılar için - FormData ile gönder
     try {
       const formData = new FormData();
       formData.append("productId", product.id.toString());
       formData.append("quantity", quantity.toString());
 
-      // Öncelik: tasarım panelinden gelen resim (base64)
       if (customDesign) {
         formData.append("customImage", customDesign);
-      }
-      // Alternatif: kullanıcının yüklediği dosya
-      else if (uploadedImage) {
+      } else if (uploadedImage) {
         formData.append("customImageFile", uploadedImage);
       }
 
@@ -216,7 +293,7 @@ export default function ProductDetailPage() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: product.title,
+          title: product?.title,
           url: window.location.href,
         });
       } catch (err) {}
@@ -234,34 +311,30 @@ export default function ProductDetailPage() {
       </div>
     );
 
-  const images = [
-    product.mainImage,
-    product.subImage,
-    product.subImage2,
-    product.subImage3,
-    product.subImage4,
-  ].filter(Boolean);
-
-  const hasDiscount = product.oldPrice && product.oldPrice > product.price;
   const finalCustomImage = customDesign || uploadedImagePreview;
-
-  // Önce özelleştirilmiş tasarım/yüklenen resim, sonra orijinal görseller
   const displayImages = finalCustomImage
-    ? [finalCustomImage, ...images]
-    : images;
+    ? [finalCustomImage, ...product.images]
+    : product.images;
+
+  // KDV Hesaplaması (%10)
+  const subtotal = product.price * quantity;
+  const vatRate = 0.1;
+  const vatAmount = subtotal * vatRate;
+  const totalWithVat = subtotal + vatAmount;
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans selection:bg-orange-100 selection:text-orange-900">
       {showPreview && (
         <DesignPanel
-          productImage={images[0] || product.mainImage}
+          productImage={product.images[0] || product.mainImage}
           onClose={() => setShowPreview(false)}
           onSaveDesign={handleSaveDesign}
           onDirectUpload={handleDirectUpload}
         />
       )}
 
-      <div className="max-w-[1400px] mx-auto px-6 py-4">
+      {/* Breadcrumb Navigation */}
+      <div className="hidden lg:block max-w-[1400px] mx-auto px-6 py-4">
         <nav className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
           <Link
             href="/products"
@@ -270,80 +343,46 @@ export default function ProductDetailPage() {
             <ArrowLeft size={12} /> Koleksiyon
           </Link>
           <ChevronRight size={10} />
+          {product.category && (
+            <>
+              <span className="hover:text-orange-600 transition-colors cursor-pointer">
+                {product.category.name}
+              </span>
+              {product.middleCategory && (
+                <>
+                  <ChevronRight size={10} />
+                  <span className="hover:text-orange-600 transition-colors cursor-pointer">
+                    {product.middleCategory.name}
+                  </span>
+                </>
+              )}
+              {product.subCategory && (
+                <>
+                  <ChevronRight size={10} />
+                  <span className="hover:text-orange-600 transition-colors cursor-pointer">
+                    {product.subCategory.name}
+                  </span>
+                </>
+              )}
+              <ChevronRight size={10} />
+            </>
+          )}
           <span className="text-slate-300">Ürün Detayı</span>
         </nav>
       </div>
-
-      <div className="max-w-[1400px] mx-auto px-6 pb-20">
+      <div className="max-w-[1400px] mx-auto px-6 pb-20 pt-4 md:pt-0">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* SOL: GÖRSEL VE GALERİ */}
-          <div className="lg:col-span-7 space-y-4">
-            <div className="relative aspect-square w-full bg-white overflow-hidden border border-slate-100 group shadow-sm">
-              <div className="absolute top-4 left-4 z-10 flex flex-col gap-1.5">
-                {customDesign ? (
-                  <span className="bg-gradient-to-r from-orange-600 to-pink-600 text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5 animate-pulse">
-                    <Sparkles size={11} /> Tasarım Paneli ile Özelleştirildi
-                  </span>
-                ) : uploadedImagePreview ? (
-                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5">
-                    <ImagePlus size={11} /> Özel Resim Yüklendi
-                  </span>
-                ) : (
-                  <span className="bg-slate-900/90 backdrop-blur text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5">
-                    <ShieldCheck size={11} className="text-orange-500" />{" "}
-                    Sertifikalı Koruma
-                  </span>
-                )}
-                {hasDiscount && (
-                  <span className="bg-orange-600 text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight">
-                    %{product.discountPercentage} İndirim
-                  </span>
-                )}
-              </div>
-
-              <div className="absolute bottom-3 right-3 md:bottom-6 md:right-6 z-20 flex gap-2">
-                <button
-                  onClick={() => setShowPreview(true)}
-                  className="
-    bg-orange-600 text-white
-    px-3 py-2 text-[10px]
-    sm:px-5 sm:py-3 sm:text-[11px]
-    font-bold uppercase tracking-wider
-    flex items-center gap-1.5 sm:gap-2
-    shadow-xl
-    hover:bg-slate-900 transition-all
-    sm:scale-100 sm:hover:scale-105 sm:active:scale-95 rounded-sm
-  "
-                >
-                  <Eye size={14} className="sm:w-4 sm:h-4" />
-                  {customDesign || uploadedImagePreview
-                    ? "Yeniden Tasarla"
-                    : "Logonu Ekle"}
-                </button>
-              </div>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-
-              <CustomImageZoom
-                src={displayImages[activeIndex]}
-                alt={product.title}
-              />
-            </div>
-
-            {/* Küçük Resimler */}
-            <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+          {/* LEFT: IMAGE GALLERY */}
+          <div className="lg:col-span-6 flex flex-col lg:flex-row gap-4">
+            {/* Thumbnail Gallery - Mobilde yatay (altta), Masaüstünde dikey (solda) */}
+            <div className="order-2 lg:order-1 flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto max-h-[600px] no-scrollbar">
+              {/* order-2: Mobilde alta atar | flex: Mobilde yan yana dizer | lg:flex-col: Masaüstünde üste dizer */}
               {displayImages.map((img, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveIndex(i)}
                   className={cn(
-                    "relative w-20 h-20 overflow-hidden transition-all border-2 flex-shrink-0 bg-white",
+                    "relative w-16 aspect-[3/4] overflow-hidden transition-all border-2 flex-shrink-0 bg-white",
                     activeIndex === i
                       ? "border-orange-600 shadow-md"
                       : "border-transparent opacity-60",
@@ -363,53 +402,116 @@ export default function ProductDetailPage() {
                 </button>
               ))}
             </div>
-
-            {/* Yüklenen resmi veya tasarımı kaldırma seçeneği */}
-            {uploadedImagePreview && (
-              <div className="flex items-center justify-between bg-blue-50 border border-blue-200 p-3 rounded">
-                <div className="flex items-center gap-2 text-xs text-blue-700">
-                  <ImagePlus size={14} />
-                  <span className="font-semibold">Özel resim yüklendi</span>
+            {/* Ana Resim - Mobilde üstte, Masaüstünde sağda */}
+            <div className="order-1 lg:order-2 flex-1 space-y-4">
+              {/* order-1: Mobilde ilk sırada gösterir | lg:order-2: Masaüstünde ikinci sütun yapar */}
+              <div className="relative aspect-[3/4] w-full bg-white overflow-hidden border border-slate-100 group shadow-sm">
+                <div className="absolute top-4 left-4 z-10 flex flex-col gap-1.5">
+                  {customDesign ? (
+                    <span className="bg-gradient-to-r from-orange-600 to-pink-600 text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5 animate-pulse">
+                      <Sparkles size={11} /> Tasarım Paneli ile Özelleştirildi
+                    </span>
+                  ) : uploadedImagePreview ? (
+                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5">
+                      <ImagePlus size={11} /> Özel Resim Yüklendi
+                    </span>
+                  ) : (
+                    <span className="bg-slate-900/90 backdrop-blur text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5">
+                      <ShieldCheck size={11} className="text-orange-500" />{" "}
+                      Sertifikalı Koruma
+                    </span>
+                  )}
+                  {product.hasDiscount && (
+                    <span className="bg-orange-600 text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight">
+                      %{product.discountPercentage} İndirim
+                    </span>
+                  )}
                 </div>
-                <button
-                  onClick={handleRemoveUploadedImage}
-                  className="text-blue-600 hover:text-red-600 transition-colors"
-                  title="Yüklenen resmi kaldır"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-            )}
 
-            {customDesign && (
-              <div className="flex items-center justify-between bg-orange-50 border border-orange-200 p-3 rounded">
-                <div className="flex items-center gap-2 text-xs text-orange-700">
-                  <Sparkles size={14} />
-                  <span className="font-semibold">
-                    Tasarım paneli ile özelleştirildi
-                  </span>
+                <div className="absolute bottom-3 right-3 md:bottom-6 md:right-6 z-20 flex gap-2">
+                  <button
+                    onClick={() => setShowPreview(true)}
+                    className="bg-orange-600 text-white px-3 py-2 text-[10px] sm:px-5 sm:py-3 sm:text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 sm:gap-2 shadow-xl hover:bg-slate-900 transition-all sm:scale-100 sm:hover:scale-105 sm:active:scale-95 rounded-sm"
+                  >
+                    <Eye size={14} className="sm:w-4 sm:h-4" />
+                    {customDesign || uploadedImagePreview
+                      ? "Yeniden Tasarla"
+                      : "Logonu Ekle"}
+                  </button>
                 </div>
-                <button
-                  onClick={handleRemoveCustomDesign}
-                  className="text-orange-600 hover:text-red-600 transition-colors"
-                  title="Özel tasarımı kaldır"
-                >
-                  <X size={16} />
-                </button>
+
+                <CustomImageZoom
+                  src={displayImages[activeIndex]}
+                  alt={product.title}
+                />
               </div>
-            )}
+
+              {/* Bildirimler Bölümü */}
+              <div className="space-y-3">
+                {uploadedImagePreview && (
+                  <div className="flex items-center justify-between bg-blue-50 border border-blue-200 p-3 rounded">
+                    <div className="flex items-center gap-2 text-xs text-blue-700">
+                      <ImagePlus size={14} />
+                      <span className="font-semibold">Özel resim yüklendi</span>
+                    </div>
+                    <button
+                      onClick={handleRemoveUploadedImage}
+                      className="text-blue-600 hover:text-red-600 transition-colors"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+
+                {customDesign && (
+                  <div className="flex items-center justify-between bg-orange-50 border border-orange-200 p-3 rounded">
+                    <div className="flex items-center gap-2 text-xs text-orange-700">
+                      <Sparkles size={14} />
+                      <span className="font-semibold">
+                        Tasarım paneli ile özelleştirildi
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleRemoveCustomDesign}
+                      className="text-orange-600 hover:text-red-600 transition-colors"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* SAĞ: ÜRÜN BİLGİLERİ */}
-          <div className="lg:col-span-5 flex flex-col pt-2">
+          {/* RIGHT: PRODUCT INFO */}
+          <div className="lg:col-span-6 flex flex-col pt-2">
             <div className="space-y-8">
-              <header className="space-y-2">
-                <div className="text-[9px] font-bold tracking-widest uppercase text-orange-600 flex items-center gap-2">
-                  <span className="bg-orange-50 px-2 py-0.5 rounded text-orange-700">
-                    {product.category}
-                  </span>
-                  <span className="text-slate-300">ID: PRO-{product.id}</span>
+              <header className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-[9px] font-bold tracking-widest uppercase text-orange-600 flex items-center gap-2">
+                    <span className="bg-orange-50 px-2 py-0.5 rounded text-orange-700">
+                      {product.category.name}
+                    </span>
+                    <span className="text-slate-300">ID: PRO-{product.id}</span>
+                  </div>
+                  {product.brand && (
+                    <div className="flex items-center gap-2 text-xs text-slate-600">
+                      {product.brand.image && (
+                        <Image
+                          src={product.brand.image}
+                          alt={product.brand.name}
+                          width={24}
+                          height={24}
+                          className="object-contain"
+                        />
+                      )}
+                      <span className="font-semibold">
+                        {product.brand.name}
+                      </span>
+                    </div>
+                  )}
                 </div>
+
                 <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 leading-tight">
                   {product.title}
                   {finalCustomImage && (
@@ -418,37 +520,84 @@ export default function ProductDetailPage() {
                     </span>
                   )}
                 </h1>
-                <div className="flex items-center gap-3 text-xs text-slate-500">
-                  <div className="flex text-orange-400">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={12} fill="currentColor" />
-                    ))}
+
+                {/* Rating Section */}
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className="flex text-orange-400">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          size={14}
+                          fill={
+                            i < Math.round(product.rating)
+                              ? "currentColor"
+                              : "none"
+                          }
+                          className={
+                            i < Math.round(product.rating)
+                              ? ""
+                              : "text-slate-300"
+                          }
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm font-bold text-slate-900">
+                      {product.rating.toFixed(1)}
+                    </span>
                   </div>
-                  <span className="font-medium text-[11px] uppercase tracking-tighter">
-                    Saha Testi Onaylı
+                  <span className="text-xs text-slate-500">
+                    ({product.reviewCount} değerlendirme)
                   </span>
+                </div>
+
+                {/* Stock Status */}
+                <div className="flex items-center gap-2">
+                  {product.stock.inStock ? (
+                    <>
+                      <CheckCircle size={16} className="text-emerald-600" />
+                      <span className="text-sm font-semibold text-emerald-600">
+                        Stokta Var
+                      </span>
+                      {product.stock.lowStock && (
+                        <span className="text-xs text-orange-600 ml-2">
+                          (Son {product.stock.quantity} adet!)
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <X size={16} className="text-red-600" />
+                      <span className="text-sm font-semibold text-red-600">
+                        Stokta Yok
+                      </span>
+                    </>
+                  )}
                 </div>
               </header>
 
               <div className="space-y-6">
-                <div className="flex flex-col">
-                  <div className="flex items-baseline gap-2">
+                {/* Price Section */}
+                <div className="flex flex-col border-t border-b border-slate-100 py-4">
+                  <div className="flex items-baseline gap-3">
                     <span className="text-3xl font-black tracking-tighter text-slate-900">
                       {product.price.toLocaleString("tr-TR")}{" "}
                       <small className="text-sm">TL</small>
                     </span>
-                    {hasDiscount && (
-                      <span className="text-sm text-slate-400 line-through font-semibold">
-                        {product.oldPrice.toLocaleString("tr-TR")} TL
-                      </span>
+                    {product.hasDiscount && (
+                      <>
+                        <span className="text-lg text-slate-400 line-through font-semibold">
+                          {product.oldPrice?.toLocaleString("tr-TR")} TL
+                        </span>
+                        <span className="bg-orange-600 text-white px-2 py-1 rounded text-xs font-bold">
+                          %{product.discountPercentage} İndirim
+                        </span>
+                      </>
                     )}
                   </div>
-                  <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest flex items-center gap-1.5 mt-1">
-                    <Truck size={12} /> Hızlı Sevkiyat
-                  </p>
                 </div>
 
-                {/* Özelleştirme Bilgisi */}
+                {/* Customization Notice */}
                 {finalCustomImage && (
                   <div className="bg-gradient-to-r from-orange-50 to-pink-50 border border-orange-200 p-4 rounded space-y-2">
                     <div className="flex items-center gap-2 text-xs font-bold text-orange-700 uppercase tracking-wider">
@@ -466,7 +615,7 @@ export default function ProductDetailPage() {
                   </div>
                 )}
 
-                {/* Butonlar */}
+                {/* Action Buttons */}
                 <div className="flex flex-col gap-3">
                   <button
                     onClick={() => fileInputRef.current?.click()}
@@ -489,7 +638,8 @@ export default function ProductDetailPage() {
                       </>
                     )}
                   </button>
-                  <div className="flex items-center gap-3 ">
+
+                  <div className="flex items-center gap-3">
                     <div className="flex items-center bg-white h-12 px-4 gap-5 border border-slate-200 rounded-sm">
                       <button
                         onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -510,9 +660,16 @@ export default function ProductDetailPage() {
 
                     <button
                       onClick={handleAddToCart}
-                      className="flex-1 h-12 bg-slate-900 rounded-sm text-white text-[11px] font-bold uppercase tracking-wider hover:bg-orange-600 transition-all shadow-sm flex items-center justify-center gap-2"
+                      disabled={!product.stock.inStock}
+                      className={cn(
+                        "flex-1 h-12 rounded-sm text-[11px] font-bold uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-2",
+                        product.stock.inStock
+                          ? "bg-slate-900 text-white hover:bg-orange-600"
+                          : "bg-slate-200 text-slate-400 cursor-not-allowed",
+                      )}
                     >
-                      <ShoppingCart size={14} fill="currentColor" /> Sepete Ekle
+                      <ShoppingCart size={14} fill="currentColor" />
+                      {product.stock.inStock ? "Sepete Ekle" : "Stokta Yok"}
                     </button>
                   </div>
 
@@ -547,42 +704,193 @@ export default function ProductDetailPage() {
                     </button>
                   </div>
                 </div>
+
+                {/* Price Summary with KDV */}
+                <div className="bg-slate-50 border border-slate-200 rounded p-4 space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">
+                      Ürün Fiyatı ({quantity} adet)
+                    </span>
+                    <span className="font-bold text-slate-900">
+                      {subtotal.toLocaleString("tr-TR", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      TL
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600 flex items-center gap-1">
+                      KDV (%10)
+                    </span>
+                    <span className="font-bold text-slate-900">
+                      {vatAmount.toLocaleString("tr-TR", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      TL
+                    </span>
+                  </div>
+                  <div className="border-t border-slate-300 pt-2 flex justify-between">
+                    <span className="text-base font-bold text-slate-900">
+                      Toplam (KDV Dahil)
+                    </span>
+                    <span className="text-md font-black text-orange-600">
+                      {totalWithVat.toLocaleString("tr-TR", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      TL
+                    </span>
+                  </div>
+                </div>
               </div>
 
+              {/* Features */}
               <div className="space-y-4 pt-4 border-t border-slate-100">
                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                  <Info size={14} className="text-orange-600" /> Teknik
-                  Dökümantasyon
+                  <Info size={14} className="text-orange-600" /> Ürün
+                  Özellikleri
                 </div>
-                <div
-                  className="prose prose-slate max-w-none text-slate-600 text-[13px] line-clamp-4"
-                  dangerouslySetInnerHTML={{ __html: product.description }}
-                />
 
-                <div className="grid grid-cols-2 gap-3 mt-4">
+                <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
                     <div className="p-2 bg-blue-100 text-blue-600">
+                      <Award size={16} />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">
+                        Garanti
+                      </div>
+                      <div className="text-[10px] text-slate-500">
+                        {product.specifications.warranty}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
+                    <div className="p-2 bg-emerald-100 text-emerald-600">
                       <BadgeCheck size={16} />
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-tighter">
-                      Dayanıklı Kumaş
-                    </span>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">
+                        Menşei
+                      </div>
+                      <div className="text-[10px] text-slate-500">
+                        {product.specifications.origin}
+                      </div>
+                    </div>
                   </div>
+
                   <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
                     <div className="p-2 bg-orange-100 text-orange-600">
+                      <ShieldCheck size={16} />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">
+                        Sertifikalar
+                      </div>
+                      <div className="text-[10px] text-slate-500">
+                        {product.specifications.certifications.join(", ")}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
+                    <div className="p-2 bg-purple-100 text-purple-600">
                       <HardHat size={16} />
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-tighter">
-                      İSG Uyumu
-                    </span>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">
+                        İSG Uyumu
+                      </div>
+                      <div className="text-[10px] text-slate-500">Onaylı</div>
+                    </div>
                   </div>
                 </div>
+
+                <div
+                  className="prose prose-slate max-w-none text-slate-600 text-[13px] leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="mt-5 pt-5 border-t border-slate-100">
+        {/* Product Stats */}
+        <div className="grid grid-cols-3 gap-3 mt-4">
+          <div className="bg-white border border-slate-100 p-4 rounded text-center">
+            <div className="flex items-center justify-center text-orange-600 mb-2">
+              <Eye size={20} />
+            </div>
+            <div className="text-lg font-bold text-slate-900">
+              {product.meta.views}
+            </div>
+            <div className="text-[7px] md:text-[10px] text-slate-500 uppercase tracking-wider">
+              Görüntülenme
+            </div>
+          </div>
+          <div className="bg-white border border-slate-100 p-4 rounded text-center">
+            <div className="flex items-center justify-center text-pink-600 mb-2">
+              <Heart size={20} />
+            </div>
+            <div className="text-lg font-bold text-slate-900">
+              {product.meta.favorites}
+            </div>
+            <div className="text-[7px] md:text-[10px] text-slate-500 uppercase tracking-wider">
+              Favori
+            </div>
+          </div>
+          <div className="bg-white border border-slate-100 p-4 rounded text-center">
+            <div className="flex items-center justify-center text-emerald-600 mb-2">
+              <ShoppingCart size={20} />
+            </div>
+            <div className="text-lg font-bold text-slate-900">
+              {product.meta.purchaseCount}
+            </div>
+            <div className="text-[7px] md:text-[10px] text-slate-500 uppercase tracking-wider">
+              Satıldı
+            </div>
+          </div>
+        </div>
+
+        {/* Related Products Section */}
+        {product.relatedProducts.length > 0 && (
+          <div className="mt-16 pt-8 border-t border-slate-200">
+            <div className="flex items-center gap-3 mb-6">
+              <TrendingUp size={20} className="text-orange-600" />
+              <h2 className="text-xl font-bold text-slate-900 uppercase tracking-tight">
+                Benzer Ürünler
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {product.relatedProducts.slice(0, 4).map((relatedProduct) => (
+                <ProductCard key={relatedProduct.id} product={relatedProduct} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Same Brand Products */}
+        {product.brand && product.brandProducts.length > 0 && (
+          <div className="mt-12">
+            <div className="flex items-center gap-3 mb-6">
+              <Users size={20} className="text-orange-600" />
+              <h2 className="text-xl font-bold text-slate-900 uppercase tracking-tight">
+                {product.brand.name} Markalı Diğer Ürünler
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {product.brandProducts.map((brandProduct) => (
+                <ProductCard key={brandProduct.id} product={brandProduct} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Product Tabs */}
+        <div className="mt-12 pt-8 border-t border-slate-100">
           <ProductTabs
             productId={product.id}
             productTitle={product.title}

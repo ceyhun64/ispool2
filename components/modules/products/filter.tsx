@@ -11,6 +11,7 @@ import {
   Banknote,
   ChevronDown,
   ChevronUp,
+  Tag,
 } from "lucide-react";
 
 // Veritabanı Tip Tanımlamaları
@@ -42,11 +43,12 @@ interface FilterProps {
   subCategoryFilter: string;
   setSubCategoryFilter: (subCat: string) => void;
   brandFilter: string;
-  setBrandFilter: (brandId: string) => void; // brandId olarak güncellendi
+  setBrandFilter: (brandId: string) => void;
   maxPrice: number;
   setMaxPrice: (price: number) => void;
   minPrice: number;
   setMinPrice: (price: number) => void;
+  isDiscountMode?: boolean; // İndirim modu kontrolü
 }
 
 const Filter: React.FC<FilterProps> = ({
@@ -59,11 +61,12 @@ const Filter: React.FC<FilterProps> = ({
   setMaxPrice,
   minPrice,
   setMinPrice,
+  isDiscountMode = false,
 }) => {
   const router = useRouter();
   const [expandedCategories, setExpandedCategories] = useState<number[]>([]);
   const [allCategories, setAllCategories] = useState<DbCategory[]>([]);
-  const [dbBrands, setDbBrands] = useState<DbBrand[]>([]); // Markalar için state
+  const [dbBrands, setDbBrands] = useState<DbBrand[]>([]);
 
   // API'den hem kategorileri hem markaları çek
   useEffect(() => {
@@ -72,7 +75,7 @@ const Filter: React.FC<FilterProps> = ({
         const res = await fetch("/api/category");
         const data = await res.json();
         setAllCategories(data.categories || []);
-        setDbBrands(data.brands || []); // Markaları state'e kaydet
+        setDbBrands(data.brands || []);
       } catch (error) {
         console.error("Filtre verileri yüklenirken hata:", error);
       }
@@ -91,6 +94,21 @@ const Filter: React.FC<FilterProps> = ({
 
   return (
     <div className="bg-slate-50">
+      {/* İNDİRİM MODU UYARISI */}
+      {isDiscountMode && (
+        <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <Tag size={16} className="text-emerald-600" />
+            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-900">
+              İNDİRİM MODU AKTİF
+            </h3>
+          </div>
+          <p className="text-[9px] text-emerald-700 leading-relaxed">
+            Sadece indirimli ürünler gösteriliyor
+          </p>
+        </div>
+      )}
+
       {/* KATEGORİLER BÖLÜMÜ */}
       <section>
         <div className="flex items-center gap-2 mb-6">
@@ -104,7 +122,7 @@ const Filter: React.FC<FilterProps> = ({
           <button
             onClick={() => {
               setSubCategoryFilter("all");
-              router.push("/products");
+              router.push(isDiscountMode ? "/products/discount" : "/products");
             }}
             className={cn(
               "group relative flex items-center rounded-sm justify-between py-2.5 px-3 transition-all duration-300",
@@ -232,7 +250,7 @@ const Filter: React.FC<FilterProps> = ({
           {dbBrands.map((brand) => (
             <button
               key={brand.id}
-              onClick={() => setBrandFilter(String(brand.id))} // brandId string olarak gönderiliyor
+              onClick={() => setBrandFilter(String(brand.id))}
               className={cn(
                 "group flex items-center gap-2 py-2 px-3 border rounded-sm text-[10px] font-bold uppercase text-left transition-all",
                 brandFilter === String(brand.id)
