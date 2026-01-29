@@ -39,11 +39,15 @@ interface Product {
   title: string;
   description: string;
   price: number;
+  oldPrice?: number;
+  discountPercentage?: number;
   rating: number;
   reviewCount?: number;
   mainImage: string;
   category: string;
+  middleCategory?: string;
   subCategory?: string;
+  brandId?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -80,14 +84,13 @@ export default function Products(): React.ReactElement {
     fetchProducts();
   }, [fetchProducts]);
 
-  // Premium İş Elbiseleri Kategorileri (Örnek içerik, kod değişmedi)
   const categories = [
-    "İş Elbiseleri",
-    "İş Ayakkabıları",
-    "Baş Koruyucular",
-    "El Koruyucular",
-    "Yüksekte Çalışma",
-    "Vücut Koruma",
+    "Oturma Takımları",
+    "Masa Takımları",
+    "Salıncak",
+    "Şezlong",
+    "Şemsiye",
+    "Barbekü",
   ];
 
   const filteredProducts = useMemo(() => {
@@ -115,10 +118,35 @@ export default function Products(): React.ReactElement {
     productId?: number,
   ) => {
     const dataForm = new FormData();
-    Object.entries(formData).forEach(([key, value]) =>
-      dataForm.append(key, String(value)),
-    );
 
+    // Tüm form alanlarını ekle
+    dataForm.append("title", formData.title);
+    dataForm.append("description", formData.description);
+    dataForm.append("price", String(formData.price));
+    dataForm.append("rating", String(formData.rating));
+    dataForm.append("reviewCount", String(formData.reviewCount));
+    dataForm.append("category", formData.category);
+
+    if (formData.oldPrice !== undefined) {
+      dataForm.append("oldPrice", String(formData.oldPrice));
+    }
+    if (formData.discountPercentage !== undefined) {
+      dataForm.append(
+        "discountPercentage",
+        String(formData.discountPercentage),
+      );
+    }
+    if (formData.middleCategory) {
+      dataForm.append("middleCategory", formData.middleCategory);
+    }
+    if (formData.subCategory) {
+      dataForm.append("subCategory", formData.subCategory);
+    }
+    if (formData.brandId !== undefined) {
+      dataForm.append("brandId", String(formData.brandId));
+    }
+
+    // Dosyaları ekle
     if (mainFile) dataForm.append("file", mainFile);
     if (subFile) dataForm.append("subImageFile", subFile);
     if (subFile2) dataForm.append("subImage2File", subFile2);
@@ -208,7 +236,7 @@ export default function Products(): React.ReactElement {
                   {selectedIds.length > 0 && (
                     <Button
                       variant="destructive"
-                      className="gap-2 font-bold uppercase text-[11px] tracking-widest h-12 px-6 rounded-none transition-all shadow-lg shadow-red-100"
+                      className="gap-2 font-bold uppercase text-[11px] tracking-widest h-12 px-6 rounded-sm transition-all shadow-lg shadow-red-100"
                       onClick={() => {
                         setProductToDelete(null);
                         setDeleteDialogOpen(true);
@@ -221,7 +249,7 @@ export default function Products(): React.ReactElement {
                   <ProductDialog
                     onSubmit={handleSubmitProduct}
                     product={selectedProduct ?? undefined}
-                    className="h-12 rounded-none bg-slate-950 hover:bg-slate-800 text-white font-bold uppercase text-[11px] tracking-widest px-8 shadow-xl transition-all"
+                    className="h-12 rounded-sm bg-slate-950 hover:bg-slate-800 text-white font-bold uppercase text-[11px] tracking-widest px-8 shadow-xl transition-all"
                   />
                 </div>
               </div>
@@ -245,7 +273,7 @@ export default function Products(): React.ReactElement {
                   setSearch(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="pl-12 bg-slate-50 border-slate-100 rounded-none focus:bg-white focus:border-orange-600 focus:ring-0 text-sm h-12 font-medium transition-all"
+                className="pl-12 bg-slate-50 border-slate-100 rounded-sm focus:bg-white focus:border-orange-600 focus:ring-0 text-sm h-12 font-medium transition-all"
               />
             </div>
 
@@ -257,13 +285,13 @@ export default function Products(): React.ReactElement {
               }}
               defaultValue="all"
             >
-              <SelectTrigger className="w-full lg:w-72 border-slate-100 bg-slate-50 text-slate-900 font-bold h-12 rounded-none focus:ring-0 focus:border-orange-600 text-[12px] uppercase tracking-wider transition-all">
+              <SelectTrigger className="w-full lg:w-72 border-slate-100 bg-slate-50 text-slate-900 font-bold h-12 rounded-sm focus:ring-0 focus:border-orange-600 text-[12px] uppercase tracking-wider transition-all">
                 <div className="flex items-center gap-2">
                   <LayoutGrid size={16} className="text-slate-400" />
                   <SelectValue placeholder="Kategori Seçiniz" />
                 </div>
               </SelectTrigger>
-              <SelectContent className="rounded-none border-slate-100 shadow-2xl">
+              <SelectContent className="rounded-sm border-slate-100 shadow-2xl">
                 <SelectItem
                   value="all"
                   className="font-bold text-[11px] uppercase tracking-wide"
@@ -353,7 +381,7 @@ export default function Products(): React.ReactElement {
 
         {/* Delete Confirmation Dialog */}
         <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-          <DialogContent className="sm:max-w-[420px] rounded-none border-none p-8 gap-6 shadow-2xl">
+          <DialogContent className="sm:max-w-[420px] rounded-sm border-none p-8 gap-6 shadow-2xl">
             <DialogHeader className="items-center text-center space-y-4">
               <div className="w-20 h-20 bg-red-50 text-red-600 flex items-center justify-center shadow-inner">
                 <ShieldCheck size={40} className="opacity-20 absolute" />
@@ -387,14 +415,14 @@ export default function Products(): React.ReactElement {
             <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-4">
               <Button
                 variant="outline"
-                className="flex-1 rounded-none font-bold uppercase text-[11px] tracking-widest h-12 border-slate-200"
+                className="flex-1 rounded-sm font-bold uppercase text-[11px] tracking-widest h-12 border-slate-200"
                 onClick={() => setDeleteDialogOpen(false)}
               >
                 İptal Et
               </Button>
               <Button
                 variant="destructive"
-                className="flex-1 rounded-none font-bold uppercase text-[11px] tracking-widest h-12 bg-red-600 hover:bg-red-700 shadow-lg shadow-red-100"
+                className="flex-1 rounded-sm font-bold uppercase text-[11px] tracking-widest h-12 bg-red-600 hover:bg-red-700 shadow-lg shadow-red-100"
                 onClick={handleDelete}
               >
                 Onaylıyorum ve Sil

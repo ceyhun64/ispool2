@@ -37,7 +37,7 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row items-center gap-6">
           <Link
             href="/"
-            className="group flex items-center gap-3 px-8 py-4 bg-[#0a0a0a] text-white  text-[11px] font-black tracking-[0.2em] uppercase transition-all hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-600/20 active:scale-95"
+            className="group rounded-sm flex items-center gap-3 px-8 py-4 bg-[#0a0a0a] text-white  text-[11px] font-black tracking-[0.2em] uppercase transition-all hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-600/20 active:scale-95"
           >
             <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
             Ana Sayfaya Dön
@@ -45,7 +45,7 @@ export default function NotFound() {
 
           <Link
             href="/products"
-            className="text-[11px] font-black tracking-[0.2em] uppercase border-b-2 border-slate-200 pb-1 hover:border-orange-600 transition-colors"
+            className="text-[11px] rounded-sm font-black tracking-[0.2em] uppercase border-b-2 border-slate-200 pb-1 hover:border-orange-600 transition-colors"
           >
             Ürünleri İncele
           </Link>

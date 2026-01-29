@@ -46,7 +46,7 @@ export const Canvas: React.FC<CanvasProps> = ({
         ref={canvasRef}
         className="relative shadow-2xl"
         style={{
-          width: `${500 * (zoom / 100)}px`,
+          width: `${375 * (zoom / 100)}px`,
           height: `${500 * (zoom / 100)}px`,
         }}
       >
@@ -98,7 +98,7 @@ export const Canvas: React.FC<CanvasProps> = ({
                   });
                 }}
                 bounds="parent"
-                style={{ outline: "none" }} // Tarayıcı odak çerçevesini kapatır
+                style={{ outline: "none" }}
                 lockAspectRatio={true}
                 disableDragging={layer.locked || tool === "pan"}
                 enableResizing={!layer.locked && tool === "select"}

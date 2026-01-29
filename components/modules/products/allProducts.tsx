@@ -15,14 +15,20 @@ import {
   ShieldCheck,
   Zap,
   Cog,
+  Tag,
+  Percent,
 } from "lucide-react";
 import MobileFilter from "./mobileFilter";
 
 interface ProductsContentProps {
   id?: number; // undefined ise tüm ürünler
+  showDiscountOnly?: boolean; // İndirimli ürünleri göster
 }
 
-export default function ProductsContent({ id }: ProductsContentProps) {
+export default function ProductsContent({
+  id,
+  showDiscountOnly = false,
+}: ProductsContentProps) {
   // Mevcut kategoriyi bul (id varsa)
   const [currentCategory, setCurrentCategory] = useState<any>(null);
 
@@ -30,15 +36,17 @@ export default function ProductsContent({ id }: ProductsContentProps) {
   const [brandFilter, setBrandFilter] = useState<string>("all");
   const [maxPrice, setMaxPrice] = useState<number>(300000);
   const [minPrice, setMinPrice] = useState<number>(0);
-  const [sort, setSort] = useState<"az" | "za" | "priceLow" | "priceHigh">(
-    "az",
-  );
+  const [sort, setSort] = useState<
+    "az" | "za" | "priceLow" | "priceHigh" | "dateNew" | "dateOld"
+  >("az");
   const [gridCols, setGridCols] = useState<2 | 3 | 4>(4);
   const [mobileGridCols, setMobileGridCols] = useState<1 | 2>(2);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(true);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [isBestSellers, setIsBestSellers] = useState(false); // Çok satanlar modu
+  const [isDiscountMode] = useState(showDiscountOnly); // İndirim modu
 
   // Kategori bilgisini API'den çek
   useEffect(() => {
@@ -71,6 +79,7 @@ export default function ProductsContent({ id }: ProductsContentProps) {
 
         const res = await fetch(url);
         const data = await res.json();
+        console.log(data);
         if (data.products) setProducts(data.products);
       } catch (error) {
         console.error(error);
@@ -88,20 +97,44 @@ export default function ProductsContent({ id }: ProductsContentProps) {
     };
   }, [isMobileFilterOpen]);
 
+  // Çok satanlar butonuna basıldığında
+  const handleBestSellers = () => {
+    setIsBestSellers(true);
+  };
+
+  // Normal sıralama yapıldığında çok satanlar modunu kapat
+  useEffect(() => {
+    if (sort !== "az" || subCategoryFilter !== "all" || brandFilter !== "all") {
+      setIsBestSellers(false);
+    }
+  }, [sort, subCategoryFilter, brandFilter]);
+
   const filteredProducts = useMemo(() => {
     let result = products.filter((p) => {
       const subCategoryCheck =
         subCategoryFilter === "all" || p.subCategory === subCategoryFilter;
       const brandCheck =
-        brandFilter === "all" || p.brandId === Number(brandFilter); // brandId number olarak karşılaştır
+        brandFilter === "all" || p.brandId === Number(brandFilter);
+
+      // İndirim modu kontrolü - oldPrice VE discountPercentage varsa göster
+      const discountCheck =
+        !isDiscountMode || (p.oldPrice && p.discountPercentage);
+
       return (
         p.price >= minPrice &&
         p.price <= maxPrice &&
         subCategoryCheck &&
-        brandCheck
+        brandCheck &&
+        discountCheck
       );
     });
 
+    // Çok satanlar modunda rastgele sırala
+    if (isBestSellers) {
+      return result.sort(() => Math.random() - 0.5);
+    }
+
+    // Normal sıralama
     return result.sort((a, b) => {
       switch (sort) {
         case "az":
@@ -112,11 +145,28 @@ export default function ProductsContent({ id }: ProductsContentProps) {
           return a.price - b.price;
         case "priceHigh":
           return b.price - a.price;
+        case "dateNew":
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        case "dateOld":
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
         default:
           return 0;
       }
     });
-  }, [subCategoryFilter, brandFilter, minPrice, maxPrice, products, sort]);
+  }, [
+    subCategoryFilter,
+    brandFilter,
+    minPrice,
+    maxPrice,
+    products,
+    sort,
+    isBestSellers,
+    isDiscountMode,
+  ]);
 
   if (loading) return <ProductSkeleton />;
 
@@ -133,6 +183,11 @@ export default function ProductsContent({ id }: ProductsContentProps) {
       </div>
     );
   }
+
+  // Başlık belirleme
+  const pageTitle = isDiscountMode
+    ? "İNDİRİMLİ ÜRÜNLER"
+    : currentCategory?.name || "TÜM ÜRÜNLER";
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 selection:bg-orange-500 selection:text-white relative font-sans overflow-x-hidden">
@@ -153,14 +208,23 @@ export default function ProductsContent({ id }: ProductsContentProps) {
             </div>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter leading-none uppercase">
-              {currentCategory?.name || "TÜM ÜRÜNLER"} <br />
+              {pageTitle} <br />
               <span className="text-orange-600">KATALOĞU</span>
             </h1>
+
+            {isDiscountMode && (
+              <div className="mt-3 sm:mt-4 flex items-center gap-2 sm:gap-3">
+                <Tag size={20} className="text-emerald-600" />
+                <span className="text-xs sm:text-sm font-bold text-emerald-600 uppercase tracking-wide">
+                  Özel İndirim Fırsatları
+                </span>
+              </div>
+            )}
 
             <div className="mt-4 sm:mt-6 flex items-center gap-3 sm:gap-4">
               <div className="h-[2px] w-8 sm:w-12 bg-orange-600" />
               <p className="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-widest leading-relaxed">
-                Saha Standartlarına Uygun{" "}
+                {isDiscountMode ? "İndirimli" : "Saha Standartlarına Uygun"}{" "}
                 <span className="text-slate-900">
                   {filteredProducts.length}
                 </span>{" "}
@@ -178,10 +242,10 @@ export default function ProductsContent({ id }: ProductsContentProps) {
                 color: "text-emerald-600",
               },
               {
-                label: "Anlık Stok",
-                val: products.length,
-                icon: Activity,
-                color: "text-orange-600",
+                label: isDiscountMode ? "İndirimli Ürün" : "Anlık Stok",
+                val: isDiscountMode ? filteredProducts.length : products.length,
+                icon: isDiscountMode ? Percent : Activity,
+                color: isDiscountMode ? "text-emerald-600" : "text-orange-600",
               },
               {
                 label: "Standartlar",
@@ -246,6 +310,8 @@ export default function ProductsContent({ id }: ProductsContentProps) {
               setGridCols={setGridCols}
               sort={sort}
               setSort={setSort}
+              onBestSellers={handleBestSellers}
+              isDiscountMode={isDiscountMode}
             />
           </div>
         </div>
@@ -271,6 +337,7 @@ export default function ProductsContent({ id }: ProductsContentProps) {
                     setMaxPrice={setMaxPrice}
                     minPrice={minPrice}
                     setMinPrice={setMinPrice}
+                    isDiscountMode={isDiscountMode}
                   />
                 </div>
               </motion.aside>
@@ -311,8 +378,9 @@ export default function ProductsContent({ id }: ProductsContentProps) {
                   />
                 </div>
                 <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-[10px] text-center max-w-xs leading-loose">
-                  Hata: Arama kriterlerine uygun teknik spesifikasyon
-                  bulunamadı.
+                  {isDiscountMode
+                    ? "Şu anda indirimli ürün bulunmuyor."
+                    : "Hata: Arama kriterlerine uygun teknik spesifikasyon bulunamadı."}
                 </p>
               </div>
             )}

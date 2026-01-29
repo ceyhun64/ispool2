@@ -13,6 +13,8 @@ import {
   ChevronDown,
   ChevronRight,
   Factory,
+  Calendar,
+  CalendarClock,
 } from "lucide-react";
 
 // Veritabanı tipi tanımlamaları
@@ -44,7 +46,7 @@ interface MobileFilterProps {
   subCategoryFilter: string;
   setSubCategoryFilter: (val: string) => void;
   brandFilter: string;
-  setBrandFilter: (brandId: string) => void; // brandId olarak güncellendi
+  setBrandFilter: (brandId: string) => void;
   minPrice: number;
   maxPrice: number;
   setMinPrice: (val: number) => void;
@@ -60,6 +62,8 @@ const sortOptions = [
   { id: "za", label: "Z'den A'ya", icon: ArrowUpAZ },
   { id: "priceLow", label: "Düşük Fiyat", icon: TrendingDown },
   { id: "priceHigh", label: "Yüksek Fiyat", icon: TrendingUp },
+  { id: "dateNew", label: "En Yeni", icon: Calendar },
+  { id: "dateOld", label: "En Eski", icon: CalendarClock },
 ];
 
 const MobileFilter: React.FC<MobileFilterProps> = ({
@@ -316,7 +320,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
           {dbBrands.map((brand) => (
             <button
               key={brand.id}
-              onClick={() => setBrandFilter(String(brand.id))} // brandId string olarak gönderiliyor
+              onClick={() => setBrandFilter(String(brand.id))}
               className={cn(
                 "flex items-center gap-2 py-3 px-3 border rounded-sm bg-white text-[10px] font-bold uppercase transition-all",
                 brandFilter === String(brand.id)

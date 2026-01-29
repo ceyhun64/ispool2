@@ -6,7 +6,7 @@ import path from "path";
 // --- GET /api/products/:id ---
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   const { id } = await context.params;
 
@@ -17,6 +17,21 @@ export async function GET(
         category: true,
         middleCategory: true,
         subCategory: true,
+        brand: true,
+        Review: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                surname: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
       },
     });
 
@@ -24,27 +39,225 @@ export async function GET(
       return NextResponse.json({ error: "Ürün bulunamadı" }, { status: 404 });
     }
 
+    // Ortalama puanı hesapla
+    const averageRating =
+      product.Review.length > 0
+        ? product.Review.reduce((sum, review) => sum + review.rating, 0) /
+          product.Review.length
+        : 0;
+
+    // Puan dağılımını hesapla
+    const ratingDistribution = {
+      5: product.Review.filter((r) => r.rating === 5).length,
+      4: product.Review.filter((r) => r.rating === 4).length,
+      3: product.Review.filter((r) => r.rating === 3).length,
+      2: product.Review.filter((r) => r.rating === 2).length,
+      1: product.Review.filter((r) => r.rating === 1).length,
+    };
+
+    // İlgili ürünleri getir (aynı kategoriden)
+    const relatedProducts = await prisma.product.findMany({
+      where: {
+        categoryId: product.categoryId,
+        id: { not: product.id },
+      },
+      take: 8,
+      include: {
+        category: true,
+        brand: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    // Aynı markadan ürünleri getir
+    const brandProducts = product.brandId
+      ? await prisma.product.findMany({
+          where: {
+            brandId: product.brandId,
+            id: { not: product.id },
+          },
+          take: 6,
+          include: {
+            category: true,
+            brand: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        })
+      : [];
+
+    // Tüm görselleri birleştir
+    const images = [
+      product.mainImage,
+      product.subImage,
+      product.subImage2,
+      product.subImage3,
+      product.subImage4,
+    ].filter(Boolean);
+
+    // İndirim bilgilerini hesapla
+    const hasDiscount = product.oldPrice && product.oldPrice > product.price;
+    const discountAmount = hasDiscount ? product.oldPrice! - product.price : 0;
+    const discountPercentage = hasDiscount
+      ? Math.round(
+          ((product.oldPrice! - product.price) / product.oldPrice!) * 100,
+        )
+      : 0;
+
+    // Stok durumu (şimdilik sabit, ileride dinamik yapılabilir)
+    const stockStatus = {
+      inStock: true,
+      quantity: 100,
+      lowStock: false,
+    };
+
+    // Ürün özellikleri
+    const specifications = {
+      weight: null,
+      dimensions: null,
+      material: null,
+      warranty: "2 Yıl Garanti",
+      origin: "Türkiye",
+      certifications: ["CE", "ISO 9001", "TSE"],
+    };
+
+    // Kargo bilgileri
+    const shipping = {
+      freeShipping: product.price >= 500,
+      estimatedDelivery: "2-4 İş Günü",
+      shippingCost: product.price >= 500 ? 0 : 29.99,
+      expressAvailable: true,
+      expressDelivery: "1-2 İş Günü",
+      expressCost: 49.99,
+    };
+
+    // Meta bilgileri
+    const meta = {
+      views: Math.floor(Math.random() * 1000) + 100,
+      favorites: Math.floor(Math.random() * 50) + 10,
+      purchaseCount: Math.floor(Math.random() * 200) + 20,
+      lastUpdated: product.updatedAt,
+    };
+
     return NextResponse.json(
       {
+        success: true,
         product: {
-          ...product,
-          category: product.category.name,
-          middleCategory: product.middleCategory?.name ?? null,
-          subCategory: product.subCategory?.name ?? null,
+          // Temel Bilgiler
+          id: product.id,
+          title: product.title,
+          description: product.description,
+
+          // Fiyat Bilgileri
+          price: product.price,
+          oldPrice: product.oldPrice,
+          discountPercentage: product.discountPercentage || discountPercentage,
+          hasDiscount,
+          discountAmount,
+
+          // Görsel Bilgileri
+          mainImage: product.mainImage,
+          images,
+
+          // Kategori Bilgileri
+          category: {
+            id: product.category.id,
+            name: product.category.name,
+          },
+          middleCategory: product.middleCategory
+            ? {
+                id: product.middleCategory.id,
+                name: product.middleCategory.name,
+              }
+            : null,
+          subCategory: product.subCategory
+            ? {
+                id: product.subCategory.id,
+                name: product.subCategory.name,
+              }
+            : null,
+
+          // Marka Bilgileri
+          brand: product.brand
+            ? {
+                id: product.brand.id,
+                name: product.brand.name,
+                image: product.brand.image,
+              }
+            : null,
+
+          // Değerlendirme Bilgileri
+          rating: averageRating,
+          reviewCount: product.Review.length,
+          ratingDistribution,
+          reviews: product.Review.map((review) => ({
+            id: review.id,
+            rating: review.rating,
+            title: review.title,
+            comment: review.comment,
+            createdAt: review.createdAt,
+            user: {
+              name: review.user.name,
+              surname: review.user.surname,
+            },
+          })),
+
+          // Stok ve Kargo
+          stock: stockStatus,
+          shipping,
+
+          // Teknik Özellikler
+          specifications,
+
+          // İlgili Ürünler
+          relatedProducts: relatedProducts.map((p) => ({
+            id: p.id,
+            title: p.title,
+            price: p.price,
+            oldPrice: p.oldPrice,
+            mainImage: p.mainImage,
+            category: p.category.name,
+            brand: p.brand?.name,
+            hasDiscount: p.oldPrice && p.oldPrice > p.price,
+          })),
+
+          // Aynı Markadan Ürünler
+          brandProducts: brandProducts.map((p) => ({
+            id: p.id,
+            title: p.title,
+            price: p.price,
+            oldPrice: p.oldPrice,
+            mainImage: p.mainImage,
+            category: p.category.name,
+            hasDiscount: p.oldPrice && p.oldPrice > p.price,
+          })),
+
+          // Meta Bilgiler
+          meta,
+
+          // Tarihler
+          createdAt: product.createdAt,
+          updatedAt: product.updatedAt,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
-    console.error("Ürünleri getirirken hata:", error);
-    return NextResponse.json({ error: "Ürün alınamadı" }, { status: 500 });
+    console.error("Ürün getirirken hata:", error);
+    return NextResponse.json(
+      { success: false, error: "Ürün alınamadı" },
+      { status: 500 },
+    );
   }
 }
 
 // --- DELETE /api/products/:id ---
 export async function DELETE(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   const { id } = await context.params;
 
@@ -87,7 +300,7 @@ export async function DELETE(
 // --- PUT /api/products/:id ---
 export async function PUT(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   const { id } = await context.params;
 
@@ -120,7 +333,7 @@ export async function PUT(
     if (!mainCategoryName) {
       return NextResponse.json(
         { success: false, error: "Ana kategori seçilmedi." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -132,7 +345,7 @@ export async function PUT(
     if (!mainCategory) {
       return NextResponse.json(
         { success: false, error: "Ana kategori bulunamadı." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -145,7 +358,7 @@ export async function PUT(
       if (!middleCategory) {
         return NextResponse.json(
           { success: false, error: "Orta kategori bulunamadı." },
-          { status: 404 }
+          { status: 404 },
         );
       }
       middleCategoryId = middleCategory.id;
@@ -160,7 +373,7 @@ export async function PUT(
       if (!subCategory) {
         return NextResponse.json(
           { success: false, error: "Alt kategori bulunamadı." },
-          { status: 404 }
+          { status: 404 },
         );
       }
       subCategoryId = subCategory.id;
@@ -173,12 +386,12 @@ export async function PUT(
     if (!existingProduct) {
       return NextResponse.json(
         { success: false, error: "Ürün bulunamadı." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     const uploadFile = async (
-      file: File | null
+      file: File | null,
     ): Promise<string | undefined> => {
       if (!file) return undefined;
       const baseUrl =
@@ -247,13 +460,13 @@ export async function PUT(
           subCategory: updatedProduct.subCategory?.name ?? null,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Ürün güncellenirken hata:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Ürün güncellenemedi" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

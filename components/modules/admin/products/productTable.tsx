@@ -20,6 +20,7 @@ import {
   MessageSquare,
   ImageOff,
   Calendar,
+  Tag,
 } from "lucide-react";
 
 export interface Product {
@@ -27,11 +28,15 @@ export interface Product {
   title: string;
   description: string;
   price: number;
+  oldPrice?: number;
+  discountPercentage?: number;
   rating: number;
   reviewCount?: number;
   mainImage: string;
   category: string;
+  middleCategory?: string;
   subCategory?: string;
+  brandId?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -89,7 +94,7 @@ export default function ProductTable({
                     selectedIds.length === products.length
                   }
                   onChange={onSelectAll}
-                  className="w-4 h-4  border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
+                  className="w-4 h-4 border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
                 />
               </TableHead>
               <TableHead className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 py-5 px-6">
@@ -135,14 +140,14 @@ export default function ProductTable({
                         type="checkbox"
                         checked={selectedIds.includes(product.id)}
                         onChange={() => onSelectOne(product.id)}
-                        className="w-4 h-4  border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
+                        className="w-4 h-4 border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
                       />
                     </TableCell>
 
                     <TableCell className="px-6 py-4">
                       <div className="flex items-center gap-4">
                         {/* Horizontal aspect ratio image */}
-                        <div className="relative w-16 h-12  overflow-hidden bg-slate-100 border border-slate-200 flex-shrink-0 flex items-center justify-center shadow-sm">
+                        <div className="relative w-16 h-12 overflow-hidden bg-slate-100 border border-slate-200 flex-shrink-0 flex items-center justify-center shadow-sm">
                           {imgPath ? (
                             <Image
                               src={imgPath}
@@ -160,22 +165,55 @@ export default function ProductTable({
                           </span>
                           <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
                             ID: #{product.id}
+                            {product.brandId && ` • Brand: ${product.brandId}`}
                           </span>
                         </div>
                       </div>
                     </TableCell>
 
                     <TableCell className="px-4">
-                      <Badge className="bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 border border-slate-200 shadow-none hover:shadow-sm hover:from-indigo-50 hover:to-indigo-100 hover:text-indigo-700 hover:border-indigo-200 text-[10px] px-2.5 py-1  font-bold transition-all">
-                        {product.category}
-                      </Badge>
+                      <div className="flex flex-col gap-1.5">
+                        <Badge className="bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 border border-slate-200 shadow-none hover:shadow-sm hover:from-indigo-50 hover:to-indigo-100 hover:text-indigo-700 hover:border-indigo-200 text-[10px] px-2.5 py-1 font-bold transition-all w-fit">
+                          {product.category}
+                        </Badge>
+                        {product.middleCategory && (
+                          <span className="text-[9px] text-slate-500 font-medium">
+                            {product.middleCategory}
+                          </span>
+                        )}
+                        {product.subCategory && (
+                          <span className="text-[9px] text-slate-400 font-medium">
+                            {product.subCategory}
+                          </span>
+                        )}
+                      </div>
                     </TableCell>
 
-                    <TableCell className="px-4 font-bold text-slate-900 text-sm whitespace-nowrap">
-                      {new Intl.NumberFormat("tr-TR", {
-                        style: "currency",
-                        currency: "TRY",
-                      }).format(product.price)}
+                    <TableCell className="px-4">
+                      <div className="flex flex-col gap-1">
+                        <span className="font-bold text-slate-900 text-sm whitespace-nowrap">
+                          {new Intl.NumberFormat("tr-TR", {
+                            style: "currency",
+                            currency: "TRY",
+                          }).format(product.price)}
+                        </span>
+                        {product.oldPrice &&
+                          product.oldPrice > product.price && (
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[11px] text-slate-400 line-through">
+                                {new Intl.NumberFormat("tr-TR", {
+                                  style: "currency",
+                                  currency: "TRY",
+                                }).format(product.oldPrice)}
+                              </span>
+                              {product.discountPercentage && (
+                                <Badge className="bg-red-50 text-red-600 border-red-200 text-[9px] px-1.5 py-0 font-bold">
+                                  -%{product.discountPercentage}
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+                      </div>
                     </TableCell>
 
                     <TableCell className="px-4">
@@ -203,7 +241,7 @@ export default function ProductTable({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-9 w-9  hover:bg-gradient-to-br hover:from-indigo-50 hover:to-indigo-100 border border-transparent hover:border-indigo-200 text-slate-400 hover:text-indigo-600 transition-all hover:shadow-sm"
+                          className="h-9 w-9 rounded-sm hover:bg-gradient-to-br hover:from-indigo-50 hover:to-indigo-100 border border-transparent hover:border-indigo-200 text-slate-400 hover:text-indigo-600 transition-all hover:shadow-sm"
                           onClick={() => onUpdateClick(product)}
                         >
                           <Edit3 size={15} />
@@ -211,7 +249,7 @@ export default function ProductTable({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-9 w-9  hover:bg-gradient-to-br hover:from-red-50 hover:to-red-100 text-slate-400 hover:text-red-500 hover:border-red-200 border border-transparent transition-all hover:shadow-sm"
+                          className="h-9 w-9 rounded-sm hover:bg-gradient-to-br hover:from-red-50 hover:to-red-100 text-slate-400 hover:text-red-500 hover:border-red-200 border border-transparent transition-all hover:shadow-sm"
                           onClick={() => onDeleteClick(product)}
                         >
                           <Trash2 size={15} />
@@ -239,7 +277,7 @@ export default function ProductTable({
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -20 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className={`bg-white  p-4 shadow-md border transition-all ${
+                className={`bg-white p-4 shadow-md border transition-all ${
                   selectedIds.includes(product.id)
                     ? "border-indigo-300 shadow-indigo-100 bg-gradient-to-br from-indigo-50/30 to-white"
                     : "border-slate-200 hover:shadow-lg hover:border-slate-300"
@@ -247,12 +285,12 @@ export default function ProductTable({
               >
                 {/* Header with Checkbox */}
                 <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <input
                       type="checkbox"
                       checked={selectedIds.includes(product.id)}
                       onChange={() => onSelectOne(product.id)}
-                      className="w-5 h-5  border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500"
+                      className="w-5 h-5 border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500"
                     />
                     <Badge
                       variant="secondary"
@@ -260,14 +298,30 @@ export default function ProductTable({
                     >
                       {product.category}
                     </Badge>
+                    {product.middleCategory && (
+                      <Badge
+                        variant="outline"
+                        className="text-[8px] font-medium px-1.5 py-0.5 border-slate-300"
+                      >
+                        {product.middleCategory}
+                      </Badge>
+                    )}
                   </div>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                    #{product.id}
-                  </span>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                      #{product.id}
+                    </span>
+                    {product.brandId && (
+                      <span className="text-[9px] text-slate-400 flex items-center gap-1">
+                        <Tag size={9} />
+                        Brand {product.brandId}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Product Image - Horizontal Aspect */}
-                <div className="relative w-full aspect-[16/9]  overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 border border-slate-200 mb-4 shadow-sm">
+                <div className="relative w-full aspect-[16/9] overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 border border-slate-200 mb-4 shadow-sm">
                   {imgPath ? (
                     <Image
                       src={imgPath}
@@ -287,9 +341,16 @@ export default function ProductTable({
 
                 {/* Product Info */}
                 <div className="space-y-3">
-                  <h3 className="font-bold text-slate-900 text-base leading-tight line-clamp-2">
-                    {product.title}
-                  </h3>
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-base leading-tight line-clamp-2">
+                      {product.title}
+                    </h3>
+                    {product.subCategory && (
+                      <span className="text-[10px] text-slate-400 font-medium">
+                        {product.subCategory}
+                      </span>
+                    )}
+                  </div>
 
                   {/* Stats Row */}
                   <div className="flex items-center justify-between">
@@ -309,8 +370,22 @@ export default function ProductTable({
                   </div>
 
                   {/* Price */}
-                  <div className="text-xl font-black text-transparent bg-gradient-to-r from-indigo-600 to-indigo-700 bg-clip-text">
-                    {product.price.toLocaleString("tr-TR")} ₺
+                  <div className="space-y-1">
+                    <div className="text-xl font-black text-transparent bg-gradient-to-r from-indigo-600 to-indigo-700 bg-clip-text">
+                      {product.price.toLocaleString("tr-TR")} ₺
+                    </div>
+                    {product.oldPrice && product.oldPrice > product.price && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-slate-400 line-through">
+                          {product.oldPrice.toLocaleString("tr-TR")} ₺
+                        </span>
+                        {product.discountPercentage && (
+                          <Badge className="bg-red-50 text-red-600 border-red-200 text-[10px] px-2 py-0.5 font-bold">
+                            -%{product.discountPercentage}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Action Buttons */}
@@ -318,7 +393,7 @@ export default function ProductTable({
                     <Button
                       size="sm"
                       variant="outline"
-                      className="flex-1  h-10 font-semibold text-sm border-slate-300 text-slate-700 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-indigo-100 hover:text-indigo-700 hover:border-indigo-300 transition-all"
+                      className="flex-1 h-10 rounded-sm font-semibold text-sm border-slate-300 text-slate-700 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-indigo-100 hover:text-indigo-700 hover:border-indigo-300 transition-all"
                       onClick={() => onUpdateClick(product)}
                     >
                       <Edit3 size={14} className="mr-2" />
@@ -327,7 +402,7 @@ export default function ProductTable({
                     <Button
                       size="sm"
                       variant="ghost"
-                      className=" h-10 w-10 p-0 text-red-400 hover:bg-gradient-to-br hover:from-red-50 hover:to-red-100 hover:text-red-600 border border-transparent hover:border-red-200 transition-all"
+                      className="h-10 w-10 p-0 rounded-sm text-red-400 hover:bg-gradient-to-br hover:from-red-50 hover:to-red-100 hover:text-red-600 border border-transparent hover:border-red-200 transition-all"
                       onClick={() => onDeleteClick(product)}
                     >
                       <Trash2 size={16} />

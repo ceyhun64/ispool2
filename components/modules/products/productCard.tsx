@@ -11,11 +11,13 @@ interface ProductData {
   id: number;
   title: string;
   price: number;
-  oldPrice?: number;
+  oldPrice: number | null;
   discountPercentage?: number;
   mainImage: string;
   category: string;
   subImage?: string;
+  brand?: string | null;
+  hasDiscount?: boolean;
 }
 
 export default function ProductCard({ product }: { product: ProductData }) {
@@ -39,7 +41,7 @@ export default function ProductCard({ product }: { product: ProductData }) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <Link href={`/products/${product.id}`}>
-        <div className="relative aspect-square w-full overflow-hidden bg-[#f9f9f9]">
+        <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#f9f9f9]">
           {/* Favori Butonu */}
           <button
             onClick={handleFavoriteClick}
@@ -99,7 +101,7 @@ export default function ProductCard({ product }: { product: ProductData }) {
               {product.category}
             </span>
             {discount > 0 && (
-              <span className="bg-amber-200 text-amber-900 px-1 sm:px-1.5 py-0.5 text-[8px] sm:text-[9px] font-bold uppercase">
+              <span className="bg-yellow-200 text-yellow-800 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase">
                 %{discount} İndirim
               </span>
             )}

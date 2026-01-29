@@ -1,3 +1,4 @@
+// DesignPanel - Ana component (mobile responsive)
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
@@ -27,6 +28,8 @@ export default function DesignPanel({
   const [showGrid, setShowGrid] = useState(false);
   const [showGuides, setShowGuides] = useState(true);
   const [tool, setTool] = useState<"select" | "pan">("select");
+  const [showLeftPanel, setShowLeftPanel] = useState(true);
+  const [showRightPanel, setShowRightPanel] = useState(true);
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const activeLayer = layers.find((l) => l.id === activeLayerId);
@@ -82,13 +85,11 @@ export default function DesignPanel({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Dosya boyutu kontrolü (5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Dosya boyutu 5MB'dan küçük olmalıdır.");
       return;
     }
 
-    // Dosya tipi kontrolü
     if (!file.type.startsWith("image/")) {
       toast.error("Lütfen geçerli bir resim dosyası seçin.");
       return;
@@ -275,7 +276,6 @@ export default function DesignPanel({
   };
 
   const handleSaveAndClose = async () => {
-    // Logo eklenmediyse direkt dosya yükleme işlevini tetikle
     if (layers.length === 0) {
       toast.info(
         "Logo eklenmedi. Dosya yükleme ekranına yönlendiriliyorsunuz...",
@@ -325,12 +325,10 @@ export default function DesignPanel({
       toast.dismiss();
       toast.success("Tasarımınız başarıyla kaydedildi! 🎨");
 
-      // Tasarımı parent component'e gönder
       if (onSaveDesign) {
         onSaveDesign(dataUrl);
       }
 
-      // Kısa bir animasyon için bekle
       await new Promise((resolve) => setTimeout(resolve, 300));
       onClose();
     } catch (error) {
@@ -342,8 +340,8 @@ export default function DesignPanel({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-slate-900 w-full max-w-[1600px] overflow-hidden shadow-2xl flex flex-col h-[95vh] border border-slate-700">
+    <div className="fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
+      <div className="bg-slate-900 w-full max-w-[1600px] overflow-hidden shadow-2xl flex flex-col h-[98vh] sm:h-[95vh] border border-slate-700">
         {/* Toolbar */}
         <Toolbar
           historyIndex={historyIndex}
@@ -351,27 +349,36 @@ export default function DesignPanel({
           tool={tool}
           zoom={zoom}
           showGrid={showGrid}
+          showLeftPanel={showLeftPanel}
+          showRightPanel={showRightPanel}
           onUndo={undo}
           onRedo={redo}
           onToolChange={setTool}
           onZoomChange={setZoom}
           onGridToggle={() => setShowGrid(!showGrid)}
+          onToggleLeftPanel={() => setShowLeftPanel(!showLeftPanel)}
+          onToggleRightPanel={() => setShowRightPanel(!showRightPanel)}
           onExport={handleExport}
           onClose={handleSaveAndClose}
         />
 
         <div className="flex-1 flex overflow-hidden">
           {/* Left Panel */}
-          <LayersPanel
-            layers={layers}
-            activeLayerId={activeLayerId}
-            onFileUpload={handleFileUpload}
-            onLayerSelect={setActiveLayerId}
-            onLayerUpdate={updateLayer}
-            onLayerDuplicate={duplicateLayer}
-            onLayerDelete={deleteLayer}
-            onLayerMove={moveLayer}
-          />
+          {showLeftPanel && (
+            <div className="hidden lg:block">
+              <LayersPanel
+                layers={layers}
+                activeLayerId={activeLayerId}
+                onFileUpload={handleFileUpload}
+                onLayerSelect={setActiveLayerId}
+                onLayerUpdate={updateLayer}
+                onLayerDuplicate={duplicateLayer}
+                onLayerDelete={deleteLayer}
+                onLayerMove={moveLayer}
+              />
+            </div>
+          )}
+
           {/* Canvas */}
           <Canvas
             productImage={productImage}
@@ -386,14 +393,43 @@ export default function DesignPanel({
           />
 
           {/* Right Panel */}
-          <PropertiesPanel
-            activeLayer={activeLayer}
-            onLayerUpdate={(updates) =>
-              activeLayer && updateLayer(activeLayer.id, updates)
-            }
-            onResetLayer={resetLayer}
-            onRemoveBackground={removeBackground}
-          />
+          {showRightPanel && (
+            <div className="hidden lg:block">
+              <PropertiesPanel
+                activeLayer={activeLayer}
+                onLayerUpdate={(updates) =>
+                  activeLayer && updateLayer(activeLayer.id, updates)
+                }
+                onResetLayer={resetLayer}
+                onRemoveBackground={removeBackground}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Bottom Sheet for Layers/Properties */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 max-h-[40vh] overflow-y-auto">
+          {activeLayer ? (
+            <PropertiesPanel
+              activeLayer={activeLayer}
+              onLayerUpdate={(updates) =>
+                activeLayer && updateLayer(activeLayer.id, updates)
+              }
+              onResetLayer={resetLayer}
+              onRemoveBackground={removeBackground}
+            />
+          ) : (
+            <LayersPanel
+              layers={layers}
+              activeLayerId={activeLayerId}
+              onFileUpload={handleFileUpload}
+              onLayerSelect={setActiveLayerId}
+              onLayerUpdate={updateLayer}
+              onLayerDuplicate={duplicateLayer}
+              onLayerDelete={deleteLayer}
+              onLayerMove={moveLayer}
+            />
+          )}
         </div>
       </div>
     </div>
