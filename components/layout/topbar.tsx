@@ -140,7 +140,7 @@ export default function TopBar() {
                 <Link
                   key={i}
                   href={item.href}
-                  className={`flex items-center gap-2 px-4 h-8 text-[10px] font-extrabold uppercase tracking-widest text-white rounded-md transition-all duration-300 shadow-sm ${item.color}`}
+                  className={`flex items-center gap-2 px-4 h-8 text-[10px] font-extrabold uppercase tracking-widest text-white rounded-full transition-all duration-300 shadow-sm ${item.color}`}
                 >
                   {item.icon}
                   {item.label}

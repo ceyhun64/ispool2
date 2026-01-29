@@ -10,12 +10,16 @@ import { ArrowRight, Factory, Shield, Award, Zap } from "lucide-react";
 interface ProductData {
   id: number;
   title: string;
-  mainImage: string;
   price: number;
-  oldPrice?: number;
+  oldPrice: number | null;
   discountPercentage?: number;
+  mainImage: string;
   category: string;
+  subImage?: string;
+  brand?: string | null;
+  hasDiscount?: boolean;
 }
+
 
 const ProductCardSkeleton = () => (
   <div className="space-y-4 p-4 bg-slate-50/50">
