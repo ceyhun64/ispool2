@@ -160,7 +160,7 @@ export default function Navbar() {
             <div className="hidden lg:flex flex-1 max-w-2xl px-4">
               <button
                 onClick={() => setSearchOpen(true)}
-                className="w-full h-12 flex rounded-sm items-center justify-between px-6 bg-slate-50 border border-slate-100 hover:border-orange-600/30 transition-all group"
+                className="w-full h-12 flex rounded-sm items-center justify-between px-6 bg-slate-50 border border-orange-600/30 transition-all group"
               >
                 <div className="flex items-center gap-4">
                   <Search

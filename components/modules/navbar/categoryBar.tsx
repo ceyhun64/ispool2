@@ -10,10 +10,7 @@ import {
   Hand,
   HardHat,
   Shield,
-  Briefcase,
   Flame,
-  TrendingDown,
-  Zap,
   Mountain,
   X,
   Plus,
@@ -28,17 +25,13 @@ import {
   Info,
   Truck,
   ChevronRight,
-  Scissors,
-  Wind,
-  Eye,
-  Ear,
 } from "lucide-react";
 import categoriesDataRaw from "@/data/categories.json";
 import middleCategoriesDataRaw from "@/data/middleCategories.json";
 import subCategoriesDataRaw from "@/data/subCategories.json";
 import Image from "next/image";
 
-// Tip Tanımlamaları
+// ─── Tip Tanımlamaları ───────────────────────────────────────────────────────
 interface CategoryInput {
   name: string;
 }
@@ -46,6 +39,7 @@ interface CategoryInput {
 interface MiddleCategoryInput {
   name: string;
   categoryName: string;
+  icon?: string;
 }
 
 interface SubCategoryInput {
@@ -61,6 +55,7 @@ interface DbSubCategory {
 interface DbMiddleCategory {
   id: number;
   name: string;
+  icon?: string;
   subCategories: DbSubCategory[];
 }
 
@@ -70,6 +65,7 @@ interface DbCategory {
   middleCategories: DbMiddleCategory[];
 }
 
+// ─── Ana Kategori İkon (name-based fallback) ────────────────────────────────
 const CategoryIcon = ({ name, size = 18 }: { name: string; size?: number }) => {
   const n = name.toLowerCase();
   if (n.includes("elbise") || n.includes("giyim")) return <Shirt size={size} />;
@@ -79,33 +75,10 @@ const CategoryIcon = ({ name, size = 18 }: { name: string; size?: number }) => {
     return <Hand size={size} />;
   if (n.includes("teknik") || n.includes("yanmaz"))
     return <Flame size={size} />;
-  if (n.includes("donanım") || n.includes("ekipman"))
+  if (n.includes("donanım") || n.includes("ekipman") || n.includes("güvenlik"))
     return <HardHat size={size} />;
   if (n.includes("dış") || n.includes("outdoor"))
     return <Mountain size={size} />;
-  return <Shield size={size} />;
-};
-
-// Middle Category için icon seçimi
-const MiddleCategoryIcon = ({
-  name,
-  size = 18,
-}: {
-  name: string;
-  size?: number;
-}) => {
-  const n = name.toLowerCase();
-  if (n.includes("baş")) return <HardHat size={size} />;
-  if (n.includes("ayak")) return <Footprints size={size} />;
-  if (n.includes("el")) return <Hand size={size} />;
-  if (n.includes("gövde") || n.includes("yelek")) return <Shield size={size} />;
-  if (n.includes("giyim") || n.includes("elbise")) return <Shirt size={size} />;
-  if (n.includes("kesilme") || n.includes("kesim"))
-    return <Scissors size={size} />;
-  if (n.includes("solunum") || n.includes("maske")) return <Wind size={size} />;
-  if (n.includes("göz")) return <Eye size={size} />;
-  if (n.includes("kulak") || n.includes("işitme")) return <Ear size={size} />;
-  if (n.includes("yanmaz") || n.includes("alev")) return <Flame size={size} />;
   return <Shield size={size} />;
 };
 
@@ -143,13 +116,14 @@ export default function CategoryBar({
       });
     });
 
-    // 2. Middle kategorileri ekle
+    // 2. Middle kategorileri ekle (icon dahil)
     middleCategoriesData.forEach((mid, index) => {
       const parentCategory = categoryMap.get(mid.categoryName);
       if (parentCategory) {
         const middleCategory: DbMiddleCategory = {
           id: index + 1,
           name: mid.name,
+          icon: mid.icon,
           subCategories: [],
         };
         parentCategory.middleCategories.push(middleCategory);
@@ -171,7 +145,6 @@ export default function CategoryBar({
       });
     });
 
-    // Map'i array'e çevir ve ID'ye göre sırala
     return Array.from(categoryMap.values()).sort((a, b) => a.id - b.id);
   }, [categoriesData, middleCategoriesData, subCategoriesData]);
 
@@ -309,9 +282,21 @@ export default function CategoryBar({
                               key={mid.id}
                               className="px-14 py-4 border-t border-slate-200/50"
                             >
-                              <p className="text-[10px] font-black uppercase text-orange-600 mb-3">
-                                {mid.name}
-                              </p>
+                              {/* Middle category başlığı + resim icon */}
+                              <div className="flex items-center gap-2 mb-3">
+                                {mid.icon && (
+                                  <img
+                                    src={mid.icon}
+                                    alt={mid.name}
+                                    width={18}
+                                    height={18}
+                                    className="object-contain"
+                                  />
+                                )}
+                                <p className="text-[10px] font-black uppercase text-orange-600">
+                                  {mid.name}
+                                </p>
+                              </div>
                               <div className="space-y-3">
                                 {mid.subCategories.map((sub) => (
                                   <Link
@@ -372,35 +357,42 @@ export default function CategoryBar({
         )}
       </AnimatePresence>
 
-      {/* ================= DESKTOP NAV - EŞİT GENİŞLİKTE 9 KATEGORİ (7 kategori + EN YENİLER + İNDİRİM) ================= */}
+      {/* ================= DESKTOP NAV ================= */}
       <nav
-        className="hidden lg:block bg-white border-b border-slate-100 sticky top-0 z-[100]"
+        className={`hidden lg:block sticky top-0 z-[100] transition-all duration-300 ${
+          isScrolled
+            ? "bg-white shadow-md"
+            : "bg-linear-to-r from-amber-600 via-amber-500 to-amber-600"
+        }`}
         onMouseLeave={() => setActiveCategory(null)}
       >
         <div className="max-w-8xl mx-auto ">
           <div
             className={`flex items-center justify-center transition-all duration-300 ease-in-out px-6 ${
-              isScrolled ? "h-16 shadow-xl" : "h-20"
+              isScrolled ? "h-16" : "h-20"
             }`}
           >
-            {" "}
-            {/* 9 eşit sütunlu grid yapısı - 7 kategori + 2 buton */}
             <div className="grid grid-cols-9 w-full ">
               {categories.map((cat) => (
                 <Link
                   key={cat.id}
                   href={`/products/category/${cat.id}`}
                   onMouseEnter={() => setActiveCategory(cat.id)}
-                  className={` text-[14px] px-2 font-bold transition-colors flex items-center justify-center text-center border-r-2 border-slate-100 ${
-                    activeCategory === cat.id
-                      ? "text-orange-600"
-                      : "text-slate-800"
-                  } uppercase`}
+                  className={`relative text-[14px] px-2 font-bold transition-colors flex items-center justify-center text-center 
+      /* Çizgi Efekti */
+      after:content-[''] after:absolute after:right-0 after:h-1/2 after:w-[1px] after:top-1/4 
+      /* Son öğede çizgiyi kaldır */
+      last:after:hidden
+      ${
+        isScrolled
+          ? `after:bg-slate-200 ${activeCategory === cat.id ? "text-orange-600" : "text-slate-700"} hover:text-orange-600`
+          : `after:bg-white/30 ${activeCategory === cat.id ? "text-slate-200" : "text-slate-100"}`
+      } uppercase`}
                 >
                   {cat.name}
                 </Link>
               ))}
-              {/* REFERANSLAR butonu */}
+              {/* REFERANSLAR */}
               <div
                 onMouseEnter={() => {
                   setActiveCategory(null);
@@ -411,20 +403,35 @@ export default function CategoryBar({
               >
                 <Link
                   href="/brands"
-                  className="py-2 text-[14px] font-bold text-slate-800 uppercase flex items-center justify-center text-center border-r-2 border-slate-100 h-full hover:text-orange-600 transition-colors"
+                  className={`relative py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center h-full transition-colors
+      /* Çizgi Efekti */
+      after:content-[''] after:absolute after:right-0 after:h-1/2 after:w-[1px] after:top-1/4
+      ${
+        isScrolled
+          ? "after:bg-slate-200 text-slate-700 hover:text-orange-600"
+          : "after:bg-white/30 text-slate-100 hover:text-slate-100"
+      }`}
                 >
                   REFERANSLAR
                 </Link>
               </div>
-              {/* EN YENİLER butonu */}
+
+              {/* EN YENİLER */}
               <Link
                 href="/products"
-                className="py-2 text-[14px] font-bold text-slate-800 uppercase flex items-center justify-center text-center border-r-2 border-slate-300"
+                className={`relative py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center transition-colors
+    /* Çizgi Efekti */
+    after:content-[''] after:absolute after:right-0 after:h-1/2 after:w-[1px] after:top-1/4
+    ${
+      isScrolled
+        ? "after:bg-slate-200 text-slate-700 hover:text-orange-600"
+        : "after:bg-white/30 text-slate-100"
+    }`}
               >
                 EN YENİLER
               </Link>
 
-              {/* İNDİRİM butonu */}
+              {/* İNDİRİM */}
               <Link
                 href="/products?discount=true"
                 className="py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center"
@@ -437,28 +444,46 @@ export default function CategoryBar({
           </div>
         </div>
 
-        {/* MEGA MENU (Açılır Menü Tasarımı) */}
+        {/* MEGA MENU */}
         <AnimatePresence>
           {activeCategory && currentCategory?.middleCategories && (
             <motion.div
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 5 }}
-              className="absolute left-0 w-full bg-white border-b border-slate-200 shadow-xl z-50"
+              className="absolute left-0 w-full bg-white border-y border-slate-200 shadow-xl z-50"
             >
               <div className="max-w-[1400px] mx-auto px-8 py-10">
                 <div className="grid grid-cols-5 gap-8">
+                  {/* MEGA MENU - Middle Category Bölümü */}
                   {currentCategory.middleCategories.map((mid) => (
                     <div key={mid.id}>
-                      <div className="flex items-center gap-2 mb-4 pb-2 border-b border-slate-100">
-                        <span className="text-orange-600">
-                          <MiddleCategoryIcon name={mid.name} size={18} />
-                        </span>
-                        <h4 className="text-[13px] font-black uppercase text-slate-900 leading-none">
+                      {/* Link hem ikonu hem de ismi kapsıyor */}
+                      <Link
+                        href={`/products/category/${currentCategory.id}?middle=${mid.name}`}
+                        onClick={() => {
+                          setActiveCategory(null);
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className="flex items-center gap-3 mb-4 group/midlink"
+                      >
+                        {mid.icon && (
+                          <div className="relative flex-shrink-0 transition-transform duration-200 group-hover/midlink:scale-110">
+                            <img
+                              src={mid.icon}
+                              alt={mid.name}
+                              width={32}
+                              height={32}
+                              className="object-contain"
+                            />
+                          </div>
+                        )}
+                        <h4 className="text-[13px] font-black uppercase text-slate-800 transition-colors duration-200 group-hover/midlink:text-orange-600 leading-tight">
                           {mid.name}
                         </h4>
-                      </div>
-                      <ul className="space-y-2">
+                      </Link>
+
+                      <ul className="space-y-2 border-l border-slate-100 ml-4 pl-4">
                         {mid.subCategories.map((sub) => (
                           <li key={sub.id}>
                             <Link
@@ -484,7 +509,6 @@ export default function CategoryBar({
               className="absolute left-0 w-full bg-white border-b border-slate-200 shadow-xl z-50"
             >
               <div className="max-w-[1400px] mx-auto px-8 py-10">
-              
                 <div className="grid grid-cols-6 gap-6">
                   {brands.map((brand) => (
                     <Link
