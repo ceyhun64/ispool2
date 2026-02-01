@@ -104,7 +104,7 @@ export default function ÇokSatanlarCarousel() {
               </span>
             </motion.div>
 
-            <h2 className="text-2xl sm:text-3xl  font-black tracking-tighter leading-tight md:leading-[0.9] text-slate-950 uppercase">
+            <h2 className="text-2xl sm:text-5xl  font-black tracking-tighter leading-tight md:leading-[0.9] text-slate-950 uppercase">
               EN ÇOK SATAN <br />
               <span className="text-orange-600">EKİPMANLAR</span>
             </h2>
