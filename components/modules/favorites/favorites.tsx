@@ -13,30 +13,30 @@ export default function Favorites() {
   const { favorites, removeFavorite, loading } = useFavorite();
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 selection:bg-orange-600 selection:text-white">
-      <div className="max-w-[1400px] mx-auto px-6 py-16 md:py-20">
-        {/* HEADER: Minimalist & Clean */}
+    <div className="min-h-screen bg-slate-100 text-slate-900 selection:bg-amber-600 selection:text-white">
+      <div className="max-w-[1400px] mx-auto px-6 py-16 md:py-24">
+        {/* ÜST BİLGİ: Minimalist ve Prestijli */}
         {!loading && (
-          <header className="mb-12 flex flex-col md:flex-row justify-between items-baseline gap-6 border-b border-slate-100 pb-8">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-orange-600">
+          <header className="mb-16 flex flex-col md:flex-row justify-between items-end gap-6 border-b border-slate-200 pb-10">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-amber-600">
                 <Heart size={14} fill="currentColor" />
                 <span className="text-[10px] tracking-[0.4em] font-bold uppercase">
-                  Kişisel Seçki
+                  Size Özel Seçki
                 </span>
               </div>
-              <h1 className="text-4xl md:text-6xl font-extralight tracking-tighter">
-                Favori <span className="font-bold">Ürünler</span>
+              <h1 className="text-5xl md:text-7xl font-extralight tracking-tighter text-slate-900">
+                Favori <span className="font-bold">Ürünlerim</span>
               </h1>
             </div>
 
             {favorites.length > 0 && (
               <div className="flex flex-col items-end">
-                <span className="text-4xl font-black text-slate-100 leading-none tabular-nums">
+                <span className="text-5xl font-black text-slate-200 leading-none tabular-nums">
                   {favorites.length.toString().padStart(2, "0")}
                 </span>
-                <span className="text-[10px] tracking-widest text-slate-400 uppercase font-medium">
-                  Toplam Ürün
+                <span className="text-[10px] tracking-widest text-slate-500 uppercase font-semibold">
+                  Kaydedilen Ürün
                 </span>
               </div>
             )}
@@ -44,52 +44,55 @@ export default function Favorites() {
         )}
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="space-y-4">
-                <Skeleton className="aspect-[3/4] w-full bg-slate-50 rounded-none" />
-                <Skeleton className="h-4 w-2/3 bg-slate-50" />
+              <div key={i} className="space-y-6">
+                <Skeleton className="aspect-[3/4] w-full bg-slate-200/50 rounded-2xl" />
+                <div className="space-y-2">
+                  <Skeleton className="h-5 w-2/3 bg-slate-200/50" />
+                  <Skeleton className="h-4 w-1/2 bg-slate-200/50" />
+                </div>
               </div>
             ))}
           </div>
         ) : favorites.length === 0 ? (
-          /* EMPTY STATE: Minimalist Center */
+          /* BOŞ DURUM: Modern & Sade */
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex flex-col items-center justify-center py-32 text-center space-y-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center justify-center py-5 text-center space-y-10"
           >
             <div className="relative">
               <Heart
-                size={80}
+                size={100}
                 strokeWidth={0.5}
-                className="text-slate-100 scale-150"
+                className="text-slate-200 scale-125"
               />
-              <Minus className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-slate-300 w-12" />
+              <Minus className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-slate-400 w-16" />
             </div>
-            <div className="space-y-3">
-              <h3 className="text-2xl font-light tracking-tight">
-                Listeniz şu an boş.
+            <div className="space-y-4">
+              <h3 className="text-3xl font-light tracking-tight text-slate-800">
+                Listeniz henüz boş.
               </h3>
-              <p className="text-slate-400 text-sm max-w-xs mx-auto leading-relaxed">
-                İş güvenliğinde yeni standartları keşfetmek için
-                koleksiyonlarımıza göz atın.
+              <p className="text-slate-500 text-base max-w-sm mx-auto leading-relaxed font-light">
+                İş güvenliğinde en yüksek standartları ve yenilikçi tasarımları
+                keşfetmek için ürünlerimize göz atın.
               </p>
             </div>
             <Link href="/products">
               <Button
                 variant="outline"
-                className="rounded-full px-10 py-6 border-slate-200 hover:bg-slate-900 hover:text-white transition-all text-[11px] tracking-widest uppercase font-bold"
+                className="rounded-sm px-12 py-7 border-slate-300 hover:bg-slate-950 hover:text-white transition-all duration-500 text-[11px] tracking-[0.2em] uppercase font-bold"
               >
-                Keşfetmeye Başla <ArrowRight size={14} className="ml-2" />
+                Keşfetmeye Başla <ArrowRight size={16} className="ml-3" />
               </Button>
             </Link>
           </motion.div>
         ) : (
-          /* GRID: Boutique Gallery Look */
+          /* ÜRÜN IZGARASI: Butik Galeri Görünümü */
           <motion.div
             layout
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-16"
           >
             <AnimatePresence mode="popLayout">
               {favorites
@@ -98,10 +101,10 @@ export default function Favorites() {
                   <motion.div
                     key={productId}
                     layout
-                    initial={{ opacity: 0, filter: "blur(10px)" }}
-                    animate={{ opacity: 1, filter: "blur(0px)" }}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
-                    transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                     className="group"
                   >
                     <ProductCard id={productId} onRemove={removeFavorite} />
@@ -112,14 +115,7 @@ export default function Favorites() {
         )}
       </div>
 
-      {/* FOOTER ACCENT: Editoryal Tipografi */}
-      <footer className="py-8 border-t border-slate-50">
-        <div className="max-w-[1400px] mx-auto px-6 flex justify-between items-center text-[9px] tracking-[0.5em] text-slate-300 font-bold uppercase">
-          <span>IsPool Performance</span>
-          <span className="hidden md:block">Selection Series // 2026</span>
-          <span>© All Rights Reserved</span>
-        </div>
-      </footer>
+   
     </div>
   );
 }
