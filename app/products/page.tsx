@@ -2,7 +2,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import ProductsContent from "@/components/modules/products/allProducts";
+import ProductsContent from "@/components/modules/products/products/allProducts";
 import { Suspense } from "react";
 import ProductSkeleton from "@/components/modules/products/productSkeleton";
 

@@ -1,4 +1,4 @@
-// /app/api/products/category/[id]/route.ts
+// /app/api/products/category/[id]/[midId]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
@@ -25,13 +25,16 @@ interface ProductData {
 
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ id: string; midId: string }> },
 ) {
   try {
-    const { id } = await context.params;
+    const { id, midId } = await context.params;
 
     const products = await prisma.product.findMany({
-      where: { categoryId: Number(id) },
+      where: {
+        categoryId: Number(id),
+        middleCategoryId: Number(midId),
+      },
       include: {
         category: true,
         middleCategory: true,
@@ -71,7 +74,7 @@ export async function GET(
 
     return NextResponse.json({ products: productsData }, { status: 200 });
   } catch (error: any) {
-    console.error("Kategoriye göre ürünler çekilemedi:", error);
+    console.error("Orta kategoriye göre ürünler çekilemedi:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 },

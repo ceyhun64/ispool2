@@ -2,7 +2,7 @@
 "use client";
 
 import { use } from "react";
-import ProductsContent from "@/components/modules/products/allProducts";
+import CatProducts from "@/components/modules/products/products/catProducts";
 
 export default function CategoryPage({
   params,
@@ -12,5 +12,5 @@ export default function CategoryPage({
   const { id } = use(params);
 
   // ID'yi sayıya çevirerek alt bileşene gönderiyoruz
-  return <ProductsContent id={Number(id)} />;
+  return <CatProducts id={Number(id)} />;
 }
