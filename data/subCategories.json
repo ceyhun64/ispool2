@@ -1,0 +1,442 @@
+[
+  {
+    "name": "Tulum Takımı",
+    "middleCategoryName": "İş Tulumu"
+  },
+  {
+    "name": "Bahçıvan Tulumu",
+    "middleCategoryName": "İş Tulumu"
+  },
+  {
+    "name": "Boyacı Tulumu",
+    "middleCategoryName": "İş Tulumu"
+  },
+  {
+    "name": "Elektrikçi Tulumu",
+    "middleCategoryName": "İş Tulumu"
+  },
+  {
+    "name": "Kaynak Tulumu",
+    "middleCategoryName": "İş Tulumu"
+  },
+  {
+    "name": "Kargo Pantolon",
+    "middleCategoryName": "İş Pantolonu"
+  },
+  {
+    "name": "Reflektörlü Pantolon",
+    "middleCategoryName": "İş Pantolonu"
+  },
+  {
+    "name": "Boyacı Pantolonu",
+    "middleCategoryName": "İş Pantolonu"
+  },
+  {
+    "name": "İnşaat Pantolonu",
+    "middleCategoryName": "İş Pantolonu"
+  },
+  {
+    "name": "Diz Koruyuculu Pantolon",
+    "middleCategoryName": "İş Pantolonu"
+  },
+  {
+    "name": "Kısa Kollu Gömlek",
+    "middleCategoryName": "İş Gömleği"
+  },
+  {
+    "name": "Uzun Kollu Gömlek",
+    "middleCategoryName": "İş Gömleği"
+  },
+  {
+    "name": "Polar Gömlek",
+    "middleCategoryName": "İş Gömleği"
+  },
+  {
+    "name": "Reflektörlü Gömlek",
+    "middleCategoryName": "İş Gömleği"
+  },
+  {
+    "name": "Deri Önlük",
+    "middleCategoryName": "İş Önlüğü"
+  },
+  {
+    "name": "PVC Önlük",
+    "middleCategoryName": "İş Önlüğü"
+  },
+  {
+    "name": "Muşamba Önlük",
+    "middleCategoryName": "İş Önlüğü"
+  },
+  {
+    "name": "Kaynak Önlüğü",
+    "middleCategoryName": "İş Önlüğü"
+  },
+  {
+    "name": "Standart Reflektörlü Yelek",
+    "middleCategoryName": "Reflektörlü Yelek"
+  },
+  {
+    "name": "Özel Baskılı Yelek",
+    "middleCategoryName": "Reflektörlü Yelek"
+  },
+  {
+    "name": "Trafik Yeleği",
+    "middleCategoryName": "Reflektörlü Yelek"
+  },
+  {
+    "name": "LED Işıklı Yelek",
+    "middleCategoryName": "Reflektörlü Yelek"
+  },
+  {
+    "name": "Çelik Burunlu Ayakkabı",
+    "middleCategoryName": "İş Ayakkabısı"
+  },
+  {
+    "name": "Composite Burunlu Ayakkabı",
+    "middleCategoryName": "İş Ayakkabısı"
+  },
+  {
+    "name": "Elektrikçi Ayakkabısı",
+    "middleCategoryName": "İş Ayakkabısı"
+  },
+  {
+    "name": "Kaynak Ayakkabısı",
+    "middleCategoryName": "İş Ayakkabısı"
+  },
+  {
+    "name": "S1 S2 S3 Ayakkabı",
+    "middleCategoryName": "İş Ayakkabısı"
+  },
+  {
+    "name": "Diz Hizası Bot",
+    "middleCategoryName": "İş Botu"
+  },
+  {
+    "name": "Bilek Üstü Bot",
+    "middleCategoryName": "İş Botu"
+  },
+  {
+    "name": "Kışlık İş Botu",
+    "middleCategoryName": "İş Botu"
+  },
+  {
+    "name": "Çelik Burunlu Bot",
+    "middleCategoryName": "İş Botu"
+  },
+  {
+    "name": "Yağmur Çizmesi",
+    "middleCategoryName": "Çizme"
+  },
+  {
+    "name": "PVC Çizme",
+    "middleCategoryName": "Çizme"
+  },
+  {
+    "name": "Kauçuk Çizme",
+    "middleCategoryName": "Çizme"
+  },
+  {
+    "name": "Asit Çizmesi",
+    "middleCategoryName": "Çizme"
+  },
+  {
+    "name": "Ayakkabı Tabanlığı",
+    "middleCategoryName": "Ayak Koruma Aksesuarları"
+  },
+  {
+    "name": "Burun Koruyucu",
+    "middleCategoryName": "Ayak Koruma Aksesuarları"
+  },
+  {
+    "name": "Gamaş",
+    "middleCategoryName": "Ayak Koruma Aksesuarları"
+  },
+  {
+    "name": "Kaydırmaz Taban",
+    "middleCategoryName": "Ayak Koruma Aksesuarları"
+  },
+  {
+    "name": "Sığır Derisi Eldiven",
+    "middleCategoryName": "Deri Eldiven"
+  },
+  {
+    "name": "Keçi Derisi Eldiven",
+    "middleCategoryName": "Deri Eldiven"
+  },
+  {
+    "name": "Koyun Derisi Eldiven",
+    "middleCategoryName": "Deri Eldiven"
+  },
+  {
+    "name": "Kaynak Eldiveni",
+    "middleCategoryName": "Deri Eldiven"
+  },
+  {
+    "name": "Beyaz Pamuklu Eldiven",
+    "middleCategoryName": "Pamuklu Eldiven"
+  },
+  {
+    "name": "Gri Pamuklu Eldiven",
+    "middleCategoryName": "Pamuklu Eldiven"
+  },
+  {
+    "name": "Noktalı Eldiven",
+    "middleCategoryName": "Pamuklu Eldiven"
+  },
+  {
+    "name": "Örgü Eldiven",
+    "middleCategoryName": "Pamuklu Eldiven"
+  },
+  {
+    "name": "Nitril Kaplı Eldiven",
+    "middleCategoryName": "Kaplama Eldiven"
+  },
+  {
+    "name": "Lateks Kaplı Eldiven",
+    "middleCategoryName": "Kaplama Eldiven"
+  },
+  {
+    "name": "PU Kaplı Eldiven",
+    "middleCategoryName": "Kaplama Eldiven"
+  },
+  {
+    "name": "PVC Kaplı Eldiven",
+    "middleCategoryName": "Kaplama Eldiven"
+  },
+  {
+    "name": "Kesilmeye Dayanıklı Eldiven",
+    "middleCategoryName": "Özel Amaçlı Eldiven"
+  },
+  {
+    "name": "Kimyasal Eldiven",
+    "middleCategoryName": "Özel Amaçlı Eldiven"
+  },
+  {
+    "name": "Termal Eldiven",
+    "middleCategoryName": "Özel Amaçlı Eldiven"
+  },
+  {
+    "name": "Elektrikçi Eldiveni",
+    "middleCategoryName": "Özel Amaçlı Eldiven"
+  },
+  {
+    "name": "Vibrasyon Önleyici Eldiven",
+    "middleCategoryName": "Özel Amaçlı Eldiven"
+  },
+  {
+    "name": "Alev Geciktirici Tulum",
+    "middleCategoryName": "Yanmaz Kıyafet"
+  },
+  {
+    "name": "Yanmaz Pantolon",
+    "middleCategoryName": "Yanmaz Kıyafet"
+  },
+  {
+    "name": "Yanmaz Gömlek",
+    "middleCategoryName": "Yanmaz Kıyafet"
+  },
+  {
+    "name": "Yanmaz Mont",
+    "middleCategoryName": "Yanmaz Kıyafet"
+  },
+  {
+    "name": "Asit Önlüğü",
+    "middleCategoryName": "Kimyasal Koruyucu Giysi"
+  },
+  {
+    "name": "Kimyasal Tulum",
+    "middleCategoryName": "Kimyasal Koruyucu Giysi"
+  },
+  {
+    "name": "Radyasyon Koruyucu",
+    "middleCategoryName": "Kimyasal Koruyucu Giysi"
+  },
+  {
+    "name": "Biyolojik Koruma Giysisi",
+    "middleCategoryName": "Kimyasal Koruyucu Giysi"
+  },
+  {
+    "name": "ESD Tulum",
+    "middleCategoryName": "Antistatik Kıyafet"
+  },
+  {
+    "name": "Antistatik Gömlek",
+    "middleCategoryName": "Antistatik Kıyafet"
+  },
+  {
+    "name": "Antistatik Pantolon",
+    "middleCategoryName": "Antistatik Kıyafet"
+  },
+  {
+    "name": "Temiz Oda Giysisi",
+    "middleCategoryName": "Antistatik Kıyafet"
+  },
+  {
+    "name": "Kışlık İş Montu",
+    "middleCategoryName": "Soğuk Hava Koruması"
+  },
+  {
+    "name": "Termal İç Çamaşırı",
+    "middleCategoryName": "Soğuk Hava Koruması"
+  },
+  {
+    "name": "Soğuk Hava Pantolonu",
+    "middleCategoryName": "Soğuk Hava Koruması"
+  },
+  {
+    "name": "Polar Yelek",
+    "middleCategoryName": "Soğuk Hava Koruması"
+  },
+  {
+    "name": "İş Güvenliği Bareti",
+    "middleCategoryName": "Baş Koruma"
+  },
+  {
+    "name": "Baret Aksesuarları",
+    "middleCategoryName": "Baş Koruma"
+  },
+  {
+    "name": "Bumpcap",
+    "middleCategoryName": "Baş Koruma"
+  },
+  {
+    "name": "Boyunluk",
+    "middleCategoryName": "Baş Koruma"
+  },
+  {
+    "name": "Koruyucu Gözlük",
+    "middleCategoryName": "Göz ve Yüz Koruma"
+  },
+  {
+    "name": "Kaynak Maskesi",
+    "middleCategoryName": "Göz ve Yüz Koruma"
+  },
+  {
+    "name": "Yüz Siperi",
+    "middleCategoryName": "Göz ve Yüz Koruma"
+  },
+  {
+    "name": "Lazer Gözlüğü",
+    "middleCategoryName": "Göz ve Yüz Koruma"
+  },
+  {
+    "name": "Toz Maskesi",
+    "middleCategoryName": "Solunum Koruma"
+  },
+  {
+    "name": "Yarım Yüz Maskesi",
+    "middleCategoryName": "Solunum Koruma"
+  },
+  {
+    "name": "Tam Yüz Maskesi",
+    "middleCategoryName": "Solunum Koruma"
+  },
+  {
+    "name": "Filtreler",
+    "middleCategoryName": "Solunum Koruma"
+  },
+  {
+    "name": "FFP2 FFP3 Maske",
+    "middleCategoryName": "Solunum Koruma"
+  },
+  {
+    "name": "Kulak Tıkacı",
+    "middleCategoryName": "İşitme Koruma"
+  },
+  {
+    "name": "Kulaklık",
+    "middleCategoryName": "İşitme Koruma"
+  },
+  {
+    "name": "Bantlı Kulak Tıkacı",
+    "middleCategoryName": "İşitme Koruma"
+  },
+  {
+    "name": "Elektronik Kulaklık",
+    "middleCategoryName": "İşitme Koruma"
+  },
+  {
+    "name": "Emniyet Kemeri",
+    "middleCategoryName": "Yüksekte Çalışma"
+  },
+  {
+    "name": "Paraşüt Tipi Kemer",
+    "middleCategoryName": "Yüksekte Çalışma"
+  },
+  {
+    "name": "Şok Emici",
+    "middleCategoryName": "Yüksekte Çalışma"
+  },
+  {
+    "name": "Kurtarma Ekipmanı",
+    "middleCategoryName": "Yüksekte Çalışma"
+  },
+  {
+    "name": "Ankaraj",
+    "middleCategoryName": "Yüksekte Çalışma"
+  },
+  {
+    "name": "PVC Yağmurluk",
+    "middleCategoryName": "Yağmurluk"
+  },
+  {
+    "name": "Pelerin",
+    "middleCategoryName": "Yağmurluk"
+  },
+  {
+    "name": "Panço",
+    "middleCategoryName": "Yağmurluk"
+  },
+  {
+    "name": "Yağmur Tulumu",
+    "middleCategoryName": "Yağmurluk"
+  },
+  {
+    "name": "Softshell Mont",
+    "middleCategoryName": "Rüzgarlık"
+  },
+  {
+    "name": "Windbreaker",
+    "middleCategoryName": "Rüzgarlık"
+  },
+  {
+    "name": "Kapüşonlu Rüzgarlık",
+    "middleCategoryName": "Rüzgarlık"
+  },
+  {
+    "name": "Reflektörlü Rüzgarlık",
+    "middleCategoryName": "Rüzgarlık"
+  },
+  {
+    "name": "Çadır",
+    "middleCategoryName": "Kamp Ekipmanları"
+  },
+  {
+    "name": "Uyku Tulumu",
+    "middleCategoryName": "Kamp Ekipmanları"
+  },
+  {
+    "name": "Matara",
+    "middleCategoryName": "Kamp Ekipmanları"
+  },
+  {
+    "name": "El Feneri",
+    "middleCategoryName": "Kamp Ekipmanları"
+  },
+  {
+    "name": "Trekking Çantası",
+    "middleCategoryName": "Sırt Çantası"
+  },
+  {
+    "name": "Günlük Sırt Çantası",
+    "middleCategoryName": "Sırt Çantası"
+  },
+  {
+    "name": "Taktik Çanta",
+    "middleCategoryName": "Sırt Çantası"
+  },
+  {
+    "name": "Askeri Çanta",
+    "middleCategoryName": "Sırt Çantası"
+  }
+]

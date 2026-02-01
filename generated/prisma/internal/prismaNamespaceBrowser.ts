@@ -110,6 +110,7 @@ export type MiddleCategoryScalarFieldEnum = (typeof MiddleCategoryScalarFieldEnu
 export const SubCategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  categoryId: 'categoryId',
   middleCategoryId: 'middleCategoryId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

@@ -65,7 +65,7 @@ const Testimonials: React.FC = () => {
                 Saha Referansları
               </span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black tracking-tighter text-slate-900 leading-[1.1] uppercase">
+            <h2 className="text-2xl sm:text-5xl font-black tracking-tighter text-slate-900 leading-[1.1] uppercase">
               PROFESYONELLERİN <br />
               <span className="text-slate-400">GÜVEN REHBERİ</span>
             </h2>
