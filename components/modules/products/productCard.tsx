@@ -41,7 +41,7 @@ export default function ProductCard({ product }: { product: ProductData }) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <Link href={`/products/${product.id}`}>
-        <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#f9f9f9] rounded-sm">
+        <div className="relative aspect-[3/4] w-full overflow-hidden bg-transparent shadow-sm  rounded-md">
           {/* Favori Butonu */}
           <button
             onClick={handleFavoriteClick}

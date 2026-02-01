@@ -97,9 +97,9 @@ export default function YeniUrunlerCarousel() {
               </span>
             </motion.div>
             <h2 className="text-2xl md:text-5xl font-black tracking-tighter text-slate-900 leading-none uppercase">
-              YENİ <span className="text-slate-400 font-medium">NESİL</span>
+              YENİ 
               <br />
-              ZIRHLAR
+              <span className="text-orange-600">GELENLER</span>
             </h2>
           </div>
 

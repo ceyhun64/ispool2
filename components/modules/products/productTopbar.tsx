@@ -18,6 +18,7 @@ import {
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface ProductTopBarProps {
   gridCols: 2 | 3 | 4;
@@ -248,8 +249,8 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
               </button>
 
               {/* İndirimdekiler */}
-              <button
-                onClick={handleDiscounts}
+              <Link
+                href="/products?discount=true"
                 className="group flex items-center gap-2 px-4 py-2 rounded-sm bg-white text-slate-600 border border-slate-200 hover:border-emerald-600 hover:text-emerald-600 hover:bg-emerald-50/50 transition-all text-[10px] font-bold uppercase tracking-tight"
               >
                 <Tag
@@ -257,7 +258,7 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
                   className="text-emerald-500 group-hover:-rotate-12 transition-transform"
                 />
                 İndirimdekiler
-              </button>
+              </Link>
             </>
           )}
 
