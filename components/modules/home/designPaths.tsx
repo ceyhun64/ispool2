@@ -55,7 +55,7 @@ export default function CategoriesSection() {
                 İnovasyon Merkezi v2.0
               </span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black tracking-tighter text-slate-900 leading-[1.1] uppercase">
+            <h2 className="text-2xl sm:text-5xl font-black tracking-tighter text-slate-900 leading-[1.1] uppercase">
               GELECEĞİN İŞ GÜVENLİĞİ <br />{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-500 to-slate-800">
                 DENEYİMİ
@@ -72,12 +72,12 @@ export default function CategoriesSection() {
         </div>
 
         {/* Grid Alanı */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 ">
           {loading
             ? Array.from({ length: 2 }).map((_, i) => (
                 <Skeleton
                   key={i}
-                  className="aspect-[16/9] w-full rounded-none bg-slate-200"
+                  className="aspect-[16/9] w-full rounded-xl bg-slate-200"
                 />
               ))
             : initialCategories.map((category) => (
@@ -93,15 +93,15 @@ function ModernCategoryCard({ category }: { category: CategoryData }) {
   return (
     <Link
       href={category.href}
-      className="group relative block overflow-hidden bg-slate-900 aspect-[11/9] sm:aspect-[11/9] border border-white/5 shadow-2xl"
+      className="group relative block overflow-hidden bg-slate-900 aspect-[11/9] sm:aspect-[11/9] rounded-xl border border-white/5 shadow-2xl"
     >
       {/* Görsel Katmanı */}
-      <div className="relative w-full h-full">
+      <div className="relative w-full h-full rounded-xl">
         <Image
           src={category.image}
           alt={category.name}
           fill
-          className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105 opacity-80 group-hover:opacity-100 grayscale-[0.3] group-hover:grayscale-0"
+          className="object-cover rounded-xl transition-transform duration-1000 ease-out group-hover:scale-105 opacity-80 group-hover:opacity-100 grayscale-[0.3] group-hover:grayscale-0"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent z-10" />
       </div>

@@ -79,7 +79,7 @@ export default function Products() {
               </span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-black tracking-tighter text-slate-900 leading-[1.1] uppercase">
+            <h2 className="text-2xl sm:text-5xl font-black tracking-tighter text-slate-900 leading-[1.1] uppercase">
               YÜKSEK <span className="text-orange-600">PERFORMANS</span> <br />
               MÜHENDİSLİĞİ
             </h2>

@@ -1,0 +1,106 @@
+[
+  {
+    "name": "İş Tulumu",
+    "categoryName": "İş Elbiseleri"
+  },
+  {
+    "name": "İş Pantolonu",
+    "categoryName": "İş Elbiseleri"
+  },
+  {
+    "name": "İş Gömleği",
+    "categoryName": "İş Elbiseleri"
+  },
+  {
+    "name": "İş Önlüğü",
+    "categoryName": "İş Elbiseleri"
+  },
+  {
+    "name": "Reflektörlü Yelek",
+    "categoryName": "İş Elbiseleri"
+  },
+  {
+    "name": "İş Ayakkabısı",
+    "categoryName": "İş Ayakkabıları ve Ayak Koruma"
+  },
+  {
+    "name": "İş Botu",
+    "categoryName": "İş Ayakkabıları ve Ayak Koruma"
+  },
+  {
+    "name": "Çizme",
+    "categoryName": "İş Ayakkabıları ve Ayak Koruma"
+  },
+  {
+    "name": "Ayak Koruma Aksesuarları",
+    "categoryName": "İş Ayakkabıları ve Ayak Koruma"
+  },
+  {
+    "name": "Deri Eldiven",
+    "categoryName": "İş Eldivenleri"
+  },
+  {
+    "name": "Pamuklu Eldiven",
+    "categoryName": "İş Eldivenleri"
+  },
+  {
+    "name": "Kaplama Eldiven",
+    "categoryName": "İş Eldivenleri"
+  },
+  {
+    "name": "Özel Amaçlı Eldiven",
+    "categoryName": "İş Eldivenleri"
+  },
+  {
+    "name": "Yanmaz Kıyafet",
+    "categoryName": "Koruyucu Teknik Kıyafet"
+  },
+  {
+    "name": "Kimyasal Koruyucu Giysi",
+    "categoryName": "Koruyucu Teknik Kıyafet"
+  },
+  {
+    "name": "Antistatik Kıyafet",
+    "categoryName": "Koruyucu Teknik Kıyafet"
+  },
+  {
+    "name": "Soğuk Hava Koruması",
+    "categoryName": "Koruyucu Teknik Kıyafet"
+  },
+  {
+    "name": "Baş Koruma",
+    "categoryName": "İş Güvenlik Ekipmanları"
+  },
+  {
+    "name": "Göz ve Yüz Koruma",
+    "categoryName": "İş Güvenlik Ekipmanları"
+  },
+  {
+    "name": "Solunum Koruma",
+    "categoryName": "İş Güvenlik Ekipmanları"
+  },
+  {
+    "name": "İşitme Koruma",
+    "categoryName": "İş Güvenlik Ekipmanları"
+  },
+  {
+    "name": "Yüksekte Çalışma",
+    "categoryName": "İş Güvenlik Ekipmanları"
+  },
+  {
+    "name": "Yağmurluk",
+    "categoryName": "Outdoor"
+  },
+  {
+    "name": "Rüzgarlık",
+    "categoryName": "Outdoor"
+  },
+  {
+    "name": "Kamp Ekipmanları",
+    "categoryName": "Outdoor"
+  },
+  {
+    "name": "Sırt Çantası",
+    "categoryName": "Outdoor"
+  }
+]

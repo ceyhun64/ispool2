@@ -9,9 +9,9 @@
     "mainImage": "/products/1.jpg",
     "subImage": "/products/2.jpg",
     "description": "Yüksek görünürlüklü reflektör şeritleri ile gece çalışmalarında tam güvenlik sağlar.",
-    "category": "İŞ ELBİSELERİ",
-    "middleCategory": "İş Yelekleri",
-    "subCategory": "Reflektörlü Yelek",
+    "category": "İş Elbiseleri",
+    "middleCategory": "Reflektörlü Yelek",
+    "subCategory": "Standart Reflektörlü Yelek",
     "brand": "PORTWEST"
   },
   {
@@ -24,9 +24,9 @@
     "mainImage": "/products/3.jpg",
     "subImage": "/products/4.jpg",
     "description": "Darbelere dayanıklı kompozit burun ve delinmez ara taban teknolojisi.",
-    "category": "AYAK KORUMA",
-    "middleCategory": "İş Botları",
-    "subCategory": "Kompozit Burunlu İş Botları",
+    "category": "İş Ayakkabıları ve Ayak Koruma",
+    "middleCategory": "İş Botu",
+    "subCategory": "Composite Burunlu Ayakkabı",
     "brand": "YDS"
   },
   {
@@ -39,9 +39,9 @@
     "mainImage": "/products/5.png",
     "subImage": "/products/6.png",
     "description": "Kesilmeye karşı dirençli nitril kaplama yüzey ile endüstriyel koruma.",
-    "category": "EL KORUMA",
-    "middleCategory": "Nitril Eldivenler",
-    "subCategory": "Kesilmez Eldivenler",
+    "category": "İş Eldivenleri",
+    "middleCategory": "Kaplama Eldiven",
+    "subCategory": "Nitril Kaplı Eldiven",
     "brand": "MAPA"
   },
   {
@@ -54,9 +54,9 @@
     "mainImage": "/products/7.jpg",
     "subImage": "/products/8.jpg",
     "description": "Yüksek gürültülü ortamlar için ultra ince ve hafif kulak koruyucu.",
-    "category": "EKİPMANLAR",
-    "middleCategory": "3M Profesyonel Seri",
-    "subCategory": "3M Peltor Kulak Koruma",
+    "category": "İş Güvenlik Ekipmanları",
+    "middleCategory": "İşitme Koruma",
+    "subCategory": "Kulaklık",
     "brand": "3M"
   },
   {
@@ -68,9 +68,9 @@
     "reviewCount": 56,
     "mainImage": "/products/9.jpg",
     "description": "Isıya ve kıvılcıma dayanıklı hakiki deri kaynakçı koruma önlüğü.",
-    "category": "İŞ ELBİSELERİ",
-    "middleCategory": "Kaynakçı Elbiseleri",
-    "subCategory": "Kaynakçı Önlükleri",
+    "category": "İş Elbiseleri",
+    "middleCategory": "İş Önlüğü",
+    "subCategory": "Kaynak Önlüğü",
     "brand": "CERVA"
   },
   {
@@ -83,9 +83,9 @@
     "mainImage": "/products/10.jpg",
     "subImage": "/products/11.jpg",
     "description": "Buğulanmaz lens teknolojisi ve çizilmeye dayanıklı dış yüzey.",
-    "category": "EKİPMANLAR",
-    "middleCategory": "Göz Koruma",
-    "subCategory": "İş Gözlükleri",
+    "category": "İş Güvenlik Ekipmanları",
+    "middleCategory": "Göz ve Yüz Koruma",
+    "subCategory": "Koruyucu Gözlük",
     "brand": "3M"
   },
   {
@@ -97,9 +97,9 @@
     "reviewCount": 215,
     "mainImage": "/products/12.jpg",
     "description": "Nefes alabilen fileli dış saya ve hafifletilmiş çelik burun koruması.",
-    "category": "AYAK KORUMA",
-    "middleCategory": "İş Ayakkabıları",
-    "subCategory": "Yazlık İş Ayakkabıları",
+    "category": "İş Ayakkabıları ve Ayak Koruma",
+    "middleCategory": "İş Ayakkabısı",
+    "subCategory": "Çelik Burunlu Ayakkabı",
     "brand": "PANDA"
   },
   {
@@ -111,9 +111,9 @@
     "reviewCount": 89,
     "mainImage": "/products/13.jpg",
     "description": "Yüksek filtrasyon kapasiteli, nefes almayı kolaylaştıran ventilli maske.",
-    "category": "EKİPMANLAR",
+    "category": "İş Güvenlik Ekipmanları",
     "middleCategory": "Solunum Koruma",
-    "subCategory": "Toz Maskeleri",
+    "subCategory": "FFP2 FFP3 Maske",
     "brand": "GVS"
   },
   {
@@ -125,9 +125,9 @@
     "reviewCount": 12,
     "mainImage": "/products/14.jpg",
     "description": "Sınıf 0 (1000V) elektrik çalışmalarına uygun kauçuk izole eldiven.",
-    "category": "EL KORUMA",
-    "middleCategory": "İzole Eldivenler",
-    "subCategory": "Elektrikçi Eldivenleri",
+    "category": "İş Eldivenleri",
+    "middleCategory": "Özel Amaçlı Eldiven",
+    "subCategory": "Elektrikçi Eldiveni",
     "brand": "CERVA"
   },
   {
@@ -140,9 +140,9 @@
     "mainImage": "/products/16.jpg",
     "subImage": "/products/17.jpg",
     "description": "Çift lanyardlı, şok emicili düşüş durdurma ve konumlandırma kemeri.",
-    "category": "EKİPMANLAR",
+    "category": "İş Güvenlik Ekipmanları",
     "middleCategory": "Yüksekte Çalışma",
-    "subCategory": "Emniyet Kemerleri",
+    "subCategory": "Emniyet Kemeri",
     "brand": "PORTWEST"
   }
 ]

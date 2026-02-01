@@ -91,7 +91,7 @@ export default function ShopServices() {
               <div className="h-[1px] flex-1 bg-slate-200 hidden md:block" />
             </motion.div>
 
-            <h2 className="text-2xl sm:text-3xl font-black tracking-tighter text-slate-900 leading-[1.1] uppercase">
+            <h2 className="text-2xl sm:text-5xl font-black tracking-tighter text-slate-900 leading-[1.1] uppercase">
               SAHA ŞARTLARINDA <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-400 to-slate-600">
                 SIFIR TAVİZ.

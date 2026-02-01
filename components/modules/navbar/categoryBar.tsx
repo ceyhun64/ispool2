@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,18 +28,42 @@ import {
   Info,
   Truck,
   ChevronRight,
+  Scissors,
+  Wind,
+  Eye,
+  Ear,
 } from "lucide-react";
+import categoriesDataRaw from "@/data/categories.json";
+import middleCategoriesDataRaw from "@/data/middleCategories.json";
+import subCategoriesDataRaw from "@/data/subCategories.json";
+import Image from "next/image";
 
-// Tip Tanımlamaları (Filter bileşeniyle uyumlu)
+// Tip Tanımlamaları
+interface CategoryInput {
+  name: string;
+}
+
+interface MiddleCategoryInput {
+  name: string;
+  categoryName: string;
+}
+
+interface SubCategoryInput {
+  name: string;
+  middleCategoryName: string;
+}
+
 interface DbSubCategory {
   id: number;
   name: string;
 }
+
 interface DbMiddleCategory {
   id: number;
   name: string;
   subCategories: DbSubCategory[];
 }
+
 interface DbCategory {
   id: number;
   name: string;
@@ -62,6 +86,29 @@ const CategoryIcon = ({ name, size = 18 }: { name: string; size?: number }) => {
   return <Shield size={size} />;
 };
 
+// Middle Category için icon seçimi
+const MiddleCategoryIcon = ({
+  name,
+  size = 18,
+}: {
+  name: string;
+  size?: number;
+}) => {
+  const n = name.toLowerCase();
+  if (n.includes("baş")) return <HardHat size={size} />;
+  if (n.includes("ayak")) return <Footprints size={size} />;
+  if (n.includes("el")) return <Hand size={size} />;
+  if (n.includes("gövde") || n.includes("yelek")) return <Shield size={size} />;
+  if (n.includes("giyim") || n.includes("elbise")) return <Shirt size={size} />;
+  if (n.includes("kesilme") || n.includes("kesim"))
+    return <Scissors size={size} />;
+  if (n.includes("solunum") || n.includes("maske")) return <Wind size={size} />;
+  if (n.includes("göz")) return <Eye size={size} />;
+  if (n.includes("kulak") || n.includes("işitme")) return <Ear size={size} />;
+  if (n.includes("yanmaz") || n.includes("alev")) return <Flame size={size} />;
+  return <Shield size={size} />;
+};
+
 export default function CategoryBar({
   isMobileMenuOpen,
   setIsMobileMenuOpen,
@@ -69,20 +116,72 @@ export default function CategoryBar({
   const router = useRouter();
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
-  const [categories, setCategories] = useState<DbCategory[]>([]);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [showBrands, setShowBrands] = useState(false);
 
-  // Verileri API'den çek
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await fetch("/api/category");
-        const data = await res.json();
-        setCategories(data.categories || []);
-      } catch (error) {
-        console.error("Kategoriler yüklenirken hata:", error);
+  // JSON verilerini type-cast ediyoruz
+  const categoriesData = categoriesDataRaw as CategoryInput[];
+  const middleCategoriesData = middleCategoriesDataRaw as MiddleCategoryInput[];
+  const subCategoriesData = subCategoriesDataRaw as SubCategoryInput[];
+
+  const brands = Array.from({ length: 11 }, (_, i) => ({
+    id: i + 1,
+    image: `/brands/${i + 1}.png`,
+    name: `Brand ${i + 1}`,
+  }));
+
+  // JSON dosyalarından hiyerarşik yapı oluştur
+  const categories = useMemo(() => {
+    const categoryMap = new Map<string, DbCategory>();
+
+    // 1. Ana kategorileri oluştur
+    categoriesData.forEach((cat, index) => {
+      categoryMap.set(cat.name, {
+        id: index + 1,
+        name: cat.name,
+        middleCategories: [],
+      });
+    });
+
+    // 2. Middle kategorileri ekle
+    middleCategoriesData.forEach((mid, index) => {
+      const parentCategory = categoryMap.get(mid.categoryName);
+      if (parentCategory) {
+        const middleCategory: DbMiddleCategory = {
+          id: index + 1,
+          name: mid.name,
+          subCategories: [],
+        };
+        parentCategory.middleCategories.push(middleCategory);
       }
+    });
+
+    // 3. Sub kategorileri ekle
+    subCategoriesData.forEach((sub, index) => {
+      categoryMap.forEach((category) => {
+        const middleCategory = category.middleCategories.find(
+          (m) => m.name === sub.middleCategoryName,
+        );
+        if (middleCategory) {
+          middleCategory.subCategories.push({
+            id: index + 1,
+            name: sub.name,
+          });
+        }
+      });
+    });
+
+    // Map'i array'e çevir ve ID'ye göre sırala
+    return Array.from(categoryMap.values()).sort((a, b) => a.id - b.id);
+  }, [categoriesData, middleCategoriesData, subCategoriesData]);
+
+  // Scroll takibi
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
     };
-    fetchCategories();
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const secondaryLinks = [
@@ -273,94 +372,99 @@ export default function CategoryBar({
         )}
       </AnimatePresence>
 
-      {/* ================= DESKTOP NAV ================= */}
+      {/* ================= DESKTOP NAV - EŞİT GENİŞLİKTE 9 KATEGORİ (7 kategori + EN YENİLER + İNDİRİM) ================= */}
       <nav
-        className="hidden lg:block sticky top-0 z-40 bg-white/90 backdrop-blur-3xl border-b border-slate-200"
+        className="hidden lg:block bg-white border-b border-slate-100 sticky top-0 z-[100]"
         onMouseLeave={() => setActiveCategory(null)}
       >
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex items-center h-14">
-            {/* Kategoriler Sol Taraf */}
-            <div className="flex items-center flex-1">
+        <div className="max-w-8xl mx-auto ">
+          <div
+            className={`flex items-center justify-center transition-all duration-300 ease-in-out px-6 ${
+              isScrolled ? "h-16 shadow-xl" : "h-20"
+            }`}
+          >
+            {" "}
+            {/* 9 eşit sütunlu grid yapısı - 7 kategori + 2 buton */}
+            <div className="grid grid-cols-9 w-full ">
               {categories.map((cat) => (
                 <Link
                   key={cat.id}
                   href={`/products/category/${cat.id}`}
                   onMouseEnter={() => setActiveCategory(cat.id)}
-                  className={`relative flex items-center gap-2 px-4 h-14 text-[10px] font-black uppercase tracking-widest transition ${
+                  className={` text-[14px] px-2 font-bold transition-colors flex items-center justify-center text-center border-r-2 border-slate-100 ${
                     activeCategory === cat.id
                       ? "text-orange-600"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
+                      : "text-slate-800"
+                  } uppercase`}
                 >
-                  <CategoryIcon name={cat.name} size={16} />
                   {cat.name}
-                  {activeCategory === cat.id && (
-                    <motion.span
-                      layoutId="activeCategory"
-                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-orange-600"
-                    />
-                  )}
                 </Link>
               ))}
-            </div>
-
-            {/* Sağ Taraf: En Yeniler ve İndirim (Sabit Linkler) */}
-            <div className="flex items-center gap-2 ml-4 pl-4 border-l border-slate-100">
+              {/* REFERANSLAR butonu */}
+              <div
+                onMouseEnter={() => {
+                  setActiveCategory(null);
+                  setShowBrands(true);
+                }}
+                onMouseLeave={() => setShowBrands(false)}
+                className="relative"
+              >
+                <Link
+                  href="/brands"
+                  className="py-2 text-[14px] font-bold text-slate-800 uppercase flex items-center justify-center text-center border-r-2 border-slate-100 h-full hover:text-orange-600 transition-colors"
+                >
+                  REFERANSLAR
+                </Link>
+              </div>
+              {/* EN YENİLER butonu */}
               <Link
                 href="/products"
-                className="flex items-center gap-2 px-4 py-2 rounded-sm text-[10px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50 transition-all group"
+                className="py-2 text-[14px] font-bold text-slate-800 uppercase flex items-center justify-center text-center border-r-2 border-slate-300"
               >
-                <Zap
-                  size={16}
-                  className="text-blue-500 group-hover:scale-110 transition-transform"
-                />
-                En Yeniler
+                EN YENİLER
               </Link>
 
+              {/* İNDİRİM butonu */}
               <Link
-                href="/products"
-                className="flex items-center gap-2 px-4 py-2 rounded-sm text-[10px] font-black uppercase tracking-widest text-white bg-orange-600 hover:bg-orange-700 shadow-lg  transition-all group"
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push("/products?discount=true");
-                }}
+                href="/products?discount=true"
+                className="py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center"
               >
-                <TrendingDown
-                  size={16}
-                  className="group-hover:translate-y-0.5 transition-transform"
-                />
-                İndirim
+                <span className="bg-[#ff2d2d] text-white px-4 py-1.5 rounded-md shadow-sm hover:bg-red-700 transition-colors">
+                  İNDİRİM
+                </span>
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Dropdown Menü (Aynen Kalıyor) */}
+        {/* MEGA MENU (Açılır Menü Tasarımı) */}
         <AnimatePresence>
           {activeCategory && currentCategory?.middleCategories && (
             <motion.div
-              initial={{ opacity: 0, y: -8 }}
+              initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="absolute top-full left-0 w-full bg-white shadow-2xl border-t overflow-hidden"
+              exit={{ opacity: 0, y: 5 }}
+              className="absolute left-0 w-full bg-white border-b border-slate-200 shadow-xl z-50"
             >
-              <div className="max-w-[1600px] mx-auto flex">
-                {/* SOL: Kategori Linkleri */}
-                <div className="flex-1 px-12 py-10 flex gap-x-16 gap-y-10 flex-wrap border-r border-slate-50">
+              <div className="max-w-[1400px] mx-auto px-8 py-10">
+                <div className="grid grid-cols-5 gap-8">
                   {currentCategory.middleCategories.map((mid) => (
-                    <div key={mid.id} className="min-w-[180px]">
-                      <h4 className="text-[11px] font-black uppercase tracking-widest text-orange-600 mb-5">
-                        {mid.name}
-                      </h4>
-                      <ul className="space-y-2.5">
+                    <div key={mid.id}>
+                      <div className="flex items-center gap-2 mb-4 pb-2 border-b border-slate-100">
+                        <span className="text-orange-600">
+                          <MiddleCategoryIcon name={mid.name} size={18} />
+                        </span>
+                        <h4 className="text-[13px] font-black uppercase text-slate-900 leading-none">
+                          {mid.name}
+                        </h4>
+                      </div>
+                      <ul className="space-y-2">
                         {mid.subCategories.map((sub) => (
                           <li key={sub.id}>
                             <Link
                               href={`/products/category/${currentCategory.id}?sub=${sub.name}`}
-                              className="text-[13px] font-semibold text-slate-500 hover:text-orange-600 transition-colors flex items-center group"
+                              className="text-[13px] text-slate-500 hover:text-orange-600 transition-colors block"
                             >
-                              <span className="w-0 group-hover:w-2 h-px bg-orange-600 mr-0 group-hover:mr-2 transition-all"></span>
                               {sub.name}
                             </Link>
                           </li>
@@ -369,8 +473,36 @@ export default function CategoryBar({
                     </div>
                   ))}
                 </div>
-
-             
+              </div>
+            </motion.div>
+          )}
+          {showBrands && (
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 5 }}
+              className="absolute left-0 w-full bg-white border-b border-slate-200 shadow-xl z-50"
+            >
+              <div className="max-w-[1400px] mx-auto px-8 py-10">
+              
+                <div className="grid grid-cols-6 gap-6">
+                  {brands.map((brand) => (
+                    <Link
+                      key={brand.id}
+                      href={`/brands/${brand.id}`}
+                      className="flex items-center justify-center p-6 bg-slate-50 rounded-lg hover:bg-slate-100 transition-all hover:shadow-md group"
+                    >
+                      <div className="relative w-full h-16">
+                        <Image
+                          src={brand.image}
+                          alt={brand.name}
+                          fill
+                          className="object-contain transition-all"
+                        />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               </div>
             </motion.div>
           )}
