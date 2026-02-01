@@ -4,12 +4,11 @@ import { prisma } from "@/lib/db";
 
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await context.params;
 
-    // Kategoriyi ID'ye göre çek (middleCategories ve subCategories ile birlikte)
     const category = await prisma.category.findUnique({
       where: { id: Number(id) },
       include: {
@@ -21,11 +20,10 @@ export async function GET(
       },
     });
 
-    // Kategori bulunamadıysa 404 döndür
     if (!category) {
       return NextResponse.json(
         { error: "Kategori bulunamadı" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -34,7 +32,7 @@ export async function GET(
     console.error("Kategori çekilirken hata:", error);
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

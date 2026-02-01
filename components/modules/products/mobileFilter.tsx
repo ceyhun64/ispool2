@@ -83,6 +83,9 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
 }) => {
   const router = useRouter();
   const [expandedCategories, setExpandedCategories] = useState<number[]>([]);
+  const [expandedMiddleCategories, setExpandedMiddleCategories] = useState<
+    number[]
+  >([]);
   const [allCategories, setAllCategories] = useState<DbCategory[]>([]);
   const [dbBrands, setDbBrands] = useState<DbBrand[]>([]);
 
@@ -121,6 +124,14 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
       prev.includes(categoryId)
         ? prev.filter((id) => id !== categoryId)
         : [...prev, categoryId],
+    );
+  };
+
+  const toggleMiddleCategory = (midId: number) => {
+    setExpandedMiddleCategories((prev) =>
+      prev.includes(midId)
+        ? prev.filter((id) => id !== midId)
+        : [...prev, midId],
     );
   };
 
@@ -201,7 +212,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
         </div>
       </section>
 
-      {/* 3. KATEGORİ / ALT KATEGORİ */}
+      {/* 3. KATEGORİ / ORTA KATEGORİ / ALT KATEGORİ */}
       <section>
         <SectionTitle>{sectionTitle}</SectionTitle>
         <div className="space-y-2">
@@ -219,6 +230,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
           >
             TÜMÜ
           </button>
+
           {allCategories.map((cat) => {
             const isExpanded = expandedCategories.includes(cat.id);
             const hasMiddle = cat.middleCategories?.length > 0;
@@ -262,35 +274,72 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
                     </button>
                   )}
                 </div>
+
                 {isExpanded && hasMiddle && (
-                  <div className="bg-slate-50 border-t border-slate-100 p-3 space-y-3">
-                    {cat.middleCategories.map((mid) => (
-                      <div key={mid.id}>
-                        <p className="text-[9px] font-black uppercase tracking-wider text-orange-600 mb-2">
-                          {mid.name}
-                        </p>
-                        <div className="space-y-1">
-                          {mid.subCategories.map((sub) => (
+                  <div className="bg-slate-50 border-t border-slate-100 p-3 space-y-2">
+                    {cat.middleCategories.map((mid) => {
+                      const isMidExpanded = expandedMiddleCategories.includes(
+                        mid.id,
+                      );
+                      const hasSubCategories = mid.subCategories?.length > 0;
+
+                      return (
+                        <div
+                          key={mid.id}
+                          className="bg-white rounded-sm border border-slate-100"
+                        >
+                          <div className="flex items-center">
                             <button
-                              key={sub.id}
-                              onClick={() => {
-                                router.push(`/products/category/${cat.id}`);
-                                setSubCategoryFilter(sub.name);
-                              }}
-                              className={cn(
-                                "w-full text-left py-2 px-3 text-[11px] font-semibold transition-colors flex items-center gap-2 rounded-sm",
-                                subCategoryFilter === sub.name
-                                  ? "text-orange-600 bg-white border border-orange-100"
-                                  : "text-slate-600 hover:bg-white",
-                              )}
+                              onClick={() =>
+                                router.push(
+                                  `/products/category/${cat.id}/${mid.id}`,
+                                )
+                              }
+                              className="flex-1 text-left py-2 px-3 text-[10px] font-black uppercase tracking-wider text-orange-600 hover:bg-orange-50 transition-colors"
                             >
-                              <ChevronRight size={12} className="opacity-30" />
-                              {sub.name}
+                              {mid.name}
                             </button>
-                          ))}
+                            {hasSubCategories && (
+                              <button
+                                onClick={() => toggleMiddleCategory(mid.id)}
+                                className="px-3 py-2 hover:bg-orange-50 transition-colors"
+                              >
+                                <ChevronRight
+                                  size={14}
+                                  className={cn(
+                                    "transition-transform duration-200",
+                                    isMidExpanded &&
+                                      "rotate-90 text-orange-600",
+                                  )}
+                                />
+                              </button>
+                            )}
+                          </div>
+
+                          {isMidExpanded && hasSubCategories && (
+                            <div className="bg-slate-50 border-t border-slate-100 p-2 space-y-1">
+                              {mid.subCategories.map((sub) => (
+                                <button
+                                  key={sub.id}
+                                  onClick={() =>
+                                    router.push(
+                                      `/products/category/${cat.id}/${mid.id}/${sub.id}`,
+                                    )
+                                  }
+                                  className="w-full text-left py-2 px-3 text-[11px] font-semibold transition-colors flex items-center gap-2 rounded-sm text-slate-600 hover:bg-white hover:text-orange-600"
+                                >
+                                  <ChevronRight
+                                    size={12}
+                                    className="opacity-30"
+                                  />
+                                  {sub.name}
+                                </button>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -299,7 +348,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
         </div>
       </section>
 
-      {/* 4. MARKALAR (DİNAMİK) - brandId kullanarak */}
+      {/* 4. MARKALAR */}
       <section>
         <SectionTitle icon={Factory}>Çözüm Ortakları</SectionTitle>
         <div className="grid grid-cols-2 gap-2">
@@ -394,6 +443,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
             setSubCategoryFilter("all");
             setBrandFilter("all");
             setExpandedCategories([]);
+            setExpandedMiddleCategories([]);
           }}
           className="w-full flex items-center justify-center gap-3 py-5 bg-slate-50 border-2 border-dashed border-slate-200 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-orange-600 hover:border-orange-200 transition-all"
         >

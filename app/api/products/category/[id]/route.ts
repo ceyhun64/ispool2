@@ -5,11 +5,11 @@ import { prisma } from "@/lib/db";
 interface ProductData {
   id: number;
   title: string;
-  price: number; // Int
-  oldPrice?: number; // Int
-  discountPercentage?: number; // Int
-  rating: number; // Int
-  reviewCount?: number; // Int
+  price: number;
+  oldPrice?: number;
+  discountPercentage?: number;
+  rating: number;
+  reviewCount?: number;
   description: string;
   mainImage: string;
   subImage?: string;
@@ -19,7 +19,8 @@ interface ProductData {
   category: string;
   middleCategory?: string;
   subCategory?: string;
-  brandId?: number; // Int - schema'da Int olarak tanımlı
+  brandId?: number;
+  createdAt: Date;
 }
 
 export async function GET(
@@ -40,7 +41,6 @@ export async function GET(
     });
 
     const productsData: ProductData[] = products.map((p) => {
-      // Type assertion ile Prisma'nın include edilmiş relationları tanıması sağlanır
       const product = p as typeof p & {
         category: { name: string };
         middleCategory: { name: string } | null;
@@ -64,7 +64,8 @@ export async function GET(
         category: product.category.name,
         middleCategory: product.middleCategory?.name ?? undefined,
         subCategory: product.subCategory?.name ?? undefined,
-        brandId: product.brandId ?? undefined, // number olarak döndür
+        brandId: product.brandId ?? undefined,
+        createdAt: product.createdAt,
       };
     });
 

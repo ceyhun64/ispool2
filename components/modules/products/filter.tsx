@@ -48,7 +48,7 @@ interface FilterProps {
   setMaxPrice: (price: number) => void;
   minPrice: number;
   setMinPrice: (price: number) => void;
-  isDiscountMode?: boolean; // İndirim modu kontrolü
+  isDiscountMode?: boolean;
 }
 
 const Filter: React.FC<FilterProps> = ({
@@ -122,7 +122,9 @@ const Filter: React.FC<FilterProps> = ({
           <button
             onClick={() => {
               setSubCategoryFilter("all");
-              router.push(isDiscountMode ? "/products/discount" : "/products");
+              router.push(
+                isDiscountMode ? "/products?discount=true" : "/products",
+              );
             }}
             className={cn(
               "group relative flex items-center rounded-sm justify-between py-2.5 px-3 transition-all duration-300",
@@ -189,21 +191,30 @@ const Filter: React.FC<FilterProps> = ({
                   <div className="ml-4 border-l-2 border-slate-200 pl-2 mt-1 mb-2 space-y-3">
                     {cat.middleCategories.map((mid) => (
                       <div key={mid.id}>
-                        <div className="py-1 px-2">
+                        <button
+                          onClick={() =>
+                            router.push(
+                              `/products/category/${cat.id}/${mid.id}`,
+                            )
+                          }
+                          className="w-full text-left py-1 px-2 hover:bg-orange-50 rounded-sm transition-colors"
+                        >
                           <span className="text-[9px] font-black uppercase tracking-wider text-orange-600">
                             {mid.name}
                           </span>
-                        </div>
+                        </button>
                         <div className="flex flex-col gap-1 mt-1">
                           {mid.subCategories.map((sub) => (
                             <button
                               key={sub.id}
-                              onClick={() => setSubCategoryFilter(sub.name)}
+                              onClick={() =>
+                                router.push(
+                                  `/products/category/${cat.id}/${mid.id}/${sub.id}`,
+                                )
+                              }
                               className={cn(
                                 "text-left py-1.5 px-2 text-[10px] font-semibold transition-colors rounded-sm",
-                                subCategoryFilter === sub.name
-                                  ? "text-orange-600 bg-orange-50"
-                                  : "text-slate-600 hover:text-orange-600 hover:bg-orange-50/50",
+                                "text-slate-600 hover:text-orange-600 hover:bg-orange-50/50",
                               )}
                             >
                               {sub.name}
@@ -230,7 +241,7 @@ const Filter: React.FC<FilterProps> = ({
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          {/* TÜMÜ Butonu - Diğer markalarla aynı grid yapısında */}
+          {/* TÜMÜ Butonu */}
           <button
             onClick={() => setBrandFilter("all")}
             className={cn(
@@ -246,7 +257,7 @@ const Filter: React.FC<FilterProps> = ({
             <span className="truncate">TÜMÜ</span>
           </button>
 
-          {/* Dinamik Markalar - brandId kullanarak filtreleme */}
+          {/* Dinamik Markalar */}
           {dbBrands.map((brand) => (
             <button
               key={brand.id}
@@ -258,14 +269,12 @@ const Filter: React.FC<FilterProps> = ({
                   : "border-slate-100 bg-white text-slate-600 hover:border-slate-300",
               )}
             >
-              {/* Marka Logosu Konteynırı */}
               <div className="relative w-6 h-6 shrink-0 flex items-center justify-center">
                 {brand.image ? (
                   <img
                     src={brand.image}
                     alt={brand.name}
-                    className="
-                      w-full h-full object-contain transition-all duration-300"
+                    className="w-full h-full object-contain transition-all duration-300"
                   />
                 ) : (
                   <div className="w-full h-full bg-slate-100 rounded-full flex items-center justify-center text-[8px] text-slate-400">
@@ -273,7 +282,6 @@ const Filter: React.FC<FilterProps> = ({
                   </div>
                 )}
               </div>
-
               <span className="truncate">{brand.name}</span>
             </button>
           ))}

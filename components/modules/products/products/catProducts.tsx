@@ -1,13 +1,13 @@
-// /components/modules/products/ProductsContent.tsx
+// /components/modules/products/products/catProducts.tsx
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import ProductCard from "./productCard";
-import Filter from "./filter";
-import ProductTopBar from "./productTopbar";
+import ProductCard from "../productCard";
+import Filter from "../filter";
+import ProductTopBar from "../productTopbar";
 import { cn } from "@/lib/utils";
-import ProductSkeleton from "./productSkeleton";
+import ProductSkeleton from "../productSkeleton";
 import {
   SlidersHorizontal,
   X,
@@ -18,20 +18,18 @@ import {
   Tag,
   Percent,
 } from "lucide-react";
-import MobileFilter from "./mobileFilter";
+import MobileFilter from "../mobileFilter";
 
-interface ProductsContentProps {
-  id?: number; // undefined ise tüm ürünler
-  showDiscountOnly?: boolean; // İndirimli ürünleri göster
+interface CatProductsProps {
+  id: number;
+  showDiscountOnly?: boolean;
 }
 
-export default function ProductsContent({
+export default function CatProducts({
   id,
   showDiscountOnly = false,
-}: ProductsContentProps) {
-  // Mevcut kategoriyi bul (id varsa)
+}: CatProductsProps) {
   const [currentCategory, setCurrentCategory] = useState<any>(null);
-
   const [subCategoryFilter, setSubCategoryFilter] = useState<string>("all");
   const [brandFilter, setBrandFilter] = useState<string>("all");
   const [maxPrice, setMaxPrice] = useState<number>(300000);
@@ -45,17 +43,12 @@ export default function ProductsContent({
   const [loading, setLoading] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(true);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  const [isBestSellers, setIsBestSellers] = useState(false); // Çok satanlar modu
-  const [isDiscountMode] = useState(showDiscountOnly); // İndirim modu
+  const [isBestSellers, setIsBestSellers] = useState(false);
+  const [isDiscountMode] = useState(showDiscountOnly);
 
-  // Kategori bilgisini API'den çek
+  // Fetch category information
   useEffect(() => {
     async function fetchCategory() {
-      if (!id) {
-        setCurrentCategory(null);
-        return;
-      }
-
       try {
         const res = await fetch(`/api/category/${id}`);
         const data = await res.json();
@@ -70,13 +63,12 @@ export default function ProductsContent({
     fetchCategory();
   }, [id]);
 
+  // Fetch products
   useEffect(() => {
     async function fetchProducts() {
       try {
         setLoading(true);
-        // id yoksa tüm ürünleri getir
-        const url = !id ? "/api/products" : `/api/products/category/${id}`;
-
+        const url = `/api/products/category/${id}`;
         const res = await fetch(url);
         const data = await res.json();
         console.log(data);
@@ -97,12 +89,10 @@ export default function ProductsContent({
     };
   }, [isMobileFilterOpen]);
 
-  // Çok satanlar butonuna basıldığında
   const handleBestSellers = () => {
     setIsBestSellers(true);
   };
 
-  // Normal sıralama yapıldığında çok satanlar modunu kapat
   useEffect(() => {
     if (sort !== "az" || subCategoryFilter !== "all" || brandFilter !== "all") {
       setIsBestSellers(false);
@@ -115,8 +105,6 @@ export default function ProductsContent({
         subCategoryFilter === "all" || p.subCategory === subCategoryFilter;
       const brandCheck =
         brandFilter === "all" || p.brandId === Number(brandFilter);
-
-      // İndirim modu kontrolü - oldPrice VE discountPercentage varsa göster
       const discountCheck =
         !isDiscountMode || (p.oldPrice && p.discountPercentage);
 
@@ -129,12 +117,10 @@ export default function ProductsContent({
       );
     });
 
-    // Çok satanlar modunda rastgele sırala
     if (isBestSellers) {
       return result.sort(() => Math.random() - 0.5);
     }
 
-    // Normal sıralama
     return result.sort((a, b) => {
       switch (sort) {
         case "az":
@@ -170,8 +156,7 @@ export default function ProductsContent({
 
   if (loading) return <ProductSkeleton />;
 
-  // Kategori bulunamadıysa (id varsa ama kategori yoksa)
-  if (id && !currentCategory) {
+  if (!currentCategory) {
     return (
       <div className="min-h-screen bg-slate-100 flex items-center justify-center">
         <div className="text-center">
@@ -184,10 +169,9 @@ export default function ProductsContent({
     );
   }
 
-  // Başlık belirleme
   const pageTitle = isDiscountMode
     ? "İNDİRİMLİ ÜRÜNLER"
-    : currentCategory?.name || "TÜM ÜRÜNLER";
+    : currentCategory?.name || "ÜRÜNLER";
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 selection:bg-orange-500 selection:text-white relative font-sans overflow-x-hidden">
