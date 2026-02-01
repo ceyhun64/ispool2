@@ -89,8 +89,10 @@ export default function CategoryBar({
   const router = useRouter();
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0); // 0 = top, 1 = scrolled
   const [showBrands, setShowBrands] = useState(false);
+
+  const isScrolled = scrollProgress > 0.5; // metin rengi için threshold
 
   // JSON verilerini type-cast ediyoruz
   const categoriesData = categoriesDataRaw as CategoryInput[];
@@ -107,7 +109,6 @@ export default function CategoryBar({
   const categories = useMemo(() => {
     const categoryMap = new Map<string, DbCategory>();
 
-    // 1. Ana kategorileri oluştur
     categoriesData.forEach((cat, index) => {
       categoryMap.set(cat.name, {
         id: index + 1,
@@ -116,7 +117,6 @@ export default function CategoryBar({
       });
     });
 
-    // 2. Middle kategorileri ekle (icon dahil)
     middleCategoriesData.forEach((mid, index) => {
       const parentCategory = categoryMap.get(mid.categoryName);
       if (parentCategory) {
@@ -130,7 +130,6 @@ export default function CategoryBar({
       }
     });
 
-    // 3. Sub kategorileri ekle
     subCategoriesData.forEach((sub, index) => {
       categoryMap.forEach((category) => {
         const middleCategory = category.middleCategories.find(
@@ -148,12 +147,19 @@ export default function CategoryBar({
     return Array.from(categoryMap.values()).sort((a, b) => a.id - b.id);
   }, [categoriesData, middleCategoriesData, subCategoriesData]);
 
-  // Scroll takibi
+  // Scroll takibi — smooth progress hesaplama
   useEffect(() => {
+    const SCROLL_RANGE = 80; // 0–80px arasında geçiş tamamlanır
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const progress = Math.min(window.scrollY / SCROLL_RANGE, 1);
+      setScrollProgress(progress);
     };
-    window.addEventListener("scroll", handleScroll);
+
+    // İlk render'da mevcut scroll pozisyonu okuyalım
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -197,6 +203,9 @@ export default function CategoryBar({
   ];
 
   const currentCategory = categories.find((c) => c.id === activeCategory);
+
+  // height interpolation: 80px → 64px
+  const navHeight = 80 - scrollProgress * 16;
 
   return (
     <>
@@ -282,7 +291,6 @@ export default function CategoryBar({
                               key={mid.id}
                               className="px-14 py-4 border-t border-slate-200/50"
                             >
-                              {/* Middle category başlığı + resim icon */}
                               <div className="flex items-center gap-2 mb-3">
                                 {mid.icon && (
                                   <img
@@ -359,39 +367,60 @@ export default function CategoryBar({
 
       {/* ================= DESKTOP NAV ================= */}
       <nav
-        className={`hidden lg:block sticky top-0 z-[100] transition-all duration-300 ${
-          isScrolled
-            ? "bg-white shadow-md"
-            : "bg-linear-to-r from-amber-600 via-amber-500 to-amber-600"
-        }`}
+        className="hidden lg:block sticky top-0 z-[100] relative"
         onMouseLeave={() => setActiveCategory(null)}
       >
-        <div className="max-w-8xl mx-auto ">
+        {/* Katmanlı arkaplan: gradient + beyaz overlay */}
+        {/* Gradient her zaman var, üstüne beyaz overlay opacity ile geçiş yapar */}
+        <div
+          className="absolute inset-0 bg-linear-to-r from-amber-600 via-amber-500 to-amber-600"
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-0 bg-white"
+          style={{ opacity: scrollProgress }}
+          aria-hidden="true"
+        />
+        {/* Shadow: scroll ettikçe belir */}
+        <div
+          className="absolute inset-0 shadow-md pointer-events-none"
+          style={{ opacity: scrollProgress }}
+          aria-hidden="true"
+        />
+
+        {/* Içerik */}
+        <div className="relative z-10 max-w-8xl mx-auto">
           <div
-            className={`flex items-center justify-center transition-all duration-300 ease-in-out px-6 ${
-              isScrolled ? "h-16" : "h-20"
-            }`}
+            className="flex items-center justify-center px-6"
+            style={{ height: `${navHeight}px`, transition: "height 0.3s ease" }}
           >
-            <div className="grid grid-cols-9 w-full ">
+            <div className="grid grid-cols-9 w-full">
               {categories.map((cat) => (
                 <Link
                   key={cat.id}
                   href={`/products/category/${cat.id}`}
                   onMouseEnter={() => setActiveCategory(cat.id)}
-                  className={`relative text-[14px] px-2 font-bold transition-colors flex items-center justify-center text-center 
-      /* Çizgi Efekti */
-      after:content-[''] after:absolute after:right-0 after:h-1/2 after:w-[1px] after:top-1/4 
-      /* Son öğede çizgiyi kaldır */
-      last:after:hidden
-      ${
-        isScrolled
-          ? `after:bg-slate-200 ${activeCategory === cat.id ? "text-orange-600" : "text-slate-700"} hover:text-orange-600`
-          : `after:bg-white/30 ${activeCategory === cat.id ? "text-slate-200" : "text-slate-100"}`
-      } uppercase`}
+                  className="relative text-[14px] px-2 font-bold flex items-center justify-center text-center uppercase
+                    after:content-[''] after:absolute after:right-0 after:h-1/2 after:w-[1px] after:top-1/4
+                    last:after:hidden"
+                  style={{
+                    // Metin: beyaz → slate-700
+                    color: `rgb(${Math.round(255 - scrollProgress * 166)}, ${Math.round(255 - scrollProgress * 220)}, ${Math.round(255 - scrollProgress * 224)})`,
+                    // Çizgi: white/30 → slate-200
+                  }}
                 >
+                  {/* Çizgi ayrı element → kendi opacity kontrolü */}
+                  <span
+                    className="absolute right-0 top-1/4 h-1/2 w-[1px]"
+                    style={{
+                      backgroundColor: `rgba(255,255,255,${1 - scrollProgress * 0.7})`,
+                      opacity: scrollProgress > 0.9 ? 0.4 : 1,
+                    }}
+                  />
                   {cat.name}
                 </Link>
               ))}
+
               {/* REFERANSLAR */}
               <div
                 onMouseEnter={() => {
@@ -403,15 +432,18 @@ export default function CategoryBar({
               >
                 <Link
                   href="/brands"
-                  className={`relative py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center h-full transition-colors
-      /* Çizgi Efekti */
-      after:content-[''] after:absolute after:right-0 after:h-1/2 after:w-[1px] after:top-1/4
-      ${
-        isScrolled
-          ? "after:bg-slate-200 text-slate-700 hover:text-orange-600"
-          : "after:bg-white/30 text-slate-100 hover:text-slate-100"
-      }`}
+                  className="relative py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center h-full"
+                  style={{
+                    color: `rgb(${Math.round(255 - scrollProgress * 166)}, ${Math.round(255 - scrollProgress * 220)}, ${Math.round(255 - scrollProgress * 224)})`,
+                  }}
                 >
+                  <span
+                    className="absolute right-0 top-1/4 h-1/2 w-[1px]"
+                    style={{
+                      backgroundColor: `rgba(255,255,255,${1 - scrollProgress * 0.7})`,
+                      opacity: scrollProgress > 0.9 ? 0.4 : 1,
+                    }}
+                  />
                   REFERANSLAR
                 </Link>
               </div>
@@ -419,15 +451,18 @@ export default function CategoryBar({
               {/* EN YENİLER */}
               <Link
                 href="/products"
-                className={`relative py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center transition-colors
-    /* Çizgi Efekti */
-    after:content-[''] after:absolute after:right-0 after:h-1/2 after:w-[1px] after:top-1/4
-    ${
-      isScrolled
-        ? "after:bg-slate-200 text-slate-700 hover:text-orange-600"
-        : "after:bg-white/30 text-slate-100"
-    }`}
+                className="relative py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center"
+                style={{
+                  color: `rgb(${Math.round(255 - scrollProgress * 166)}, ${Math.round(255 - scrollProgress * 220)}, ${Math.round(255 - scrollProgress * 224)})`,
+                }}
               >
+                <span
+                  className="absolute right-0 top-1/4 h-1/2 w-[1px]"
+                  style={{
+                    backgroundColor: `rgba(255,255,255,${1 - scrollProgress * 0.7})`,
+                    opacity: scrollProgress > 0.9 ? 0.4 : 1,
+                  }}
+                />
                 EN YENİLER
               </Link>
 
@@ -455,10 +490,8 @@ export default function CategoryBar({
             >
               <div className="max-w-[1400px] mx-auto px-8 py-10">
                 <div className="grid grid-cols-5 gap-8">
-                  {/* MEGA MENU - Middle Category Bölümü */}
                   {currentCategory.middleCategories.map((mid) => (
                     <div key={mid.id}>
-                      {/* Link hem ikonu hem de ismi kapsıyor */}
                       <Link
                         href={`/products/category/${currentCategory.id}?middle=${mid.name}`}
                         onClick={() => {
