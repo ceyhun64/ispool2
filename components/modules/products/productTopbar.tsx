@@ -18,7 +18,6 @@ import {
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 interface ProductTopBarProps {
   gridCols: 2 | 3 | 4;
@@ -89,9 +88,14 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
     setIsOpen(false);
   };
 
-  // İndirimdekiler butonu handler
+  // İndirimdekiler butonu handler - Sayfayı yeniden yükle
   const handleDiscounts = () => {
-    router.push("/products/discount");
+    window.location.href = "/products?discount=true";
+  };
+
+  // Tüm Ürünler butonu handler - Sayfayı yeniden yükle
+  const handleAllProducts = () => {
+    window.location.href = "/products";
   };
 
   return (
@@ -248,9 +252,9 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
                 Çok Satanlar
               </button>
 
-              {/* İndirimdekiler */}
-              <Link
-                href="/products?discount=true"
+              {/* İndirimdekiler - window.location.href ile tam sayfa yenileme */}
+              <button
+                onClick={handleDiscounts}
                 className="group flex items-center gap-2 px-4 py-2 rounded-sm bg-white text-slate-600 border border-slate-200 hover:border-emerald-600 hover:text-emerald-600 hover:bg-emerald-50/50 transition-all text-[10px] font-bold uppercase tracking-tight"
               >
                 <Tag
@@ -258,7 +262,7 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
                   className="text-emerald-500 group-hover:-rotate-12 transition-transform"
                 />
                 İndirimdekiler
-              </Link>
+              </button>
             </>
           )}
 
@@ -289,9 +293,9 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
                 En Çok İndirimli
               </button>
 
-              {/* Tüm Ürünler */}
+              {/* Tüm Ürünler - window.location.href ile tam sayfa yenileme */}
               <button
-                onClick={() => router.push("/products")}
+                onClick={handleAllProducts}
                 className="group flex items-center gap-2 px-4 py-2 rounded-sm bg-slate-900 text-white border border-slate-900 hover:bg-slate-800 transition-all text-[10px] font-bold uppercase tracking-tight"
               >
                 <LayoutGrid
