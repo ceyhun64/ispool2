@@ -384,10 +384,11 @@ export default function CategoryBar({
 
         <div className="relative z-10 max-w-8xl mx-auto">
           <div
-            className="flex items-center justify-center px-6"
+            className="flex items-center justify-center px-8"
             style={{ height: `${navHeight}px`, transition: "height 0.3s ease" }}
           >
             <div className="grid grid-cols-9 w-full">
+              {/* KATEGORİLER */}
               {categories.map((cat) => (
                 <Link
                   key={cat.id}
@@ -396,20 +397,43 @@ export default function CategoryBar({
                     setActiveCategory(cat.id);
                     setShowBrands(false);
                   }}
-                  className="relative text-[14px] px-2 font-bold flex items-center justify-center text-center uppercase transition-colors duration-300"
+                  className="relative text-[14px] px-2 font-bold flex items-center justify-center text-center uppercase transition-colors duration-300 group h-full"
                   style={{
                     color: scrollProgress > 0.5 ? "#334155" : "#ffffff",
                   }}
                 >
+                  {/* Dikey Ayraç Çizgisi */}
                   <span
-                    className="absolute right-0 top-1/4 h-1/2 w-[1px] bg-white/30"
-                    style={{ opacity: scrollProgress > 0.8 ? 0.2 : 1 }}
+                    className="absolute right-0 top-1/4 h-1/2 w-[1px] transition-all duration-300"
+                    style={{
+                      // Scroll 0.5'i geçince slate-500 benzeri bir gri, tepedeyken beyazın %30 şeffaf hali
+                      backgroundColor:
+                        scrollProgress > 0.5
+                          ? "#64748b"
+                          : "rgba(255, 255, 255, 0.3)",
+                      // Scroll ilerledikçe opacity'yi tamamen bitirmek yerine 0.2 gibi bir değerde sabit tutuyoruz
+                      opacity: scrollProgress > 0.8 ? 0.3 : 1,
+                    }}
                   />
-                  {cat.name}
+
+                  <span className="relative z-10">{cat.name}</span>
+
+                  {/* Alt Çizgi */}
+                  <span
+                    className="absolute left-1/2 w-0 h-[4px] transition-all duration-500 ease-out -translate-x-1/2 group-hover:w-full z-[110]"
+                    style={{
+                      bottom: scrollProgress > 0.5 ? "-0.5rem" : "-1rem",
+                      backgroundColor:
+                        scrollProgress > 0.5 ? "#f97316" : "#ffffff",
+                      clipPath: "polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%)",
+                    }}
+                  />
                 </Link>
               ))}
 
+              {/* REFERANSLAR */}
               <div
+                className="group" // Hover etkisini yakalamak için eklendi
                 onMouseEnter={() => {
                   setActiveCategory(null);
                   setShowBrands(true);
@@ -422,20 +446,72 @@ export default function CategoryBar({
                     color: scrollProgress > 0.5 ? "#334155" : "#ffffff",
                   }}
                 >
-                  <span className="absolute right-0 top-1/4 h-1/2 w-[1px] bg-white/30" />
+                  <span
+                    className="absolute right-0 top-1/4 h-1/2 w-[1px] transition-all duration-300"
+                    style={{
+                      // Scroll 0.5'i geçince slate-500 benzeri bir gri, tepedeyken beyazın %30 şeffaf hali
+                      backgroundColor:
+                        scrollProgress > 0.5
+                          ? "#64748b"
+                          : "rgba(255, 255, 255, 0.3)",
+                      // Scroll ilerledikçe opacity'yi tamamen bitirmek yerine 0.2 gibi bir değerde sabit tutuyoruz
+                      opacity: scrollProgress > 0.8 ? 0.3 : 1,
+                    }}
+                  />
                   REFERANSLAR
+                  {/* REFERANSLAR için alt çizgi */}
+                  <span
+                    className="absolute left-1/2 w-0 h-[4px] transition-all duration-500 ease-out -translate-x-1/2 group-hover:w-full z-[110]"
+                    style={{
+                      // Scroll yapıldıkça (0.5 eşiğinden sonra) bottom -2, tepedeyken -4 olur
+                      bottom: scrollProgress > 0.5 ? "-0.5rem" : "-1rem",
+
+                      // En tepedeyken (scrollProgress < 0.5) beyaz, scroll iken turuncu
+                      backgroundColor:
+                        scrollProgress > 0.5 ? "#f97316" : "#ffffff", // #f97316 orange-500 rengidir
+
+                      clipPath: "polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%)",
+                    }}
+                  />
                 </Link>
               </div>
 
+              {/* EN YENİLER */}
               <Link
                 href="/products"
-                className="relative py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center transition-colors duration-300"
+                className="relative py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center transition-colors duration-300 group"
                 style={{ color: scrollProgress > 0.5 ? "#334155" : "#ffffff" }}
               >
-                <span className="absolute right-0 top-1/4 h-1/2 w-[1px] bg-white/30" />
+                <span
+                  className="absolute right-0 top-1/4 h-1/2 w-[1px] transition-all duration-300"
+                  style={{
+                    // Scroll 0.5'i geçince slate-500 benzeri bir gri, tepedeyken beyazın %30 şeffaf hali
+                    backgroundColor:
+                      scrollProgress > 0.5
+                        ? "#64748b"
+                        : "rgba(255, 255, 255, 0.3)",
+                    // Scroll ilerledikçe opacity'yi tamamen bitirmek yerine 0.2 gibi bir değerde sabit tutuyoruz
+                    opacity: scrollProgress > 0.8 ? 0.3 : 1,
+                  }}
+                />
                 EN YENİLER
+                {/* EN YENİLER için alt çizgi */}
+                <span
+                  className="absolute left-1/2 w-0 h-[4px] transition-all duration-500 ease-out -translate-x-1/2 group-hover:w-full z-[110]"
+                  style={{
+                    // Scroll yapıldıkça (0.5 eşiğinden sonra) bottom -2, tepedeyken -4 olur
+                    bottom: scrollProgress > 0.5 ? "-0.5rem" : "-1rem",
+
+                    // En tepedeyken (scrollProgress < 0.5) beyaz, scroll iken turuncu
+                    backgroundColor:
+                      scrollProgress > 0.5 ? "#f97316" : "#ffffff", // #f97316 orange-500 rengidir
+
+                    clipPath: "polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%)",
+                  }}
+                />
               </Link>
 
+              {/* İNDİRİM (Çizgisiz Kalabilir) */}
               <Link
                 href="/products?discount=true"
                 className="py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center"
@@ -447,20 +523,21 @@ export default function CategoryBar({
             </div>
           </div>
         </div>
-
+        {/* MEGA MENU & BRANDS */}
         {/* MEGA MENU & BRANDS */}
         <AnimatePresence>
           {activeCategory && currentCategory?.middleCategories && (
             <motion.div
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 5 }}
-              className="absolute left-0 w-full bg-white border-y border-slate-200 shadow-xl z-50"
+              initial={{ opacity: 0, y: 5, x: "-50%" }} // X ekseninde merkeze hizalamak için -50% ekledik
+              animate={{ opacity: 1, y: 0, x: "-50%" }}
+              exit={{ opacity: 0, y: 5, x: "-50%" }}
+              className="absolute left-1/2 top-full w-[95vw] max-w-[1500px] bg-white border border-slate-200 shadow-2xl z-50 rounded-b-4xl"
             >
-              <div className="max-w-[1400px] mx-auto px-8 py-10">
+              <div className="mx-auto px-8 py-10">
                 <div className="grid grid-cols-5 gap-8">
                   {currentCategory.middleCategories.map((mid) => (
                     <div key={mid.id}>
+                      {/* Orta Kategori Başlığı */}
                       <Link
                         href={`/products/category/${currentCategory.id}/${mid.id}`}
                         className="flex items-center gap-3 mb-4 group/midlink"
@@ -478,6 +555,8 @@ export default function CategoryBar({
                           {mid.name}
                         </h4>
                       </Link>
+
+                      {/* Alt Kategoriler */}
                       <ul className="space-y-2 border-l border-slate-100 ml-4 pl-4">
                         {mid.subCategories.map((sub) => (
                           <li key={sub.id}>
@@ -499,12 +578,12 @@ export default function CategoryBar({
 
           {showBrands && (
             <motion.div
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 5 }}
-              className="absolute left-0 w-full bg-white border-b border-slate-200 shadow-xl z-50"
+              initial={{ opacity: 0, y: 5, x: "-50%" }}
+              animate={{ opacity: 1, y: 0, x: "-50%" }}
+              exit={{ opacity: 0, y: 5, x: "-50%" }}
+              className="absolute left-1/2 top-full w-[95vw] max-w-[1400px] bg-white border border-slate-200 shadow-2xl z-50 rounded-b-2xl"
             >
-              <div className="max-w-[1400px] mx-auto px-8 py-10">
+              <div className="mx-auto px-8 py-10">
                 <div className="grid grid-cols-6 gap-6">
                   {brands.map((brand) => (
                     <Link
