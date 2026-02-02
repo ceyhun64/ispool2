@@ -76,34 +76,49 @@ enum UserRole {
 // --------------------
 // VERİTABANI RESET
 // --------------------
+
 async function resetDatabase() {
-  console.log("🗑️  Veritabanı temizleniyor...");
+  console.log("🗑️  Veritabanı temizleniyor ve ID'ler sıfırlanıyor...");
 
   try {
-    // Child → Parent sırası (ÇOK ÖNEMLİ)
-    await prisma.review.deleteMany();
-    await prisma.orderItem.deleteMany();
-    await prisma.orderAddress.deleteMany();
-    await prisma.order.deleteMany();
-    await prisma.cartItem.deleteMany();
-    await prisma.favorite.deleteMany();
-    await prisma.address.deleteMany();
+    // Şemandaki @@map değerlerine göre tablo isimleri (Tam liste ve doğru sıra)
+    const tables = [
+      "review",
+      "orderitem",
+      "orderaddress",
+      "order",
+      "cartitem",
+      "favorite",
+      "address",
+      "product", // Şemanda model adı küçük 'product'
+      "sub_category",
+      "middle_category",
+      "category",
+      "brand",
+      "blog",
+      "subscribe",
+      "Banner", // Map olmadığı için model adı
+      "user",
+      "coupons",
+    ];
 
-    await prisma.product.deleteMany();
-    await prisma.subCategory.deleteMany();
-    await prisma.middleCategory.deleteMany();
-    await prisma.category.deleteMany();
-    await prisma.brand.deleteMany();
+    for (const table of tables) {
+      try {
+        // PostgreSQL'de tablo isimlerini map'lediğin halleriyle küçük harf çağırmalıyız
+        await prisma.$executeRawUnsafe(
+          `TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE;`,
+        );
+      } catch (e) {
+        // Tablo henüz oluşmamışsa hata vermemesi için
+        console.warn(
+          `⚠️  Tablo sıfırlanamadı (muhtemelen henüz yok): ${table}`,
+        );
+      }
+    }
 
-    await prisma.blog.deleteMany();
-    await prisma.subscribe.deleteMany();
-    await prisma.banner.deleteMany();
-
-    await prisma.user.deleteMany();
-
-    console.log("✨ Veritabanı başarıyla temizlendi.");
+    console.log("✨ Veritabanı ve ID sayaçları başarıyla sıfırlandı.");
   } catch (error) {
-    console.error("🚨 Veritabanı sıfırlama hatası:", error);
+    console.error("🚨 Sıfırlama hatası:", error);
     process.exit(1);
   }
 }
@@ -176,9 +191,11 @@ async function seedHierarchy() {
   for (let i = 0; i < middleCategoriesData.length; i++) {
     const mid = middleCategoriesData[i];
     const categoryId = categoryMap.get(mid.categoryName);
-    
+
     if (!categoryId) {
-      console.warn(`    ⚠️  ${mid.name} için parent kategori bulunamadı: ${mid.categoryName}`);
+      console.warn(
+        `    ⚠️  ${mid.name} için parent kategori bulunamadı: ${mid.categoryName}`,
+      );
       continue;
     }
 
@@ -189,7 +206,9 @@ async function seedHierarchy() {
       },
     });
     middleCategoryMap.set(mid.name, created.id);
-    console.log(`    ${i + 1}. ${mid.name} → ${mid.categoryName} (ID: ${created.id})`);
+    console.log(
+      `    ${i + 1}. ${mid.name} → ${mid.categoryName} (ID: ${created.id})`,
+    );
   }
 
   // 3. ALT KATEGORİLER - JSON sırasına göre
@@ -197,9 +216,11 @@ async function seedHierarchy() {
   for (let i = 0; i < subCategoriesData.length; i++) {
     const sub = subCategoriesData[i];
     const middleCategoryId = middleCategoryMap.get(sub.middleCategoryName);
-    
+
     if (!middleCategoryId) {
-      console.warn(`    ⚠️  ${sub.name} için parent orta kategori bulunamadı: ${sub.middleCategoryName}`);
+      console.warn(
+        `    ⚠️  ${sub.name} için parent orta kategori bulunamadı: ${sub.middleCategoryName}`,
+      );
       continue;
     }
 
@@ -220,7 +241,9 @@ async function seedHierarchy() {
         categoryId: middle.categoryId,
       },
     });
-    console.log(`    ${i + 1}. ${sub.name} → ${sub.middleCategoryName} (ID: ${created.id})`);
+    console.log(
+      `    ${i + 1}. ${sub.name} → ${sub.middleCategoryName} (ID: ${created.id})`,
+    );
   }
 
   console.log("✅ Kategori yapısı sıralı şekilde tamamlandı.");
@@ -302,7 +325,9 @@ async function main() {
   await seedProducts();
 
   console.log("\n✨ TÜM SEED İŞLEMLERİ TAMAMLANDI ✨");
-  console.log("\n📋 Kategori sıralaması JSON dosyalarındaki sıraya göre oluşturuldu.");
+  console.log(
+    "\n📋 Kategori sıralaması JSON dosyalarındaki sıraya göre oluşturuldu.",
+  );
 }
 
 main()

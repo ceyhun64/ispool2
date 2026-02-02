@@ -114,34 +114,36 @@
   --sidebar-border: hsl(240 3.7% 15.9%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
-
 @layer base {
   /* Webkit tarayıcılar için (Chrome, Safari, Edge, yeni Opera) */
   ::-webkit-scrollbar {
-    width: 5px; /* Dikey scrollbar genişliği */
-    height: 8px; /* Yatay scrollbar yüksekliği */
+    width: 6px; /* Biraz daha belirgin olması için 6px yapıldı */
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #ffffff; /* Arkaplan beyaz */
+    /* Sayfa arka planıyla bütünleşik olması için şeffaf veya çok açık gri */
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #f97316; /* Tailwind orange-500 rengi */
-    border-radius: 2px; /* rounded-sm karşılığı */
+    /* Tailwind slate-400 rengine karşılık gelen gri tonu */
+    background: oklch(40.664% 0.00421 67.463 / 0.4);
+    border-radius: 10px; /* Tam yuvarlak köşeler daha modern durur */
+    border: 1px solid transparent; /* Boşluk hissi için */
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #db5e1b; /* Hover durumunda biraz daha koyu turuncu (orange-600) */
+    /* Hover durumunda slate-600 tonu */
+    background: oklch(31.166% 0.01216 258.415);
   }
 
-  /* Firefox için standart (Sınırlı özelleştirme sunar) */
+  /* Firefox için standart */
   * {
     scrollbar-width: thin;
-    scrollbar-color: #f97316 #ffffff;
+    scrollbar-color: oklch(36.65% 0.00869 67.447 / 0.5) transparent;
   }
 }
-
 button {
   @apply cursor-pointer;
 }

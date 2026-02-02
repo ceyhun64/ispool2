@@ -388,6 +388,7 @@ const Filter: React.FC<FilterProps> = ({
         <span className="text-[10px] font-black uppercase tracking-[0.2em]">
           Parametreleri Sıfırla
         </span>
+        
       </button>
     </div>
   );
