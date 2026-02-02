@@ -38,6 +38,7 @@ interface CategoryInput {
 interface MiddleCategoryInput {
   name: string;
   categoryName: string;
+  icon?: string;
 }
 
 interface SubCategoryInput {
@@ -137,38 +138,49 @@ async function seedAdmin() {
 async function seedBrands() {
   console.log("🏷️  Markalar ekleniyor...");
 
-  await prisma.brand.createMany({
-    data: BRANDS.map((name, i) => ({
-      name,
-      image: `/brands/${i + 1}.png`,
-    })),
-    skipDuplicates: true,
-  });
+  // Sıralı ekleme için for döngüsü kullan
+  for (let i = 0; i < BRANDS.length; i++) {
+    await prisma.brand.create({
+      data: {
+        name: BRANDS[i],
+        image: `/brands/${i + 1}.png`,
+      },
+    });
+  }
 
-  console.log(`✅ ${BRANDS.length} marka eklendi.`);
+  console.log(`✅ ${BRANDS.length} marka sıralı şekilde eklendi.`);
 }
 
 // --------------------
-// KATEGORİ HİYERARŞİSİ
+// KATEGORİ HİYERARŞİSİ (SIRALI)
 // --------------------
 async function seedHierarchy() {
-  console.log("📂 Kategori hiyerarşisi oluşturuluyor...");
+  console.log("📂 Kategori hiyerarşisi sıralı olarak oluşturuluyor...");
 
   const categoryMap = new Map<string, number>();
   const middleCategoryMap = new Map<string, number>();
 
-  // Ana kategori
-  for (const cat of categoriesData) {
+  // 1. ANA KATEGORİLER - JSON sırasına göre
+  console.log("  ↳ Ana kategoriler ekleniyor...");
+  for (let i = 0; i < categoriesData.length; i++) {
+    const cat = categoriesData[i];
     const created = await prisma.category.create({
       data: { name: cat.name },
     });
     categoryMap.set(cat.name, created.id);
+    console.log(`    ${i + 1}. ${cat.name} (ID: ${created.id})`);
   }
 
-  // Orta kategori
-  for (const mid of middleCategoriesData) {
+  // 2. ORTA KATEGORİLER - JSON sırasına göre
+  console.log("  ↳ Orta kategoriler ekleniyor...");
+  for (let i = 0; i < middleCategoriesData.length; i++) {
+    const mid = middleCategoriesData[i];
     const categoryId = categoryMap.get(mid.categoryName);
-    if (!categoryId) continue;
+    
+    if (!categoryId) {
+      console.warn(`    ⚠️  ${mid.name} için parent kategori bulunamadı: ${mid.categoryName}`);
+      continue;
+    }
 
     const created = await prisma.middleCategory.create({
       data: {
@@ -177,30 +189,41 @@ async function seedHierarchy() {
       },
     });
     middleCategoryMap.set(mid.name, created.id);
+    console.log(`    ${i + 1}. ${mid.name} → ${mid.categoryName} (ID: ${created.id})`);
   }
 
-  // Alt kategori
-  for (const sub of subCategoriesData) {
+  // 3. ALT KATEGORİLER - JSON sırasına göre
+  console.log("  ↳ Alt kategoriler ekleniyor...");
+  for (let i = 0; i < subCategoriesData.length; i++) {
+    const sub = subCategoriesData[i];
     const middleCategoryId = middleCategoryMap.get(sub.middleCategoryName);
-    if (!middleCategoryId) continue;
+    
+    if (!middleCategoryId) {
+      console.warn(`    ⚠️  ${sub.name} için parent orta kategori bulunamadı: ${sub.middleCategoryName}`);
+      continue;
+    }
 
     const middle = await prisma.middleCategory.findUnique({
       where: { id: middleCategoryId },
       select: { categoryId: true },
     });
 
-    if (!middle) continue;
+    if (!middle) {
+      console.warn(`    ⚠️  ${sub.name} için middle kategori ID'si okunamadı`);
+      continue;
+    }
 
-    await prisma.subCategory.create({
+    const created = await prisma.subCategory.create({
       data: {
         name: sub.name,
         middleCategoryId,
         categoryId: middle.categoryId,
       },
     });
+    console.log(`    ${i + 1}. ${sub.name} → ${sub.middleCategoryName} (ID: ${created.id})`);
   }
 
-  console.log("✅ Kategori yapısı tamamlandı.");
+  console.log("✅ Kategori yapısı sıralı şekilde tamamlandı.");
 }
 
 // --------------------
@@ -279,6 +302,7 @@ async function main() {
   await seedProducts();
 
   console.log("\n✨ TÜM SEED İŞLEMLERİ TAMAMLANDI ✨");
+  console.log("\n📋 Kategori sıralaması JSON dosyalarındaki sıraya göre oluşturuldu.");
 }
 
 main()
