@@ -16,6 +16,9 @@ import {
   Calendar,
   CalendarClock,
 } from "lucide-react";
+import categoriesDataRaw from "@/data/categories.json";
+import middleCategoriesDataRaw from "@/data/middleCategories.json";
+import subCategoriesDataRaw from "@/data/subCategories.json";
 
 // Veritabanı tipi tanımlamaları
 interface DbSubCategory {
@@ -86,23 +89,76 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
   const [expandedMiddleCategories, setExpandedMiddleCategories] = useState<
     number[]
   >([]);
-  const [allCategories, setAllCategories] = useState<DbCategory[]>([]);
-  const [dbBrands, setDbBrands] = useState<DbBrand[]>([]);
 
-  // API'den tüm verileri çek
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch("/api/category");
-        const data = await res.json();
-        setAllCategories(data.categories || []);
-        setDbBrands(data.brands || []);
-      } catch (error) {
-        console.error("Mobil filtre verileri çekilemedi:", error);
+  // JSON dosyalarını type-cast et
+  const categoriesData = categoriesDataRaw as { name: string }[];
+  const middleCategoriesData = middleCategoriesDataRaw as {
+    name: string;
+    categoryName: string;
+  }[];
+  const subCategoriesData = subCategoriesDataRaw as {
+    name: string;
+    middleCategoryName: string;
+  }[];
+
+  // JSON dosyalarından hiyerarşik yapı oluştur
+  const allCategories = React.useMemo(() => {
+    const categoryMap = new Map<string, DbCategory>();
+
+    categoriesData.forEach((cat, index) => {
+      categoryMap.set(cat.name, {
+        id: index + 1,
+        name: cat.name,
+        middleCategories: [],
+      });
+    });
+
+    middleCategoriesData.forEach((mid, index) => {
+      const parentCategory = categoryMap.get(mid.categoryName);
+      if (parentCategory) {
+        const middleCategory: DbMiddleCategory = {
+          id: index + 1,
+          name: mid.name,
+          subCategories: [],
+        };
+        parentCategory.middleCategories.push(middleCategory);
       }
-    };
-    fetchData();
-  }, []);
+    });
+
+    subCategoriesData.forEach((sub, index) => {
+      categoryMap.forEach((category) => {
+        const middleCategory = category.middleCategories.find(
+          (m) => m.name === sub.middleCategoryName,
+        );
+        if (middleCategory) {
+          middleCategory.subCategories.push({
+            id: index + 1,
+            name: sub.name,
+          });
+        }
+      });
+    });
+
+    return Array.from(categoryMap.values()).sort((a, b) => a.id - b.id);
+  }, [categoriesData, middleCategoriesData, subCategoriesData]);
+
+  // Markalar için statik veri
+  const dbBrands: DbBrand[] = React.useMemo(
+    () => [
+      { id: 1, name: "Marka 1", image: "/brands/1.png" },
+      { id: 2, name: "Marka 2", image: "/brands/2.png" },
+      { id: 3, name: "Marka 3", image: "/brands/3.png" },
+      { id: 4, name: "Marka 4", image: "/brands/4.png" },
+      { id: 5, name: "Marka 5", image: "/brands/5.png" },
+      { id: 6, name: "Marka 6", image: "/brands/6.png" },
+      { id: 7, name: "Marka 7", image: "/brands/7.png" },
+      { id: 8, name: "Marka 8", image: "/brands/8.png" },
+      { id: 9, name: "Marka 9", image: "/brands/9.png" },
+      { id: 10, name: "Marka 10", image: "/brands/10.png" },
+      { id: 11, name: "Marka 11", image: "/brands/11.png" },
+    ],
+    [],
+  );
 
   const SectionTitle = ({
     children,

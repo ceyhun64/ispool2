@@ -309,7 +309,7 @@ export default function CategoryBar({
                                 {mid.subCategories.map((sub) => (
                                   <Link
                                     key={sub.id}
-                                    href={`/products/category/${cat.id}?sub=${sub.name}`}
+                                    href={`/products/category/${cat.id}/${mid.id}/${sub.id}`}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className="flex items-center justify-between text-[12px] font-semibold text-slate-500 hover:text-orange-600"
                                   >
@@ -493,7 +493,7 @@ export default function CategoryBar({
                   {currentCategory.middleCategories.map((mid) => (
                     <div key={mid.id}>
                       <Link
-                        href={`/products/category/${currentCategory.id}?middle=${mid.name}`}
+                        href={`/products/category/${currentCategory.id}/${mid.id}`}
                         onClick={() => {
                           setActiveCategory(null);
                           setIsMobileMenuOpen(false);
@@ -520,7 +520,7 @@ export default function CategoryBar({
                         {mid.subCategories.map((sub) => (
                           <li key={sub.id}>
                             <Link
-                              href={`/products/category/${currentCategory.id}?sub=${sub.name}`}
+                              href={`/products/category/${currentCategory.id}/${mid.id}/${sub.id}`}
                               className="text-[13px] text-slate-500 hover:text-orange-600 transition-colors block"
                             >
                               {sub.name}
