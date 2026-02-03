@@ -17,6 +17,9 @@ import {
   GuestCartItem,
 } from "@/utils/cart";
 
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 interface Product {
   id: number;
   title: string;
@@ -29,14 +32,20 @@ export interface CartItemType {
   id: number;
   product: Product;
   quantity: number;
+  sizeId?: number | null; // ← beden ID
+  size?: { id: number; value: string } | null; // ← beden detay (API)
   customImage?: string | null;
 }
 
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 export default function Cart() {
-  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [cartItems, setCartItems] = useState<CartItemType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  // ─── Login ───────────────────────────────────────────────────────────────
   const checkLogin = useCallback(async () => {
     try {
       const res = await fetch("/api/account/check", { credentials: "include" });
@@ -49,12 +58,15 @@ export default function Cart() {
     }
   }, []);
 
+  // ─── Guest cart ──────────────────────────────────────────────────────────
   const loadGuestCart = useCallback(() => {
     const cart = getCart();
-    const guestCart = cart.map((item: GuestCartItem) => ({
+    const guestCart: CartItemType[] = cart.map((item: GuestCartItem) => ({
       id: item.productId,
       quantity: item.quantity,
-      customImage: item.customImage,
+      sizeId: item.sizeId ?? null, // ← beden
+      size: null, // guest'te detay yok
+      customImage: item.customImage ?? null,
       product: {
         id: item.productId,
         title: item.title,
@@ -67,19 +79,21 @@ export default function Cart() {
     setIsLoading(false);
   }, []);
 
+  // ─── API cart ────────────────────────────────────────────────────────────
   const fetchCart = useCallback(async () => {
     try {
       setIsLoading(true);
       const res = await fetch("/api/cart", { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
-        setCartItems(data);
+        setCartItems(data); // API sizeId + size döndürüyor
       }
     } finally {
       setIsLoading(false);
     }
   }, []);
 
+  // ─── Mount ───────────────────────────────────────────────────────────────
   useEffect(() => {
     (async () => {
       const logged = await checkLogin();
@@ -88,24 +102,20 @@ export default function Cart() {
     })();
   }, [checkLogin, fetchCart, loadGuestCart]);
 
+  // ─── Quantity change ─────────────────────────────────────────────────────
   const handleQuantityChange = async (
     id: number,
     delta: number,
+    sizeId?: number | null,
     customImage?: string | null,
   ) => {
     if (!isLoggedIn) {
-      updateGuestCartQuantity(id, delta, customImage);
+      updateGuestCartQuantity(id, delta, sizeId, customImage);
       loadGuestCart();
       return;
     }
 
-    const item = cartItems.find((c) => {
-      if (customImage) {
-        return c.id === id && c.customImage === customImage;
-      }
-      return c.id === id && !c.customImage;
-    });
-
+    const item = cartItems.find((c) => c.id === id);
     if (!item) return;
     const newQuantity = Math.max(1, item.quantity + delta);
 
@@ -122,13 +132,15 @@ export default function Cart() {
     }
   };
 
+  // ─── Remove ──────────────────────────────────────────────────────────────
   const handleRemove = async (
     cartItemId: number,
-    productId?: number,
+    productId: number,
+    sizeId?: number | null,
     customImage?: string | null,
   ) => {
     if (!isLoggedIn) {
-      removeFromGuestCart(productId || cartItemId, customImage);
+      removeFromGuestCart(productId, sizeId, customImage);
       loadGuestCart();
       return;
     }
@@ -140,13 +152,16 @@ export default function Cart() {
     if (res.ok) setCartItems((prev) => prev.filter((c) => c.id !== cartItemId));
   };
 
+  // ─── Totals ──────────────────────────────────────────────────────────────
   const subtotal = cartItems.reduce(
     (acc, item) => acc + item.product.price * item.quantity,
     0,
   );
 
+  // ─── Loading skeleton ────────────────────────────────────────────────────
   if (isLoading) return <CartLoadingSkeleton />;
 
+  // ─── Render ──────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 py-12 md:py-16">
@@ -179,7 +194,7 @@ export default function Cart() {
             </motion.div>
           ) : (
             <div className="max-w-7xl mx-auto">
-              {/* Sayfa Başlığı ve Navigasyon */}
+              {/* Header */}
               <header className="flex flex-col items-start mb-12">
                 <Link
                   href="/products"
@@ -203,8 +218,9 @@ export default function Cart() {
                 </div>
               </header>
 
+              {/* Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                {/* Ürün Listesi Konteynırı */}
+                {/* Ürün Listesi */}
                 <div className="lg:col-span-7 xl:col-span-8">
                   <div className="flex flex-col">
                     {cartItems.map((item, index) => (
@@ -216,7 +232,7 @@ export default function Cart() {
                           ease: [0.19, 1, 0.22, 1],
                           duration: 1,
                         }}
-                        key={`${item.id}-${item.customImage || "default"}`}
+                        key={`${item.id}-${item.sizeId ?? "null"}-${item.customImage || "default"}`}
                         className="border-b border-slate-100"
                       >
                         <CartItem
@@ -225,6 +241,7 @@ export default function Cart() {
                             handleQuantityChange(
                               isLoggedIn ? item.id : item.product.id,
                               1,
+                              item.sizeId,
                               item.customImage,
                             )
                           }
@@ -232,6 +249,7 @@ export default function Cart() {
                             handleQuantityChange(
                               isLoggedIn ? item.id : item.product.id,
                               -1,
+                              item.sizeId,
                               item.customImage,
                             )
                           }
@@ -239,6 +257,7 @@ export default function Cart() {
                             handleRemove(
                               item.id,
                               item.product.id,
+                              item.sizeId,
                               item.customImage,
                             )
                           }
@@ -248,12 +267,10 @@ export default function Cart() {
                   </div>
                 </div>
 
-                {/* Sağ Panel / Özet */}
+                {/* Özet panel */}
                 <div className="lg:col-span-5 xl:col-span-4 relative">
                   <div className="sticky top-32">
                     <CartSummary subtotal={subtotal} />
-
-                    {/* Güvenlik Notu Bölümü */}
                     <div className="mt-6 p-6 bg-slate-50/50 border border-slate-100 flex items-start gap-4">
                       <ShieldCheck className="h-5 w-5 text-slate-900 shrink-0 mt-0.5" />
                       <p className="text-[10px] text-slate-500 leading-relaxed font-medium uppercase tracking-wider">
@@ -273,6 +290,9 @@ export default function Cart() {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Loading skeleton
+// ---------------------------------------------------------------------------
 function CartLoadingSkeleton() {
   return (
     <div className="max-w-[1600px] mx-auto px-6 py-16">

@@ -531,7 +531,7 @@ export default function CategoryBar({
               initial={{ opacity: 0, y: 5, x: "-50%" }} // X ekseninde merkeze hizalamak için -50% ekledik
               animate={{ opacity: 1, y: 0, x: "-50%" }}
               exit={{ opacity: 0, y: 5, x: "-50%" }}
-              className="absolute left-1/2 top-full w-[95vw] max-w-[1500px] bg-white border border-slate-200 shadow-2xl z-50 rounded-b-4xl"
+              className="absolute left-1/2 top-full w-[95vw] max-w-[1500px] bg-white border border-slate-200 shadow-2xl z-50 rounded-b-xl"
             >
               <div className="mx-auto px-8 py-10">
                 <div className="grid grid-cols-5 gap-8">

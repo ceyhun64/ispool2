@@ -1,46 +1,48 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import { useParams } from "next/navigation";
 import {
   Heart,
-  Minus,
-  Plus,
-  Share2,
-  Truck,
-  ShieldCheck,
-  ArrowLeft,
-  ChevronRight,
-  HardHat,
-  BadgeCheck,
-  Star,
-  Info,
-  ShoppingCart,
-  Eye,
   Sparkles,
-  Upload,
-  X,
-  ImagePlus,
-  Package,
+  Info,
+  Eye,
+  ShoppingCart,
   Award,
-  Clock,
+  BadgeCheck,
+  ShieldCheck,
+  HardHat,
   TrendingUp,
   Users,
-  Zap,
-  CheckCircle,
-  Receipt,
 } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { CustomImageZoom } from "./imageZoom";
 import ProductTabs from "./productTabs";
 import ProductDetailSkeleton from "./productDetailSkeleton";
 import { useFavorite } from "@/contexts/favoriteContext";
 import { addToGuestCart } from "@/utils/cart";
-import Link from "next/link";
 import DesignPanel from "@/components/modules/products/productDetail/design/designPanel";
 import ProductCard from "../productCard";
+import ProductImageGallery from "./productImageGallery";
+import ProductInfo from "./productInfo";
+import ProductVariantSelector from "./productVariantSelector";
+import ProductActions from "./productActions";
+
+// --------------------
+// İNTERFACES  —  API response ile birebir örtüşür
+// --------------------
+interface Size {
+  id: number;
+  value: string;
+  type: string;
+  sortOrder: number;
+}
+
+interface StockEntry {
+  id: number;
+  sizeId: number | null;
+  stock: number;
+  priceModifier: number;
+}
 
 interface ProductData {
   id: number;
@@ -68,11 +70,7 @@ interface ProductData {
     createdAt: string;
     user: { name: string; surname: string };
   }>;
-  stock: {
-    inStock: boolean;
-    quantity: number;
-    lowStock: boolean;
-  };
+  stock: { inStock: boolean; quantity: number; lowStock: boolean };
   shipping: {
     freeShipping: boolean;
     estimatedDelivery: string;
@@ -114,6 +112,9 @@ interface ProductData {
     purchaseCount: number;
     lastUpdated: string;
   };
+  hasVariants: boolean;
+  availableSizes: Size[]; // ProductSize → Size
+  stockMatrix: StockEntry[]; // ProductStock kayıtları
 }
 
 export default function ProductDetailPage() {
@@ -132,24 +133,35 @@ export default function ProductDetailPage() {
     string | null
   >(null);
 
+  // Sadece beden seçimi
+  const [selectedSizeId, setSelectedSizeId] = useState<number | null>(null);
+
+  // Seçili stok satırı (stockMatrix'ten)
+  const [selectedStock, setSelectedStock] = useState<StockEntry | null>(null);
+
   const { isFavorited, addFavorite, removeFavorite } = useFavorite();
   const cartDropdownRef = useRef<{ open: () => void; refreshCart: () => void }>(
     null,
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // ---------- Ürün yükleme ----------
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
       try {
         const res = await fetch(`/api/products/${productId}`);
         const data = await res.json();
+        console.log("productId", data);
         if (data.success) {
           setProduct(data.product);
+          setSelectedSizeId(null);
+          setSelectedStock(null);
         } else {
           setProduct(null);
         }
       } catch (error) {
+        console.error("Ürün yükleme hatası:", error);
         setProduct(null);
       } finally {
         setLoading(false);
@@ -158,6 +170,30 @@ export default function ProductDetailPage() {
     if (productId) fetchProduct();
   }, [productId]);
 
+  // ---------- Seçili stok satırını güncelle ----------
+  useEffect(() => {
+    if (!product) {
+      setSelectedStock(null);
+      return;
+    }
+
+    if (product.hasVariants && product.availableSizes.length > 0) {
+      // Beden seçilmişse o bedene ait stok satırını bul
+      if (selectedSizeId) {
+        const entry =
+          product.stockMatrix.find((s) => s.sizeId === selectedSizeId) ?? null;
+        setSelectedStock(entry);
+      } else {
+        setSelectedStock(null);
+      }
+    } else {
+      // Varyant yok → sizeId: null olan tek satır
+      const entry = product.stockMatrix.find((s) => s.sizeId === null) ?? null;
+      setSelectedStock(entry);
+    }
+  }, [selectedSizeId, product]);
+
+  // ---------- Login kontrolü ----------
   useEffect(() => {
     const checkLogin = async () => {
       try {
@@ -174,6 +210,7 @@ export default function ProductDetailPage() {
     checkLogin();
   }, []);
 
+  // ---------- Handlers ----------
   const handleSaveDesign = (designUrl: string) => {
     setCustomDesign(designUrl);
     setUploadedImage(null);
@@ -182,19 +219,13 @@ export default function ProductDetailPage() {
     toast.success("Tasarımınız kaydedildi! Sepete ekleyebilirsiniz.");
   };
 
-  const handleDirectUpload = () => {
-    fileInputRef.current?.click();
-  };
-
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Dosya boyutu 5MB'dan küçük olmalıdır.");
       return;
     }
-
     if (!file.type.startsWith("image/")) {
       toast.error("Lütfen geçerli bir resim dosyası seçin.");
       return;
@@ -209,22 +240,7 @@ export default function ProductDetailPage() {
       setActiveIndex(0);
     };
     reader.readAsDataURL(file);
-
     toast.success("Resim yüklendi! Sepete ekleyebilirsiniz.");
-  };
-
-  const handleRemoveUploadedImage = () => {
-    setUploadedImage(null);
-    setUploadedImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-    toast.info("Yüklenen resim kaldırıldı.");
-  };
-
-  const handleRemoveCustomDesign = () => {
-    setCustomDesign(null);
-    toast.info("Özel tasarım kaldırıldı.");
   };
 
   const handleAddToCart = async () => {
@@ -233,22 +249,42 @@ export default function ProductDetailPage() {
       return;
     }
 
+    // Beden kontrolü: varyant varsa ve beden listesi doluysa → beden seçilmeli
+    if (
+      product.hasVariants &&
+      product.availableSizes.length > 0 &&
+      !selectedSizeId
+    ) {
+      toast.error("Lütfen bir beden seçin.");
+      return;
+    }
+
+    // Seçili stok kontrolü
+    if (selectedStock && selectedStock.stock <= 0) {
+      toast.error("Seçilen beden stokta yok.");
+      return;
+    }
+
     const finalCustomImage = customDesign || uploadedImagePreview;
+    const finalPrice = product.price + (selectedStock?.priceModifier ?? 0);
 
+    // ---------- Guest cart ----------
     if (!isLoggedIn) {
-      const item = {
-        productId: product.id,
-        title: finalCustomImage
-          ? `${product.title} (Özelleştirilmiş)`
-          : product.title,
-        price: product.price,
-        image: finalCustomImage || product.mainImage,
-        customImage: finalCustomImage,
-        isCustom: !!finalCustomImage,
-        category: product.category.name,
-      };
-
-      addToGuestCart(item, quantity);
+      addToGuestCart(
+        {
+          productId: product.id,
+          title: finalCustomImage
+            ? `${product.title} (Özelleştirilmiş)`
+            : product.title,
+          price: finalPrice,
+          image: finalCustomImage || product.mainImage,
+          customImage: finalCustomImage,
+          isCustom: !!finalCustomImage,
+          category: product.category.name,
+          sizeId: selectedSizeId,
+        },
+        quantity,
+      );
       toast.success(
         `${quantity} adet ${finalCustomImage ? "özelleştirilmiş " : ""}ürün sepete eklendi!`,
       );
@@ -256,11 +292,12 @@ export default function ProductDetailPage() {
       return;
     }
 
+    // ---------- Auth'd cart ----------
     try {
       const formData = new FormData();
       formData.append("productId", product.id.toString());
       formData.append("quantity", quantity.toString());
-
+      if (selectedSizeId) formData.append("sizeId", selectedSizeId.toString());
       if (customDesign) {
         formData.append("customImage", customDesign);
       } else if (uploadedImage) {
@@ -272,7 +309,6 @@ export default function ProductDetailPage() {
         body: formData,
         credentials: "include",
       });
-
       if (res.ok) {
         toast.success(
           `${quantity} adet ${finalCustomImage ? "özelleştirilmiş " : ""}ürün sepete eklendi!`,
@@ -296,13 +332,14 @@ export default function ProductDetailPage() {
           title: product?.title,
           url: window.location.href,
         });
-      } catch (err) {}
+      } catch {}
     } else {
       navigator.clipboard.writeText(window.location.href);
       toast.success("Bağlantı kopyalandı!");
     }
   };
 
+  // ---------- Render ----------
   if (loading) return <ProductDetailSkeleton />;
   if (!product)
     return (
@@ -312,14 +349,11 @@ export default function ProductDetailPage() {
     );
 
   const finalCustomImage = customDesign || uploadedImagePreview;
-  const displayImages = finalCustomImage
-    ? [finalCustomImage, ...product.images]
-    : product.images;
+  const currentPrice = product.price + (selectedStock?.priceModifier ?? 0);
 
-  // KDV Hesaplaması (%10)
-  const subtotal = product.price * quantity;
-  const vatRate = 0.1;
-  const vatAmount = subtotal * vatRate;
+  // KDV (%10)
+  const subtotal = currentPrice * quantity;
+  const vatAmount = subtotal * 0.1;
   const totalWithVat = subtotal + vatAmount;
 
   return (
@@ -329,280 +363,82 @@ export default function ProductDetailPage() {
           productImage={product.images[0] || product.mainImage}
           onClose={() => setShowPreview(false)}
           onSaveDesign={handleSaveDesign}
-          onDirectUpload={handleDirectUpload}
+          onDirectUpload={() => fileInputRef.current?.click()}
         />
       )}
 
-      {/* Breadcrumb Navigation */}
-      <div className="hidden lg:block max-w-[1400px] mx-auto px-6 py-4">
-        <nav className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-          <Link
-            href="/products"
-            className="hover:text-orange-600 transition-colors flex items-center gap-1"
-          >
-            <ArrowLeft size={12} /> Koleksiyon
-          </Link>
-          <ChevronRight size={10} />
-          {product.category && (
-            <>
-              <span className="hover:text-orange-600 transition-colors cursor-pointer">
-                {product.category.name}
-              </span>
-              {product.middleCategory && (
-                <>
-                  <ChevronRight size={10} />
-                  <span className="hover:text-orange-600 transition-colors cursor-pointer">
-                    {product.middleCategory.name}
-                  </span>
-                </>
-              )}
-              {product.subCategory && (
-                <>
-                  <ChevronRight size={10} />
-                  <span className="hover:text-orange-600 transition-colors cursor-pointer">
-                    {product.subCategory.name}
-                  </span>
-                </>
-              )}
-              <ChevronRight size={10} />
-            </>
-          )}
-          <span className="text-slate-300">Ürün Detayı</span>
-        </nav>
-      </div>
-      <div className="max-w-[1400px] mx-auto px-6 pb-20 pt-4 md:pt-0">
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileSelect}
+        accept="image/*"
+        className="hidden"
+      />
+
+      <div className="mx-auto px-6 pb-20 pt-4 md:pt-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* LEFT: IMAGE GALLERY */}
-          <div className="lg:col-span-6 flex flex-col lg:flex-row gap-4">
-            {/* Thumbnail Gallery - Mobilde yatay (altta), Masaüstünde dikey (solda) */}
-            <div className="order-2 lg:order-1 flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto max-h-[600px] no-scrollbar">
-              {/* order-2: Mobilde alta atar | flex: Mobilde yan yana dizer | lg:flex-col: Masaüstünde üste dizer */}
-              {displayImages.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveIndex(i)}
-                  className={cn(
-                    "relative w-16 aspect-[3/4] overflow-hidden transition-all border-2 flex-shrink-0 bg-white",
-                    activeIndex === i
-                      ? "border-orange-600 shadow-md"
-                      : "border-transparent opacity-60",
-                  )}
-                >
-                  {i === 0 && finalCustomImage && (
-                    <div className="absolute top-0 left-0 bg-orange-600 text-white text-[6px] font-bold px-1 py-0.5 uppercase z-10">
-                      Özel
-                    </div>
-                  )}
-                  <Image
-                    src={img}
-                    alt="Thumb"
-                    fill
-                    className="object-contain p-1"
-                  />
-                </button>
-              ))}
-            </div>
-            {/* Ana Resim - Mobilde üstte, Masaüstünde sağda */}
-            <div className="order-1 lg:order-2 flex-1 space-y-4">
-              {/* order-1: Mobilde ilk sırada gösterir | lg:order-2: Masaüstünde ikinci sütun yapar */}
-              <div className="relative aspect-[3/4] w-full bg-white overflow-hidden border border-slate-100 group shadow-sm">
-                <div className="absolute top-4 left-4 z-10 flex flex-col gap-1.5">
-                  {customDesign ? (
-                    <span className="bg-gradient-to-r from-orange-600 to-pink-600 text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5 animate-pulse">
-                      <Sparkles size={11} /> Tasarım Paneli ile Özelleştirildi
-                    </span>
-                  ) : uploadedImagePreview ? (
-                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5">
-                      <ImagePlus size={11} /> Özel Resim Yüklendi
-                    </span>
-                  ) : (
-                    <span className="bg-slate-900/90 backdrop-blur text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5">
-                      <ShieldCheck size={11} className="text-orange-500" />{" "}
-                      Sertifikalı Koruma
-                    </span>
-                  )}
-                  {product.hasDiscount && (
-                    <span className="bg-orange-600 text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight">
-                      %{product.discountPercentage} İndirim
-                    </span>
-                  )}
-                </div>
+          {/* Galeri */}
+          <ProductImageGallery
+            images={product.images}
+            activeIndex={activeIndex}
+            onIndexChange={setActiveIndex}
+            customDesign={customDesign}
+            uploadedImagePreview={uploadedImagePreview}
+            hasDiscount={product.hasDiscount}
+            discountPercentage={product.discountPercentage}
+            onShowPreview={() => setShowPreview(true)}
+            onRemoveCustomDesign={() => {
+              setCustomDesign(null);
+              toast.info("Özel tasarım kaldırıldı.");
+            }}
+            onRemoveUploadedImage={() => {
+              setUploadedImage(null);
+              setUploadedImagePreview(null);
+              if (fileInputRef.current) fileInputRef.current.value = "";
+              toast.info("Yüklenen resim kaldırıldı.");
+            }}
+            productTitle={product.title}
+          />
 
-                <div className="absolute bottom-3 right-3 md:bottom-6 md:right-6 z-20 flex gap-2">
-                  <button
-                    onClick={() => setShowPreview(true)}
-                    className="bg-orange-600 text-white px-3 py-2 text-[10px] sm:px-5 sm:py-3 sm:text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 sm:gap-2 shadow-xl hover:bg-slate-900 transition-all sm:scale-100 sm:hover:scale-105 sm:active:scale-95 rounded-sm"
-                  >
-                    <Eye size={14} className="sm:w-4 sm:h-4" />
-                    {customDesign || uploadedImagePreview
-                      ? "Yeniden Tasarla"
-                      : "Logonu Ekle"}
-                  </button>
-                </div>
-
-                <CustomImageZoom
-                  src={displayImages[activeIndex]}
-                  alt={product.title}
-                />
-              </div>
-
-              {/* Bildirimler Bölümü */}
-              <div className="space-y-3">
-                {uploadedImagePreview && (
-                  <div className="flex items-center justify-between bg-blue-50 border border-blue-200 p-3 rounded">
-                    <div className="flex items-center gap-2 text-xs text-blue-700">
-                      <ImagePlus size={14} />
-                      <span className="font-semibold">Özel resim yüklendi</span>
-                    </div>
-                    <button
-                      onClick={handleRemoveUploadedImage}
-                      className="text-blue-600 hover:text-red-600 transition-colors"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                )}
-
-                {customDesign && (
-                  <div className="flex items-center justify-between bg-orange-50 border border-orange-200 p-3 rounded">
-                    <div className="flex items-center gap-2 text-xs text-orange-700">
-                      <Sparkles size={14} />
-                      <span className="font-semibold">
-                        Tasarım paneli ile özelleştirildi
-                      </span>
-                    </div>
-                    <button
-                      onClick={handleRemoveCustomDesign}
-                      className="text-orange-600 hover:text-red-600 transition-colors"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* RIGHT: PRODUCT INFO */}
+          {/* Ürün Bilgileri */}
           <div className="lg:col-span-6 flex flex-col pt-2">
             <div className="space-y-8">
-              <header className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="text-[9px] font-bold tracking-widest uppercase text-orange-600 flex items-center gap-2">
-                    <span className="bg-orange-50 px-2 py-0.5 rounded text-orange-700">
-                      {product.category.name}
-                    </span>
-                    <span className="text-slate-300">ID: PRO-{product.id}</span>
-                  </div>
-                  {product.brand && (
-                    <div className="flex items-center gap-2 text-xs text-slate-600">
-                      {product.brand.image && (
-                        <Image
-                          src={product.brand.image}
-                          alt={product.brand.name}
-                          width={24}
-                          height={24}
-                          className="object-contain"
-                        />
-                      )}
-                      <span className="font-semibold">
-                        {product.brand.name}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 leading-tight">
-                  {product.title}
-                  {finalCustomImage && (
-                    <span className="ml-2 text-sm font-normal text-orange-600">
-                      (Özelleştirilmiş)
-                    </span>
-                  )}
-                </h1>
-
-                {/* Rating Section */}
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <div className="flex text-orange-400">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          size={14}
-                          fill={
-                            i < Math.round(product.rating)
-                              ? "currentColor"
-                              : "none"
-                          }
-                          className={
-                            i < Math.round(product.rating)
-                              ? ""
-                              : "text-slate-300"
-                          }
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm font-bold text-slate-900">
-                      {product.rating.toFixed(1)}
-                    </span>
-                  </div>
-                  <span className="text-xs text-slate-500">
-                    ({product.reviewCount} değerlendirme)
-                  </span>
-                </div>
-
-                {/* Stock Status */}
-                <div className="flex items-center gap-2">
-                  {product.stock.inStock ? (
-                    <>
-                      <CheckCircle size={16} className="text-emerald-600" />
-                      <span className="text-sm font-semibold text-emerald-600">
-                        Stokta Var
-                      </span>
-                      {product.stock.lowStock && (
-                        <span className="text-xs text-orange-600 ml-2">
-                          (Son {product.stock.quantity} adet!)
-                        </span>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <X size={16} className="text-red-600" />
-                      <span className="text-sm font-semibold text-red-600">
-                        Stokta Yok
-                      </span>
-                    </>
-                  )}
-                </div>
-              </header>
+              <ProductInfo
+                id={product.id}
+                title={product.title}
+                category={product.category}
+                middleCategory={product.middleCategory}
+                subCategory={product.subCategory}
+                brand={product.brand}
+                rating={product.rating}
+                reviewCount={product.reviewCount}
+                currentPrice={currentPrice}
+                oldPrice={product.oldPrice}
+                hasDiscount={product.hasDiscount}
+                discountPercentage={product.discountPercentage}
+                inStock={product.stock.inStock}
+                lowStock={product.stock.lowStock}
+                stockQuantity={product.stock.quantity}
+                hasCustomImage={!!finalCustomImage}
+                selectedStock={selectedStock}
+              />
 
               <div className="space-y-6">
-                {/* Price Section */}
-                <div className="flex flex-col border-t border-b border-slate-100 py-4">
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-3xl font-black tracking-tighter text-slate-900">
-                      {product.price.toLocaleString("tr-TR")}{" "}
-                      <small className="text-sm">TL</small>
-                    </span>
-                    {product.hasDiscount && (
-                      <>
-                        <span className="text-lg text-slate-400 line-through font-semibold">
-                          {product.oldPrice?.toLocaleString("tr-TR")} TL
-                        </span>
-                        <span className="bg-orange-600 text-white px-2 py-1 rounded text-xs font-bold">
-                          %{product.discountPercentage} İndirim
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
+                {/* Beden Seçimi */}
+                <ProductVariantSelector
+                  hasVariants={product.hasVariants}
+                  availableSizes={product.availableSizes}
+                  stockMatrix={product.stockMatrix}
+                  selectedSizeId={selectedSizeId}
+                  selectedStock={selectedStock}
+                  onSizeChange={setSelectedSizeId}
+                />
 
-                {/* Customization Notice */}
+                {/* Özelleştirme bildirim */}
                 {finalCustomImage && (
                   <div className="bg-gradient-to-r from-orange-50 to-pink-50 border border-orange-200 p-4 rounded space-y-2">
                     <div className="flex items-center gap-2 text-xs font-bold text-orange-700 uppercase tracking-wider">
-                      <Sparkles size={14} />
-                      Özelleştirilmiş Ürün
+                      <Sparkles size={14} /> Özelleştirilmiş Ürün
                     </div>
                     <p className="text-xs text-slate-600 leading-relaxed">
                       Bu ürün{" "}
@@ -615,97 +451,25 @@ export default function ProductDetailPage() {
                   </div>
                 )}
 
-                {/* Action Buttons */}
-                <div className="flex flex-col gap-3">
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className={cn(
-                      "h-12 w-full text-[11px] rounded-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-sm border",
-                      uploadedImagePreview
-                        ? "bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100"
-                        : "bg-white border-slate-200 text-slate-700 hover:border-slate-900 hover:bg-slate-50",
-                    )}
-                  >
-                    {uploadedImagePreview ? (
-                      <>
-                        <BadgeCheck size={16} className="text-orange-600" />
-                        Farklı Resim Seç
-                      </>
-                    ) : (
-                      <>
-                        <Upload size={16} className="text-slate-500" />
-                        Kendi Resmini Yükle
-                      </>
-                    )}
-                  </button>
+                {/* Aksiyon Butonları */}
+                <ProductActions
+                  quantity={quantity}
+                  onQuantityChange={setQuantity}
+                  onAddToCart={handleAddToCart}
+                  onToggleFavorite={() =>
+                    isFavorited(product.id)
+                      ? removeFavorite(product.id)
+                      : addFavorite(product.id)
+                  }
+                  onShare={handleShare}
+                  onUploadImage={() => fileInputRef.current?.click()}
+                  isFavorited={isFavorited(product.id)}
+                  hasUploadedImage={!!uploadedImagePreview}
+                  inStock={product.stock.inStock}
+                  sizeStockAvailable={!selectedStock || selectedStock.stock > 0}
+                />
 
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center bg-white h-12 px-4 gap-5 border border-slate-200 rounded-sm">
-                      <button
-                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                        className="text-slate-500 hover:text-orange-600 transition-colors"
-                      >
-                        <Minus size={14} strokeWidth={3} />
-                      </button>
-                      <span className="w-4 text-center text-sm font-bold text-slate-900">
-                        {quantity}
-                      </span>
-                      <button
-                        onClick={() => setQuantity((q) => q + 1)}
-                        className="text-slate-500 hover:text-orange-600 transition-colors"
-                      >
-                        <Plus size={14} strokeWidth={3} />
-                      </button>
-                    </div>
-
-                    <button
-                      onClick={handleAddToCart}
-                      disabled={!product.stock.inStock}
-                      className={cn(
-                        "flex-1 h-12 rounded-sm text-[11px] font-bold uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-2",
-                        product.stock.inStock
-                          ? "bg-slate-900 text-white hover:bg-orange-600"
-                          : "bg-slate-200 text-slate-400 cursor-not-allowed",
-                      )}
-                    >
-                      <ShoppingCart size={14} fill="currentColor" />
-                      {product.stock.inStock ? "Sepete Ekle" : "Stokta Yok"}
-                    </button>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() =>
-                        isFavorited(product.id)
-                          ? removeFavorite(product.id)
-                          : addFavorite(product.id)
-                      }
-                      className={cn(
-                        "flex-1 h-11 border rounded-sm flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider transition-all",
-                        isFavorited(product.id)
-                          ? "bg-slate-50 border-slate-200 text-slate-900"
-                          : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50",
-                      )}
-                    >
-                      <Heart
-                        size={14}
-                        className={cn(
-                          isFavorited(product.id) &&
-                            "fill-orange-500 text-orange-500",
-                        )}
-                      />
-                      {isFavorited(product.id) ? "Listede" : "Listeye Ekle"}
-                    </button>
-                    <button
-                      onClick={handleShare}
-                      className="w-11 h-11 rounded-sm bg-white border border-slate-200 flex items-center justify-center hover:border-orange-600 hover:text-orange-600 transition-all shadow-sm"
-                    >
-                      <Share2 size={14} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Price Summary with KDV */}
+                {/* Fiyat Özeti */}
                 <div className="bg-slate-50 border border-slate-200 rounded p-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">
@@ -720,9 +484,7 @@ export default function ProductDetailPage() {
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-600 flex items-center gap-1">
-                      KDV (%10)
-                    </span>
+                    <span className="text-slate-600">KDV (%10)</span>
                     <span className="font-bold text-slate-900">
                       {vatAmount.toLocaleString("tr-TR", {
                         minimumFractionDigits: 2,
@@ -746,13 +508,12 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* Features */}
+              {/* Özellikler */}
               <div className="space-y-4 pt-4 border-t border-slate-100">
                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                   <Info size={14} className="text-orange-600" /> Ürün
                   Özellikleri
                 </div>
-
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
                     <div className="p-2 bg-blue-100 text-blue-600">
@@ -767,7 +528,6 @@ export default function ProductDetailPage() {
                       </div>
                     </div>
                   </div>
-
                   <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
                     <div className="p-2 bg-emerald-100 text-emerald-600">
                       <BadgeCheck size={16} />
@@ -781,7 +541,6 @@ export default function ProductDetailPage() {
                       </div>
                     </div>
                   </div>
-
                   <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
                     <div className="p-2 bg-orange-100 text-orange-600">
                       <ShieldCheck size={16} />
@@ -795,7 +554,6 @@ export default function ProductDetailPage() {
                       </div>
                     </div>
                   </div>
-
                   <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
                     <div className="p-2 bg-purple-100 text-purple-600">
                       <HardHat size={16} />
@@ -808,7 +566,6 @@ export default function ProductDetailPage() {
                     </div>
                   </div>
                 </div>
-
                 <div
                   className="prose prose-slate max-w-none text-slate-600 text-[13px] leading-relaxed"
                   dangerouslySetInnerHTML={{ __html: product.description }}
@@ -818,8 +575,8 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Product Stats */}
-        <div className="grid grid-cols-3 gap-3 mt-4">
+        {/* İstatistikler */}
+        <div className="grid grid-cols-3 gap-3 mt-8">
           <div className="bg-white border border-slate-100 p-4 rounded text-center">
             <div className="flex items-center justify-center text-orange-600 mb-2">
               <Eye size={20} />
@@ -855,7 +612,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Related Products Section */}
+        {/* İlgili Ürünler */}
         {product.relatedProducts.length > 0 && (
           <div className="mt-16 pt-8 border-t border-slate-200">
             <div className="flex items-center gap-3 mb-6">
@@ -865,14 +622,14 @@ export default function ProductDetailPage() {
               </h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {product.relatedProducts.slice(0, 4).map((relatedProduct) => (
-                <ProductCard key={relatedProduct.id} product={relatedProduct} />
+              {product.relatedProducts.slice(0, 4).map((rp) => (
+                <ProductCard key={rp.id} product={rp} />
               ))}
             </div>
           </div>
         )}
 
-        {/* Same Brand Products */}
+        {/* Marka Ürünleri */}
         {product.brand && product.brandProducts.length > 0 && (
           <div className="mt-12">
             <div className="flex items-center gap-3 mb-6">
@@ -882,14 +639,14 @@ export default function ProductDetailPage() {
               </h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {product.brandProducts.map((brandProduct) => (
-                <ProductCard key={brandProduct.id} product={brandProduct} />
+              {product.brandProducts.map((bp) => (
+                <ProductCard key={bp.id} product={bp} />
               ))}
             </div>
           </div>
         )}
 
-        {/* Product Tabs */}
+        {/* Sekmeleri */}
         <div className="mt-12 pt-8 border-t border-slate-100">
           <ProductTabs
             productId={product.id}

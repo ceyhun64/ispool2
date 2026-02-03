@@ -531,10 +531,6 @@ export type EnumCouponTypeFieldUpdateOperationsInput = {
   set?: $Enums.CouponType
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 
 
 export type CouponSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{

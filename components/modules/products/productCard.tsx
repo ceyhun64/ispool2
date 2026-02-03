@@ -20,6 +20,8 @@ interface ProductData {
   hasDiscount?: boolean;
 }
 
+//aynen kardeşim ben de öyle diyoeum
+// emin miyiz peki
 export default function ProductCard({ product }: { product: ProductData }) {
   const [isHovered, setIsHovered] = useState(false);
   const { isFavorited, addFavorite, removeFavorite } = useFavorite();
@@ -93,7 +95,7 @@ export default function ProductCard({ product }: { product: ProductData }) {
             </div>
           </div>
         </div>
-
+        
         {/* İçerik Alanı */}
         <div className="py-3 sm:py-4 flex flex-col space-y-1">
           <div className="flex justify-between items-center">

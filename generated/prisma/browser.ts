@@ -38,10 +38,25 @@ export type SubCategory = Prisma.SubCategoryModel
  */
 export type Brand = Prisma.BrandModel
 /**
+ * Model Size
+ * 
+ */
+export type Size = Prisma.SizeModel
+/**
  * Model product
  * 
  */
 export type product = Prisma.productModel
+/**
+ * Model ProductSize
+ * 
+ */
+export type ProductSize = Prisma.ProductSizeModel
+/**
+ * Model ProductStock
+ * 
+ */
+export type ProductStock = Prisma.ProductStockModel
 /**
  * Model User
  * 

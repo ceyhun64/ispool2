@@ -1,3 +1,4 @@
+// app/api/products/[id]/route.ts
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import fs from "fs/promises";
@@ -11,42 +12,58 @@ export async function GET(
   const { id } = await context.params;
 
   try {
+    const productId = Number(id);
+    if (isNaN(productId) || productId <= 0) {
+      return NextResponse.json(
+        { success: false, error: "Geçersiz ürün ID" },
+        { status: 400 },
+      );
+    }
+
     const product = await prisma.product.findUnique({
-      where: { id: Number(id) },
+      where: { id: productId },
       include: {
         category: true,
         middleCategory: true,
         subCategory: true,
         brand: true,
+        sizes: {
+          include: { size: true },
+          orderBy: { size: { sortOrder: "asc" } },
+        },
+        stock: {
+          orderBy: { sizeId: "asc" },
+        },
         Review: {
           include: {
             user: {
-              select: {
-                id: true,
-                name: true,
-                surname: true,
-              },
+              select: { id: true, name: true, surname: true },
             },
           },
-          orderBy: {
-            createdAt: "desc",
-          },
+          orderBy: { createdAt: "desc" },
         },
       },
     });
 
     if (!product) {
-      return NextResponse.json({ error: "Ürün bulunamadı" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: "Ürün bulunamadı" },
+        { status: 404 },
+      );
     }
 
-    // Ortalama puanı hesapla
+    // Ortalama puan
     const averageRating =
       product.Review.length > 0
-        ? product.Review.reduce((sum, review) => sum + review.rating, 0) /
-          product.Review.length
+        ? Number(
+            (
+              product.Review.reduce((sum, r) => sum + r.rating, 0) /
+              product.Review.length
+            ).toFixed(1),
+          )
         : 0;
 
-    // Puan dağılımını hesapla
+    // Puan dağılımı
     const ratingDistribution = {
       5: product.Review.filter((r) => r.rating === 5).length,
       4: product.Review.filter((r) => r.rating === 4).length,
@@ -55,23 +72,18 @@ export async function GET(
       1: product.Review.filter((r) => r.rating === 1).length,
     };
 
-    // İlgili ürünleri getir (aynı kategoriden)
+    // İlgili ürünler (aynı kategori)
     const relatedProducts = await prisma.product.findMany({
       where: {
         categoryId: product.categoryId,
         id: { not: product.id },
       },
       take: 8,
-      include: {
-        category: true,
-        brand: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
+      include: { category: true, brand: true },
+      orderBy: { createdAt: "desc" },
     });
 
-    // Aynı markadan ürünleri getir
+    // Aynı markadan ürünler
     const brandProducts = product.brandId
       ? await prisma.product.findMany({
           where: {
@@ -79,27 +91,24 @@ export async function GET(
             id: { not: product.id },
           },
           take: 6,
-          include: {
-            category: true,
-            brand: true,
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
+          include: { category: true, brand: true },
+          orderBy: { createdAt: "desc" },
         })
       : [];
 
-    // Tüm görselleri birleştir
+    // Görseller
     const images = [
       product.mainImage,
       product.subImage,
       product.subImage2,
       product.subImage3,
       product.subImage4,
-    ].filter(Boolean);
+    ].filter(Boolean) as string[];
 
-    // İndirim bilgilerini hesapla
-    const hasDiscount = product.oldPrice && product.oldPrice > product.price;
+    // İndirim
+    const hasDiscount = !!(
+      product.oldPrice && product.oldPrice > product.price
+    );
     const discountAmount = hasDiscount ? product.oldPrice! - product.price : 0;
     const discountPercentage = hasDiscount
       ? Math.round(
@@ -107,14 +116,43 @@ export async function GET(
         )
       : 0;
 
-    // Stok durumu (şimdilik sabit, ileride dinamik yapılabilir)
-    const stockStatus = {
-      inStock: true,
-      quantity: 100,
-      lowStock: false,
-    };
+    // Stok durumu
+    let stockStatus;
+    if (product.hasVariants && product.stock.length > 0) {
+      const totalStock = product.stock.reduce((sum, s) => sum + s.stock, 0);
+      stockStatus = {
+        inStock: totalStock > 0,
+        quantity: totalStock,
+        lowStock: totalStock > 0 && totalStock <= 10,
+      };
+    } else {
+      const singleStock = product.stock.find((s) => s.sizeId === null);
+      stockStatus = {
+        inStock: singleStock ? singleStock.stock > 0 : true,
+        quantity: singleStock ? singleStock.stock : 100,
+        lowStock: singleStock
+          ? singleStock.stock > 0 && singleStock.stock <= 10
+          : false,
+      };
+    }
 
-    // Ürün özellikleri
+    // Bedenleri çıkar (ProductSize → Size)
+    const availableSizes = product.sizes.map((ps) => ({
+      id: ps.size.id,
+      value: ps.size.value,
+      type: ps.size.type,
+      sortOrder: ps.size.sortOrder,
+    }));
+
+    // Stok matrisi (beden bazlı)
+    const stockMatrix = product.stock.map((s) => ({
+      id: s.id,
+      sizeId: s.sizeId,
+      stock: s.stock,
+      priceModifier: s.priceModifier || 0,
+    }));
+
+    // Özellikler
     const specifications = {
       weight: null,
       dimensions: null,
@@ -124,7 +162,7 @@ export async function GET(
       certifications: ["CE", "ISO 9001", "TSE"],
     };
 
-    // Kargo bilgileri
+    // Kargo
     const shipping = {
       freeShipping: product.price >= 500,
       estimatedDelivery: "2-4 İş Günü",
@@ -134,7 +172,7 @@ export async function GET(
       expressCost: 49.99,
     };
 
-    // Meta bilgileri
+    // Meta
     const meta = {
       views: Math.floor(Math.random() * 1000) + 100,
       favorites: Math.floor(Math.random() * 50) + 10,
@@ -142,31 +180,43 @@ export async function GET(
       lastUpdated: product.updatedAt,
     };
 
+    // Helper: ürün listesi formatlama
+    const formatProductCard = (p: (typeof relatedProducts)[0]) => ({
+      id: p.id,
+      title: p.title,
+      price: p.price,
+      oldPrice: p.oldPrice,
+      mainImage: p.mainImage,
+      category: p.category.name,
+      brand: p.brand?.name ?? null,
+      hasDiscount: !!(p.oldPrice && p.oldPrice > p.price),
+      discountPercentage: p.oldPrice
+        ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100)
+        : 0,
+    });
+
     return NextResponse.json(
       {
         success: true,
         product: {
-          // Temel Bilgiler
+          // Temel
           id: product.id,
           title: product.title,
           description: product.description,
 
-          // Fiyat Bilgileri
+          // Fiyat
           price: product.price,
           oldPrice: product.oldPrice,
           discountPercentage: product.discountPercentage || discountPercentage,
           hasDiscount,
           discountAmount,
 
-          // Görsel Bilgileri
+          // Görseller
           mainImage: product.mainImage,
           images,
 
-          // Kategori Bilgileri
-          category: {
-            id: product.category.id,
-            name: product.category.name,
-          },
+          // Kategoriler
+          category: { id: product.category.id, name: product.category.name },
           middleCategory: product.middleCategory
             ? {
                 id: product.middleCategory.id,
@@ -174,13 +224,10 @@ export async function GET(
               }
             : null,
           subCategory: product.subCategory
-            ? {
-                id: product.subCategory.id,
-                name: product.subCategory.name,
-              }
+            ? { id: product.subCategory.id, name: product.subCategory.name }
             : null,
 
-          // Marka Bilgileri
+          // Marka
           brand: product.brand
             ? {
                 id: product.brand.id,
@@ -189,7 +236,12 @@ export async function GET(
               }
             : null,
 
-          // Değerlendirme Bilgileri
+          // Beden & Stok
+          hasVariants: product.hasVariants,
+          availableSizes,
+          stockMatrix,
+
+          // Değerlendirmeler
           rating: averageRating,
           reviewCount: product.Review.length,
           ratingDistribution,
@@ -199,46 +251,22 @@ export async function GET(
             title: review.title,
             comment: review.comment,
             createdAt: review.createdAt,
-            user: {
-              name: review.user.name,
-              surname: review.user.surname,
-            },
+            user: { name: review.user.name, surname: review.user.surname },
           })),
 
-          // Stok ve Kargo
+          // Stok & Kargo
           stock: stockStatus,
           shipping,
 
-          // Teknik Özellikler
+          // Teknik
           specifications,
 
-          // İlgili Ürünler
-          relatedProducts: relatedProducts.map((p) => ({
-            id: p.id,
-            title: p.title,
-            price: p.price,
-            oldPrice: p.oldPrice,
-            mainImage: p.mainImage,
-            category: p.category.name,
-            brand: p.brand?.name,
-            hasDiscount: p.oldPrice && p.oldPrice > p.price,
-          })),
+          // İlgili
+          relatedProducts: relatedProducts.map(formatProductCard),
+          brandProducts: brandProducts.map(formatProductCard),
 
-          // Aynı Markadan Ürünler
-          brandProducts: brandProducts.map((p) => ({
-            id: p.id,
-            title: p.title,
-            price: p.price,
-            oldPrice: p.oldPrice,
-            mainImage: p.mainImage,
-            category: p.category.name,
-            hasDiscount: p.oldPrice && p.oldPrice > p.price,
-          })),
-
-          // Meta Bilgiler
+          // Meta & Tarihler
           meta,
-
-          // Tarihler
           createdAt: product.createdAt,
           updatedAt: product.updatedAt,
         },
@@ -262,38 +290,81 @@ export async function DELETE(
   const { id } = await context.params;
 
   try {
+    const productId = Number(id);
+    if (isNaN(productId) || productId <= 0) {
+      return NextResponse.json(
+        { success: false, error: "Geçersiz ürün ID" },
+        { status: 400 },
+      );
+    }
+
     const existingProduct = await prisma.product.findUnique({
-      where: { id: Number(id) },
+      where: { id: productId },
     });
 
     if (!existingProduct) {
-      return NextResponse.json({ error: "Ürün bulunamadı" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: "Ürün bulunamadı" },
+        { status: 404 },
+      );
     }
 
+    // Dosya silme
     const deleteFile = async (filePath?: string | null) => {
       if (!filePath) return;
       try {
-        await fs.unlink(path.join(process.cwd(), "public", filePath));
-      } catch {}
+        const fullPath = path.join(process.cwd(), "public", filePath);
+        await fs.unlink(fullPath);
+        console.log(`Dosya silindi: ${fullPath}`);
+      } catch (error) {
+        console.log(`Dosya silinemedi: ${filePath}`, error);
+      }
     };
 
-    await deleteFile(existingProduct.mainImage);
-    await deleteFile(existingProduct.subImage);
-    await deleteFile(existingProduct.subImage2);
-    await deleteFile(existingProduct.subImage3);
-    await deleteFile(existingProduct.subImage4);
+    await Promise.all([
+      deleteFile(existingProduct.mainImage),
+      deleteFile(existingProduct.subImage),
+      deleteFile(existingProduct.subImage2),
+      deleteFile(existingProduct.subImage3),
+      deleteFile(existingProduct.subImage4),
+    ]);
 
-    const product = await prisma.product.delete({
-      where: { id: Number(id) },
+    // Sil — ProductSize, ProductStock cascade ile otomatik silinir
+    const deletedProduct = await prisma.product.delete({
+      where: { id: productId },
     });
 
-    return NextResponse.json({ product }, { status: 200 });
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Ürün başarıyla silindi",
+        product: deletedProduct,
+      },
+      { status: 200 },
+    );
   } catch (error: any) {
+    console.error("Ürün silinirken hata:", error);
+
     if (error.code === "P2025") {
-      return NextResponse.json({ error: "Ürün bulunamadı" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: "Ürün bulunamadı" },
+        { status: 404 },
+      );
     }
-    console.error(error);
-    return NextResponse.json({ error: "Ürün silinemedi" }, { status: 500 });
+    if (error.code === "P2003") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Bu ürün başka kayıtlarda kullanıldığı için silinemez",
+        },
+        { status: 409 },
+      );
+    }
+
+    return NextResponse.json(
+      { success: false, error: "Ürün silinemedi" },
+      { status: 500 },
+    );
   }
 }
 
@@ -305,91 +376,121 @@ export async function PUT(
   const { id } = await context.params;
 
   try {
+    const productId = Number(id);
+    if (isNaN(productId) || productId <= 0) {
+      return NextResponse.json(
+        { success: false, error: "Geçersiz ürün ID" },
+        { status: 400 },
+      );
+    }
+
     const formData = await request.formData();
+
+    // Dosyalar
     const mainFile = formData.get("file") as File | null;
     const subFile = formData.get("subImageFile") as File | null;
     const subFile2 = formData.get("subImage2File") as File | null;
     const subFile3 = formData.get("subImage3File") as File | null;
     const subFile4 = formData.get("subImage4File") as File | null;
 
+    // Zorunlu alan validasyon
     const title = formData.get("title")?.toString();
-    const price = parseFloat(formData.get("price") as string);
-    const oldPrice = formData.get("oldPrice")
-      ? parseFloat(formData.get("oldPrice") as string)
-      : null;
-    const discountPercentage = formData.get("discountPercentage")
-      ? parseInt(formData.get("discountPercentage") as string)
-      : null;
-    const rating = parseInt(formData.get("rating") as string);
-    const reviewCount = formData.get("reviewCount")
-      ? parseInt(formData.get("reviewCount") as string)
-      : 0;
+    const priceStr = formData.get("price") as string;
 
-    const mainCategoryName = formData.get("category") as string;
-    const middleCategoryName = formData.get("middleCategory") as string | null;
-    const subCategoryName = formData.get("subCategory") as string | null;
-    const description = formData.get("description")?.toString() || "";
-
-    if (!mainCategoryName) {
+    if (!title || !priceStr) {
       return NextResponse.json(
-        { success: false, error: "Ana kategori seçilmedi." },
+        { success: false, error: "Ürün başlığı ve fiyat zorunludur" },
         { status: 400 },
       );
     }
 
-    // Ana kategoriyi bul
+    const price = parseInt(priceStr);
+    if (isNaN(price) || price <= 0) {
+      return NextResponse.json(
+        { success: false, error: "Geçersiz fiyat değeri" },
+        { status: 400 },
+      );
+    }
+
+    // Optional fields
+    const oldPriceStr = formData.get("oldPrice") as string;
+    const discountPercentageStr = formData.get("discountPercentage") as string;
+    const ratingStr = formData.get("rating") as string;
+    const reviewCountStr = formData.get("reviewCount") as string;
+    const description = formData.get("description")?.toString() || "";
+    const brandIdStr = formData.get("brandId") as string;
+
+    const oldPrice = oldPriceStr ? parseInt(oldPriceStr) : null;
+    const discountPercentage = discountPercentageStr
+      ? parseInt(discountPercentageStr)
+      : null;
+    const rating = ratingStr ? parseInt(ratingStr) : 0;
+    const reviewCount = reviewCountStr ? parseInt(reviewCountStr) : 0;
+    const brandId = brandIdStr ? parseInt(brandIdStr) : null;
+
+    // Kategori
+    const mainCategoryName = formData.get("category") as string;
+    const middleCategoryName = formData.get("middleCategory") as string | null;
+    const subCategoryName = formData.get("subCategory") as string | null;
+    const hasVariants = formData.get("hasVariants") === "true";
+
+    if (!mainCategoryName) {
+      return NextResponse.json(
+        { success: false, error: "Ana kategori seçilmedi" },
+        { status: 400 },
+      );
+    }
+
     const mainCategory = await prisma.category.findFirst({
       where: { name: mainCategoryName },
     });
-
     if (!mainCategory) {
       return NextResponse.json(
-        { success: false, error: "Ana kategori bulunamadı." },
+        { success: false, error: "Ana kategori bulunamadı" },
         { status: 404 },
       );
     }
 
-    // Orta kategoriyi bul
-    let middleCategoryId: number | undefined = undefined;
+    let middleCategoryId: number | null = null;
     if (middleCategoryName && middleCategoryName !== "null") {
-      const middleCategory = await prisma.middleCategory.findFirst({
+      const mc = await prisma.middleCategory.findFirst({
         where: { name: middleCategoryName, categoryId: mainCategory.id },
       });
-      if (!middleCategory) {
+      if (!mc) {
         return NextResponse.json(
-          { success: false, error: "Orta kategori bulunamadı." },
+          { success: false, error: "Orta kategori bulunamadı" },
           { status: 404 },
         );
       }
-      middleCategoryId = middleCategory.id;
+      middleCategoryId = mc.id;
     }
 
-    // Alt kategoriyi bul
-    let subCategoryId: number | undefined = undefined;
+    let subCategoryId: number | null = null;
     if (subCategoryName && subCategoryName !== "null" && middleCategoryId) {
-      const subCategory = await prisma.subCategory.findFirst({
-        where: { name: subCategoryName, middleCategoryId: middleCategoryId },
+      const sc = await prisma.subCategory.findFirst({
+        where: { name: subCategoryName, middleCategoryId },
       });
-      if (!subCategory) {
+      if (!sc) {
         return NextResponse.json(
-          { success: false, error: "Alt kategori bulunamadı." },
+          { success: false, error: "Alt kategori bulunamadı" },
           { status: 404 },
         );
       }
-      subCategoryId = subCategory.id;
+      subCategoryId = sc.id;
     }
 
+    // Mevcut ürün kontrolü
     const existingProduct = await prisma.product.findUnique({
-      where: { id: Number(id) },
+      where: { id: productId },
     });
-
     if (!existingProduct) {
       return NextResponse.json(
-        { success: false, error: "Ürün bulunamadı." },
+        { success: false, error: "Ürün bulunamadı" },
         { status: 404 },
       );
     }
 
+    // Dosya yükleme
     const uploadFile = async (
       file: File | null,
     ): Promise<string | undefined> => {
@@ -399,11 +500,11 @@ export async function PUT(
       const uploadForm = new FormData();
       uploadForm.append("file", file);
       uploadForm.append("folderName", "products");
-
       const res = await fetch(`${baseUrl}/api/upload`, {
         method: "POST",
         body: uploadForm,
       });
+      if (!res.ok) throw new Error("Dosya yüklenemedi");
       const data = await res.json();
       return data.path;
     };
@@ -424,35 +525,107 @@ export async function PUT(
       ? await uploadFile(subFile4)
       : existingProduct.subImage4;
 
-    const updatedProduct = await prisma.product.update({
-      where: { id: Number(id) },
-      data: {
-        title,
-        price,
-        oldPrice,
-        discountPercentage,
-        description,
-        rating,
-        reviewCount,
-        mainImage: mainImagePath,
-        subImage: subImagePath,
-        subImage2: subImage2Path,
-        subImage3: subImage3Path,
-        subImage4: subImage4Path,
-        categoryId: mainCategory.id,
-        middleCategoryId,
-        subCategoryId,
-      },
-      include: {
-        category: true,
-        middleCategory: true,
-        subCategory: true,
-      },
+    // Beden ve stok verileri (JSON string olarak gelir)
+    // sizes: [{ sizeId: number }, ...]
+    // stock: [{ sizeId: number | null, stock: number, priceModifier: number }, ...]
+    let sizesInput: { sizeId: number }[] = [];
+    let stockInput: {
+      sizeId: number | null;
+      stock: number;
+      priceModifier: number;
+    }[] = [];
+
+    const sizesRaw = formData.get("sizes");
+    const stockRaw = formData.get("stock");
+
+    if (sizesRaw) {
+      try {
+        sizesInput = JSON.parse(sizesRaw as string);
+      } catch {
+        console.error("sizes parse hatası");
+      }
+    }
+    if (stockRaw) {
+      try {
+        stockInput = JSON.parse(stockRaw as string);
+      } catch {
+        console.error("stock parse hatası");
+      }
+    }
+
+    // Transaction
+    const updatedProduct = await prisma.$transaction(async (tx) => {
+      // 1. Ürün güncelle
+      const product = await tx.product.update({
+        where: { id: productId },
+        data: {
+          title,
+          price,
+          oldPrice,
+          discountPercentage,
+          description,
+          rating,
+          reviewCount,
+          mainImage: mainImagePath,
+          subImage: subImagePath,
+          subImage2: subImage2Path,
+          subImage3: subImage3Path,
+          subImage4: subImage4Path,
+          categoryId: mainCategory.id,
+          middleCategoryId,
+          subCategoryId,
+          brandId,
+          hasVariants,
+        },
+        include: {
+          category: true,
+          middleCategory: true,
+          subCategory: true,
+          brand: true,
+        },
+      });
+
+      // 2. Mevcut ProductSize + ProductStock temizle
+      await tx.productSize.deleteMany({ where: { productId } });
+      await tx.productStock.deleteMany({ where: { productId } });
+
+      if (hasVariants && sizesInput.length > 0) {
+        // 3. Frontend'den gelen sizeId listesini ekle
+        await tx.productSize.createMany({
+          data: sizesInput.map((s) => ({ productId, sizeId: s.sizeId })),
+        });
+
+        // 4. Stok kayıtları
+        if (stockInput.length > 0) {
+          await tx.productStock.createMany({
+            data: stockInput.map((s) => ({
+              productId,
+              sizeId: s.sizeId,
+              stock: s.stock,
+              priceModifier: s.priceModifier,
+            })),
+          });
+        }
+      } else {
+        // Varyant yok → tek stok kayıtı (sizeId: null)
+        const singleStock = stockInput.find((s) => s.sizeId === null);
+        await tx.productStock.create({
+          data: {
+            productId,
+            sizeId: null,
+            stock: singleStock?.stock ?? 50,
+            priceModifier: singleStock?.priceModifier ?? 0,
+          },
+        });
+      }
+
+      return product;
     });
 
     return NextResponse.json(
       {
         success: true,
+        message: "Ürün başarıyla güncellendi",
         product: {
           ...updatedProduct,
           category: updatedProduct.category.name,
@@ -464,6 +637,14 @@ export async function PUT(
     );
   } catch (error: any) {
     console.error("Ürün güncellenirken hata:", error);
+
+    if (error.code === "P2002") {
+      return NextResponse.json(
+        { success: false, error: "Bu ürün bilgileri zaten mevcut" },
+        { status: 409 },
+      );
+    }
+
     return NextResponse.json(
       { success: false, error: error.message || "Ürün güncellenemedi" },
       { status: 500 },
