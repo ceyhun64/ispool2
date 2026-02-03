@@ -55,7 +55,10 @@ export const ModelName = {
   MiddleCategory: 'MiddleCategory',
   SubCategory: 'SubCategory',
   Brand: 'Brand',
+  Size: 'Size',
   product: 'product',
+  ProductSize: 'ProductSize',
+  ProductStock: 'ProductStock',
   User: 'User',
   Address: 'Address',
   Favorite: 'Favorite',
@@ -130,6 +133,19 @@ export const BrandScalarFieldEnum = {
 export type BrandScalarFieldEnum = (typeof BrandScalarFieldEnum)[keyof typeof BrandScalarFieldEnum]
 
 
+export const SizeScalarFieldEnum = {
+  id: 'id',
+  value: 'value',
+  type: 'type',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SizeScalarFieldEnum = (typeof SizeScalarFieldEnum)[keyof typeof SizeScalarFieldEnum]
+
+
 export const ProductScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -144,6 +160,7 @@ export const ProductScalarFieldEnum = {
   subImage3: 'subImage3',
   subImage4: 'subImage4',
   description: 'description',
+  hasVariants: 'hasVariants',
   brandId: 'brandId',
   categoryId: 'categoryId',
   middleCategoryId: 'middleCategoryId',
@@ -153,6 +170,28 @@ export const ProductScalarFieldEnum = {
 } as const
 
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
+
+
+export const ProductSizeScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  sizeId: 'sizeId'
+} as const
+
+export type ProductSizeScalarFieldEnum = (typeof ProductSizeScalarFieldEnum)[keyof typeof ProductSizeScalarFieldEnum]
+
+
+export const ProductStockScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  sizeId: 'sizeId',
+  stock: 'stock',
+  priceModifier: 'priceModifier',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductStockScalarFieldEnum = (typeof ProductStockScalarFieldEnum)[keyof typeof ProductStockScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {
@@ -209,6 +248,7 @@ export const CartItemScalarFieldEnum = {
   productId: 'productId',
   quantity: 'quantity',
   customImage: 'customImage',
+  sizeId: 'sizeId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -244,7 +284,8 @@ export const OrderItemScalarFieldEnum = {
   unitPrice: 'unitPrice',
   totalPrice: 'totalPrice',
   iyziTransactionId: 'iyziTransactionId',
-  customImage: 'customImage'
+  customImage: 'customImage',
+  sizeId: 'sizeId'
 } as const
 
 export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]

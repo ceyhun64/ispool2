@@ -1,16 +1,17 @@
+// app/api/cart/[id]/route.ts
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 interface PatchRequestBody {
-  quantity?: number; // Opsiyonel yaptık
-  customImage?: string; // Yeni ekledik
+  quantity?: number;
+  customImage?: string;
 }
 
-/**
- * DELETE /api/cart/[id]
- */
+// ---------------------------------------------------------------------------
+// DELETE  /api/cart/:id
+// ---------------------------------------------------------------------------
 export async function DELETE(
   req: NextRequest,
   context: { params: Promise<{ id: string }> },
@@ -19,25 +20,38 @@ export async function DELETE(
   const session = await getServerSession(authOptions);
 
   if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
 
   try {
-    const deleted = await prisma.cartItem.delete({
-      where: { id: Number(id) },
+    const cartItemId = Number(id);
+
+    // ─── Ownership kontrolü: sadece kendi sepet satırını silebilir ────────
+    const cartItem = await prisma.cartItem.findFirst({
+      where: {
+        id: cartItemId,
+        userId: Number(session.user.id), // ← bu kullanıcıya ait mi?
+      },
     });
-    return NextResponse.json({ success: true, deleted });
+
+    if (!cartItem) {
+      return NextResponse.json(
+        { error: "Sepet öğesi bulunamadı" },
+        { status: 404 },
+      );
+    }
+
+    await prisma.cartItem.delete({ where: { id: cartItemId } });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Failed to delete cart item" },
-      { status: 500 },
-    );
+    console.error("Cart DELETE error:", error);
+    return NextResponse.json({ error: "Silme başarısız" }, { status: 500 });
   }
 }
 
-/**
- * PATCH /api/cart/[id]
- */
+// ---------------------------------------------------------------------------
+// PATCH  /api/cart/:id   — quantity / customImage güncelle
+// ---------------------------------------------------------------------------
 export async function PATCH(
   req: NextRequest,
   context: { params: Promise<{ id: string }> },
@@ -46,26 +60,52 @@ export async function PATCH(
   const session = await getServerSession(authOptions);
 
   if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const body: PatchRequestBody = await req.json();
+    return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
 
   try {
+    const cartItemId = Number(id);
+    const body: PatchRequestBody = await req.json();
+
+    // ─── Ownership kontrolü ───────────────────────────────────────────────
+    const cartItem = await prisma.cartItem.findFirst({
+      where: {
+        id: cartItemId,
+        userId: Number(session.user.id), // ← bu kullanıcıya ait mi?
+      },
+    });
+
+    if (!cartItem) {
+      return NextResponse.json(
+        { error: "Sepet öğesi bulunamadı" },
+        { status: 404 },
+      );
+    }
+
+    // ─── Miktar validasyon ─────────────────────────────────────────────────
+    if (body.quantity !== undefined && body.quantity < 1) {
+      return NextResponse.json(
+        { error: "Miktar 1'den düşük olamaz" },
+        { status: 400 },
+      );
+    }
+
+    // ─── Güncelle ──────────────────────────────────────────────────────────
     const updated = await prisma.cartItem.update({
-      where: { id: Number(id) },
+      where: { id: cartItemId },
       data: {
-        // Sadece gelen alanları güncelle
         ...(body.quantity !== undefined && { quantity: body.quantity }),
         ...(body.customImage !== undefined && {
           customImage: body.customImage,
         }),
       },
+      include: { product: true, size: true },
     });
+
     return NextResponse.json(updated);
   } catch (error) {
-    console.error(error);
+    console.error("Cart PATCH error:", error);
     return NextResponse.json(
-      { error: "Failed to update cart item" },
+      { error: "Güncelleme başarısız" },
       { status: 500 },
     );
   }

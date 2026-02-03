@@ -62,7 +62,7 @@ export function CustomImageZoom({ src, alt }: Props) {
           src={src}
           alt={alt}
           fill
-          className={`object-contain transition-opacity duration-300 ${
+          className={`object-contain transition-opacity duration-300  ${
             showZoom && !isTouchDevice ? "opacity-0" : "opacity-100"
           }`}
           priority

@@ -52,87 +52,87 @@
   {
     "name": "İş Ayakkabısı",
     "categoryName": "İş Ayakkabıları ve Ayak Koruma",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/ayakkabi.png"
   },
   {
     "name": "İş Botu",
     "categoryName": "İş Ayakkabıları ve Ayak Koruma",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/bot.png"
   },
   {
     "name": "Çizme",
     "categoryName": "İş Ayakkabıları ve Ayak Koruma",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/cizme.png"
   },
   {
     "name": "Ayak Koruma Aksesuarları",
     "categoryName": "İş Ayakkabıları ve Ayak Koruma",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/ayak.png"
   },
   {
     "name": "Deri Eldiven",
     "categoryName": "İş Eldivenleri",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/deri.png"
   },
   {
     "name": "Pamuklu Eldiven",
     "categoryName": "İş Eldivenleri",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/pamuklu.png"
   },
   {
     "name": "Kaplama Eldiven",
     "categoryName": "İş Eldivenleri",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/kaplama.png"
   },
   {
     "name": "Özel Amaçlı Eldiven",
     "categoryName": "İş Eldivenleri",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/ozel.png"
   },
   {
     "name": "Yanmaz Kıyafet",
     "categoryName": "Koruyucu Teknik Kıyafet",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/yangin.png"
   },
   {
     "name": "Kimyasal Koruyucu Giysi",
     "categoryName": "Koruyucu Teknik Kıyafet",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/kimyasal.png"
   },
   {
     "name": "Antistatik Kıyafet",
     "categoryName": "Koruyucu Teknik Kıyafet",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/antistatik.png"
   },
   {
     "name": "Soğuk Hava Koruması",
     "categoryName": "Koruyucu Teknik Kıyafet",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/soguk.png"
   },
   {
     "name": "Baş Koruma",
     "categoryName": "İş Güvenlik Ekipmanları",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/bas.png"
   },
   {
     "name": "Göz ve Yüz Koruma",
     "categoryName": "İş Güvenlik Ekipmanları",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/goz.png"
   },
   {
     "name": "Solunum Koruma",
     "categoryName": "İş Güvenlik Ekipmanları",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/solunum.png"
   },
   {
     "name": "İşitme Koruma",
     "categoryName": "İş Güvenlik Ekipmanları",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/kulak.png"
   },
   {
     "name": "Yüksekte Çalışma",
     "categoryName": "İş Güvenlik Ekipmanları",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/yuksek.png"
   },
   {
     "name": "Yağmurluk",
@@ -142,16 +142,16 @@
   {
     "name": "Rüzgarlık",
     "categoryName": "Outdoor",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/ruzgarlik.png"
   },
   {
     "name": "Kamp Ekipmanları",
     "categoryName": "Outdoor",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/sandalye.png"
   },
   {
     "name": "Sırt Çantası",
     "categoryName": "Outdoor",
-    "icon": "/categoryIcons/yagmurluk.png"
+    "icon": "/categoryIcons/canta.png"
   }
 ]

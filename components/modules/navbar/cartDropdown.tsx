@@ -36,6 +36,9 @@ import {
 } from "@/utils/cart";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 interface Product {
   id: number;
   title: string;
@@ -48,6 +51,8 @@ export interface CartItemType {
   productId: number;
   quantity: number;
   product: Product;
+  sizeId?: number | null; // ← beden ID
+  size?: { id: number; value: string } | null; // ← beden detay (API'den)
   customImage?: string | null;
 }
 
@@ -56,6 +61,9 @@ interface CartDropdownProps {
   guest?: boolean;
 }
 
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 const CartDropdown = forwardRef(
   ({ showCount = true, guest = false }: CartDropdownProps, ref) => {
     const [cartItems, setCartItems] = useState<CartItemType[]>([]);
@@ -63,14 +71,13 @@ const CartDropdown = forwardRef(
     const [isOpen, setIsOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    // Cart Sheet durumunu Navbar'a bildir
     useEffect(() => {
-      const event = new CustomEvent("cartSheetStateChange", {
-        detail: { isOpen },
-      });
-      window.dispatchEvent(event);
+      window.dispatchEvent(
+        new CustomEvent("cartSheetStateChange", { detail: { isOpen } }),
+      );
     }, [isOpen]);
 
+    // ─── Login check ───────────────────────────────────────────────────────
     const checkLogin = useCallback(async (): Promise<boolean> => {
       try {
         const res = await fetch("/api/account/check", {
@@ -91,6 +98,7 @@ const CartDropdown = forwardRef(
       }
     }, []);
 
+    // ─── API cart ──────────────────────────────────────────────────────────
     const fetchCart = useCallback(async () => {
       setIsLoading(true);
       try {
@@ -100,22 +108,25 @@ const CartDropdown = forwardRef(
         });
         if (!res.ok) throw new Error("API hatası");
         const data = await res.json();
-        setCartItems(data);
-      } catch (err) {
+        setCartItems(data); // API zaten sizeId + size döndürüyor
+      } catch {
         setCartItems([]);
       } finally {
         setIsLoading(false);
       }
     }, []);
 
+    // ─── Guest cart ────────────────────────────────────────────────────────
     const loadGuestCart = useCallback(() => {
       try {
         const cart = getCart();
-        const guestCart = cart.map((item: GuestCartItem) => ({
-          id: item.productId,
+        const guestCart: CartItemType[] = cart.map((item: GuestCartItem) => ({
+          id: item.productId, // guest'te DB id yok → productId kullan
           productId: item.productId,
           quantity: item.quantity,
-          customImage: item.customImage,
+          sizeId: item.sizeId ?? null, // ← beden
+          size: null, // guest'te size detay yok (sadece ID var)
+          customImage: item.customImage ?? null,
           product: {
             id: item.productId,
             title: item.title,
@@ -131,6 +142,7 @@ const CartDropdown = forwardRef(
       }
     }, []);
 
+    // ─── Initial + re-load ─────────────────────────────────────────────────
     useEffect(() => {
       (async () => {
         const logged = await checkLogin();
@@ -163,24 +175,22 @@ const CartDropdown = forwardRef(
       return () => window.removeEventListener("cartUpdated", handleCartUpdate);
     }, [isLoggedIn, fetchCart, loadGuestCart, guest]);
 
+    // ─── Quantity change ───────────────────────────────────────────────────
     const handleQuantityChange = async (
       id: number,
       delta: number,
+      sizeId?: number | null,
       customImage?: string | null,
     ) => {
       if (!isLoggedIn) {
-        updateGuestCartQuantity(id, delta, customImage);
+        // guest: id burada productId
+        updateGuestCartQuantity(id, delta, sizeId, customImage);
         loadGuestCart();
         return;
       }
 
-      const item = cartItems.find((c) => {
-        if (customImage) {
-          return c.id === id && c.customImage === customImage;
-        }
-        return c.id === id && !c.customImage;
-      });
-
+      // logged-in: id = CartItem.id (DB primary key)
+      const item = cartItems.find((c) => c.id === id);
       if (!item) return;
 
       const newQuantity = Math.max(1, item.quantity + delta);
@@ -192,7 +202,6 @@ const CartDropdown = forwardRef(
           body: JSON.stringify({ quantity: newQuantity }),
           credentials: "include",
         });
-
         if (!res.ok) {
           toast.error("Miktar güncellenemedi");
           return;
@@ -204,21 +213,24 @@ const CartDropdown = forwardRef(
             c.id === item.id ? { ...c, quantity: updatedItem.quantity } : c,
           ),
         );
-      } catch (err) {
+      } catch {
         toast.error("Miktar güncellenemedi");
       }
     };
 
+    // ─── Remove ────────────────────────────────────────────────────────────
     const handleRemove = async (
       cartItemId: number,
-      productId?: number,
+      productId: number,
+      sizeId?: number | null,
       customImage?: string | null,
     ) => {
       if (!isLoggedIn) {
-        removeFromGuestCart(productId || cartItemId, customImage);
+        removeFromGuestCart(productId, sizeId, customImage);
         loadGuestCart();
         return;
       }
+
       try {
         const res = await fetch(`/api/cart/${cartItemId}`, {
           method: "DELETE",
@@ -233,20 +245,22 @@ const CartDropdown = forwardRef(
       }
     };
 
+    // ─── Totals ────────────────────────────────────────────────────────────
     const subtotal = cartItems.reduce(
-      (acc, item) => acc + item.product.price * item.quantity,
+      (acc, i) => acc + i.product.price * i.quantity,
       0,
     );
     const taxAmount = subtotal * 0.1;
     const total = subtotal + taxAmount;
 
+    // ─── Render ────────────────────────────────────────────────────────────
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <button className="relative p-2.5 text-slate-900 rounded-sm hover:text-slate-500 transition-colors duration-300">
-            <div className="w-9 h-9 md:w-10 md:h-10 text-slate-900 flex items-center justify-center group-hover:bg-orange-600 transition-all">
+            <div className="w-9 h-9 md:w-10 md:h-10 text-slate-900 flex items-center justify-center">
               <ShoppingCart size={18} strokeWidth={2.5} />
-            </div>{" "}
+            </div>
             {showCount && cartItems.length > 0 && (
               <span className="absolute top-3 right-3 h-4 w-4 rounded-full bg-slate-900 text-white text-[9px] flex items-center justify-center font-bold font-mono shadow-sm">
                 {cartItems.length}
@@ -259,14 +273,14 @@ const CartDropdown = forwardRef(
           side="right"
           className="z-[200] p-0 w-full sm:max-w-[450px] h-full fixed top-0 right-0 bg-white flex flex-col border-l border-slate-100 shadow-2xl"
         >
-          {/* Modern Industrial Header */}
+          {/* Header */}
           <div className="px-8 pt-12 pb-8 shrink-0 border-b border-slate-50 bg-slate-50/30">
             <div className="flex justify-between items-end">
               <SheetTitle className="flex flex-col gap-1.5">
                 <span className="text-[10px] tracking-[0.4em] text-slate-400 uppercase font-black leading-none">
                   EKİPMAN SEÇİMİ
                 </span>
-                <span className="text-2xl font-black  text-slate-900 uppercase">
+                <span className="text-2xl font-black text-slate-900 uppercase">
                   SEPETİM
                 </span>
               </SheetTitle>
@@ -279,7 +293,7 @@ const CartDropdown = forwardRef(
             </div>
           </div>
 
-          {/* Items Area */}
+          {/* Items */}
           <div className="flex-1 overflow-y-auto px-8 py-6 custom-scrollbar">
             {isLoading ? (
               <div className="space-y-10 pt-4">
@@ -287,9 +301,9 @@ const CartDropdown = forwardRef(
                   <div key={i} className="flex gap-6">
                     <Skeleton className="w-24 h-24 bg-slate-50 border border-slate-100" />
                     <div className="flex-1 space-y-4 py-1">
-                      <Skeleton className="h-4 w-3/4 bg-slate-50 " />
-                      <Skeleton className="h-3 w-1/4 bg-slate-50 " />
-                      <Skeleton className="h-8 w-20 bg-slate-50 " />
+                      <Skeleton className="h-4 w-3/4 bg-slate-50" />
+                      <Skeleton className="h-3 w-1/4 bg-slate-50" />
+                      <Skeleton className="h-8 w-20 bg-slate-50" />
                     </div>
                   </div>
                 ))}
@@ -316,7 +330,7 @@ const CartDropdown = forwardRef(
                   <Link href="/products">
                     <Button
                       variant="outline"
-                      className="border-slate-900 rounded-sm text-slate-900  font-black text-[10px] uppercase tracking-[0.2em] px-10 h-14 hover:bg-slate-900 hover:text-white transition-all duration-500 shadow-lg"
+                      className="border-slate-900 rounded-sm text-slate-900 font-black text-[10px] uppercase tracking-[0.2em] px-10 h-14 hover:bg-slate-900 hover:text-white transition-all duration-500 shadow-lg"
                     >
                       KATALOĞU İNCELE
                     </Button>
@@ -328,7 +342,7 @@ const CartDropdown = forwardRef(
                 <AnimatePresence mode="popLayout">
                   {cartItems.map((item, index) => (
                     <motion.div
-                      key={`${item.id}-${item.customImage || "default"}`}
+                      key={`${item.productId}-${item.sizeId ?? "null"}-${item.customImage || "default"}`}
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
@@ -351,7 +365,7 @@ const CartDropdown = forwardRef(
             )}
           </div>
 
-          {/* Premium Footer Summary */}
+          {/* Footer */}
           {cartItems.length > 0 && (
             <div className="bg-slate-50 border-t border-slate-200 p-8 space-y-6 shrink-0 shadow-[0_-10px_40px_rgba(0,0,0,0.03)]">
               <div className="space-y-3">
@@ -382,7 +396,7 @@ const CartDropdown = forwardRef(
                       Vergiler Dahil Net Tutar
                     </span>
                   </div>
-                  <span className="text-xl md:tex-2xl font-black text-slate-900 tracking-tighter font-mono leading-none">
+                  <span className="text-xl font-black text-slate-900 tracking-tighter font-mono leading-none">
                     ₺
                     {total.toLocaleString("tr-TR", {
                       minimumFractionDigits: 2,
@@ -412,7 +426,6 @@ const CartDropdown = forwardRef(
                     </Button>
                   </Link>
                 </SheetClose>
-
                 <div className="flex items-center justify-center gap-3 py-2 opacity-60">
                   <Lock size={12} className="text-slate-900" />
                   <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">

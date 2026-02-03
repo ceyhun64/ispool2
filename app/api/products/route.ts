@@ -11,15 +11,16 @@ interface ProductData {
   subImage3?: string;
   subImage4?: string;
   description: string;
-  price: number; // Int
-  oldPrice?: number; // Int
-  discountPercentage?: number; // Int
-  rating: number; // Int
-  reviewCount?: number; // Int
+  price: number;
+  oldPrice?: number;
+  discountPercentage?: number;
+  rating: number;
+  reviewCount?: number;
   category: string;
   middleCategory?: string;
   subCategory?: string;
-  brandId?: number; // Int - schema'da Int olarak tanımlı
+  brandId?: number;
+  hasVariants?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -38,36 +39,28 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
 
-    const productsData: ProductData[] = products.map((p) => {
-      // Type assertion ile Prisma'nın include edilmiş relationları tanıması sağlanır
-      const product = p as typeof p & {
-        category: { name: string };
-        middleCategory: { name: string } | null;
-        subCategory: { name: string } | null;
-      };
-
-      return {
-        id: product.id,
-        title: product.title,
-        price: product.price,
-        oldPrice: product.oldPrice ?? undefined,
-        discountPercentage: product.discountPercentage ?? undefined,
-        rating: product.rating,
-        reviewCount: product.reviewCount ?? undefined,
-        description: product.description,
-        mainImage: product.mainImage,
-        subImage: product.subImage ?? undefined,
-        subImage2: product.subImage2 ?? undefined,
-        subImage3: product.subImage3 ?? undefined,
-        subImage4: product.subImage4 ?? undefined,
-        category: product.category.name,
-        middleCategory: product.middleCategory?.name ?? undefined,
-        subCategory: product.subCategory?.name ?? undefined,
-        brandId: product.brandId ?? undefined, // number olarak döndür
-        createdAt: product.createdAt.toISOString(),
-        updatedAt: product.updatedAt.toISOString(),
-      };
-    });
+    const productsData: ProductData[] = products.map((p) => ({
+      id: p.id,
+      title: p.title,
+      price: p.price,
+      oldPrice: p.oldPrice ?? undefined,
+      discountPercentage: p.discountPercentage ?? undefined,
+      rating: p.rating,
+      reviewCount: p.reviewCount ?? undefined,
+      description: p.description,
+      mainImage: p.mainImage,
+      subImage: p.subImage ?? undefined,
+      subImage2: p.subImage2 ?? undefined,
+      subImage3: p.subImage3 ?? undefined,
+      subImage4: p.subImage4 ?? undefined,
+      category: p.category.name,
+      middleCategory: p.middleCategory?.name ?? undefined,
+      subCategory: p.subCategory?.name ?? undefined,
+      brandId: p.brandId ?? undefined,
+      hasVariants: p.hasVariants,
+      createdAt: p.createdAt.toISOString(),
+      updatedAt: p.updatedAt.toISOString(),
+    }));
 
     return NextResponse.json({ products: productsData }, { status: 200 });
   } catch (error: any) {
@@ -86,6 +79,7 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
 
+    // Dosyalar
     const mainFile = formData.get("file") as File | null;
     const subFile = formData.get("subImageFile") as File | null;
     const subFile2 = formData.get("subImage2File") as File | null;
@@ -106,7 +100,6 @@ export async function POST(request: Request) {
       const fd = new FormData();
       fd.append("file", file);
       fd.append("folderName", folder);
-
       const res = await fetch(`${baseUrl}/api/upload`, {
         method: "POST",
         body: fd,
@@ -115,7 +108,7 @@ export async function POST(request: Request) {
       return data.path as string;
     }
 
-    // Upload all images
+    // Görseller
     const mainImagePath = await uploadFile(mainFile, "products");
     const subImagePath = subFile
       ? await uploadFile(subFile, "products")
@@ -130,32 +123,37 @@ export async function POST(request: Request) {
       ? await uploadFile(subFile4, "products")
       : undefined;
 
-    // Form fields - Schema'ya göre doğru tiplerde parse et
+    // Temel alanlar
     const title = formData.get("title") as string;
-    const price = parseInt(formData.get("price") as string); // Int
+    const price = parseInt(formData.get("price") as string);
     const oldPrice = formData.get("oldPrice")
-      ? parseInt(formData.get("oldPrice") as string) // Int
+      ? parseInt(formData.get("oldPrice") as string)
       : undefined;
     const discountPercentage = formData.get("discountPercentage")
-      ? parseInt(formData.get("discountPercentage") as string) // Int
+      ? parseInt(formData.get("discountPercentage") as string)
       : undefined;
     const description = formData.get("description") as string;
-    const rating = parseInt(formData.get("rating") as string); // Int
+    const rating = formData.get("rating")
+      ? parseInt(formData.get("rating") as string)
+      : 0;
     const reviewCount = formData.get("reviewCount")
-      ? parseInt(formData.get("reviewCount") as string) // Int
-      : undefined;
+      ? parseInt(formData.get("reviewCount") as string)
+      : 0;
     const brandIdStr = formData.get("brandId") as string | null;
-    const brandId = brandIdStr ? parseInt(brandIdStr) : undefined; // Int
+    const brandId = brandIdStr ? parseInt(brandIdStr) : undefined;
 
+    // Beden / varyant
+    const hasVariants = formData.get("hasVariants") === "true";
+
+    // Kategori
     const categoryName = formData.get("category") as string;
     const middleCategoryName = formData.get("middleCategory") as string | null;
     const subCategoryName = formData.get("subCategory") as string | null;
 
-    // Ana kategoriyi bul
+    // ── Kategori lookup ──
     const category = await prisma.category.findFirst({
       where: { name: categoryName },
     });
-
     if (!category) {
       return NextResponse.json(
         { success: false, error: "Ana kategori bulunamadı." },
@@ -163,92 +161,156 @@ export async function POST(request: Request) {
       );
     }
 
-    // Orta kategoriyi bul
-    let middleCategoryId: number | undefined = undefined;
+    let middleCategoryId: number | undefined;
     if (middleCategoryName) {
-      const middleCategory = await prisma.middleCategory.findFirst({
+      const mc = await prisma.middleCategory.findFirst({
         where: { name: middleCategoryName, categoryId: category.id },
       });
-
-      if (!middleCategory) {
+      if (!mc) {
         return NextResponse.json(
           { success: false, error: "Orta kategori bulunamadı." },
           { status: 404 },
         );
       }
-
-      middleCategoryId = middleCategory.id;
+      middleCategoryId = mc.id;
     }
 
-    // Alt kategoriyi bul
-    let subCategoryId: number | undefined = undefined;
+    let subCategoryId: number | undefined;
     if (subCategoryName && middleCategoryId) {
-      const subCategory = await prisma.subCategory.findFirst({
-        where: { name: subCategoryName, middleCategoryId: middleCategoryId },
+      const sc = await prisma.subCategory.findFirst({
+        where: { name: subCategoryName, middleCategoryId },
       });
-
-      if (!subCategory) {
+      if (!sc) {
         return NextResponse.json(
           { success: false, error: "Alt kategori bulunamadı." },
           { status: 404 },
         );
       }
-
-      subCategoryId = subCategory.id;
+      subCategoryId = sc.id;
     }
 
-    // Ürün oluştur
-    const newProduct = await prisma.product.create({
-      data: {
-        title,
-        price,
-        oldPrice,
-        discountPercentage,
-        rating,
-        reviewCount,
-        description,
-        mainImage: mainImagePath,
-        subImage: subImagePath,
-        subImage2: subImage2Path,
-        subImage3: subImage3Path,
-        subImage4: subImage4Path,
-        brandId: brandId ?? undefined, // Int olarak kaydet
-        categoryId: category.id,
-        middleCategoryId,
-        subCategoryId,
-      },
-      include: {
-        category: true,
-        middleCategory: true,
-        subCategory: true,
-      },
+    // Beden ve stok verileri (JSON string olarak gelir)
+    let sizesInput: { sizeId: number }[] = [];
+    let stockInput: {
+      sizeId: number | null;
+      stock: number;
+      priceModifier: number;
+    }[] = [];
+
+    const sizesRaw = formData.get("sizes");
+    const stockRaw = formData.get("stock");
+
+    if (sizesRaw) {
+      try {
+        sizesInput = JSON.parse(sizesRaw as string);
+      } catch {
+        console.error("sizes parse hatası");
+      }
+    }
+    if (stockRaw) {
+      try {
+        stockInput = JSON.parse(stockRaw as string);
+      } catch {
+        console.error("stock parse hatası");
+      }
+    }
+
+    // ── Transaction: ürün + ProductSize + ProductStock ──
+    const newProduct = await prisma.$transaction(async (tx) => {
+      // 1. Ürün oluştur
+      const product = await tx.product.create({
+        data: {
+          title,
+          price,
+          oldPrice,
+          discountPercentage,
+          rating,
+          reviewCount,
+          description,
+          mainImage: mainImagePath,
+          subImage: subImagePath,
+          subImage2: subImage2Path,
+          subImage3: subImage3Path,
+          subImage4: subImage4Path,
+          brandId,
+          categoryId: category.id,
+          middleCategoryId,
+          subCategoryId,
+          hasVariants,
+        },
+        include: {
+          category: true,
+          middleCategory: true,
+          subCategory: true,
+        },
+      });
+
+      // 2. Beden ve stok
+      if (hasVariants && sizesInput.length > 0) {
+        // ProductSize (ürün-beden ilişkisi)
+        await tx.productSize.createMany({
+          data: sizesInput.map((s) => ({
+            productId: product.id,
+            sizeId: s.sizeId,
+          })),
+        });
+
+        // ProductStock (beden bazlı stok)
+        if (stockInput.length > 0) {
+          await tx.productStock.createMany({
+            data: stockInput.map((s) => ({
+              productId: product.id,
+              sizeId: s.sizeId,
+              stock: s.stock,
+              priceModifier: s.priceModifier || 0,
+            })),
+          });
+        } else {
+          // Stok verisi gelmemişse default değerler
+          await tx.productStock.createMany({
+            data: sizesInput.map((s) => ({
+              productId: product.id,
+              sizeId: s.sizeId,
+              stock: 10,
+              priceModifier: 0,
+            })),
+          });
+        }
+      } else {
+        // Varyant yok → tek stok kayıtı, sizeId: null
+        const singleStock = stockInput.find((s) => s.sizeId === null);
+        await tx.productStock.create({
+          data: {
+            productId: product.id,
+            sizeId: null,
+            stock: singleStock?.stock ?? 50,
+            priceModifier: singleStock?.priceModifier ?? 0,
+          },
+        });
+      }
+
+      return product;
     });
 
-    // Type assertion
-    const product = newProduct as typeof newProduct & {
-      category: { name: string };
-      middleCategory: { name: string } | null;
-      subCategory: { name: string } | null;
-    };
-
     const productData: ProductData = {
-      id: product.id,
-      title: product.title,
-      price: product.price,
-      oldPrice: product.oldPrice ?? undefined,
-      discountPercentage: product.discountPercentage ?? undefined,
-      rating: product.rating,
-      reviewCount: product.reviewCount ?? undefined,
-      description: product.description,
-      mainImage: product.mainImage,
-      subImage: product.subImage ?? undefined,
-      subImage2: product.subImage2 ?? undefined,
-      subImage3: product.subImage3 ?? undefined,
-      subImage4: product.subImage4 ?? undefined,
-      category: product.category.name,
-      middleCategory: product.middleCategory?.name ?? undefined,
-      subCategory: product.subCategory?.name ?? undefined,
-      brandId: product.brandId ?? undefined, // number olarak döndür
+      id: newProduct.id,
+      title: newProduct.title,
+      price: newProduct.price,
+      oldPrice: newProduct.oldPrice ?? undefined,
+      discountPercentage: newProduct.discountPercentage ?? undefined,
+      rating: newProduct.rating,
+      reviewCount: newProduct.reviewCount ?? undefined,
+      description: newProduct.description,
+      mainImage: newProduct.mainImage,
+      subImage: newProduct.subImage ?? undefined,
+      subImage2: newProduct.subImage2 ?? undefined,
+      subImage3: newProduct.subImage3 ?? undefined,
+      subImage4: newProduct.subImage4 ?? undefined,
+      category: newProduct.category.name,
+      middleCategory: newProduct.middleCategory?.name ?? undefined,
+      subCategory: newProduct.subCategory?.name ?? undefined,
+      brandId: newProduct.brandId ?? undefined,
+      hasVariants: newProduct.hasVariants,
     };
 
     return NextResponse.json(

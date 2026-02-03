@@ -31,6 +31,7 @@ export type CartItemAvgAggregateOutputType = {
   userId: number | null
   productId: number | null
   quantity: number | null
+  sizeId: number | null
 }
 
 export type CartItemSumAggregateOutputType = {
@@ -38,6 +39,7 @@ export type CartItemSumAggregateOutputType = {
   userId: number | null
   productId: number | null
   quantity: number | null
+  sizeId: number | null
 }
 
 export type CartItemMinAggregateOutputType = {
@@ -46,6 +48,7 @@ export type CartItemMinAggregateOutputType = {
   productId: number | null
   quantity: number | null
   customImage: string | null
+  sizeId: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +59,7 @@ export type CartItemMaxAggregateOutputType = {
   productId: number | null
   quantity: number | null
   customImage: string | null
+  sizeId: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -66,6 +70,7 @@ export type CartItemCountAggregateOutputType = {
   productId: number
   quantity: number
   customImage: number
+  sizeId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -77,6 +82,7 @@ export type CartItemAvgAggregateInputType = {
   userId?: true
   productId?: true
   quantity?: true
+  sizeId?: true
 }
 
 export type CartItemSumAggregateInputType = {
@@ -84,6 +90,7 @@ export type CartItemSumAggregateInputType = {
   userId?: true
   productId?: true
   quantity?: true
+  sizeId?: true
 }
 
 export type CartItemMinAggregateInputType = {
@@ -92,6 +99,7 @@ export type CartItemMinAggregateInputType = {
   productId?: true
   quantity?: true
   customImage?: true
+  sizeId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -102,6 +110,7 @@ export type CartItemMaxAggregateInputType = {
   productId?: true
   quantity?: true
   customImage?: true
+  sizeId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -112,6 +121,7 @@ export type CartItemCountAggregateInputType = {
   productId?: true
   quantity?: true
   customImage?: true
+  sizeId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -209,6 +219,7 @@ export type CartItemGroupByOutputType = {
   productId: number
   quantity: number
   customImage: string | null
+  sizeId: number | null
   createdAt: Date
   updatedAt: Date
   _count: CartItemCountAggregateOutputType | null
@@ -242,8 +253,10 @@ export type CartItemWhereInput = {
   productId?: Prisma.IntFilter<"CartItem"> | number
   quantity?: Prisma.IntFilter<"CartItem"> | number
   customImage?: Prisma.StringNullableFilter<"CartItem"> | string | null
+  sizeId?: Prisma.IntNullableFilter<"CartItem"> | number | null
   createdAt?: Prisma.DateTimeFilter<"CartItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CartItem"> | Date | string
+  size?: Prisma.XOR<Prisma.SizeNullableScalarRelationFilter, Prisma.SizeWhereInput> | null
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.productWhereInput>
 }
 
@@ -253,8 +266,10 @@ export type CartItemOrderByWithRelationInput = {
   productId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   customImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  sizeId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  size?: Prisma.SizeOrderByWithRelationInput
   product?: Prisma.productOrderByWithRelationInput
 }
 
@@ -267,8 +282,10 @@ export type CartItemWhereUniqueInput = Prisma.AtLeast<{
   productId?: Prisma.IntFilter<"CartItem"> | number
   quantity?: Prisma.IntFilter<"CartItem"> | number
   customImage?: Prisma.StringNullableFilter<"CartItem"> | string | null
+  sizeId?: Prisma.IntNullableFilter<"CartItem"> | number | null
   createdAt?: Prisma.DateTimeFilter<"CartItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CartItem"> | Date | string
+  size?: Prisma.XOR<Prisma.SizeNullableScalarRelationFilter, Prisma.SizeWhereInput> | null
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.productWhereInput>
 }, "id">
 
@@ -278,6 +295,7 @@ export type CartItemOrderByWithAggregationInput = {
   productId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   customImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  sizeId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CartItemCountOrderByAggregateInput
@@ -296,6 +314,7 @@ export type CartItemScalarWhereWithAggregatesInput = {
   productId?: Prisma.IntWithAggregatesFilter<"CartItem"> | number
   quantity?: Prisma.IntWithAggregatesFilter<"CartItem"> | number
   customImage?: Prisma.StringNullableWithAggregatesFilter<"CartItem"> | string | null
+  sizeId?: Prisma.IntNullableWithAggregatesFilter<"CartItem"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CartItem"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CartItem"> | Date | string
 }
@@ -306,6 +325,7 @@ export type CartItemCreateInput = {
   customImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  size?: Prisma.SizeCreateNestedOneWithoutCartItemInput
   product: Prisma.productCreateNestedOneWithoutCartItemInput
 }
 
@@ -315,6 +335,7 @@ export type CartItemUncheckedCreateInput = {
   productId: number
   quantity?: number
   customImage?: string | null
+  sizeId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -325,6 +346,7 @@ export type CartItemUpdateInput = {
   customImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  size?: Prisma.SizeUpdateOneWithoutCartItemNestedInput
   product?: Prisma.productUpdateOneRequiredWithoutCartItemNestedInput
 }
 
@@ -334,6 +356,7 @@ export type CartItemUncheckedUpdateInput = {
   productId?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   customImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sizeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -344,6 +367,7 @@ export type CartItemCreateManyInput = {
   productId: number
   quantity?: number
   customImage?: string | null
+  sizeId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -362,6 +386,7 @@ export type CartItemUncheckedUpdateManyInput = {
   productId?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   customImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sizeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -382,6 +407,7 @@ export type CartItemCountOrderByAggregateInput = {
   productId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   customImage?: Prisma.SortOrder
+  sizeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -391,6 +417,7 @@ export type CartItemAvgOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  sizeId?: Prisma.SortOrder
 }
 
 export type CartItemMaxOrderByAggregateInput = {
@@ -399,6 +426,7 @@ export type CartItemMaxOrderByAggregateInput = {
   productId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   customImage?: Prisma.SortOrder
+  sizeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -409,6 +437,7 @@ export type CartItemMinOrderByAggregateInput = {
   productId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   customImage?: Prisma.SortOrder
+  sizeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -418,6 +447,49 @@ export type CartItemSumOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  sizeId?: Prisma.SortOrder
+}
+
+export type CartItemCreateNestedManyWithoutSizeInput = {
+  create?: Prisma.XOR<Prisma.CartItemCreateWithoutSizeInput, Prisma.CartItemUncheckedCreateWithoutSizeInput> | Prisma.CartItemCreateWithoutSizeInput[] | Prisma.CartItemUncheckedCreateWithoutSizeInput[]
+  connectOrCreate?: Prisma.CartItemCreateOrConnectWithoutSizeInput | Prisma.CartItemCreateOrConnectWithoutSizeInput[]
+  createMany?: Prisma.CartItemCreateManySizeInputEnvelope
+  connect?: Prisma.CartItemWhereUniqueInput | Prisma.CartItemWhereUniqueInput[]
+}
+
+export type CartItemUncheckedCreateNestedManyWithoutSizeInput = {
+  create?: Prisma.XOR<Prisma.CartItemCreateWithoutSizeInput, Prisma.CartItemUncheckedCreateWithoutSizeInput> | Prisma.CartItemCreateWithoutSizeInput[] | Prisma.CartItemUncheckedCreateWithoutSizeInput[]
+  connectOrCreate?: Prisma.CartItemCreateOrConnectWithoutSizeInput | Prisma.CartItemCreateOrConnectWithoutSizeInput[]
+  createMany?: Prisma.CartItemCreateManySizeInputEnvelope
+  connect?: Prisma.CartItemWhereUniqueInput | Prisma.CartItemWhereUniqueInput[]
+}
+
+export type CartItemUpdateManyWithoutSizeNestedInput = {
+  create?: Prisma.XOR<Prisma.CartItemCreateWithoutSizeInput, Prisma.CartItemUncheckedCreateWithoutSizeInput> | Prisma.CartItemCreateWithoutSizeInput[] | Prisma.CartItemUncheckedCreateWithoutSizeInput[]
+  connectOrCreate?: Prisma.CartItemCreateOrConnectWithoutSizeInput | Prisma.CartItemCreateOrConnectWithoutSizeInput[]
+  upsert?: Prisma.CartItemUpsertWithWhereUniqueWithoutSizeInput | Prisma.CartItemUpsertWithWhereUniqueWithoutSizeInput[]
+  createMany?: Prisma.CartItemCreateManySizeInputEnvelope
+  set?: Prisma.CartItemWhereUniqueInput | Prisma.CartItemWhereUniqueInput[]
+  disconnect?: Prisma.CartItemWhereUniqueInput | Prisma.CartItemWhereUniqueInput[]
+  delete?: Prisma.CartItemWhereUniqueInput | Prisma.CartItemWhereUniqueInput[]
+  connect?: Prisma.CartItemWhereUniqueInput | Prisma.CartItemWhereUniqueInput[]
+  update?: Prisma.CartItemUpdateWithWhereUniqueWithoutSizeInput | Prisma.CartItemUpdateWithWhereUniqueWithoutSizeInput[]
+  updateMany?: Prisma.CartItemUpdateManyWithWhereWithoutSizeInput | Prisma.CartItemUpdateManyWithWhereWithoutSizeInput[]
+  deleteMany?: Prisma.CartItemScalarWhereInput | Prisma.CartItemScalarWhereInput[]
+}
+
+export type CartItemUncheckedUpdateManyWithoutSizeNestedInput = {
+  create?: Prisma.XOR<Prisma.CartItemCreateWithoutSizeInput, Prisma.CartItemUncheckedCreateWithoutSizeInput> | Prisma.CartItemCreateWithoutSizeInput[] | Prisma.CartItemUncheckedCreateWithoutSizeInput[]
+  connectOrCreate?: Prisma.CartItemCreateOrConnectWithoutSizeInput | Prisma.CartItemCreateOrConnectWithoutSizeInput[]
+  upsert?: Prisma.CartItemUpsertWithWhereUniqueWithoutSizeInput | Prisma.CartItemUpsertWithWhereUniqueWithoutSizeInput[]
+  createMany?: Prisma.CartItemCreateManySizeInputEnvelope
+  set?: Prisma.CartItemWhereUniqueInput | Prisma.CartItemWhereUniqueInput[]
+  disconnect?: Prisma.CartItemWhereUniqueInput | Prisma.CartItemWhereUniqueInput[]
+  delete?: Prisma.CartItemWhereUniqueInput | Prisma.CartItemWhereUniqueInput[]
+  connect?: Prisma.CartItemWhereUniqueInput | Prisma.CartItemWhereUniqueInput[]
+  update?: Prisma.CartItemUpdateWithWhereUniqueWithoutSizeInput | Prisma.CartItemUpdateWithWhereUniqueWithoutSizeInput[]
+  updateMany?: Prisma.CartItemUpdateManyWithWhereWithoutSizeInput | Prisma.CartItemUpdateManyWithWhereWithoutSizeInput[]
+  deleteMany?: Prisma.CartItemScalarWhereInput | Prisma.CartItemScalarWhereInput[]
 }
 
 export type CartItemCreateNestedManyWithoutProductInput = {
@@ -462,12 +534,72 @@ export type CartItemUncheckedUpdateManyWithoutProductNestedInput = {
   deleteMany?: Prisma.CartItemScalarWhereInput | Prisma.CartItemScalarWhereInput[]
 }
 
+export type CartItemCreateWithoutSizeInput = {
+  userId?: number | null
+  quantity?: number
+  customImage?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  product: Prisma.productCreateNestedOneWithoutCartItemInput
+}
+
+export type CartItemUncheckedCreateWithoutSizeInput = {
+  id?: number
+  userId?: number | null
+  productId: number
+  quantity?: number
+  customImage?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CartItemCreateOrConnectWithoutSizeInput = {
+  where: Prisma.CartItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.CartItemCreateWithoutSizeInput, Prisma.CartItemUncheckedCreateWithoutSizeInput>
+}
+
+export type CartItemCreateManySizeInputEnvelope = {
+  data: Prisma.CartItemCreateManySizeInput | Prisma.CartItemCreateManySizeInput[]
+  skipDuplicates?: boolean
+}
+
+export type CartItemUpsertWithWhereUniqueWithoutSizeInput = {
+  where: Prisma.CartItemWhereUniqueInput
+  update: Prisma.XOR<Prisma.CartItemUpdateWithoutSizeInput, Prisma.CartItemUncheckedUpdateWithoutSizeInput>
+  create: Prisma.XOR<Prisma.CartItemCreateWithoutSizeInput, Prisma.CartItemUncheckedCreateWithoutSizeInput>
+}
+
+export type CartItemUpdateWithWhereUniqueWithoutSizeInput = {
+  where: Prisma.CartItemWhereUniqueInput
+  data: Prisma.XOR<Prisma.CartItemUpdateWithoutSizeInput, Prisma.CartItemUncheckedUpdateWithoutSizeInput>
+}
+
+export type CartItemUpdateManyWithWhereWithoutSizeInput = {
+  where: Prisma.CartItemScalarWhereInput
+  data: Prisma.XOR<Prisma.CartItemUpdateManyMutationInput, Prisma.CartItemUncheckedUpdateManyWithoutSizeInput>
+}
+
+export type CartItemScalarWhereInput = {
+  AND?: Prisma.CartItemScalarWhereInput | Prisma.CartItemScalarWhereInput[]
+  OR?: Prisma.CartItemScalarWhereInput[]
+  NOT?: Prisma.CartItemScalarWhereInput | Prisma.CartItemScalarWhereInput[]
+  id?: Prisma.IntFilter<"CartItem"> | number
+  userId?: Prisma.IntNullableFilter<"CartItem"> | number | null
+  productId?: Prisma.IntFilter<"CartItem"> | number
+  quantity?: Prisma.IntFilter<"CartItem"> | number
+  customImage?: Prisma.StringNullableFilter<"CartItem"> | string | null
+  sizeId?: Prisma.IntNullableFilter<"CartItem"> | number | null
+  createdAt?: Prisma.DateTimeFilter<"CartItem"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"CartItem"> | Date | string
+}
+
 export type CartItemCreateWithoutProductInput = {
   userId?: number | null
   quantity?: number
   customImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  size?: Prisma.SizeCreateNestedOneWithoutCartItemInput
 }
 
 export type CartItemUncheckedCreateWithoutProductInput = {
@@ -475,6 +607,7 @@ export type CartItemUncheckedCreateWithoutProductInput = {
   userId?: number | null
   quantity?: number
   customImage?: string | null
+  sizeId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -505,17 +638,43 @@ export type CartItemUpdateManyWithWhereWithoutProductInput = {
   data: Prisma.XOR<Prisma.CartItemUpdateManyMutationInput, Prisma.CartItemUncheckedUpdateManyWithoutProductInput>
 }
 
-export type CartItemScalarWhereInput = {
-  AND?: Prisma.CartItemScalarWhereInput | Prisma.CartItemScalarWhereInput[]
-  OR?: Prisma.CartItemScalarWhereInput[]
-  NOT?: Prisma.CartItemScalarWhereInput | Prisma.CartItemScalarWhereInput[]
-  id?: Prisma.IntFilter<"CartItem"> | number
-  userId?: Prisma.IntNullableFilter<"CartItem"> | number | null
-  productId?: Prisma.IntFilter<"CartItem"> | number
-  quantity?: Prisma.IntFilter<"CartItem"> | number
-  customImage?: Prisma.StringNullableFilter<"CartItem"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"CartItem"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"CartItem"> | Date | string
+export type CartItemCreateManySizeInput = {
+  id?: number
+  userId?: number | null
+  productId: number
+  quantity?: number
+  customImage?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CartItemUpdateWithoutSizeInput = {
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  customImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  product?: Prisma.productUpdateOneRequiredWithoutCartItemNestedInput
+}
+
+export type CartItemUncheckedUpdateWithoutSizeInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productId?: Prisma.IntFieldUpdateOperationsInput | number
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  customImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CartItemUncheckedUpdateManyWithoutSizeInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productId?: Prisma.IntFieldUpdateOperationsInput | number
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  customImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CartItemCreateManyProductInput = {
@@ -523,6 +682,7 @@ export type CartItemCreateManyProductInput = {
   userId?: number | null
   quantity?: number
   customImage?: string | null
+  sizeId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -533,6 +693,7 @@ export type CartItemUpdateWithoutProductInput = {
   customImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  size?: Prisma.SizeUpdateOneWithoutCartItemNestedInput
 }
 
 export type CartItemUncheckedUpdateWithoutProductInput = {
@@ -540,6 +701,7 @@ export type CartItemUncheckedUpdateWithoutProductInput = {
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   customImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sizeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -549,6 +711,7 @@ export type CartItemUncheckedUpdateManyWithoutProductInput = {
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   customImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sizeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -561,8 +724,10 @@ export type CartItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   productId?: boolean
   quantity?: boolean
   customImage?: boolean
+  sizeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  size?: boolean | Prisma.CartItem$sizeArgs<ExtArgs>
   product?: boolean | Prisma.productDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["cartItem"]>
 
@@ -572,8 +737,10 @@ export type CartItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   productId?: boolean
   quantity?: boolean
   customImage?: boolean
+  sizeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  size?: boolean | Prisma.CartItem$sizeArgs<ExtArgs>
   product?: boolean | Prisma.productDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["cartItem"]>
 
@@ -583,8 +750,10 @@ export type CartItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   productId?: boolean
   quantity?: boolean
   customImage?: boolean
+  sizeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  size?: boolean | Prisma.CartItem$sizeArgs<ExtArgs>
   product?: boolean | Prisma.productDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["cartItem"]>
 
@@ -594,24 +763,29 @@ export type CartItemSelectScalar = {
   productId?: boolean
   quantity?: boolean
   customImage?: boolean
+  sizeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CartItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "productId" | "quantity" | "customImage" | "createdAt" | "updatedAt", ExtArgs["result"]["cartItem"]>
+export type CartItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "productId" | "quantity" | "customImage" | "sizeId" | "createdAt" | "updatedAt", ExtArgs["result"]["cartItem"]>
 export type CartItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  size?: boolean | Prisma.CartItem$sizeArgs<ExtArgs>
   product?: boolean | Prisma.productDefaultArgs<ExtArgs>
 }
 export type CartItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  size?: boolean | Prisma.CartItem$sizeArgs<ExtArgs>
   product?: boolean | Prisma.productDefaultArgs<ExtArgs>
 }
 export type CartItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  size?: boolean | Prisma.CartItem$sizeArgs<ExtArgs>
   product?: boolean | Prisma.productDefaultArgs<ExtArgs>
 }
 
 export type $CartItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CartItem"
   objects: {
+    size: Prisma.$SizePayload<ExtArgs> | null
     product: Prisma.$productPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -620,6 +794,7 @@ export type $CartItemPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     productId: number
     quantity: number
     customImage: string | null
+    sizeId: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["cartItem"]>
@@ -1016,6 +1191,7 @@ readonly fields: CartItemFieldRefs;
  */
 export interface Prisma__CartItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  size<T extends Prisma.CartItem$sizeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CartItem$sizeArgs<ExtArgs>>): Prisma.Prisma__SizeClient<runtime.Types.Result.GetResult<Prisma.$SizePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   product<T extends Prisma.productDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.productDefaultArgs<ExtArgs>>): Prisma.Prisma__productClient<runtime.Types.Result.GetResult<Prisma.$productPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1051,6 +1227,7 @@ export interface CartItemFieldRefs {
   readonly productId: Prisma.FieldRef<"CartItem", 'Int'>
   readonly quantity: Prisma.FieldRef<"CartItem", 'Int'>
   readonly customImage: Prisma.FieldRef<"CartItem", 'String'>
+  readonly sizeId: Prisma.FieldRef<"CartItem", 'Int'>
   readonly createdAt: Prisma.FieldRef<"CartItem", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"CartItem", 'DateTime'>
 }
@@ -1446,6 +1623,25 @@ export type CartItemDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many CartItems to delete.
    */
   limit?: number
+}
+
+/**
+ * CartItem.size
+ */
+export type CartItem$sizeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Size
+   */
+  select?: Prisma.SizeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Size
+   */
+  omit?: Prisma.SizeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SizeInclude<ExtArgs> | null
+  where?: Prisma.SizeWhereInput
 }
 
 /**

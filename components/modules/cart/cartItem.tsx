@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { X, Plus, Minus, Sparkles } from "lucide-react";
+import { X, Plus, Minus, Sparkles, Ruler } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { CartItemType } from "./cart";
@@ -26,19 +26,17 @@ export default function CartItem({
 
   return (
     <div className="group flex flex-row w-full gap-3 md:gap-5 py-4 md:py-6 px-2 md:px-3 bg-white border-b border-slate-100 last:border-0 transition-all">
-      {/* Ürün Görseli - Responsive Boyutlandırma */}
+      {/* Ürün Görseli */}
       <Link
         href={`/products/${product.id}`}
         className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 flex-shrink-0 bg-white overflow-hidden border border-slate-100 rounded-sm"
       >
-        {/* Özelleştirme Badge'i */}
         {isCustomized && (
           <div className="absolute top-0 left-0 z-10 bg-gradient-to-r from-orange-600 to-pink-600 text-white text-[7px] md:text-[8px] font-bold px-1.5 py-0.5 uppercase tracking-tight flex items-center gap-1">
             <Sparkles size={8} className="animate-pulse" />
             <span className="hidden sm:inline">Özel</span>
           </div>
         )}
-
         <Image
           src={displayImage}
           alt={product.title}
@@ -52,6 +50,7 @@ export default function CartItem({
       <div className="flex-1 flex flex-col justify-between min-w-0">
         <div className="flex justify-between items-start gap-2">
           <div className="space-y-0.5 md:space-y-1 overflow-hidden">
+            {/* Başlık */}
             <Link href={`/products/${product.id}`}>
               <h3 className="text-xs md:text-sm font-bold tracking-tight text-slate-900 hover:text-slate-500 transition-colors uppercase leading-tight truncate md:whitespace-normal">
                 {product.title}
@@ -63,6 +62,7 @@ export default function CartItem({
               </h3>
             </Link>
 
+            {/* Meta satır: Custom / Pro-Series + ID */}
             <div className="flex flex-wrap items-center gap-1 md:gap-2">
               {isCustomized ? (
                 <>
@@ -85,7 +85,20 @@ export default function CartItem({
               </span>
             </div>
 
-            {/* Özelleştirme Bilgi Mesajı */}
+            {/* ─── Beden badge ──────────────────────────────────────────────── */}
+            {item.sizeId && (
+              <div className="flex items-center gap-1 mt-0.5">
+                <Ruler size={10} className="text-indigo-500" />
+                <span className="text-[9px] md:text-[10px] text-indigo-600 font-bold uppercase tracking-wide">
+                  Beden:{" "}
+                  {item.size?.value // API'den gelen size.value
+                    ? item.size.value
+                    : item.sizeId}{" "}
+                </span>
+              </div>
+            )}
+
+            {/* Özel resim bilgisi */}
             {isCustomized && (
               <div className="mt-1 md:mt-2">
                 <p className="text-[8px] md:text-[9px] text-orange-600 bg-orange-50 px-2 py-1 rounded inline-block font-medium">
@@ -95,6 +108,7 @@ export default function CartItem({
             )}
           </div>
 
+          {/* Kaldır butonu */}
           <button
             onClick={onRemove}
             className="text-slate-300 hover:text-red-600 transition-colors p-1 rounded-sm"
@@ -104,9 +118,9 @@ export default function CartItem({
           </button>
         </div>
 
-        {/* Adet ve Fiyat Bölümü */}
+        {/* Adet + Fiyat */}
         <div className="flex flex-row justify-between items-end mt-2 md:mt-4">
-          {/* Kompakt Adet Kontrolü */}
+          {/* Adet kontrolü */}
           <div
             className={`flex items-center border rounded-sm ${
               isCustomized
@@ -144,7 +158,7 @@ export default function CartItem({
             </button>
           </div>
 
-          {/* Fiyat Bilgisi */}
+          {/* Fiyat */}
           <div className="text-right ml-2">
             <p className="hidden xs:block text-[9px] md:text-[10px] text-slate-400 font-bold mb-0.5 uppercase tracking-tighter">
               Birim: ₺{(product.price || 0).toLocaleString("tr-TR")}
