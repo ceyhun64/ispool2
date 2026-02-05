@@ -12,7 +12,7 @@ interface CancelOrderBody {
 const sendMail = async (
   recipients: string[],
   subject: string,
-  message: string
+  message: string,
 ) => {
   try {
     await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/send-mail`, {
@@ -35,18 +35,35 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const orders = await prisma.order.findMany({
       where: { userId: Number(session.user.id) },
       include: {
-        items: { include: { product: true } },
+        items: {
+          include: {
+            product: true,
+            size: true, // Beden bilgisi eklendi
+          },
+        },
         addresses: true,
       },
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({ status: "success", orders });
+    // Fiyatları TL'ye çevir (kuruştan)
+    const formattedOrders = orders.map((order) => ({
+      ...order,
+      totalPrice: order.totalPrice / 100,
+      paidPrice: order.paidPrice / 100,
+      items: order.items.map((item) => ({
+        ...item,
+        unitPrice: item.unitPrice,
+        totalPrice: item.totalPrice,
+      })),
+    }));
+
+    return NextResponse.json({ status: "success", orders: formattedOrders });
   } catch (error: any) {
     console.error("User Orders GET Error:", error);
     return NextResponse.json(
       { status: "failure", error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -64,14 +81,19 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
     if (!orderId)
       return NextResponse.json(
         { status: "failure", error: "orderId gerekli" },
-        { status: 400 }
+        { status: 400 },
       );
 
     // Kullanıcının kendi siparişi mi kontrol et
     const order = await prisma.order.findUnique({
       where: { id: Number(orderId) },
       include: {
-        items: { include: { product: true } },
+        items: {
+          include: {
+            product: true,
+            size: true, // Beden bilgisi eklendi
+          },
+        },
         addresses: true,
         user: true, // kullanıcının emailini almak için
       },
@@ -80,7 +102,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
     if (!order || order.userId !== Number(session.user.id)) {
       return NextResponse.json(
         { status: "failure", error: "Sipariş bulunamadı veya erişim yok" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -88,7 +110,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
     if (["delivered", "shipped", "cancelled"].includes(order.status)) {
       return NextResponse.json(
         { status: "failure", error: "Bu sipariş artık iptal edilemez." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -97,7 +119,12 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
       where: { id: Number(orderId) },
       data: { status: "cancelled" },
       include: {
-        items: { include: { product: true } },
+        items: {
+          include: {
+            product: true,
+            size: true, // Beden bilgisi eklendi
+          },
+        },
         addresses: true,
         user: true,
       },
@@ -116,15 +143,22 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
     await sendMail(
       ["ceyhunturkmen4@gmail.com"],
       `Order ${order.id} Cancelled by User`,
-      adminMessage
+      adminMessage,
     );
 
-    return NextResponse.json({ status: "success", order: updatedOrder });
+    // Fiyatları TL'ye çevir
+    const formattedOrder = {
+      ...updatedOrder,
+      totalPrice: updatedOrder.totalPrice / 100,
+      paidPrice: updatedOrder.paidPrice / 100,
+    };
+
+    return NextResponse.json({ status: "success", order: formattedOrder });
   } catch (error: any) {
     console.error("User Orders PATCH Error:", error);
     return NextResponse.json(
       { status: "failure", error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

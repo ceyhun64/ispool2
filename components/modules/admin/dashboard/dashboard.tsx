@@ -1,20 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Sidebar from "@/components/modules/admin/sideBar";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   Package,
   ShoppingCart,
   Users,
   FileText,
-  Loader,
-  CheckCircle,
-  Truck,
-  XCircle,
-  UserPlus,
+  Bell,
+  Ticket,
+  Settings,
   ArrowRight,
-  ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -25,12 +21,10 @@ import { Spinner } from "@/components/ui/spinner";
 interface KPI {
   id: string;
   title: string;
-  stat: number;
+  stat: number | string;
   description: string;
   icon: React.ReactNode;
   href: string;
-  color: string;
-  bgColor: string;
 }
 
 export default function AdminDashboard() {
@@ -40,131 +34,150 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   const getStatusBadge = (status: string) => {
-    const tr: Record<string, any> = {
-      pending: [
-        "Beklemede",
-        "bg-amber-100/50 text-amber-700 border-amber-200",
-        <Loader size={12} className="animate-spin" />,
-      ],
-      paid: [
-        "Ödendi",
-        "bg-emerald-100/50 text-emerald-700 border-emerald-200",
-        <CheckCircle size={12} />,
-      ],
-      shipped: [
-        "Kargoda",
-        "bg-blue-100/50 text-blue-700 border-blue-200",
-        <Truck size={12} />,
-      ],
-      delivered: [
-        "Teslim Edildi",
-        "bg-slate-100/80 text-slate-700 border-slate-200",
-        <Package size={12} />,
-      ],
-      cancelled: [
-        "İptal",
-        "bg-red-100/50 text-red-700 border-red-200",
-        <XCircle size={12} />,
-      ],
+    const styles: Record<string, { label: string; className: string }> = {
+      pending: {
+        label: "Beklemede",
+        className: "bg-amber-50 text-amber-700 border-amber-200",
+      },
+      paid: {
+        label: "Ödendi",
+        className: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      },
+      shipped: {
+        label: "Kargoda",
+        className: "bg-blue-50 text-blue-700 border-blue-200",
+      },
+      delivered: {
+        label: "Teslim Edildi",
+        className: "bg-slate-50 text-slate-700 border-slate-200",
+      },
+      cancelled: {
+        label: "İptal",
+        className: "bg-red-50 text-red-700 border-red-200",
+      },
     };
 
-    const [label, style, icon] = tr[status] || [
-      "Bilinmiyor",
-      "bg-slate-50",
-      null,
-    ];
+    const { label, className } = styles[status] || styles.pending;
 
     return (
       <Badge
         variant="outline"
-        className={`${style} flex items-center w-fit gap-1.5 px-3 py-1 text-[10px] sm:text-[11px] font-bold tracking-tight border`}
+        className={`${className} text-[10px] font-semibold border px-2 py-0.5`}
       >
-        {icon} <span className="hidden sm:inline uppercase">{label}</span>
+        {label}
       </Badge>
     );
+  };
+
+  const formatOrderId = (id: any): string => {
+    if (!id) return "000000";
+    const idStr = String(id);
+    if (idStr.length >= 6) {
+      return idStr.slice(-6).toUpperCase();
+    }
+    return idStr.padStart(6, "0").toUpperCase();
   };
 
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const [productRes, orderRes, userRes, blogRes, subsRes] =
+      const [productRes, orderRes, userRes, blogRes, subsRes, couponRes] =
         await Promise.all([
           fetch("/api/products"),
           fetch("/api/order"),
           fetch("/api/user/all"),
           fetch("/api/blog"),
           fetch("/api/subscribe"),
+          fetch("/api/coupon"),
         ]);
 
-      const products = await productRes.json();
-      const orders = await orderRes.json();
-      const users = await userRes.json();
-      const blogs = await blogRes.json();
-      const subscribers = await subsRes.json();
+      const products = productRes.ok
+        ? await productRes.json().catch(() => ({}))
+        : {};
+      const orders = orderRes.ok ? await orderRes.json().catch(() => ({})) : {};
+      const users = userRes.ok ? await userRes.json().catch(() => ({})) : {};
+      const blogs = blogRes.ok ? await blogRes.json().catch(() => ({})) : {};
+      const subscribers = subsRes.ok
+        ? await subsRes.json().catch(() => [])
+        : [];
+      const coupons = couponRes.ok
+        ? await couponRes.json().catch(() => ({}))
+        : {};
 
       setKpiData([
         {
           id: "products",
-          title: "Stok Envanteri",
+          title: "Ürünler",
           stat: products.products?.length || 0,
-          description: "Premium Ürün Gamı",
-          icon: <Package size={20} />,
+          description: "Toplam Ürün",
+          icon: <Package className="w-5 h-5" />,
           href: "/admin/products",
-          color: "text-slate-900",
-          bgColor: "bg-slate-100",
         },
         {
           id: "orders",
-          title: "Sipariş Akışı",
+          title: "Siparişler",
           stat: orders.orders?.length || 0,
-          description: "Net Satış Hacmi",
-          icon: <ShoppingCart size={20} />,
+          description: "Toplam Sipariş",
+          icon: <ShoppingCart className="w-5 h-5" />,
           href: "/admin/orders",
-          color: "text-orange-600",
-          bgColor: "bg-orange-50",
         },
         {
           id: "users",
-          title: "Portföy",
+          title: "Müşteriler",
           stat: users.users?.length || 0,
-          description: "Kurumsal Müşteriler",
-          icon: <Users size={20} />,
+          description: "Kayıtlı Kullanıcı",
+          icon: <Users className="w-5 h-5" />,
           href: "/admin/users",
-          color: "text-slate-900",
-          bgColor: "bg-slate-100",
         },
         {
           id: "blogs",
-          title: "Bilgi Merkezi",
+          title: "Blog Yazıları",
           stat: blogs.blogs?.length || 0,
-          description: "İSG Makaleleri",
-          icon: <ShieldCheck size={20} />,
+          description: "Yayında",
+          icon: <FileText className="w-5 h-5" />,
           href: "/admin/blogs",
-          color: "text-slate-900",
-          bgColor: "bg-slate-100",
         },
         {
           id: "subscribers",
-          title: "Bülten",
-          stat: Array.isArray(subscribers) ? subscribers.length : 0,
-          description: "Potansiyel Lead",
-          icon: <UserPlus size={20} />,
+          title: "Aboneler",
+          stat: Array.isArray(subscribers)
+            ? subscribers.length
+            : subscribers.subscribers?.length || 0,
+          description: "E-posta Abonesi",
+          icon: <Bell className="w-5 h-5" />,
           href: "/admin/subscribers",
-          color: "text-slate-900",
-          bgColor: "bg-slate-100",
+        },
+        {
+          id: "coupons",
+          title: "Kuponlar",
+          stat:
+            coupons.coupons?.length ||
+            (Array.isArray(coupons) ? coupons.length : 0),
+          description: "Aktif Kupon",
+          icon: <Ticket className="w-5 h-5" />,
+          href: "/admin/coupon",
+        },
+        {
+          id: "settings",
+          title: "Ayarlar",
+          stat: "Yönet",
+          description: "Site Ayarları",
+          icon: <Settings className="w-5 h-5" />,
+          href: "/admin/banner",
         },
       ]);
 
+      const orderList = orders.orders || [];
       setRecentOrders(
-        orders.orders
-          ?.sort(
+        [...orderList]
+          .sort(
             (a: any, b: any) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
           )
-          .slice(0, 6) || [],
+          .slice(0, 6),
       );
     } catch (err) {
-      console.error(err);
+      console.error("Dashboard yükleme hatası:", err);
     } finally {
       setLoading(false);
     }
@@ -182,186 +195,160 @@ export default function AdminDashboard() {
     );
 
   return (
-    <div className="flex min-h-screen bg-[#FDFDFD] font-sans selection:bg-orange-100">
-      <Sidebar />
-      <main
-        className={`flex-1 p-4 sm:p-8 lg:p-12 transition-all duration-300 ${
-          isMobile ? "mt-14" : "md:ml-[240px] lg:ml-[280px]"
-        }`}
-      >
-        {/* Header Section */}
-        <header className="flex flex-col gap-2 mb-10">
-          <div className="flex items-center gap-3">
-            <span className="h-[2px] w-12 bg-orange-600" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-orange-600">
-              Pro-Wear Dashboard
-            </span>
-          </div>
-          <div className="flex items-end justify-between">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-950 uppercase">
-                Panel <span className="text-slate-400 font-light">Özet</span>
-              </h1>
-              <p className="text-slate-500 text-sm mt-2 font-medium">
-                Endüstriyel performans ve operasyonel veriler.
-              </p>
-            </div>
-          </div>
-        </header>
+    <div
+      className={`flex-1 bg-slate-50 min-h-screen p-6 sm:p-8 ${isMobile ? "mt-14" : ""}`}
+    >
+      {/* Header */}
+      <header className="mb-8">
+        <h1 className="text-2xl font-bold text-slate-900 mb-1">Panel Özet</h1>
+        <p className="text-sm text-slate-600">
+          Sistem geneli operasyonel kısayollar ve veriler
+        </p>
+      </header>
 
-        {/* KPI CARDS */}
-        <div className="grid gap-4 mb-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {kpiData.map((card) => (
-            <Link key={card.id} href={card.href} className="group">
-              <Card className="bg-white h-full border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] transition-all duration-500 rounded-none relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-0 bg-orange-600 group-hover:h-full transition-all duration-300" />
-                <CardHeader className="flex flex-row items-center justify-between pb-4 space-y-0 px-5 pt-6">
-                  <div
-                    className={`p-2.5 ${card.bgColor} ${card.color} transition-colors duration-300`}
-                  >
+      {/* KPI Cards */}
+      <div className="grid gap-4 mb-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {kpiData.map((card) => (
+          <Link key={card.id} href={card.href}>
+            <Card className="bg-white hover:shadow-md rounded-xl transition-shadow border-slate-200">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="p-2 bg-slate-100 text-slate-700 rounded">
                     {card.icon}
                   </div>
-                  <ArrowRight
-                    size={16}
-                    className="text-slate-200 group-hover:text-orange-600 transition-all -translate-x-2 group-hover:translate-x-0"
-                  />
-                </CardHeader>
-                <CardContent className="px-5 pb-6">
-                  <div className="text-3xl font-bold text-slate-950 tabular-nums">
-                    {card.stat}
-                  </div>
-                  <p className="text-[12px] font-bold text-slate-400 uppercase tracking-wider mt-1">
-                    {card.title}
-                  </p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
+                  <ArrowRight className="w-4 h-4 text-slate-400" />
+                </div>
+                <div className="text-2xl font-bold text-slate-900 mb-1">
+                  {card.stat}
+                </div>
+                <p className="text-xs font-medium text-slate-600">
+                  {card.title}
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
 
-        {/* RECENT ORDERS TABLE */}
-        <Card className="bg-white border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] rounded-none overflow-hidden">
-          <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-orange-600" />
-              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-900">
-                Lojistik ve Sipariş Takibi
-              </h2>
-            </div>
+      {/* Recent Orders */}
+      <Card className="bg-white border-slate-200 py-6 rounded-sm">
+        <CardHeader className="border-b border-slate-200">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base font-semibold text-slate-900">
+              Son Siparişler
+            </CardTitle>
             <Link
               href="/admin/orders"
-              className="text-[11px] font-bold uppercase tracking-tighter text-slate-400 hover:text-orange-600 transition-colors flex items-center gap-1"
+              className="text-xs font-medium text-slate-600 hover:text-slate-900"
             >
-              Arşivi Görüntüle <ArrowRight size={12} />
+              Tümünü Gör →
             </Link>
           </div>
-          <CardContent className="p-0">
-            {/* Desktop Table */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-left">
-                <thead className="bg-slate-50 text-slate-500 text-[10px] uppercase tracking-[0.15em] font-bold">
-                  <tr>
-                    <th className="px-6 py-4">Müşteri Profili</th>
-                    <th className="px-6 py-4 hidden lg:table-cell">
-                      Ekipman Detayı
-                    </th>
-                    <th className="px-6 py-4">Hakediş</th>
-                    <th className="px-6 py-4">Lojistik Durum</th>
-                    <th className="px-6 py-4 text-right">Aksiyon</th>
+        </CardHeader>
+        <CardContent className="p-0">
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600">
+                    Sipariş No
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600">
+                    Müşteri
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-semibold text-slate-600">
+                    Tutar
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-semibold text-slate-600">
+                    Durum
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-semibold text-slate-600">
+                    İşlem
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {recentOrders.map((order) => (
+                  <tr
+                    key={order.id}
+                    className="hover:bg-slate-50 transition-colors"
+                  >
+                    <td className="px-6 py-4">
+                      <span className="text-sm font-medium text-slate-900">
+                        #{formatOrderId(order.id)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm text-slate-900">
+                        {order.user?.name} {order.user?.surname}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <span className="text-sm font-semibold text-slate-900">
+                        {order.paidPrice?.toLocaleString("tr-TR")} ₺
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      {getStatusBadge(order.status)}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <Link href={`/admin/orders?orderId=${order.id}`}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-slate-600 hover:text-slate-900"
+                        >
+                          Detay
+                        </Button>
+                      </Link>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {recentOrders.map((order) => (
-                    <tr
-                      key={order.id}
-                      className="hover:bg-slate-50/50 transition-colors"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col">
-                          <span className="text-sm font-bold text-slate-900 uppercase">
-                            {order.user.name} {order.user.surname}
-                          </span>
-                          <span className="text-[11px] font-medium text-slate-400">
-                            ID: #{order.id.slice(-6).toUpperCase()} •{" "}
-                            {new Date(order.createdAt).toLocaleDateString(
-                              "tr-TR",
-                            )}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 hidden lg:table-cell">
-                        <p className="text-[12px] font-medium text-slate-600 truncate max-w-[220px]">
-                          {order.items
-                            ?.map((i: any) => i.product?.title)
-                            .join(", ") || "Endüstriyel Çözüm"}
-                        </p>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm font-black text-slate-950">
-                          {order.paidPrice?.toLocaleString("tr-TR")} ₺
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        {getStatusBadge(order.status)}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <Link href={`/admin/orders?orderId=${order.id}`}>
-                          <Button
-                            variant="outline"
-                            className="h-8 w-8 p-0 border-slate-200 hover:border-orange-600 hover:bg-orange-600 hover:text-white transition-all rounded-none"
-                          >
-                            <ArrowRight size={14} />
-                          </Button>
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-            {/* Mobile Cards (Kısıtlı alanda sadeleştirilmiş premium görünüm) */}
-            <div className="md:hidden space-y-0 divide-y divide-slate-100">
-              {recentOrders.map((order) => (
-                <div key={order.id} className="p-5 bg-white">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex flex-col">
-                      <p className="text-[12px] font-black text-slate-900 uppercase tracking-tight">
-                        {order.user.name} {order.user.surname}
-                      </p>
-                      <p className="text-[10px] font-bold text-slate-400">
-                        {new Date(order.createdAt).toLocaleDateString("tr-TR")}
-                      </p>
-                    </div>
-                    {getStatusBadge(order.status)}
+          {/* Mobile View */}
+          <div className="md:hidden divide-y divide-slate-100">
+            {recentOrders.map((order) => (
+              <div key={order.id} className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">
+                      #{formatOrderId(order.id)}
+                    </p>
+                    <p className="text-xs text-slate-600">
+                      {order.user?.name} {order.user?.surname}
+                    </p>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-black text-slate-900">
-                      {order.paidPrice?.toLocaleString("tr-TR")} ₺
-                    </span>
-                    <Link href={`/admin/orders?orderId=${order.id}`}>
-                      <Button
-                        variant="link"
-                        className="text-orange-600 font-bold p-0 h-auto text-xs uppercase"
-                      >
-                        Detayları İncele
-                      </Button>
-                    </Link>
-                  </div>
+                  {getStatusBadge(order.status)}
                 </div>
-              ))}
-            </div>
-
-            {recentOrders.length === 0 && (
-              <div className="py-20 text-center">
-                <p className="text-slate-400 text-xs font-bold uppercase tracking-widest italic">
-                  Kayıtlı operasyon bulunamadı.
-                </p>
+                <div className="flex justify-between items-center mt-3">
+                  <span className="text-sm font-bold text-slate-900">
+                    {order.paidPrice?.toLocaleString("tr-TR")} ₺
+                  </span>
+                  <Link href={`/admin/orders?orderId=${order.id}`}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-slate-600 hover:text-slate-900"
+                    >
+                      Detay
+                    </Button>
+                  </Link>
+                </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </main>
+            ))}
+          </div>
+
+          {recentOrders.length === 0 && (
+            <div className="py-12 text-center text-slate-500 text-sm">
+              Henüz sipariş bulunmuyor
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -47,10 +47,16 @@ interface Product {
   mainImage: string;
 }
 
+interface Size {
+  id: number;
+  value: string;
+}
+
 interface BasketItem {
   id: number;
   product: Product;
   quantity: number;
+  size?: Size;
 }
 
 interface CouponData {
@@ -116,7 +122,13 @@ export default function BasketSummaryCard({
                   mainImage: item.product.mainImage,
                 },
                 quantity: item.quantity,
-              }))
+                size: item.size
+                  ? {
+                      id: item.size.id,
+                      value: item.size.value,
+                    }
+                  : undefined,
+              })),
             );
             setGuestItems([]);
           }
@@ -144,13 +156,14 @@ export default function BasketSummaryCard({
           mainImage: item.image,
         },
         quantity: item.quantity,
+        size: undefined,
       }));
 
   const calculatedSubTotal =
     externalSubTotal ||
     itemsToRender.reduce(
       (acc, item) => acc + item.product.price * item.quantity,
-      0
+      0,
     );
 
   const calculatedKdv = calculatedSubTotal * KDV_RATE;
@@ -161,12 +174,12 @@ export default function BasketSummaryCard({
   const discountAmount = appliedCoupon?.discountAmount || 0;
   const baseTotalAfterDiscount = Math.max(
     0,
-    baseTotalBeforeDiscount - discountAmount
+    baseTotalBeforeDiscount - discountAmount,
   );
 
   // Calculate installment
   const selectedRate = installmentRates.find(
-    (r) => r.count === selectedInstallment
+    (r) => r.count === selectedInstallment,
   );
   const interestAmount = selectedRate
     ? baseTotalAfterDiscount * (selectedRate.rate / 100)
@@ -278,9 +291,19 @@ export default function BasketSummaryCard({
                   <p className="text-[11px] font-medium text-slate-900 truncate uppercase tracking-tight">
                     {item.product.title}
                   </p>
-                  <p className="text-[10px] text-slate-400">
-                    {item.quantity} Adet
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-[10px] text-slate-400">
+                      {item.quantity} Adet
+                    </p>
+                    {item.size && (
+                      <>
+                        <span className="text-[10px] text-slate-300">•</span>
+                        <p className="text-[10px] text-slate-400 font-medium">
+                          Beden: {item.size.value}
+                        </p>
+                      </>
+                    )}
+                  </div>
                 </div>
                 <div className="text-right flex flex-col justify-center">
                   <p className="text-xs font-semibold text-slate-950">

@@ -39,7 +39,6 @@ export type SizeSumAggregateOutputType = {
 export type SizeMinAggregateOutputType = {
   id: number | null
   value: string | null
-  type: string | null
   sortOrder: number | null
   isActive: boolean | null
   createdAt: Date | null
@@ -49,7 +48,6 @@ export type SizeMinAggregateOutputType = {
 export type SizeMaxAggregateOutputType = {
   id: number | null
   value: string | null
-  type: string | null
   sortOrder: number | null
   isActive: boolean | null
   createdAt: Date | null
@@ -59,7 +57,6 @@ export type SizeMaxAggregateOutputType = {
 export type SizeCountAggregateOutputType = {
   id: number
   value: number
-  type: number
   sortOrder: number
   isActive: number
   createdAt: number
@@ -81,7 +78,6 @@ export type SizeSumAggregateInputType = {
 export type SizeMinAggregateInputType = {
   id?: true
   value?: true
-  type?: true
   sortOrder?: true
   isActive?: true
   createdAt?: true
@@ -91,7 +87,6 @@ export type SizeMinAggregateInputType = {
 export type SizeMaxAggregateInputType = {
   id?: true
   value?: true
-  type?: true
   sortOrder?: true
   isActive?: true
   createdAt?: true
@@ -101,7 +96,6 @@ export type SizeMaxAggregateInputType = {
 export type SizeCountAggregateInputType = {
   id?: true
   value?: true
-  type?: true
   sortOrder?: true
   isActive?: true
   createdAt?: true
@@ -198,7 +192,6 @@ export type SizeGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type SizeGroupByOutputType = {
   id: number
   value: string
-  type: string
   sortOrder: number
   isActive: boolean
   createdAt: Date
@@ -231,7 +224,6 @@ export type SizeWhereInput = {
   NOT?: Prisma.SizeWhereInput | Prisma.SizeWhereInput[]
   id?: Prisma.IntFilter<"Size"> | number
   value?: Prisma.StringFilter<"Size"> | string
-  type?: Prisma.StringFilter<"Size"> | string
   sortOrder?: Prisma.IntFilter<"Size"> | number
   isActive?: Prisma.BoolFilter<"Size"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Size"> | Date | string
@@ -244,7 +236,6 @@ export type SizeWhereInput = {
 export type SizeOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   value?: Prisma.SortOrder
-  type?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -256,12 +247,10 @@ export type SizeOrderByWithRelationInput = {
 
 export type SizeWhereUniqueInput = Prisma.AtLeast<{
   id?: number
-  value_type?: Prisma.SizeValueTypeCompoundUniqueInput
+  value?: string
   AND?: Prisma.SizeWhereInput | Prisma.SizeWhereInput[]
   OR?: Prisma.SizeWhereInput[]
   NOT?: Prisma.SizeWhereInput | Prisma.SizeWhereInput[]
-  value?: Prisma.StringFilter<"Size"> | string
-  type?: Prisma.StringFilter<"Size"> | string
   sortOrder?: Prisma.IntFilter<"Size"> | number
   isActive?: Prisma.BoolFilter<"Size"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Size"> | Date | string
@@ -269,12 +258,11 @@ export type SizeWhereUniqueInput = Prisma.AtLeast<{
   products?: Prisma.ProductSizeListRelationFilter
   CartItem?: Prisma.CartItemListRelationFilter
   OrderItem?: Prisma.OrderItemListRelationFilter
-}, "id" | "value_type">
+}, "id" | "value">
 
 export type SizeOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   value?: Prisma.SortOrder
-  type?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -292,7 +280,6 @@ export type SizeScalarWhereWithAggregatesInput = {
   NOT?: Prisma.SizeScalarWhereWithAggregatesInput | Prisma.SizeScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"Size"> | number
   value?: Prisma.StringWithAggregatesFilter<"Size"> | string
-  type?: Prisma.StringWithAggregatesFilter<"Size"> | string
   sortOrder?: Prisma.IntWithAggregatesFilter<"Size"> | number
   isActive?: Prisma.BoolWithAggregatesFilter<"Size"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Size"> | Date | string
@@ -301,7 +288,6 @@ export type SizeScalarWhereWithAggregatesInput = {
 
 export type SizeCreateInput = {
   value: string
-  type: string
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -314,7 +300,6 @@ export type SizeCreateInput = {
 export type SizeUncheckedCreateInput = {
   id?: number
   value: string
-  type: string
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -326,7 +311,6 @@ export type SizeUncheckedCreateInput = {
 
 export type SizeUpdateInput = {
   value?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -339,7 +323,6 @@ export type SizeUpdateInput = {
 export type SizeUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   value?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -352,7 +335,6 @@ export type SizeUncheckedUpdateInput = {
 export type SizeCreateManyInput = {
   id?: number
   value: string
-  type: string
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -361,7 +343,6 @@ export type SizeCreateManyInput = {
 
 export type SizeUpdateManyMutationInput = {
   value?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -371,22 +352,15 @@ export type SizeUpdateManyMutationInput = {
 export type SizeUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   value?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type SizeValueTypeCompoundUniqueInput = {
-  value: string
-  type: string
-}
-
 export type SizeCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   value?: Prisma.SortOrder
-  type?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -401,7 +375,6 @@ export type SizeAvgOrderByAggregateInput = {
 export type SizeMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   value?: Prisma.SortOrder
-  type?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -411,7 +384,6 @@ export type SizeMaxOrderByAggregateInput = {
 export type SizeMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   value?: Prisma.SortOrder
-  type?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -485,7 +457,6 @@ export type SizeUpdateOneWithoutOrderItemNestedInput = {
 
 export type SizeCreateWithoutProductsInput = {
   value: string
-  type: string
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -497,7 +468,6 @@ export type SizeCreateWithoutProductsInput = {
 export type SizeUncheckedCreateWithoutProductsInput = {
   id?: number
   value: string
-  type: string
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -524,7 +494,6 @@ export type SizeUpdateToOneWithWhereWithoutProductsInput = {
 
 export type SizeUpdateWithoutProductsInput = {
   value?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -536,7 +505,6 @@ export type SizeUpdateWithoutProductsInput = {
 export type SizeUncheckedUpdateWithoutProductsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   value?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -547,7 +515,6 @@ export type SizeUncheckedUpdateWithoutProductsInput = {
 
 export type SizeCreateWithoutCartItemInput = {
   value: string
-  type: string
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -559,7 +526,6 @@ export type SizeCreateWithoutCartItemInput = {
 export type SizeUncheckedCreateWithoutCartItemInput = {
   id?: number
   value: string
-  type: string
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -586,7 +552,6 @@ export type SizeUpdateToOneWithWhereWithoutCartItemInput = {
 
 export type SizeUpdateWithoutCartItemInput = {
   value?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -598,7 +563,6 @@ export type SizeUpdateWithoutCartItemInput = {
 export type SizeUncheckedUpdateWithoutCartItemInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   value?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -609,7 +573,6 @@ export type SizeUncheckedUpdateWithoutCartItemInput = {
 
 export type SizeCreateWithoutOrderItemInput = {
   value: string
-  type: string
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -621,7 +584,6 @@ export type SizeCreateWithoutOrderItemInput = {
 export type SizeUncheckedCreateWithoutOrderItemInput = {
   id?: number
   value: string
-  type: string
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -648,7 +610,6 @@ export type SizeUpdateToOneWithWhereWithoutOrderItemInput = {
 
 export type SizeUpdateWithoutOrderItemInput = {
   value?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -660,7 +621,6 @@ export type SizeUpdateWithoutOrderItemInput = {
 export type SizeUncheckedUpdateWithoutOrderItemInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   value?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -721,7 +681,6 @@ export type SizeCountOutputTypeCountOrderItemArgs<ExtArgs extends runtime.Types.
 export type SizeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   value?: boolean
-  type?: boolean
   sortOrder?: boolean
   isActive?: boolean
   createdAt?: boolean
@@ -735,7 +694,6 @@ export type SizeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 export type SizeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   value?: boolean
-  type?: boolean
   sortOrder?: boolean
   isActive?: boolean
   createdAt?: boolean
@@ -745,7 +703,6 @@ export type SizeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 export type SizeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   value?: boolean
-  type?: boolean
   sortOrder?: boolean
   isActive?: boolean
   createdAt?: boolean
@@ -755,14 +712,13 @@ export type SizeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 export type SizeSelectScalar = {
   id?: boolean
   value?: boolean
-  type?: boolean
   sortOrder?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type SizeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "value" | "type" | "sortOrder" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["size"]>
+export type SizeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "value" | "sortOrder" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["size"]>
 export type SizeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   products?: boolean | Prisma.Size$productsArgs<ExtArgs>
   CartItem?: boolean | Prisma.Size$CartItemArgs<ExtArgs>
@@ -782,7 +738,6 @@ export type $SizePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     value: string
-    type: string
     sortOrder: number
     isActive: boolean
     createdAt: Date
@@ -1215,7 +1170,6 @@ export interface Prisma__SizeClient<T, Null = never, ExtArgs extends runtime.Typ
 export interface SizeFieldRefs {
   readonly id: Prisma.FieldRef<"Size", 'Int'>
   readonly value: Prisma.FieldRef<"Size", 'String'>
-  readonly type: Prisma.FieldRef<"Size", 'String'>
   readonly sortOrder: Prisma.FieldRef<"Size", 'Int'>
   readonly isActive: Prisma.FieldRef<"Size", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Size", 'DateTime'>

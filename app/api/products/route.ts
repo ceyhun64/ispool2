@@ -20,9 +20,10 @@ interface ProductData {
   middleCategory?: string;
   subCategory?: string;
   brandId?: number;
-  hasVariants?: boolean;
   createdAt?: string;
   updatedAt?: string;
+  bulkDiscountQty?: number;
+  bulkDiscountRate?: number;
 }
 
 // ======================================================
@@ -57,9 +58,10 @@ export async function GET() {
       middleCategory: p.middleCategory?.name ?? undefined,
       subCategory: p.subCategory?.name ?? undefined,
       brandId: p.brandId ?? undefined,
-      hasVariants: p.hasVariants,
       createdAt: p.createdAt.toISOString(),
       updatedAt: p.updatedAt.toISOString(),
+      bulkDiscountQty: p.bulkDiscountQty ?? undefined,
+      bulkDiscountRate: p.bulkDiscountRate ?? undefined,
     }));
 
     return NextResponse.json({ products: productsData }, { status: 200 });
@@ -104,92 +106,121 @@ export async function POST(request: Request) {
         method: "POST",
         body: fd,
       });
+      if (!res.ok) {
+        throw new Error("Dosya yüklenemedi");
+      }
       const data = await res.json();
       return data.path as string;
     }
 
     // Görseller
     const mainImagePath = await uploadFile(mainFile, "products");
-    const subImagePath = subFile
-      ? await uploadFile(subFile, "products")
-      : undefined;
+    const subImagePath = subFile ? await uploadFile(subFile, "products") : null;
     const subImage2Path = subFile2
       ? await uploadFile(subFile2, "products")
-      : undefined;
+      : null;
     const subImage3Path = subFile3
       ? await uploadFile(subFile3, "products")
-      : undefined;
+      : null;
     const subImage4Path = subFile4
       ? await uploadFile(subFile4, "products")
-      : undefined;
+      : null;
 
     // Temel alanlar
     const title = formData.get("title") as string;
-    const price = parseInt(formData.get("price") as string);
-    const oldPrice = formData.get("oldPrice")
-      ? parseInt(formData.get("oldPrice") as string)
-      : undefined;
-    const discountPercentage = formData.get("discountPercentage")
-      ? parseInt(formData.get("discountPercentage") as string)
-      : undefined;
     const description = formData.get("description") as string;
-    const rating = formData.get("rating")
-      ? parseInt(formData.get("rating") as string)
-      : 0;
-    const reviewCount = formData.get("reviewCount")
-      ? parseInt(formData.get("reviewCount") as string)
-      : 0;
-    const brandIdStr = formData.get("brandId") as string | null;
-    const brandId = brandIdStr ? parseInt(brandIdStr) : undefined;
+    const priceStr = formData.get("price") as string;
 
-    // Beden / varyant
-    const hasVariants = formData.get("hasVariants") === "true";
+    if (!title || !priceStr) {
+      return NextResponse.json(
+        { success: false, error: "Başlık ve fiyat zorunludur" },
+        { status: 400 },
+      );
+    }
+
+    const price = parseFloat(priceStr);
+    if (isNaN(price) || price <= 0) {
+      return NextResponse.json(
+        { success: false, error: "Geçersiz fiyat" },
+        { status: 400 },
+      );
+    }
+
+    const oldPriceStr = formData.get("oldPrice") as string;
+    const discountPercentageStr = formData.get("discountPercentage") as string;
+    const ratingStr = formData.get("rating") as string;
+    const reviewCountStr = formData.get("reviewCount") as string;
+    const brandIdStr = formData.get("brandId") as string;
+
+    const bulkDiscountQtyStr = formData.get("bulkDiscountQty") as string;
+    const bulkDiscountRateStr = formData.get("bulkDiscountRate") as string;
+    const oldPrice = oldPriceStr ? parseFloat(oldPriceStr) : null;
+    const discountPercentage = discountPercentageStr
+      ? parseFloat(discountPercentageStr)
+      : null;
+    const rating = ratingStr ? parseFloat(ratingStr) : 0;
+    const reviewCount = reviewCountStr ? parseInt(reviewCountStr) : 0;
+    const brandId = brandIdStr ? parseInt(brandIdStr) : null;
+
+    const bulkDiscountQty = bulkDiscountQtyStr
+      ? parseInt(bulkDiscountQtyStr)
+      : null;
+    const bulkDiscountRate = bulkDiscountRateStr
+      ? parseFloat(bulkDiscountRateStr)
+      : null;
 
     // Kategori
     const categoryName = formData.get("category") as string;
     const middleCategoryName = formData.get("middleCategory") as string | null;
     const subCategoryName = formData.get("subCategory") as string | null;
 
-    // ── Kategori lookup ──
+    if (!categoryName) {
+      return NextResponse.json(
+        { success: false, error: "Ana kategori gerekli" },
+        { status: 400 },
+      );
+    }
+
+    // Kategori lookup
     const category = await prisma.category.findFirst({
       where: { name: categoryName },
     });
     if (!category) {
       return NextResponse.json(
-        { success: false, error: "Ana kategori bulunamadı." },
+        { success: false, error: "Ana kategori bulunamadı" },
         { status: 404 },
       );
     }
 
-    let middleCategoryId: number | undefined;
-    if (middleCategoryName) {
+    let middleCategoryId: number | null = null;
+    if (middleCategoryName && middleCategoryName !== "") {
       const mc = await prisma.middleCategory.findFirst({
         where: { name: middleCategoryName, categoryId: category.id },
       });
       if (!mc) {
         return NextResponse.json(
-          { success: false, error: "Orta kategori bulunamadı." },
+          { success: false, error: "Orta kategori bulunamadı" },
           { status: 404 },
         );
       }
       middleCategoryId = mc.id;
     }
 
-    let subCategoryId: number | undefined;
-    if (subCategoryName && middleCategoryId) {
+    let subCategoryId: number | null = null;
+    if (subCategoryName && subCategoryName !== "" && middleCategoryId) {
       const sc = await prisma.subCategory.findFirst({
         where: { name: subCategoryName, middleCategoryId },
       });
       if (!sc) {
         return NextResponse.json(
-          { success: false, error: "Alt kategori bulunamadı." },
+          { success: false, error: "Alt kategori bulunamadı" },
           { status: 404 },
         );
       }
       subCategoryId = sc.id;
     }
 
-    // Beden ve stok verileri (JSON string olarak gelir)
+    // Beden ve stok verileri
     let sizesInput: { sizeId: number }[] = [];
     let stockInput: {
       sizeId: number | null;
@@ -203,19 +234,22 @@ export async function POST(request: Request) {
     if (sizesRaw) {
       try {
         sizesInput = JSON.parse(sizesRaw as string);
-      } catch {
-        console.error("sizes parse hatası");
-      }
-    }
-    if (stockRaw) {
-      try {
-        stockInput = JSON.parse(stockRaw as string);
-      } catch {
-        console.error("stock parse hatası");
+      } catch (e) {
+        console.error("sizes parse hatası:", e);
+        sizesInput = [];
       }
     }
 
-    // ── Transaction: ürün + ProductSize + ProductStock ──
+    if (stockRaw) {
+      try {
+        stockInput = JSON.parse(stockRaw as string);
+      } catch (e) {
+        console.error("stock parse hatası:", e);
+        stockInput = [];
+      }
+    }
+
+    // Transaction: ürün + ProductSize + ProductStock
     const newProduct = await prisma.$transaction(async (tx) => {
       // 1. Ürün oluştur
       const product = await tx.product.create({
@@ -236,7 +270,8 @@ export async function POST(request: Request) {
           categoryId: category.id,
           middleCategoryId,
           subCategoryId,
-          hasVariants,
+          bulkDiscountQty,
+          bulkDiscountRate,
         },
         include: {
           category: true,
@@ -246,8 +281,8 @@ export async function POST(request: Request) {
       });
 
       // 2. Beden ve stok
-      if (hasVariants && sizesInput.length > 0) {
-        // ProductSize (ürün-beden ilişkisi)
+      if (sizesInput.length > 0) {
+        // Beden varyantları var
         await tx.productSize.createMany({
           data: sizesInput.map((s) => ({
             productId: product.id,
@@ -255,29 +290,28 @@ export async function POST(request: Request) {
           })),
         });
 
-        // ProductStock (beden bazlı stok)
-        if (stockInput.length > 0) {
+        // Her beden için stok
+        const stockToCreate =
+          stockInput.length > 0
+            ? stockInput.filter((s) => s.sizeId !== null)
+            : sizesInput.map((s) => ({
+                sizeId: s.sizeId,
+                stock: 10,
+                priceModifier: 0,
+              }));
+
+        if (stockToCreate.length > 0) {
           await tx.productStock.createMany({
-            data: stockInput.map((s) => ({
+            data: stockToCreate.map((s) => ({
               productId: product.id,
               sizeId: s.sizeId,
               stock: s.stock,
               priceModifier: s.priceModifier || 0,
             })),
           });
-        } else {
-          // Stok verisi gelmemişse default değerler
-          await tx.productStock.createMany({
-            data: sizesInput.map((s) => ({
-              productId: product.id,
-              sizeId: s.sizeId,
-              stock: 10,
-              priceModifier: 0,
-            })),
-          });
         }
       } else {
-        // Varyant yok → tek stok kayıtı, sizeId: null
+        // Varyant yok → tek stok
         const singleStock = stockInput.find((s) => s.sizeId === null);
         await tx.productStock.create({
           data: {
@@ -310,7 +344,6 @@ export async function POST(request: Request) {
       middleCategory: newProduct.middleCategory?.name ?? undefined,
       subCategory: newProduct.subCategory?.name ?? undefined,
       brandId: newProduct.brandId ?? undefined,
-      hasVariants: newProduct.hasVariants,
     };
 
     return NextResponse.json(
@@ -320,7 +353,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error("Product create error:", error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: error.message || "Ürün oluşturulamadı" },
       { status: 500 },
     );
   }

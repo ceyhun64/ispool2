@@ -20,7 +20,6 @@ interface StockEntry {
 }
 
 interface ProductVariantSelectorProps {
-  hasVariants: boolean;
   availableSizes: Size[]; // ProductSize → Size listesi
   stockMatrix: StockEntry[]; // ProductStock satırları
   selectedSizeId: number | null;
@@ -29,7 +28,6 @@ interface ProductVariantSelectorProps {
 }
 
 export default function ProductVariantSelector({
-  hasVariants,
   availableSizes,
   stockMatrix,
   selectedSizeId,
@@ -37,7 +35,7 @@ export default function ProductVariantSelector({
   onSizeChange,
 }: ProductVariantSelectorProps) {
   // Beden seçimi gösterilmez: varyant yok veya beden listesi boş
-  if (!hasVariants || availableSizes.length === 0) return null;
+  if ( availableSizes.length === 0) return null;
 
   // Her beden için stok bilgisini stockMatrix'ten çek
   const getSizeStock = (sizeId: number): number => {

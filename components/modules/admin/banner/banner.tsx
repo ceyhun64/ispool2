@@ -1,20 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Sidebar from "@/components/modules/admin/sideBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import {
-  Loader2,
-  Plus,
-  Trash2,
-  Layout,
-  Type,
-  AlertCircle,
-  Sparkles,
-  Eye,
-} from "lucide-react";
+import { Loader2, Plus, Trash2, Eye } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Dialog,
@@ -23,9 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { motion } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface Banner {
   id: number;
@@ -33,7 +22,6 @@ interface Banner {
   subtitle: string;
 }
 
-// --- Preview Component (Sitenin orijinal banner stiliyle uyumlu) ---
 const BannerPreviewCard = ({
   title,
   subtitle,
@@ -41,16 +29,13 @@ const BannerPreviewCard = ({
   title: string;
   subtitle: string;
 }) => (
-  <div className="relative w-full h-[240px]  overflow-hidden bg-[#0f0f0f] border border-slate-800 group-hover:border-slate-600 transition-all duration-500">
-    {/* Arka Plan Efekti */}
+  <div className="relative w-full h-[240px] overflow-hidden bg-slate-900 border border-slate-200 rounded-sm">
     <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]" />
-    <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[120%] bg-slate-400/10  blur-[80px]" />
-
     <div className="relative h-full flex flex-col items-center justify-center text-center p-6">
-      <span className="text-[7px] tracking-[0.4em] text-slate-500 uppercase mb-3 block font-medium">
-        Önizleme Modu
+      <span className="text-[8px] tracking-widest text-slate-400 uppercase mb-3 block">
+        Önizleme
       </span>
-      <h2 className="text-xl md:text-2xl text-white font-serif leading-tight mb-3">
+      <h2 className="text-xl text-white font-serif leading-tight mb-3">
         {title.split("<br />").map((line, i) => (
           <React.Fragment key={i}>
             {line}
@@ -58,13 +43,9 @@ const BannerPreviewCard = ({
           </React.Fragment>
         )) || "Başlık Giriniz"}
       </h2>
-      <p className="text-slate-400 text-[10px] font-light max-w-[240px] leading-relaxed line-clamp-2">
+      <p className="text-slate-400 text-xs max-w-[240px] leading-relaxed line-clamp-2">
         {subtitle || "Açıklama metni burada görünecek."}
       </p>
-
-      <div className="mt-5 px-4 py-2 border border-slate-800 text-[8px] tracking-[0.2em] text-slate-400 uppercase">
-        Detayları İncele
-      </div>
     </div>
   </div>
 );
@@ -75,6 +56,8 @@ export default function Banners() {
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newSubtitle, setNewSubtitle] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [bannerToDelete, setBannerToDelete] = useState<number | null>(null);
   const isMobile = useIsMobile();
 
   const fetchBanners = async () => {
@@ -107,7 +90,7 @@ export default function Banners() {
         setBanners((prev) => [...prev, data.banner]);
         setNewTitle("");
         setNewSubtitle("");
-        toast.success("Yayına alındı.");
+        toast.success("Banner eklendi.");
       }
     } catch (err) {
       toast.error("Ekleme başarısız.");
@@ -116,12 +99,17 @@ export default function Banners() {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async () => {
+    if (!bannerToDelete) return;
     try {
-      const res = await fetch(`/api/banner/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/banner/${bannerToDelete}`, {
+        method: "DELETE",
+      });
       if (res.ok) {
-        setBanners((prev) => prev.filter((b) => b.id !== id));
-        toast.success("Kaldırıldı.");
+        setBanners((prev) => prev.filter((b) => b.id !== bannerToDelete));
+        toast.success("Banner silindi.");
+        setDeleteDialogOpen(false);
+        setBannerToDelete(null);
       }
     } catch (err) {
       toast.error("Silme hatası.");
@@ -129,46 +117,34 @@ export default function Banners() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F8F9FB] font-sans selection:bg-indigo-100">
-      <Sidebar />
-      <main
-        className={`flex-1 p-6 lg:p-12 transition-all duration-300 ${
-          isMobile ? "mt-14" : "md:ml-72"
-        }`}
-      >
-        {/* Header Section */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="h-1 w-8 bg-indigo-600 " />
-              <span className="text-xs font-bold uppercase tracking-widest text-indigo-600">
-                Yönetim Paneli
-              </span>
-            </div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
-              Ayarlar
-            </h1>
-            <p className="text-slate-500 text-sm mt-1 font-medium">
-              İşletmenizin performansını gerçek zamanlı izleyin.
-            </p>
-          </div>
-        </header>
+    <div
+      className={`flex-1 bg-slate-50 min-h-screen p-6 sm:p-8 ${isMobile ? "mt-14" : ""}`}
+    >
+      {/* Header */}
+      <header className="mb-8">
+        <h1 className="text-2xl font-bold text-slate-900 mb-1">
+          Banner Yönetimi
+        </h1>
+        <p className="text-sm text-slate-600">
+          Ana sayfa banner içeriklerini yönetin
+        </p>
+      </header>
 
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-          {/* Sol Panel: Editör */}
-          <div className="xl:col-span-4 space-y-6">
-            <div className="bg-white  p-6 shadow-sm border border-slate-100 sticky top-10">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-blue-50  flex items-center justify-center">
-                  <Plus className="w-5 h-5 text-blue-600" />
-                </div>
-                <h2 className="font-bold text-slate-800">Canlı Düzenleyici</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Panel: Editor */}
+        <div className="lg:col-span-1">
+          <Card className="bg-white border-slate-200 sticky top-6 rounded-sm">
+            <CardContent className="p-6 space-y-4">
+              <div>
+                <h3 className="text-sm font-semibold text-slate-900 mb-4">
+                  Yeni Banner Ekle
+                </h3>
               </div>
 
-              {/* Anlık Canlı Önizleme */}
-              <div className="mb-6">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">
-                  Anlık Görünüm
+              {/* Live Preview */}
+              <div className="mb-4">
+                <label className="text-xs font-semibold text-slate-600 mb-2 block">
+                  Canlı Önizleme
                 </label>
                 <BannerPreviewCard
                   title={newTitle || "Başlık Örneği"}
@@ -177,114 +153,117 @@ export default function Banners() {
               </div>
 
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">
-                    Ana Başlık (HTML Destekler)
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 mb-2 block">
+                    Başlık
                   </label>
                   <Input
-                    placeholder="Örn: Hayalinizdeki Salonu <br /> Beraber Tasarlayalım."
+                    placeholder="Örn: Yeni Koleksiyon"
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
-                    className="h-12 bg-slate-50 border-none  focus:ring-4 focus:ring-blue-100 transition-all"
+                    className="bg-slate-50 border-slate-200 rounded-xl"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 mb-2 block">
                     Alt Metin
                   </label>
                   <textarea
-                    placeholder="Rafine çözümler sunuyoruz..."
+                    placeholder="Açıklama yazınız..."
                     value={newSubtitle}
                     onChange={(e) => setNewSubtitle(e.target.value)}
-                    className="w-full p-4 bg-slate-50 border-none  min-h-[100px] text-sm focus:ring-4 focus:ring-blue-100 transition-all outline-none resize-none"
+                    className="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 min-h-[100px] text-sm outline-none resize-none focus:border-slate-400 transition-colors"
                   />
                 </div>
 
                 <Button
                   onClick={handleAddBanner}
                   disabled={isAdding || !newTitle.trim()}
-                  className="w-full bg-black hover:bg-[#001e59] text-white h-12  font-bold transition-all shadow-lg shadow-black/5"
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-full"
                 >
                   {isAdding ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    "Yayına Gönder"
+                    <>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Banner Ekle
+                    </>
                   )}
                 </Button>
               </div>
-            </div>
-          </div>
-
-          {/* Sağ Panel: Aktif Bannerlar */}
-          <div className="xl:col-span-8 space-y-4">
-            <div className="flex items-center justify-between px-2">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                <Eye className="w-4 h-4" /> Yayındaki İçerikler
-              </h3>
-            </div>
-
-            {isLoading ? (
-              <div className="h-64 flex items-center justify-center bg-white  border border-slate-100">
-                <Loader2 className="w-10 h-10 animate-spin text-slate-200" />
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {banners.map((banner) => (
-                  <motion.div
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    key={banner.id}
-                    className="group relative"
-                  >
-                    <BannerPreviewCard
-                      title={banner.title}
-                      subtitle={banner.subtitle}
-                    />
-
-                    {/* Üstüne Binmiş Aksiyon Butonları */}
-                    <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            size="icon"
-                            variant="destructive"
-                            className="w-10 h-10  shadow-xl"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className=" border-none shadow-2xl">
-                          <DialogHeader className="items-center text-center">
-                            <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
-                            <DialogTitle>Bu içeriği kaldıralım mı?</DialogTitle>
-                            <DialogDescription>
-                              Web sitesi anında güncellenecektir.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <DialogFooter className="sm:justify-center gap-3">
-                            <Button variant="ghost" className="">
-                              İptal
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              className=" px-8"
-                              onClick={() => handleDelete(banner.id)}
-                            >
-                              Evet, Sil
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </div>
+            </CardContent>
+          </Card>
         </div>
-      </main>
+
+        {/* Right Panel: Banner List */}
+        <div className="lg:col-span-2 space-y-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+              <Eye className="w-4 h-4" /> Aktif Bannerlar
+            </h3>
+          </div>
+
+          {isLoading ? (
+            <div className="h-64 flex items-center justify-center bg-white rounded border border-slate-200">
+              <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-sm">
+              {banners.map((banner) => (
+                <div key={banner.id} className="group relative rounded-sm">
+                  <BannerPreviewCard
+                    title={banner.title}
+                    subtitle={banner.subtitle}
+                  />
+                  <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      onClick={() => {
+                        setBannerToDelete(banner.id);
+                        setDeleteDialogOpen(true);
+                      }}
+                      className="shadow-lg"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!isLoading && banners.length === 0 && (
+            <div className="h-64 flex items-center justify-center bg-white rounded border border-slate-200">
+              <p className="text-sm text-slate-500">Henüz banner eklenmemiş</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Delete Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Banner Sil</DialogTitle>
+            <DialogDescription>
+              Bu banner kalıcı olarak silinecektir. Devam etmek istiyor musunuz?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+            >
+              İptal
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Evet, Sil
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

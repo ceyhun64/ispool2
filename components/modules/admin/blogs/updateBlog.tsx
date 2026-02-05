@@ -14,15 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { toast } from "sonner";
-import {
-  Edit3,
-  Save,
-  Layout,
-  Type,
-  Tag,
-  ImageIcon,
-  Sparkles,
-} from "lucide-react";
+import { Edit3, Save, Loader2, ImageIcon } from "lucide-react";
 
 interface Blog {
   id: number;
@@ -62,7 +54,7 @@ export default function UpdateBlogDialog({
       if (!res.ok) throw new Error(data.message || "Güncelleme başarısız");
 
       onUpdate(data.blog);
-      toast.success("İçerik başarıyla güncellendi");
+      toast.success("Blog güncellendi");
       setOpen(false);
     } catch (err: any) {
       toast.error(err.message || "Bir hata oluştu");
@@ -77,178 +69,133 @@ export default function UpdateBlogDialog({
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 sm:h-9 sm:w-9 text-slate-400 hover:text-indigo-600 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-indigo-100  transition-all border border-transparent hover:border-indigo-200"
+          className="h-8 w-8 text-slate-400 hover:text-slate-900"
         >
-          <Edit3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <Edit3 className="w-4 h-4" />
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[900px] lg:max-w-[1000px] p-0 overflow-hidden border-none shadow-2xl  bg-white max-w-[95vw] max-h-[90vh] flex flex-col">
-        <DialogHeader className="p-4 sm:p-6 bg-gradient-to-r from-white to-slate-50 border-b border-slate-100 flex-shrink-0">
-          <DialogTitle className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 to-indigo-600  flex items-center justify-center shadow-md">
-              <Layout className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                İçeriği Düzenle
-                <Sparkles className="w-4 h-4 text-indigo-500 hidden sm:inline" />
-              </div>
-              <p className="text-xs sm:text-sm font-normal text-slate-500 mt-0.5">
-                Blog yazısını güncelleyin
-              </p>
-            </div>
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold text-slate-900">
+            Blog Düzenle
           </DialogTitle>
         </DialogHeader>
 
-        {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
-          <div className="grid grid-cols-1 lg:grid-cols-5">
-            {/* Form Area */}
-            <div className="lg:col-span-3 p-4 sm:p-6 space-y-4 sm:space-y-5 bg-white border-r border-slate-50">
-              <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                  <div className="w-1 h-3 bg-indigo-500 "></div>
-                  Başlık
-                </Label>
-                <div className="relative">
-                  <Type className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <Input
-                    value={editedBlog.title}
-                    onChange={(e) =>
-                      setEditedBlog({ ...editedBlog, title: e.target.value })
-                    }
-                    className="pl-10 h-11 sm:h-12  border-slate-200 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm text-sm sm:text-base"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="space-y-2">
-                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                    <div className="w-1 h-3 bg-amber-500 "></div>
-                    Kategori
-                  </Label>
-                  <div className="relative">
-                    <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <Input
-                      value={editedBlog.category}
-                      onChange={(e) =>
-                        setEditedBlog({
-                          ...editedBlog,
-                          category: e.target.value,
-                        })
-                      }
-                      className="pl-10 h-11 sm:h-12  border-slate-200 focus:border-amber-400 focus:ring-4 focus:ring-amber-50 shadow-sm text-sm sm:text-base"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                    <div className="w-1 h-3 bg-emerald-500 "></div>
-                    Görsel URL
-                  </Label>
-                  <div className="relative">
-                    <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <Input
-                      value={editedBlog.image}
-                      onChange={(e) =>
-                        setEditedBlog({ ...editedBlog, image: e.target.value })
-                      }
-                      className="pl-10 h-11 sm:h-12  border-slate-200 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-50 shadow-sm font-mono text-xs"
-                      placeholder="https://example.com/image.jpg"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                  <div className="w-1 h-3 bg-indigo-500 "></div>
-                  İçerik Metni
-                </Label>
-                <textarea
-                  value={editedBlog.content}
-                  onChange={(e) =>
-                    setEditedBlog({ ...editedBlog, content: e.target.value })
-                  }
-                  className="w-full min-h-[200px] p-3 sm:p-4 border border-slate-200  focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm text-sm sm:text-base outline-none resize-none leading-relaxed text-slate-700"
-                />
-                <div className="flex items-center justify-between text-xs text-slate-400 mt-1">
-                  <span>{editedBlog.content.length} karakter</span>
-                  <span className="hidden sm:inline">
-                    Değişiklikler otomatik kaydedilmez
-                  </span>
-                </div>
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+          {/* Form Section */}
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">
+                Başlık
+              </Label>
+              <Input
+                value={editedBlog.title}
+                onChange={(e) =>
+                  setEditedBlog({ ...editedBlog, title: e.target.value })
+                }
+                className="bg-slate-50 border-slate-200"
+              />
             </div>
 
-            {/* Preview Area */}
-            <div className="lg:col-span-2 p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-white flex flex-col items-center">
-              <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-4 self-start flex items-center gap-2">
-                <div className="w-1 h-3 bg-indigo-500 "></div>
-                Önizleme
+            <div>
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">
+                Kategori
               </Label>
+              <Input
+                value={editedBlog.category}
+                onChange={(e) =>
+                  setEditedBlog({ ...editedBlog, category: e.target.value })
+                }
+                className="bg-slate-50 border-slate-200"
+              />
+            </div>
 
-              <div className="w-full bg-white  shadow-xl border border-slate-200 overflow-hidden flex flex-col group hover:shadow-2xl transition-all sticky top-0">
-                <div className="relative w-full aspect-video bg-gradient-to-br from-slate-100 to-slate-50 overflow-hidden">
-                  {editedBlog.image ? (
-                    <Image
-                      src={editedBlog.image}
-                      alt="Preview"
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      unoptimized
-                    />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
-                      <ImageIcon className="w-8 h-8 opacity-50 mb-2" />
-                      <span className="text-[10px] font-medium">
-                        Görsel URL girilmedi
-                      </span>
-                    </div>
-                  )}
-                </div>
+            <div>
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">
+                Görsel URL
+              </Label>
+              <Input
+                value={editedBlog.image}
+                onChange={(e) =>
+                  setEditedBlog({ ...editedBlog, image: e.target.value })
+                }
+                className="bg-slate-50 border-slate-200"
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
 
-                <div className="p-4 space-y-3">
-                  <span className="inline-block px-3 py-1 bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-700 text-[10px] font-bold  uppercase tracking-wide border border-indigo-200">
-                    {editedBlog.category || "Kategori"}
-                  </span>
-                  <h4 className="font-bold text-slate-900 leading-tight line-clamp-2">
-                    {editedBlog.title || "Başlık Yazılmadı"}
-                  </h4>
-                  <p className="text-xs text-slate-500 line-clamp-4 leading-relaxed">
-                    {editedBlog.content || "İçerik henüz eklenmedi..."}
-                  </p>
-                </div>
+            <div>
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">
+                İçerik
+              </Label>
+              <textarea
+                value={editedBlog.content}
+                onChange={(e) =>
+                  setEditedBlog({ ...editedBlog, content: e.target.value })
+                }
+                className="w-full min-h-[200px] p-3 bg-slate-50 border border-slate-200 rounded text-sm outline-none resize-none focus:border-slate-400 transition-colors"
+              />
+              <p className="text-xs text-slate-500 mt-1">
+                {editedBlog.content.length} karakter
+              </p>
+            </div>
+          </div>
+
+          {/* Preview Section */}
+          <div>
+            <Label className="text-sm font-semibold text-slate-700 mb-2 block">
+              Önizleme
+            </Label>
+            <div className="bg-white border border-slate-200 rounded overflow-hidden">
+              <div className="relative w-full aspect-video bg-slate-100">
+                {editedBlog.image ? (
+                  <Image
+                    src={editedBlog.image}
+                    alt="Preview"
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <ImageIcon className="w-12 h-12 text-slate-300" />
+                  </div>
+                )}
+              </div>
+              <div className="p-4">
+                <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-1 rounded">
+                  {editedBlog.category || "Kategori"}
+                </span>
+                <h4 className="font-bold text-slate-900 mt-2">
+                  {editedBlog.title || "Başlık"}
+                </h4>
+                <p className="text-sm text-slate-600 mt-2 line-clamp-3">
+                  {editedBlog.content || "İçerik"}
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        <DialogFooter className="p-3 sm:p-4 bg-gradient-to-r from-slate-50 to-white border-t border-slate-100 flex flex-col sm:flex-row items-center gap-2 sm:gap-3 flex-shrink-0">
-          <Button
-            variant="ghost"
-            onClick={() => setOpen(false)}
-            className=" px-4 sm:px-6 font-semibold text-slate-600 hover:bg-slate-100 h-10 sm:h-11 order-2 sm:order-1 w-full sm:w-auto"
-          >
-            Vazgeç
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            İptal
           </Button>
           <Button
             onClick={handleSave}
             disabled={loading}
-            className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white  px-6 sm:px-8 font-semibold shadow-lg shadow-indigo-200 flex items-center gap-2 h-10 sm:h-11 disabled:opacity-50 disabled:cursor-not-allowed order-1 sm:order-2 w-full sm:w-auto"
+            className="bg-slate-900 hover:bg-slate-800 text-white"
           >
             {loading ? (
               <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white  animate-spin"></div>
-                <span>Kaydediliyor...</span>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Kaydediliyor...
               </>
             ) : (
               <>
-                <Save className="w-4 h-4" />
-                <span>Değişiklikleri Kaydet</span>
+                <Save className="w-4 h-4 mr-2" />
+                Kaydet
               </>
             )}
           </Button>

@@ -1,25 +1,17 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import Sidebar from "@/components/modules/admin/sideBar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import DefaultPagination from "@/components/layout/pagination";
-import {
-  Loader,
-  Truck,
-  CheckCircle,
-  XCircle,
-  Package,
-  Search,
-} from "lucide-react";
+import { Search } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import OrderDetailDialog from "./orderDetailDialog";
 import { Dialog } from "@/components/ui/dialog";
 import { FormattedOrder } from "@/types/order";
 import { Spinner } from "@/components/ui/spinner";
-import { toast } from "sonner"; // Sonner import edildi
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,6 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function Orders() {
   const isMobile = useIsMobile();
@@ -38,9 +31,8 @@ export default function Orders() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState<FormattedOrder | null>(
-    null
+    null,
   );
-
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [orderToUpdate, setOrderToUpdate] = useState<{
     id: number;
@@ -56,90 +48,33 @@ export default function Orders() {
   ];
 
   const getStatusInTurkish = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "Ödeme Bekleniyor";
-      case "paid":
-        return "Ödeme Başarılı";
-      case "shipped":
-        return "Kargoya Verildi";
-      case "delivered":
-        return "Teslim Edildi";
-      case "cancelled":
-        return "İptal Edildi";
-      default:
-        return "Bilinmiyor";
-    }
+    const map: Record<string, string> = {
+      pending: "Beklemede",
+      paid: "Ödendi",
+      shipped: "Kargoda",
+      delivered: "Teslim Edildi",
+      cancelled: "İptal",
+    };
+    return map[status] || "Bilinmiyor";
   };
 
   const getStatusBadge = (status: string) => {
-    const label = getStatusInTurkish(status);
-    const baseClasses =
-      "font-medium flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-[11px]";
+    const styles: Record<string, string> = {
+      pending: "bg-amber-50 text-amber-700 border-amber-200",
+      paid: "bg-blue-50 text-blue-700 border-blue-200",
+      shipped: "bg-indigo-50 text-indigo-700 border-indigo-200",
+      delivered: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      cancelled: "bg-slate-50 text-slate-600 border-slate-200",
+    };
 
-    switch (status) {
-      case "pending":
-        return (
-          <Badge
-            variant="outline"
-            className={`${baseClasses} bg-amber-50 text-amber-600 border-amber-200`}
-          >
-            <Loader className="w-3 h-3 animate-spin" />
-            <span className="hidden sm:inline">{label}</span>
-            <span className="sm:hidden">Bekliyor</span>
-          </Badge>
-        );
-      case "paid":
-        return (
-          <Badge
-            variant="outline"
-            className={`${baseClasses} bg-blue-50 text-blue-600 border-blue-200`}
-          >
-            <CheckCircle className="w-3 h-3" />
-            <span className="hidden sm:inline">{label}</span>
-            <span className="sm:hidden">Ödendi</span>
-          </Badge>
-        );
-      case "shipped":
-        return (
-          <Badge
-            variant="outline"
-            className={`${baseClasses} bg-indigo-50 text-indigo-600 border-indigo-200`}
-          >
-            <Truck className="w-3 h-3" />
-            <span className="hidden sm:inline">{label}</span>
-            <span className="sm:hidden">Kargoda</span>
-          </Badge>
-        );
-      case "delivered":
-        return (
-          <Badge
-            variant="outline"
-            className={`${baseClasses} bg-emerald-50 text-emerald-600 border-emerald-200`}
-          >
-            <Package className="w-3 h-3" />
-            <span className="hidden sm:inline">{label}</span>
-            <span className="sm:hidden">Teslim</span>
-          </Badge>
-        );
-      case "cancelled":
-        return (
-          <Badge
-            variant="outline"
-            className={`${baseClasses} bg-slate-50 text-slate-500 border-slate-200`}
-          >
-            <XCircle className="w-3 h-3" />
-            <span className="hidden sm:inline">{label}</span>
-            <span className="sm:hidden">İptal</span>
-          </Badge>
-        );
-      default:
-        return (
-          <Badge variant="secondary" className="text-[10px]">
-            {label}
-          </Badge>
-        );
-    }
+    return (
+      <Badge
+        variant="outline"
+        className={`${styles[status]} text-xs font-semibold border`}
+      >
+        {getStatusInTurkish(status)}
+      </Badge>
+    );
   };
 
   const getNextStatus = (currentStatus: FormattedOrder["status"]) => {
@@ -154,9 +89,11 @@ export default function Orders() {
     try {
       const res = await fetch("/api/order");
       const data = await res.json();
-      if (data.status === "success") setOrders(data.orders);
+      if (data.status === "success") {
+        setOrders(data.orders);
+      }
     } catch (error) {
-      console.error("Siparişler yüklenirken hata oluştu:", error);
+      toast.error("Siparişler yüklenirken bir hata oluştu.");
     } finally {
       setLoading(false);
     }
@@ -168,19 +105,17 @@ export default function Orders() {
 
   const triggerStatusUpdate = (
     orderId: number,
-    currentStatus: FormattedOrder["status"]
+    currentStatus: FormattedOrder["status"],
   ) => {
     setOrderToUpdate({ id: orderId, currentStatus });
     setIsUpdateDialogOpen(true);
   };
 
-  // GÜNCELLENEN API FONKSİYONU (SONNER TOAST EKLENDİ)
   const confirmUpdateStatus = async () => {
     if (!orderToUpdate) return;
     const nextStatus = getNextStatus(orderToUpdate.currentStatus);
     if (!nextStatus) return;
 
-    // Toast Promise yapısı ile işlem durumu takibi
     toast.promise(
       (async () => {
         const res = await fetch("/api/order", {
@@ -196,14 +131,14 @@ export default function Orders() {
         if (data.status !== "success")
           throw new Error(data.message || "Hata oluştu");
 
-        await fetchOrders(); // Listeyi yenile
+        await fetchOrders();
         return data;
       })(),
       {
-        loading: "Sipariş durumu güncelleniyor...",
-        success: "Sipariş durumu başarıyla güncellendi.",
-        error: "Güncelleme sırasında bir hata oluştu.",
-      }
+        loading: "Güncelleniyor...",
+        success: "Sipariş durumu güncellendi.",
+        error: "Güncelleme başarısız.",
+      },
     );
 
     setIsUpdateDialogOpen(false);
@@ -218,195 +153,176 @@ export default function Orders() {
             .toLowerCase()
             .includes(search.toLowerCase()) ||
           o.user.email.toLowerCase().includes(search.toLowerCase()) ||
-          String(o.id).includes(search)
+          String(o.id).includes(search),
       ),
-    [orders, search]
+    [orders, search],
   );
 
   const paginatedOrders = useMemo(
     () =>
       filteredOrders.slice(
         (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
+        currentPage * itemsPerPage,
       ),
-    [filteredOrders, currentPage]
+    [filteredOrders, currentPage],
   );
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center">
+      <div className="h-screen flex items-center justify-center bg-slate-50">
         <Spinner />
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F9FAFB] font-sans antialiased text-slate-900">
-      <Sidebar />
-      <main
-        className={`flex-1 p-4 sm:p-6 lg:p-10 transition-all duration-300 ${
-          isMobile ? "mt-14 sm:mt-16" : "md:ml-[240px] lg:ml-[280px]"
-        }`}
-      >
-        {/* Header */}
-        <header className="mb-8 sm:mb-10">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="h-1 sm:h-1.5 w-5 sm:w-6 bg-indigo-600 " />
-            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-indigo-600/80">
-              Yönetici Paneli
-            </span>
-          </div>
-          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
-            Sipariş Yönetimi
-          </h1>
-          <p className="text-slate-500 text-xs sm:text-sm">
-            Gelen siparişleri takip edin ve süreçleri yönetin.
-          </p>
-        </header>
+    <div
+      className={`flex-1 bg-slate-50 min-h-screen p-6 sm:p-8 ${isMobile ? "mt-14" : ""}`}
+    >
+      {/* Header */}
+      <header className="mb-8">
+        <h1 className="text-2xl font-bold text-slate-900 mb-1">
+          Sipariş Yönetimi
+        </h1>
+        <p className="text-sm text-slate-600">
+          Siparişleri takip edin ve yönetin
+        </p>
+      </header>
 
-        {/* Search */}
-        <div className="relative max-w-full sm:max-w-md mb-6 sm:mb-8 group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
-          <Input
-            placeholder="Müşteri, email veya ID..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="pl-10 bg-white border-slate-200 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 h-11 text-sm"
-          />
-        </div>
+      {/* Search */}
+      <div className="relative max-w-md mb-6">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <Input
+          placeholder="Müşteri, email veya sipariş no..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="pl-10 bg-white border-slate-200 rounded-xl"
+        />
+      </div>
 
-        {/* Desktop Table */}
-        <div className="hidden md:block bg-white  border border-slate-200 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left border-collapse min-w-[768px]">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-medium text-xs uppercase tracking-wider">
-                <tr>
-                  <th className="px-4 sm:px-6 py-4">ID</th>
-                  <th className="px-4 sm:px-6 py-4">Müşteri</th>
-                  <th className="px-4 sm:px-6 py-4 hidden lg:table-cell text-center">
-                    Ürünler
-                  </th>
-                  <th className="px-4 sm:px-6 py-4 text-center">Tutar</th>
-                  <th className="px-4 sm:px-6 py-4 text-center">Durum</th>
-                  <th className="px-4 sm:px-6 py-4 text-right">İşlemler</th>
+      {/* Desktop Table */}
+      <div className="hidden md:block bg-orange-500 rounded-sm overflow-hidden border border-slate-200">
+        <table className="w-full bg-white border-separate border-spacing-0">
+          <thead className="bg-slate-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 border-b border-slate-200">
+                Sipariş No
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 border-b border-slate-200">
+                Müşteri
+              </th>
+              <th className="px-6 py-3 text-center text-xs font-semibold text-slate-600 border-b border-slate-200">
+                Tutar
+              </th>
+              <th className="px-6 py-3 text-center text-xs font-semibold text-slate-600 border-b border-slate-200">
+                Durum
+              </th>
+              <th className="px-6 py-3 text-right text-xs font-semibold text-slate-600 border-b border-slate-200">
+                İşlemler
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {paginatedOrders.map((order) => {
+              const nextStatus = getNextStatus(order.status);
+              return (
+                <tr
+                  key={order.id}
+                  className="hover:bg-slate-50 transition-colors"
+                >
+                  <td className="px-6 py-4">
+                    <span className="text-sm font-medium text-slate-900">
+                      #{order.id}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">
+                        {order.user.name} {order.user.surname}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {order.user.email}
+                      </p>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <p className="text-sm font-semibold text-slate-900">
+                      {order.paidPrice.toLocaleString("tr-TR")} ₺
+                    </p>
+                    {order.couponCode && (
+                      <p className="text-xs text-green-600">
+                        🎟️ {order.couponCode}
+                      </p>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    {getStatusBadge(order.status)}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedOrder(order)}
+                      >
+                        Detay
+                      </Button>
+                      {nextStatus && order.status !== "cancelled" && (
+                        <Button
+                          size="sm"
+                          className="bg-slate-900 hover:bg-slate-800 text-white rounded-full"
+                          onClick={() =>
+                            triggerStatusUpdate(order.id, order.status)
+                          }
+                        >
+                          {getStatusInTurkish(nextStatus)} Yap
+                        </Button>
+                      )}
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {paginatedOrders.map((order) => {
-                  const nextStatus = getNextStatus(order.status);
-                  return (
-                    <tr
-                      key={order.id}
-                      className="hover:bg-slate-50/50 transition-colors group"
-                    >
-                      <td className="px-4 sm:px-6 py-5 font-mono text-xs text-slate-400">
-                        #{order.id}
-                      </td>
-                      <td className="px-4 sm:px-6 py-5">
-                        <div className="flex flex-col">
-                          <span className="font-medium text-slate-800 text-sm">
-                            {order.user.name} {order.user.surname}
-                          </span>
-                          <span className="text-xs text-slate-400 truncate max-w-[200px]">
-                            {order.user.email}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4 sm:px-6 py-5 hidden lg:table-cell">
-                        <div className="flex items-center gap-3">
-                          <div className="flex -space-x-3 overflow-hidden">
-                            {order.items.slice(0, 3).map((item, idx) => (
-                              <div
-                                key={idx}
-                                className="inline-block h-8 w-8  ring-2 ring-white overflow-hidden bg-slate-100 border border-slate-200"
-                              >
-                                <img
-                                  src={item.product.mainImage}
-                                  alt={item.product.title}
-                                  className="h-full w-full object-cover"
-                                />
-                              </div>
-                            ))}
-                          </div>
-                          <span className="text-xs font-medium text-slate-700 truncate max-w-[120px]">
-                            {order.items[0]?.product.title}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4 sm:px-6 py-5 text-center font-semibold text-slate-700 text-sm">
-                        {order.paidPrice.toLocaleString("tr-TR")} ₺
-                      </td>
-                      <td className="px-4 sm:px-6 py-5 text-center">
-                        {getStatusBadge(order.status)}
-                      </td>
-                      <td className="px-4 sm:px-6 py-5 text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 px-3 text-xs"
-                            onClick={() => setSelectedOrder(order)}
-                          >
-                            Detay
-                          </Button>
-                          {nextStatus && order.status !== "cancelled" && (
-                            <Button
-                              size="sm"
-                              className="h-8 px-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs"
-                              onClick={() =>
-                                triggerStatusUpdate(order.id, order.status)
-                              }
-                            >
-                              {getStatusInTurkish(nextStatus)} Yap
-                            </Button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
 
-        {/* Mobile View */}
-        <div className="md:hidden space-y-3">
-          {paginatedOrders.map((order) => {
-            const nextStatus = getNextStatus(order.status);
-            return (
-              <div
-                key={order.id}
-                className="bg-white  p-4 shadow-sm border border-slate-200"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-slate-900 text-sm mb-1">
-                      {order.user.name} {order.user.surname}
-                    </p>
-                    <p className="text-xs text-slate-400 truncate">
-                      {order.user.email}
-                    </p>
-                  </div>
-                  <div className="text-right ml-3">
-                    <p className="font-mono text-xs text-slate-400">
+      {/* Mobile View */}
+      <div className="md:hidden space-y-3">
+        {paginatedOrders.map((order) => {
+          const nextStatus = getNextStatus(order.status);
+          return (
+            <Card key={order.id} className="bg-white border-slate-200">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <p className="text-sm font-bold text-slate-900">
                       #{order.id}
                     </p>
-                    {getStatusBadge(order.status)}
+                    <p className="text-xs text-slate-600">
+                      {order.user.name} {order.user.surname}
+                    </p>
                   </div>
+                  {getStatusBadge(order.status)}
                 </div>
-                <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                  <p className="font-bold text-slate-900">
-                    {order.paidPrice.toLocaleString("tr-TR")} ₺
-                  </p>
+                <div className="flex justify-between items-center pt-3 border-t border-slate-100">
+                  <div>
+                    <p className="text-sm font-bold text-slate-900">
+                      {order.paidPrice.toLocaleString("tr-TR")} ₺
+                    </p>
+                    {order.couponCode && (
+                      <p className="text-xs text-green-600">
+                        🎟️ {order.couponCode}
+                      </p>
+                    )}
+                  </div>
                   <div className="flex gap-2">
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 px-3 text-xs"
                       onClick={() => setSelectedOrder(order)}
                     >
                       Detay
@@ -414,86 +330,75 @@ export default function Orders() {
                     {nextStatus && order.status !== "cancelled" && (
                       <Button
                         size="sm"
-                        className="h-8 px-3 bg-indigo-600 text-white text-xs"
+                        className="bg-slate-900 text-white text-xs"
                         onClick={() =>
                           triggerStatusUpdate(order.id, order.status)
                         }
                       >
-                        {getStatusInTurkish(nextStatus)} Yap
+                        Güncelle
                       </Button>
                     )}
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Pagination */}
+      {filteredOrders.length > itemsPerPage && (
+        <div className="mt-6">
+          <DefaultPagination
+            totalItems={filteredOrders.length}
+            itemsPerPage={itemsPerPage}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
         </div>
+      )}
 
-        {/* Pagination */}
-        {filteredOrders.length > itemsPerPage && (
-          <div className="mt-6 sm:mt-8">
-            <DefaultPagination
-              totalItems={filteredOrders.length}
-              itemsPerPage={itemsPerPage}
-              currentPage={currentPage}
-              onPageChange={setCurrentPage}
-            />
-          </div>
+      {/* Detail Dialog */}
+      <Dialog
+        open={!!selectedOrder}
+        onOpenChange={() => setSelectedOrder(null)}
+      >
+        {selectedOrder && (
+          <OrderDetailDialog
+            order={selectedOrder}
+            setSelectedOrder={setSelectedOrder}
+            onUpdateStatus={triggerStatusUpdate}
+            getStatusInTurkish={getStatusInTurkish}
+            getStatusBadge={getStatusBadge}
+            getNextStatus={getNextStatus}
+          />
         )}
+      </Dialog>
 
-        {/* Detay Dialog */}
-        <Dialog
-          open={!!selectedOrder}
-          onOpenChange={() => setSelectedOrder(null)}
-        >
-          {selectedOrder && (
-            <OrderDetailDialog
-              order={selectedOrder}
-              setSelectedOrder={setSelectedOrder}
-              onUpdateStatus={triggerStatusUpdate}
-              getStatusInTurkish={getStatusInTurkish}
-              getStatusBadge={getStatusBadge}
-              getNextStatus={getNextStatus}
-            />
-          )}
-        </Dialog>
-
-        {/* MODERN DURUM GÜNCELLEME ONAY DİAYLOĞU */}
-        <AlertDialog
-          open={isUpdateDialogOpen}
-          onOpenChange={setIsUpdateDialogOpen}
-        >
-          <AlertDialogContent className="bg-white  border-none shadow-2xl">
-            <AlertDialogHeader>
-              <AlertDialogTitle className="text-xl font-bold text-slate-900">
-                Durumu Güncelle
-              </AlertDialogTitle>
-              <AlertDialogDescription className="text-slate-500 text-sm">
-                Bu siparişin durumunu{" "}
-                <strong className="text-slate-900">
-                  "
-                  {orderToUpdate
-                    ? getStatusInTurkish(orderToUpdate.currentStatus)
-                    : ""}
-                  "
-                </strong>{" "}
-                aşamasından bir sonraki aşamaya taşımak üzeresiniz.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter className="gap-2">
-              <AlertDialogCancel className=" border-slate-200 font-semibold h-11">
-                Vazgeç
-              </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={confirmUpdateStatus}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white  font-semibold h-11"
-              >
-                Evet, Güncelle
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </main>
+      {/* Update Confirmation */}
+      <AlertDialog
+        open={isUpdateDialogOpen}
+        onOpenChange={setIsUpdateDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Durumu Güncelle</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bu siparişin durumunu bir sonraki aşamaya taşımak istediğinize
+              emin misiniz?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>İptal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmUpdateStatus}
+              className="bg-slate-900 hover:bg-slate-800"
+            >
+              Evet, Güncelle
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -1,5 +1,4 @@
-import type { NextConfig } from "next";
-
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   // Görsel optimizasyonu
   images: {
@@ -18,46 +17,4 @@ const nextConfig = {
       },
     ],
   },
-
-  // Compiler optimizasyonları
-  compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
-  },
-
-  // Modern JavaScript - Eski polyfill'leri kaldır
-  swcMinify: true,
-
-  // Experimental features
-  experimental: {
-    optimizePackageImports: ["lucide-react", "framer-motion"],
-  },
-
-  // Production optimizasyonları
-  productionBrowserSourceMaps: false,
-
-  // Headers - Caching ve güvenlik
-  async headers() {
-    return [
-      {
-        source: "/:all*(svg|jpg|jpeg|png|webp|avif|gif)",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
-      },
-      {
-        source: "/_next/static/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
-      },
-    ];
-  },
 };
-
-module.exports = nextConfig;

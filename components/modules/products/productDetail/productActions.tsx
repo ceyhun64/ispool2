@@ -64,40 +64,42 @@ export default function ProductActions({
         )}
       </button>
 
-      {/* Miktar + Sepete Ekle */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center bg-white h-12 px-4 gap-5 border border-slate-200 rounded-sm">
+      {/* Miktar + Sepete Ekle - Sadece quantity > 0 olduğunda göster */}
+      {quantity > 0 && (
+        <div className="flex items-center gap-3">
+          <div className="flex items-center bg-white h-12 px-4 gap-5 border border-slate-200 rounded-sm">
+            <button
+              onClick={() => onQuantityChange(Math.max(1, quantity - 1))}
+              className="text-slate-500 hover:text-orange-600 transition-colors"
+            >
+              <Minus size={14} strokeWidth={3} />
+            </button>
+            <span className="w-4 text-center text-sm font-bold text-slate-900">
+              {quantity}
+            </span>
+            <button
+              onClick={() => onQuantityChange(quantity + 1)}
+              className="text-slate-500 hover:text-orange-600 transition-colors"
+            >
+              <Plus size={14} strokeWidth={3} />
+            </button>
+          </div>
+
           <button
-            onClick={() => onQuantityChange(Math.max(1, quantity - 1))}
-            className="text-slate-500 hover:text-orange-600 transition-colors"
+            onClick={onAddToCart}
+            disabled={!canAddToCart}
+            className={cn(
+              "flex-1 h-12 rounded-sm text-[11px] font-bold uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-2",
+              canAddToCart
+                ? "bg-slate-900 text-white hover:bg-orange-600"
+                : "bg-slate-200 text-slate-400 cursor-not-allowed",
+            )}
           >
-            <Minus size={14} strokeWidth={3} />
-          </button>
-          <span className="w-4 text-center text-sm font-bold text-slate-900">
-            {quantity}
-          </span>
-          <button
-            onClick={() => onQuantityChange(quantity + 1)}
-            className="text-slate-500 hover:text-orange-600 transition-colors"
-          >
-            <Plus size={14} strokeWidth={3} />
+            <ShoppingCart size={14} fill="currentColor" />
+            {canAddToCart ? "Sepete Ekle" : "Stokta Yok"}
           </button>
         </div>
-
-        <button
-          onClick={onAddToCart}
-          disabled={!canAddToCart}
-          className={cn(
-            "flex-1 h-12 rounded-sm text-[11px] font-bold uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-2",
-            canAddToCart
-              ? "bg-slate-900 text-white hover:bg-orange-600"
-              : "bg-slate-200 text-slate-400 cursor-not-allowed",
-          )}
-        >
-          <ShoppingCart size={14} fill="currentColor" />
-          {canAddToCart ? "Sepete Ekle" : "Stokta Yok"}
-        </button>
-      </div>
+      )}
 
       {/* Favori + Paylaş */}
       <div className="flex gap-3">

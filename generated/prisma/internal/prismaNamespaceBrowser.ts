@@ -136,7 +136,6 @@ export type BrandScalarFieldEnum = (typeof BrandScalarFieldEnum)[keyof typeof Br
 export const SizeScalarFieldEnum = {
   id: 'id',
   value: 'value',
-  type: 'type',
   sortOrder: 'sortOrder',
   isActive: 'isActive',
   createdAt: 'createdAt',
@@ -160,7 +159,8 @@ export const ProductScalarFieldEnum = {
   subImage3: 'subImage3',
   subImage4: 'subImage4',
   description: 'description',
-  hasVariants: 'hasVariants',
+  bulkDiscountQty: 'bulkDiscountQty',
+  bulkDiscountRate: 'bulkDiscountRate',
   brandId: 'brandId',
   categoryId: 'categoryId',
   middleCategoryId: 'middleCategoryId',

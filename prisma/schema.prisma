@@ -60,26 +60,23 @@ model Brand {
   @@map("brand")
 }
 
-// --- BEDEN TABLOSU ---
+// --- BEDEN TABLOSU (sizeType / type kaldırıldı) ---
 model Size {
   id        Int      @id @default(autoincrement())
-  value     String // Örn: "36", "XL", "42", "Standart"
-  type      String // Örn: "CLOTHING", "SHOE", "GLOVE" (Sadece gruplama için string)
+  value     String   @unique // Örn: "36", "XL", "Standart". Global olarak unique yapıldı.
   sortOrder Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // İlişkiler
-  products  ProductSize[] // Ürün-Beden ilişkisi (Explicit Many-to-Many)
+  products  ProductSize[]
   CartItem  CartItem[]
   OrderItem OrderItem[]
 
-  @@unique([value, type]) // Aynı tipte aynı değerden iki tane olmasın
   @@map("size")
 }
 
-// --- ÜRÜN MODELİ ---
 model product {
   id                 Int     @id @default(autoincrement())
   title              String
@@ -95,14 +92,12 @@ model product {
   subImage4          String?
   description        String  @db.Text
 
-  // Beden Yönetimi - sadece hasVariants kaldı
-  hasVariants Boolean @default(false)
+  bulkDiscountQty  Int? @default(0)
+  bulkDiscountRate Int? @default(0)
 
-  // Marka İlişkisi
   brandId Int?
   brand   Brand? @relation(fields: [brandId], references: [id])
 
-  // Hiyerarşik İlişkiler
   categoryId       Int
   category         Category        @relation(fields: [categoryId], references: [id])
   middleCategoryId Int?
@@ -113,16 +108,15 @@ model product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Diğer Modellerle İlişkiler
   CartItem  CartItem[]
   Favorite  Favorite[]
   OrderItem OrderItem[]
   Review    Review[]
-  sizes     ProductSize[] // Bu ürünün elindeki mevcut bedenler
-  stock     ProductStock[] // Varyant bazlı stok detayı
+  sizes     ProductSize[]
+  stock     ProductStock[]
 }
 
-// --- ARA TABLO (Many-to-Many) ---
+// --- ARA TABLO ---
 model ProductSize {
   id        Int     @id @default(autoincrement())
   productId Int
@@ -134,14 +128,13 @@ model ProductSize {
   @@map("product_size")
 }
 
-// Ürün Stok Tablosu (Beden bazlı stok ve fiyat bilgileri)
 model ProductStock {
   id            Int      @id @default(autoincrement())
   productId     Int
   product       product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  sizeId        Int? // Null ise beden yok (STANDARD)
+  sizeId        Int?
   stock         Int      @default(0)
-  priceModifier Int?     @default(0) // Fiyat farkı (+ veya -)
+  priceModifier Int?     @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -151,7 +144,7 @@ model ProductStock {
   @@map("product_stock")
 }
 
-// --- KULLANICI VE ADRES SİSTEMİ ---
+// --- KULLANICI VE DİĞERLERİ (Değişmedi) ---
 model User {
   id                Int        @id @default(autoincrement())
   name              String
@@ -194,7 +187,6 @@ model Address {
   @@map("address")
 }
 
-// --- SEPET VE FAVORİLER ---
 model Favorite {
   id        Int      @id @default(autoincrement())
   userId    Int
@@ -209,26 +201,22 @@ model Favorite {
 }
 
 model CartItem {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   userId      Int?
   productId   Int
-  quantity    Int     @default(1)
+  quantity    Int      @default(1)
   customImage String?
-
-  // Beden seçimi
-  sizeId Int?
-  size   Size? @relation(fields: [sizeId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  product   product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sizeId      Int?
+  size        Size?    @relation(fields: [sizeId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  product     product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId], map: "CartItem_productId_fkey")
   @@index([sizeId], map: "CartItem_sizeId_fkey")
   @@map("cartitem")
 }
 
-// --- SİPARİŞ SİSTEMİ ---
 model Order {
   id             Int            @id @default(autoincrement())
   userId         Int
@@ -262,13 +250,10 @@ model OrderItem {
   totalPrice        Float
   iyziTransactionId String?
   customImage       String?
-
-  // Beden bilgisi
-  sizeId Int?
-  size   Size? @relation(fields: [sizeId], references: [id])
-
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product product @relation(fields: [productId], references: [id])
+  sizeId            Int?
+  size              Size?   @relation(fields: [sizeId], references: [id])
+  order             Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product           product @relation(fields: [productId], references: [id])
 
   @@index([orderId], map: "OrderItem_orderId_fkey")
   @@index([productId], map: "OrderItem_productId_fkey")
@@ -295,7 +280,6 @@ model OrderAddress {
   @@map("orderaddress")
 }
 
-// --- DİĞER MODELLER ---
 model Review {
   id        Int      @id @default(autoincrement())
   rating    Int

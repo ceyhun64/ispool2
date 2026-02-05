@@ -14,6 +14,12 @@ import subCategoriesDataRaw from "@/data/subCategories.json" assert { type: "jso
 // --------------------
 // TİP TANIMLARI
 // --------------------
+interface StockInput {
+  size: string;
+  stock: number;
+  priceModifier: number;
+}
+
 interface ProductInput {
   title: string;
   price: number;
@@ -31,29 +37,17 @@ interface ProductInput {
   middleCategory?: string;
   subCategory?: string;
   brand?: string;
-  sizeType?: string;
-  hasVariants?: boolean;
+  sizes: string[];
+  stock: StockInput[];
+  bulkDiscountQty?: number;
+  bulkDiscountRate?: number;
 }
 
-interface CategoryInput {
-  name: string;
-}
-
-interface MiddleCategoryInput {
-  name: string;
-  categoryName: string;
-  icon?: string;
-}
-
-interface SubCategoryInput {
-  name: string;
-  middleCategoryName: string;
-}
-
+// Data casting
 const productData = productDataRaw as ProductInput[];
-const categoriesData = categoriesDataRaw as CategoryInput[];
-const middleCategoriesData = middleCategoriesDataRaw as MiddleCategoryInput[];
-const subCategoriesData = subCategoriesDataRaw as SubCategoryInput[];
+const categoriesData = categoriesDataRaw as any[];
+const middleCategoriesData = middleCategoriesDataRaw as any[];
+const subCategoriesData = subCategoriesDataRaw as any[];
 
 // --------------------
 // SABİTLER
@@ -77,73 +71,54 @@ enum UserRole {
   ADMIN = "ADMIN",
 }
 
-// Tüm bedenler tek bir flat array'de — type field ile gruplanır
-const ALL_SIZES: { value: string; type: string; sortOrder: number }[] = [
-  // CLOTHING_NUMBER
-  ...[
-    "36",
-    "38",
-    "40",
-    "42",
-    "44",
-    "46",
-    "48",
-    "50",
-    "52",
-    "54",
-    "56",
-    "58",
-    "60",
-    "62",
-    "64",
-  ].map((v, i) => ({
-    value: v,
-    type: "CLOTHING_NUMBER",
-    sortOrder: i,
-  })),
-  // CLOTHING_TEXT
-  ...["XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL"].map((v, i) => ({
-    value: v,
-    type: "CLOTHING_TEXT",
-    sortOrder: i,
-  })),
+const ALL_SIZES: { value: string; sortOrder: number }[] = [
   // SHOE
-  ...[
-    "35",
-    "36",
-    "37",
-    "38",
-    "39",
-    "40",
-    "41",
-    "42",
-    "43",
-    "44",
-    "45",
-    "46",
-    "47",
-    "48",
-  ].map((v, i) => ({
-    value: v,
-    type: "SHOE",
-    sortOrder: i,
-  })),
-  // GLOVE
-  ...["6", "7", "8", "9", "10", "11", "Standart"].map((v, i) => ({
-    value: v,
-    type: "GLOVE",
-    sortOrder: i,
-  })),
-  // STANDARD
-  [{ value: "Standart", type: "STANDARD", sortOrder: 0 }][0],
+  { value: "35", sortOrder: 0 },
+  { value: "36", sortOrder: 1 },
+  { value: "37", sortOrder: 2 },
+  { value: "38", sortOrder: 3 },
+  { value: "39", sortOrder: 4 },
+  { value: "40", sortOrder: 5 },
+  { value: "41", sortOrder: 6 },
+  { value: "42", sortOrder: 7 },
+  { value: "43", sortOrder: 8 },
+  { value: "44", sortOrder: 9 },
+  { value: "45", sortOrder: 10 },
+  { value: "46", sortOrder: 11 },
+  { value: "47", sortOrder: 12 },
+  { value: "48", sortOrder: 13 },
+  { value: "50", sortOrder: 14 },
+  { value: "52", sortOrder: 15 },
+  { value: "54", sortOrder: 16 },
+  { value: "56", sortOrder: 17 },
+  { value: "58", sortOrder: 18 },
+  { value: "60", sortOrder: 19 },
+  { value: "62", sortOrder: 20 },
+  { value: "64", sortOrder: 21 },
+  // CLOTHING_TEXT
+  { value: "XS", sortOrder: 22 },
+  { value: "S", sortOrder: 23 },
+  { value: "M", sortOrder: 24 },
+  { value: "L", sortOrder: 25 },
+  { value: "XL", sortOrder: 26 },
+  { value: "XXL", sortOrder: 27 },
+  { value: "3XL", sortOrder: 28 },
+  { value: "4XL", sortOrder: 29 },
+  // GLOVE / STANDARD
+  { value: "6", sortOrder: 30 },
+  { value: "7", sortOrder: 31 },
+  { value: "8", sortOrder: 32 },
+  { value: "9", sortOrder: 33 },
+  { value: "10", sortOrder: 34 },
+  { value: "11", sortOrder: 35 },
+  { value: "Standart", sortOrder: 36 },
 ];
 
 // --------------------
 // VERİTABANI RESET
 // --------------------
 async function resetDatabase() {
-  console.log("🗑️  Veritabanı temizleniyor ve ID'ler sıfırlanıyor...");
-
+  console.log("🗑️  Veritabanı temizleniyor...");
   const tables = [
     "product_stock",
     "product_size",
@@ -173,24 +148,20 @@ async function resetDatabase() {
         `TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE;`,
       );
     } catch {
-      console.warn(`⚠️  Tablo sıfırlanamadı (muhtemelen henüz yok): ${table}`);
+      console.warn(`⚠️  Tablo sıfırlanamadı: ${table}`);
     }
   }
-
-  console.log("✨ Veritabanı ve ID sayaçları başarıyla sıfırlandı.");
 }
 
 // --------------------
-// ADMIN
+// SEED FUNCTIONS
 // --------------------
 async function seedAdmin() {
   console.log("👑 Admin oluşturuluyor...");
-
   const hashedPassword = await bcrypt.hash(
     process.env.ADMIN_PASSWORD || "Admin123!",
     10,
   );
-
   await prisma.user.create({
     data: {
       name: process.env.ADMIN_NAME || "Admin",
@@ -200,153 +171,86 @@ async function seedAdmin() {
       role: UserRole.ADMIN,
     },
   });
-
-  console.log("✅ Admin oluşturuldu.");
 }
 
-// --------------------
-// BEDENLER — Toplu kaydet
-// --------------------
 async function seedSizes() {
   console.log("📏 Bedenler ekleniyor...");
-
-  // Tüm bedenler tek bir createMany ile yaz
   await prisma.size.createMany({
     data: ALL_SIZES.map((s) => ({
       value: s.value,
-      type: s.type,
       sortOrder: s.sortOrder,
       isActive: true,
     })),
   });
-
-  // Türe göre özet log
-  const typeCounts = ALL_SIZES.reduce<Record<string, number>>((acc, s) => {
-    acc[s.type] = (acc[s.type] || 0) + 1;
-    return acc;
-  }, {});
-
-  console.log(`✅ ${ALL_SIZES.length} beden eklendi.`);
-  Object.entries(typeCounts).forEach(([type, count]) => {
-    console.log(`   - ${type}: ${count} beden`);
-  });
 }
 
-// --------------------
-// MARKALAR
-// --------------------
 async function seedBrands() {
   console.log("🏷️  Markalar ekleniyor...");
-
   await prisma.brand.createMany({
     data: BRANDS.map((name, i) => ({
       name,
       image: `/brands/${i + 1}.png`,
     })),
   });
-
-  console.log(`✅ ${BRANDS.length} marka eklendi.`);
 }
 
-// --------------------
-// KATEGORİ HİYERARŞİSİ
-// --------------------
 async function seedHierarchy() {
   console.log("📂 Kategori hiyerarşisi oluşturuluyor...");
-
   const categoryMap = new Map<string, number>();
   const middleCategoryMap = new Map<string, number>();
 
-  // 1. ANA KATEGORİLER
-  console.log("  ↳ Ana kategoriler...");
-  for (let i = 0; i < categoriesData.length; i++) {
-    const cat = categoriesData[i];
-    const created = await prisma.category.create({
-      data: { name: cat.name },
-    });
+  for (const cat of categoriesData) {
+    const created = await prisma.category.create({ data: { name: cat.name } });
     categoryMap.set(cat.name, created.id);
-    console.log(`    ${i + 1}. ${cat.name}`);
   }
 
-  // 2. ORTA KATEGORİLER
-  console.log("  ↳ Orta kategoriler...");
-  for (let i = 0; i < middleCategoriesData.length; i++) {
-    const mid = middleCategoriesData[i];
+  for (const mid of middleCategoriesData) {
     const categoryId = categoryMap.get(mid.categoryName);
-
-    if (!categoryId) {
-      console.warn(`    ⚠️  Parent bulunamadı: ${mid.categoryName}`);
-      continue;
+    if (categoryId) {
+      const created = await prisma.middleCategory.create({
+        data: { name: mid.name, categoryId },
+      });
+      middleCategoryMap.set(mid.name, created.id);
     }
-
-    const created = await prisma.middleCategory.create({
-      data: { name: mid.name, categoryId },
-    });
-    middleCategoryMap.set(mid.name, created.id);
-    console.log(`    ${i + 1}. ${mid.name}`);
   }
 
-  // 3. ALT KATEGORİLER
-  console.log("  ↳ Alt kategoriler...");
-  for (let i = 0; i < subCategoriesData.length; i++) {
-    const sub = subCategoriesData[i];
+  for (const sub of subCategoriesData) {
     const middleCategoryId = middleCategoryMap.get(sub.middleCategoryName);
-
-    if (!middleCategoryId) {
-      console.warn(`    ⚠️  Parent bulunamadı: ${sub.middleCategoryName}`);
-      continue;
+    if (middleCategoryId) {
+      const middle = await prisma.middleCategory.findUnique({
+        where: { id: middleCategoryId },
+      });
+      if (middle) {
+        await prisma.subCategory.create({
+          data: {
+            name: sub.name,
+            middleCategoryId,
+            categoryId: middle.categoryId,
+          },
+        });
+      }
     }
-
-    const middle = await prisma.middleCategory.findUnique({
-      where: { id: middleCategoryId },
-      select: { categoryId: true },
-    });
-
-    if (!middle) {
-      console.warn(`    ⚠️  Middle kategori okunamadı`);
-      continue;
-    }
-
-    await prisma.subCategory.create({
-      data: {
-        name: sub.name,
-        middleCategoryId,
-        categoryId: middle.categoryId,
-      },
-    });
-    console.log(`    ${i + 1}. ${sub.name}`);
   }
-
-  console.log("✅ Kategori yapısı tamamlandı.");
 }
 
-// --------------------
-// ÜRÜNLER — ProductSize üzerinden beden ilişkilendirme
-// --------------------
 async function seedProducts() {
-  console.log("🛒 Ürünler ve stok bilgileri ekleniyor...");
-
-  let success = 0;
-  let skipped = 0;
-  let totalStockRecords = 0;
-
-  // Size tablosundan tüm aktif bedenler çek, tip bazında grupla
+  console.log("🛒 Ürünler ve stoklar ekleniyor...");
   const allSizes = await prisma.size.findMany({ where: { isActive: true } });
-  const sizesByType = new Map<string, typeof allSizes>();
-  allSizes.forEach((s) => {
-    const arr = sizesByType.get(s.type) || [];
-    arr.push(s);
-    sizesByType.set(s.type, arr);
+
+  // Beden value'ya göre sizeId bulma map'i oluştur
+  const sizeMap = new Map<string, number>();
+  allSizes.forEach((size) => {
+    sizeMap.set(size.value, size.id);
   });
 
+  let success = 0;
+
   for (const p of productData) {
-    // ─── Kategori / Marka lookup ───
     const category = await prisma.category.findUnique({
       where: { name: p.category },
     });
     if (!category) {
-      console.warn(`⚠️  Kategori bulunamadı: ${p.category} (${p.title})`);
-      skipped++;
+      console.warn(`⚠️  Kategori bulunamadı: ${p.category} - Ürün: ${p.title}`);
       continue;
     }
 
@@ -355,20 +259,17 @@ async function seedProducts() {
           where: { name: p.middleCategory, categoryId: category.id },
         })
       : null;
-
     const sub =
       p.subCategory && middle
         ? await prisma.subCategory.findFirst({
             where: { name: p.subCategory, middleCategoryId: middle.id },
           })
         : null;
-
     const brand = p.brand
       ? await prisma.brand.findUnique({ where: { name: p.brand } })
       : null;
 
     try {
-      // ─── Ürün oluştur ───
       const product = await prisma.product.create({
         data: {
           title: p.title,
@@ -383,88 +284,90 @@ async function seedProducts() {
           subImage3: p.subImage3 || null,
           subImage4: p.subImage4 || null,
           description: p.description,
-          hasVariants: p.hasVariants || false,
           categoryId: category.id,
           middleCategoryId: middle?.id || null,
           subCategoryId: sub?.id || null,
           brandId: brand?.id || null,
+          bulkDiscountQty: p.bulkDiscountQty || 0,
+          bulkDiscountRate: p.bulkDiscountRate || 0,
         },
       });
 
-      success++;
-
-      // ─── ProductSize + ProductStock ───
-      if (p.hasVariants && p.sizeType) {
-        // sizeType'a göre ilgili bedenler gelir (SHOE, GLOVE, CLOTHING_TEXT vs.)
-        const matchedSizes = sizesByType.get(p.sizeType) || [];
-
-        // ProductSize kayıtları — toplu
-        await prisma.productSize.createMany({
-          data: matchedSizes.map((s) => ({
+      // Ürüne ait bedenleri ekle (ProductSize)
+      const productSizesData: { productId: number; sizeId: number }[] = [];
+      for (const sizeValue of p.sizes) {
+        const sizeId = sizeMap.get(sizeValue);
+        if (sizeId) {
+          productSizesData.push({
             productId: product.id,
-            sizeId: s.id,
-          })),
-        });
-
-        // ProductStock kayıtları — toplu
-        await prisma.productStock.createMany({
-          data: matchedSizes.map((s) => ({
-            productId: product.id,
-            sizeId: s.id,
-            stock: Math.floor(Math.random() * 50) + 10,
-            priceModifier: 0,
-          })),
-        });
-
-        totalStockRecords += matchedSizes.length;
-        console.log(
-          `  ✓ ${product.title}: ${matchedSizes.length} beden varyantı`,
-        );
-      } else {
-        // Varyant yok — tek stok kayıtı, sizeId null
-        await prisma.productStock.create({
-          data: {
-            productId: product.id,
-            sizeId: null,
-            stock: Math.floor(Math.random() * 100) + 50,
-            priceModifier: 0,
-          },
-        });
-        totalStockRecords += 1;
-        console.log(`  ✓ ${product.title}: Standart ürün (beden yok)`);
+            sizeId: sizeId,
+          });
+        } else {
+          console.warn(`⚠️  Beden bulunamadı: ${sizeValue} - Ürün: ${p.title}`);
+        }
       }
+
+      if (productSizesData.length > 0) {
+        await prisma.productSize.createMany({
+          data: productSizesData,
+        });
+      }
+
+      // Stok verilerini ekle (ProductStock)
+      const productStockData: {
+        productId: number;
+        sizeId: number | null;
+        stock: number;
+        priceModifier: number;
+      }[] = [];
+
+      for (const stockItem of p.stock) {
+        const sizeId = sizeMap.get(stockItem.size);
+        if (sizeId) {
+          productStockData.push({
+            productId: product.id,
+            sizeId: sizeId,
+            stock: stockItem.stock,
+            priceModifier: stockItem.priceModifier,
+          });
+        } else {
+          console.warn(
+            `⚠️  Stok için beden bulunamadı: ${stockItem.size} - Ürün: ${p.title}`,
+          );
+        }
+      }
+
+      if (productStockData.length > 0) {
+        await prisma.productStock.createMany({
+          data: productStockData,
+        });
+      }
+
+      success++;
+      console.log(
+        `✅ Eklendi: ${p.title} - ${p.sizes.length} beden, ${p.stock.length} stok kaydı`,
+      );
     } catch (error) {
-      console.error(`  ✗ Hata: ${p.title}`, error);
-      skipped++;
+      console.error(`✗ Hata: ${p.title}`, error);
     }
   }
-
-  console.log(`✅ ${success} ürün eklendi`);
-  console.log(`✅ ${totalStockRecords} stok kaydı oluşturuldu`);
-  if (skipped) console.log(`⚠️  ${skipped} ürün atlandı`);
+  console.log(`\n✅ ${success} ürün ve ilgili stok kayıtları tamamlandı.`);
 }
 
-// --------------------
-// MAIN
-// --------------------
 async function main() {
-  console.log("🚀 Seed işlemi başlatılıyor...\n");
-
+  console.log("🚀 Seed işlemi başlatılıyor...");
   await resetDatabase();
   await seedAdmin();
   await seedSizes();
   await seedBrands();
   await seedHierarchy();
   await seedProducts();
-
-  console.log("\n✨ TÜM SEED İŞLEMLERİ TAMAMLANDI ✨");
-  console.log("📏 Beden sistemi hazır!");
-  console.log("📋 Tüm veriler admin panelden yönetilebilir.");
+  console.log("\n✨ TÜM İŞLEMLER BAŞARIYLA TAMAMLANDI ✨");
 }
 
 main()
   .catch((e) => {
-    console.error("🚨 Seed başarısız:", e);
+    console.error("🚨 Hata:", e);
     process.exit(1);
   })
   .finally(async () => {

@@ -12,12 +12,21 @@
     "subImage3": null,
     "subImage4": null,
     "description": "Yüksek görünürlüklü reflektör şeritleri ile gece çalışmalarında tam güvenlik sağlar.",
-    "sizeType": "CLOTHING_TEXT",
-    "hasVariants": true,
     "category": "İş Elbiseleri",
     "middleCategory": "İş Yelek",
     "subCategory": "İkaz ve Mühendis Yelek",
-    "brand": "PORTWEST"
+    "brand": "PORTWEST",
+    "bulkDiscountQty": 3,
+    "bulkDiscountRate": 20,
+    "sizes": ["S", "M", "L", "XL", "XXL", "3XL"],
+    "stock": [
+      { "size": "S", "stock": 45, "priceModifier": 0 },
+      { "size": "M", "stock": 60, "priceModifier": 0 },
+      { "size": "L", "stock": 55, "priceModifier": 0 },
+      { "size": "XL", "stock": 50, "priceModifier": 0 },
+      { "size": "XXL", "stock": 35, "priceModifier": 0 },
+      { "size": "3XL", "stock": 25, "priceModifier": 50 }
+    ]
   },
   {
     "title": "S3 Kompozit Burun İş Botu",
@@ -32,12 +41,23 @@
     "subImage3": null,
     "subImage4": null,
     "description": "Darbelere dayanıklı kompozit burun ve delinmez ara taban teknolojisi.",
-    "sizeType": "SHOE",
-    "hasVariants": true,
     "category": "İş Ayakkabıları ve Ayak Koruma",
     "middleCategory": "İş Botu",
     "subCategory": "Composite Burunlu Ayakkabı",
-    "brand": "YDS"
+    "bulkDiscountQty": 3,
+    "bulkDiscountRate": 20,
+    "brand": "YDS",
+    "sizes": ["39", "40", "41", "42", "43", "44", "45", "46"],
+    "stock": [
+      { "size": "39", "stock": 20, "priceModifier": 0 },
+      { "size": "40", "stock": 35, "priceModifier": 0 },
+      { "size": "41", "stock": 40, "priceModifier": 0 },
+      { "size": "42", "stock": 50, "priceModifier": 0 },
+      { "size": "43", "stock": 45, "priceModifier": 0 },
+      { "size": "44", "stock": 35, "priceModifier": 0 },
+      { "size": "45", "stock": 25, "priceModifier": 0 },
+      { "size": "46", "stock": 15, "priceModifier": 0 }
+    ]
   },
   {
     "title": "Nitril Kaplı Kesilmez Eldiven",
@@ -52,12 +72,20 @@
     "subImage3": null,
     "subImage4": null,
     "description": "Kesilmeye karşı dirençli nitril kaplama yüzey ile endüstriyel koruma.",
-    "sizeType": "GLOVE",
-    "hasVariants": true,
     "category": "İş Eldivenleri",
     "middleCategory": "Kaplama Eldiven",
     "subCategory": "Nitril Kaplı Eldiven",
-    "brand": "MAPA"
+    "brand": "MAPA",
+    "bulkDiscountQty": 3,
+    "bulkDiscountRate": 20,
+    "sizes": ["7", "8", "9", "10", "11"],
+    "stock": [
+      { "size": "7", "stock": 100, "priceModifier": 0 },
+      { "size": "8", "stock": 150, "priceModifier": 0 },
+      { "size": "9", "stock": 180, "priceModifier": 0 },
+      { "size": "10", "stock": 160, "priceModifier": 0 },
+      { "size": "11", "stock": 90, "priceModifier": 0 }
+    ]
   },
   {
     "title": "3M Peltor X4A Kulaklık",
@@ -72,12 +100,14 @@
     "subImage3": null,
     "subImage4": null,
     "description": "Yüksek gürültülü ortamlar için ultra ince ve hafif kulak koruyucu.",
-    "sizeType": "STANDARD",
-    "hasVariants": true,
     "category": "İş Güvenlik Ekipmanları",
     "middleCategory": "İşitme Koruma",
     "subCategory": "Kulaklık",
-    "brand": "3M"
+    "brand": "3M",
+    "bulkDiscountQty": 3,
+    "bulkDiscountRate": 20,
+    "sizes": ["Standart"],
+    "stock": [{ "size": "Standart", "stock": 75, "priceModifier": 0 }]
   },
   {
     "title": "Alev Almaz Kaynakçı Önlüğü",
@@ -92,12 +122,19 @@
     "subImage3": null,
     "subImage4": null,
     "description": "Isıya ve kıvılcıma dayanıklı hakiki deri kaynakçı koruma önlüğü.",
-    "sizeType": "CLOTHING_NUMBER",
-    "hasVariants": true,
     "category": "İş Elbiseleri",
     "middleCategory": "İş Önlük",
     "subCategory": "Kaynakçı Önlük",
-    "brand": "CERVA"
+    "brand": "CERVA",
+    "bulkDiscountQty": 3,
+    "bulkDiscountRate": 20,
+    "sizes": ["M", "L", "XL", "XXL"],
+    "stock": [
+      { "size": "M", "stock": 30, "priceModifier": 0 },
+      { "size": "L", "stock": 40, "priceModifier": 0 },
+      { "size": "XL", "stock": 35, "priceModifier": 0 },
+      { "size": "XXL", "stock": 20, "priceModifier": 0 }
+    ]
   },
   {
     "title": "UV Korumalı Şeffaf İş Gözlüğü",
@@ -112,12 +149,12 @@
     "subImage3": null,
     "subImage4": null,
     "description": "Buğulanmaz lens teknolojisi ve çizilmeye dayanıklı dış yüzey.",
-    "sizeType": "STANDARD",
-    "hasVariants": true,
     "category": "İş Güvenlik Ekipmanları",
     "middleCategory": "Göz ve Yüz Koruma",
     "subCategory": "Koruyucu Gözlük",
-    "brand": "3M"
+    "brand": "3M",
+    "sizes": ["Standart"],
+    "stock": [{ "size": "Standart", "stock": 200, "priceModifier": 0 }]
   },
   {
     "title": "Çelik Burunlu Yazlık İş Ayakkabısı",
@@ -132,12 +169,23 @@
     "subImage3": null,
     "subImage4": null,
     "description": "Nefes alabilen fileli dış saya ve hafifletilmiş çelik burun koruması.",
-    "sizeType": "SHOE",
-    "hasVariants": true,
     "category": "İş Ayakkabıları ve Ayak Koruma",
     "middleCategory": "İş Ayakkabısı",
     "subCategory": "Çelik Burunlu Ayakkabı",
-    "brand": "PANDA"
+    "brand": "PANDA",
+    "sizes": ["38", "39", "40", "41", "42", "43", "44", "45", "46", "47"],
+    "stock": [
+      { "size": "38", "stock": 15, "priceModifier": 0 },
+      { "size": "39", "stock": 25, "priceModifier": 0 },
+      { "size": "40", "stock": 40, "priceModifier": 0 },
+      { "size": "41", "stock": 50, "priceModifier": 0 },
+      { "size": "42", "stock": 55, "priceModifier": 0 },
+      { "size": "43", "stock": 50, "priceModifier": 0 },
+      { "size": "44", "stock": 40, "priceModifier": 0 },
+      { "size": "45", "stock": 30, "priceModifier": 0 },
+      { "size": "46", "stock": 20, "priceModifier": 0 },
+      { "size": "47", "stock": 10, "priceModifier": 0 }
+    ]
   },
   {
     "title": "FFP3 Ventilli Toz Maskesi 10lu",
@@ -152,12 +200,12 @@
     "subImage3": null,
     "subImage4": null,
     "description": "Yüksek filtrasyon kapasiteli, nefes almayı kolaylaştıran ventilli maske.",
-    "sizeType": "STANDARD",
-    "hasVariants": true,
     "category": "İş Güvenlik Ekipmanları",
     "middleCategory": "Solunum Koruma",
     "subCategory": "FFP2 FFP3 Maske",
-    "brand": "GVS"
+    "brand": "GVS",
+    "sizes": ["Standart"],
+    "stock": [{ "size": "Standart", "stock": 150, "priceModifier": 0 }]
   },
   {
     "title": "Yüksek Gerilim İzole Eldiven",
@@ -172,12 +220,17 @@
     "subImage3": null,
     "subImage4": null,
     "description": "Sınıf 0 (1000V) elektrik çalışmalarına uygun kauçuk izole eldiven.",
-    "sizeType": "GLOVE",
-    "hasVariants": true,
     "category": "İş Eldivenleri",
     "middleCategory": "Özel Amaçlı Eldiven",
     "subCategory": "Elektrikçi Eldiveni",
-    "brand": "CERVA"
+    "brand": "CERVA",
+    "sizes": ["8", "9", "10", "11"],
+    "stock": [
+      { "size": "8", "stock": 20, "priceModifier": 0 },
+      { "size": "9", "stock": 30, "priceModifier": 0 },
+      { "size": "10", "stock": 35, "priceModifier": 0 },
+      { "size": "11", "stock": 25, "priceModifier": 0 }
+    ]
   },
   {
     "title": "Tam Donanımlı Emniyet Kemeri",
@@ -192,11 +245,11 @@
     "subImage3": null,
     "subImage4": null,
     "description": "Çift lanyardlı, şok emicili düşüş durdurma ve konumlandırma kemeri.",
-    "sizeType": "CLOTHING_TEXT",
-    "hasVariants": true,
     "category": "İş Güvenlik Ekipmanları",
     "middleCategory": "Yüksekte Çalışma",
     "subCategory": "Emniyet Kemeri",
-    "brand": "PORTWEST"
+    "brand": "PORTWEST",
+    "sizes": ["Standart"],
+    "stock": [{ "size": "Standart", "stock": 40, "priceModifier": 0 }]
   }
 ]
