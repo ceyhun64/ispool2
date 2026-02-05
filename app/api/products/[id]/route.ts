@@ -118,7 +118,7 @@ export async function GET(
 
     // Stok durumu
     let stockStatus;
-    if (product.hasVariants && product.stock.length > 0) {
+    if (product.stock.length > 0) {
       const totalStock = product.stock.reduce((sum, s) => sum + s.stock, 0);
       stockStatus = {
         inStock: totalStock > 0,
@@ -140,7 +140,6 @@ export async function GET(
     const availableSizes = product.sizes.map((ps) => ({
       id: ps.size.id,
       value: ps.size.value,
-      type: ps.size.type,
       sortOrder: ps.size.sortOrder,
     }));
 
@@ -215,6 +214,8 @@ export async function GET(
           mainImage: product.mainImage,
           images,
 
+          bulkDiscountQty: product.bulkDiscountQty,
+          bulkDiscountRate: product.bulkDiscountRate,
           // Kategoriler
           category: { id: product.category.id, name: product.category.name },
           middleCategory: product.middleCategory
@@ -236,8 +237,6 @@ export async function GET(
               }
             : null,
 
-          // Beden & Stok
-          hasVariants: product.hasVariants,
           availableSizes,
           stockMatrix,
 
@@ -367,8 +366,7 @@ export async function DELETE(
     );
   }
 }
-
-// --- PUT /api/products/:id ---
+// app/api/products/[id]/route.ts - PUT fonksiyonu
 export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> },
@@ -404,7 +402,7 @@ export async function PUT(
       );
     }
 
-    const price = parseInt(priceStr);
+    const price = parseFloat(priceStr);
     if (isNaN(price) || price <= 0) {
       return NextResponse.json(
         { success: false, error: "Geçersiz fiyat değeri" },
@@ -420,11 +418,11 @@ export async function PUT(
     const description = formData.get("description")?.toString() || "";
     const brandIdStr = formData.get("brandId") as string;
 
-    const oldPrice = oldPriceStr ? parseInt(oldPriceStr) : null;
+    const oldPrice = oldPriceStr ? parseFloat(oldPriceStr) : null;
     const discountPercentage = discountPercentageStr
-      ? parseInt(discountPercentageStr)
+      ? parseFloat(discountPercentageStr)
       : null;
-    const rating = ratingStr ? parseInt(ratingStr) : 0;
+    const rating = ratingStr ? parseFloat(ratingStr) : 0;
     const reviewCount = reviewCountStr ? parseInt(reviewCountStr) : 0;
     const brandId = brandIdStr ? parseInt(brandIdStr) : null;
 
@@ -432,7 +430,6 @@ export async function PUT(
     const mainCategoryName = formData.get("category") as string;
     const middleCategoryName = formData.get("middleCategory") as string | null;
     const subCategoryName = formData.get("subCategory") as string | null;
-    const hasVariants = formData.get("hasVariants") === "true";
 
     if (!mainCategoryName) {
       return NextResponse.json(
@@ -452,7 +449,11 @@ export async function PUT(
     }
 
     let middleCategoryId: number | null = null;
-    if (middleCategoryName && middleCategoryName !== "null") {
+    if (
+      middleCategoryName &&
+      middleCategoryName !== "null" &&
+      middleCategoryName !== ""
+    ) {
       const mc = await prisma.middleCategory.findFirst({
         where: { name: middleCategoryName, categoryId: mainCategory.id },
       });
@@ -466,7 +467,12 @@ export async function PUT(
     }
 
     let subCategoryId: number | null = null;
-    if (subCategoryName && subCategoryName !== "null" && middleCategoryId) {
+    if (
+      subCategoryName &&
+      subCategoryName !== "null" &&
+      subCategoryName !== "" &&
+      middleCategoryId
+    ) {
       const sc = await prisma.subCategory.findFirst({
         where: { name: subCategoryName, middleCategoryId },
       });
@@ -490,7 +496,7 @@ export async function PUT(
       );
     }
 
-    // Dosya yükleme
+    // Dosya yükleme helper
     const uploadFile = async (
       file: File | null,
     ): Promise<string | undefined> => {
@@ -509,6 +515,7 @@ export async function PUT(
       return data.path;
     };
 
+    // Görseller - yeni yükleme varsa kullan, yoksa eskiyi koru
     const mainImagePath = mainFile
       ? await uploadFile(mainFile)
       : existingProduct.mainImage;
@@ -525,9 +532,7 @@ export async function PUT(
       ? await uploadFile(subFile4)
       : existingProduct.subImage4;
 
-    // Beden ve stok verileri (JSON string olarak gelir)
-    // sizes: [{ sizeId: number }, ...]
-    // stock: [{ sizeId: number | null, stock: number, priceModifier: number }, ...]
+    // Beden ve stok verileri
     let sizesInput: { sizeId: number }[] = [];
     let stockInput: {
       sizeId: number | null;
@@ -541,15 +546,18 @@ export async function PUT(
     if (sizesRaw) {
       try {
         sizesInput = JSON.parse(sizesRaw as string);
-      } catch {
-        console.error("sizes parse hatası");
+      } catch (e) {
+        console.error("sizes parse hatası:", e);
+        sizesInput = [];
       }
     }
+
     if (stockRaw) {
       try {
         stockInput = JSON.parse(stockRaw as string);
-      } catch {
-        console.error("stock parse hatası");
+      } catch (e) {
+        console.error("stock parse hatası:", e);
+        stockInput = [];
       }
     }
 
@@ -575,7 +583,6 @@ export async function PUT(
           middleCategoryId,
           subCategoryId,
           brandId,
-          hasVariants,
         },
         include: {
           category: true,
@@ -589,25 +596,35 @@ export async function PUT(
       await tx.productSize.deleteMany({ where: { productId } });
       await tx.productStock.deleteMany({ where: { productId } });
 
-      if (hasVariants && sizesInput.length > 0) {
-        // 3. Frontend'den gelen sizeId listesini ekle
+      // 3. Yeni beden ve stok verileri
+      if (sizesInput.length > 0) {
+        // Beden varyantları var
         await tx.productSize.createMany({
           data: sizesInput.map((s) => ({ productId, sizeId: s.sizeId })),
         });
 
-        // 4. Stok kayıtları
-        if (stockInput.length > 0) {
+        // Stok kayıtları
+        const stockToCreate =
+          stockInput.length > 0
+            ? stockInput.filter((s) => s.sizeId !== null)
+            : sizesInput.map((s) => ({
+                sizeId: s.sizeId,
+                stock: 10,
+                priceModifier: 0,
+              }));
+
+        if (stockToCreate.length > 0) {
           await tx.productStock.createMany({
-            data: stockInput.map((s) => ({
+            data: stockToCreate.map((s) => ({
               productId,
               sizeId: s.sizeId,
               stock: s.stock,
-              priceModifier: s.priceModifier,
+              priceModifier: s.priceModifier || 0,
             })),
           });
         }
       } else {
-        // Varyant yok → tek stok kayıtı (sizeId: null)
+        // Varyant yok → tek stok kaydı
         const singleStock = stockInput.find((s) => s.sizeId === null);
         await tx.productStock.create({
           data: {

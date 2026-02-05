@@ -62,10 +62,16 @@ interface Product {
   category: string;
 }
 
+interface Size {
+  id: number;
+  value: string;
+}
+
 interface CartItem {
   id: number;
   product: Product;
   quantity: number;
+  size?: Size;
 }
 
 interface UserUser {
@@ -142,7 +148,20 @@ export default function PaymentPage() {
           cache: "no-store",
         });
         if (cartRes.ok) {
-          setCartItems(await cartRes.json());
+          const cartData = await cartRes.json();
+          setCartItems(
+            cartData.map((item: any) => ({
+              id: item.id,
+              product: item.product,
+              quantity: item.quantity,
+              size: item.size
+                ? {
+                    id: item.size.id,
+                    value: item.size.value,
+                  }
+                : undefined,
+            })),
+          );
         } else {
           setCartItems([]);
         }
@@ -402,9 +421,10 @@ export default function PaymentPage() {
         localStorage.removeItem("cart");
         router.push("/checkout/success");
       } else {
-        throw new Error();
+        throw new Error(data.error || "Ödeme başarısız");
       }
     } catch (err) {
+      console.error("Payment error:", err);
       router.push("/checkout/unsuccess");
     } finally {
       setProcessingPayment(false);

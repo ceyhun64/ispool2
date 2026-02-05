@@ -14,6 +14,7 @@ import {
   HardHat,
   TrendingUp,
   Users,
+  Percent,
 } from "lucide-react";
 import { toast } from "sonner";
 import ProductTabs from "./productTabs";
@@ -28,7 +29,7 @@ import ProductVariantSelector from "./productVariantSelector";
 import ProductActions from "./productActions";
 
 // --------------------
-// İNTERFACES  —  API response ile birebir örtüşür
+// İNTERFACES
 // --------------------
 interface Size {
   id: number;
@@ -112,9 +113,11 @@ interface ProductData {
     purchaseCount: number;
     lastUpdated: string;
   };
-  hasVariants: boolean;
-  availableSizes: Size[]; // ProductSize → Size
-  stockMatrix: StockEntry[]; // ProductStock kayıtları
+  availableSizes: Size[];
+  stockMatrix: StockEntry[];
+  // ─── Toplu alım indirimi ────────────────────────────────────────────────
+  bulkDiscountQty: number | null;
+  bulkDiscountRate: number | null;
 }
 
 export default function ProductDetailPage() {
@@ -133,10 +136,7 @@ export default function ProductDetailPage() {
     string | null
   >(null);
 
-  // Sadece beden seçimi
   const [selectedSizeId, setSelectedSizeId] = useState<number | null>(null);
-
-  // Seçili stok satırı (stockMatrix'ten)
   const [selectedStock, setSelectedStock] = useState<StockEntry | null>(null);
 
   const { isFavorited, addFavorite, removeFavorite } = useFavorite();
@@ -177,8 +177,7 @@ export default function ProductDetailPage() {
       return;
     }
 
-    if (product.hasVariants && product.availableSizes.length > 0) {
-      // Beden seçilmişse o bedene ait stok satırını bul
+    if (product.availableSizes.length > 0) {
       if (selectedSizeId) {
         const entry =
           product.stockMatrix.find((s) => s.sizeId === selectedSizeId) ?? null;
@@ -187,7 +186,6 @@ export default function ProductDetailPage() {
         setSelectedStock(null);
       }
     } else {
-      // Varyant yok → sizeId: null olan tek satır
       const entry = product.stockMatrix.find((s) => s.sizeId === null) ?? null;
       setSelectedStock(entry);
     }
@@ -209,6 +207,32 @@ export default function ProductDetailPage() {
     };
     checkLogin();
   }, []);
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // ─── TOPLU ALIM İNDİRİMİ HESAPLAMA ──────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
+  const calculateBulkDiscount = () => {
+    if (!product) return { hasDiscount: false, discountRate: 0 };
+
+    const { bulkDiscountQty, bulkDiscountRate } = product;
+
+    // Toplu alım indirimi aktif mi?
+    if (
+      !bulkDiscountQty ||
+      !bulkDiscountRate ||
+      bulkDiscountQty <= 0 ||
+      bulkDiscountRate <= 0
+    ) {
+      return { hasDiscount: false, discountRate: 0 };
+    }
+
+    // Miktar kontrolü
+    if (quantity >= bulkDiscountQty) {
+      return { hasDiscount: true, discountRate: bulkDiscountRate };
+    }
+
+    return { hasDiscount: false, discountRate: 0 };
+  };
 
   // ---------- Handlers ----------
   const handleSaveDesign = (designUrl: string) => {
@@ -249,24 +273,27 @@ export default function ProductDetailPage() {
       return;
     }
 
-    // Beden kontrolü: varyant varsa ve beden listesi doluysa → beden seçilmeli
-    if (
-      product.hasVariants &&
-      product.availableSizes.length > 0 &&
-      !selectedSizeId
-    ) {
+    if (product.availableSizes.length > 0 && !selectedSizeId) {
       toast.error("Lütfen bir beden seçin.");
       return;
     }
 
-    // Seçili stok kontrolü
     if (selectedStock && selectedStock.stock <= 0) {
       toast.error("Seçilen beden stokta yok.");
       return;
     }
 
     const finalCustomImage = customDesign || uploadedImagePreview;
-    const finalPrice = product.price + (selectedStock?.priceModifier ?? 0);
+
+    // ─── Toplu alım indirimli fiyat hesaplama ───────────────────────────────
+    const bulkDiscount = calculateBulkDiscount();
+    let basePrice = product.price + (selectedStock?.priceModifier ?? 0);
+
+    if (bulkDiscount.hasDiscount) {
+      basePrice = basePrice * (1 - bulkDiscount.discountRate / 100);
+    }
+
+    const finalPrice = basePrice;
 
     // ---------- Guest cart ----------
     if (!isLoggedIn) {
@@ -285,9 +312,12 @@ export default function ProductDetailPage() {
         },
         quantity,
       );
-      toast.success(
-        `${quantity} adet ${finalCustomImage ? "özelleştirilmiş " : ""}ürün sepete eklendi!`,
-      );
+
+      const message = bulkDiscount.hasDiscount
+        ? `${quantity} adet ${finalCustomImage ? "özelleştirilmiş " : ""}ürün sepete eklendi! 🎉 %${bulkDiscount.discountRate} toplu alım indirimi uygulandı!`
+        : `${quantity} adet ${finalCustomImage ? "özelleştirilmiş " : ""}ürün sepete eklendi!`;
+
+      toast.success(message);
       window.dispatchEvent(new CustomEvent("cartUpdated"));
       return;
     }
@@ -310,9 +340,11 @@ export default function ProductDetailPage() {
         credentials: "include",
       });
       if (res.ok) {
-        toast.success(
-          `${quantity} adet ${finalCustomImage ? "özelleştirilmiş " : ""}ürün sepete eklendi!`,
-        );
+        const message = bulkDiscount.hasDiscount
+          ? `${quantity} adet ${finalCustomImage ? "özelleştirilmiş " : ""}ürün sepete eklendi! 🎉 %${bulkDiscount.discountRate} toplu alım indirimi uygulandı!`
+          : `${quantity} adet ${finalCustomImage ? "özelleştirilmiş " : ""}ürün sepete eklendi!`;
+
+        toast.success(message);
         window.dispatchEvent(new CustomEvent("cartUpdated"));
         cartDropdownRef.current?.open?.();
       } else {
@@ -349,12 +381,23 @@ export default function ProductDetailPage() {
     );
 
   const finalCustomImage = customDesign || uploadedImagePreview;
-  const currentPrice = product.price + (selectedStock?.priceModifier ?? 0);
+  const bulkDiscount = calculateBulkDiscount();
+
+  // Fiyat hesaplama (toplu alım indirimli)
+  let currentPrice = product.price + (selectedStock?.priceModifier ?? 0);
+  if (bulkDiscount.hasDiscount) {
+    currentPrice = currentPrice * (1 - bulkDiscount.discountRate / 100);
+  }
 
   // KDV (%10)
   const subtotal = currentPrice * quantity;
   const vatAmount = subtotal * 0.1;
   const totalWithVat = subtotal + vatAmount;
+
+  // Kalan adet (toplu alıma ulaşmak için)
+  const remainingForBulk = product.bulkDiscountQty
+    ? Math.max(0, product.bulkDiscountQty - quantity)
+    : 0;
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans selection:bg-orange-100 selection:text-orange-900">
@@ -378,27 +421,30 @@ export default function ProductDetailPage() {
       <div className="mx-auto px-6 pb-20 pt-4 md:pt-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Galeri */}
-          <ProductImageGallery
-            images={product.images}
-            activeIndex={activeIndex}
-            onIndexChange={setActiveIndex}
-            customDesign={customDesign}
-            uploadedImagePreview={uploadedImagePreview}
-            hasDiscount={product.hasDiscount}
-            discountPercentage={product.discountPercentage}
-            onShowPreview={() => setShowPreview(true)}
-            onRemoveCustomDesign={() => {
-              setCustomDesign(null);
-              toast.info("Özel tasarım kaldırıldı.");
-            }}
-            onRemoveUploadedImage={() => {
-              setUploadedImage(null);
-              setUploadedImagePreview(null);
-              if (fileInputRef.current) fileInputRef.current.value = "";
-              toast.info("Yüklenen resim kaldırıldı.");
-            }}
-            productTitle={product.title}
-          />
+          {/* Galeri - Sticky özelliği eklendi */}
+          <div className="lg:col-span-6 lg:sticky lg:top-20 h-fit">
+            <ProductImageGallery
+              images={product.images}
+              activeIndex={activeIndex}
+              onIndexChange={setActiveIndex}
+              customDesign={customDesign}
+              uploadedImagePreview={uploadedImagePreview}
+              hasDiscount={product.hasDiscount}
+              discountPercentage={product.discountPercentage}
+              onShowPreview={() => setShowPreview(true)}
+              onRemoveCustomDesign={() => {
+                setCustomDesign(null);
+                toast.info("Özel tasarım kaldırıldı.");
+              }}
+              onRemoveUploadedImage={() => {
+                setUploadedImage(null);
+                setUploadedImagePreview(null);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+                toast.info("Yüklenen resim kaldırıldı.");
+              }}
+              productTitle={product.title}
+            />
+          </div>
 
           {/* Ürün Bilgileri */}
           <div className="lg:col-span-6 flex flex-col pt-2">
@@ -426,7 +472,6 @@ export default function ProductDetailPage() {
               <div className="space-y-6">
                 {/* Beden Seçimi */}
                 <ProductVariantSelector
-                  hasVariants={product.hasVariants}
                   availableSizes={product.availableSizes}
                   stockMatrix={product.stockMatrix}
                   selectedSizeId={selectedSizeId}
@@ -447,6 +492,68 @@ export default function ProductDetailPage() {
                         : "yüklediğiniz resimle"}{" "}
                       özelleştirilmiştir. Sepete eklediğinizde bu özel tasarım
                       kaydedilecektir.
+                    </p>
+                  </div>
+                )}
+
+                {/* ─── TOPLU ALIM İNDİRİMİ BİLDİRİMİ ────────────────────── */}
+                {product.bulkDiscountQty && product.bulkDiscountRate && (
+                  <div
+                    className={`border p-4 rounded space-y-2 ${
+                      bulkDiscount.hasDiscount
+                        ? "bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200"
+                        : "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
+                      <Percent
+                        size={14}
+                        className={
+                          bulkDiscount.hasDiscount
+                            ? "text-emerald-700"
+                            : "text-blue-700"
+                        }
+                      />
+                      <span
+                        className={
+                          bulkDiscount.hasDiscount
+                            ? "text-emerald-700"
+                            : "text-blue-700"
+                        }
+                      >
+                        {bulkDiscount.hasDiscount
+                          ? `🎉 Toplu Alım İndirimi Uygulandı! %${bulkDiscount.discountRate}`
+                          : `Toplu Alım Fırsatı`}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      {bulkDiscount.hasDiscount ? (
+                        <>
+                          Bu üründen {product.bulkDiscountQty} adet ve üzeri
+                          alımlarda <strong>%{product.bulkDiscountRate}</strong>{" "}
+                          indirim kazanıyorsunuz! Sepetinizdeki{" "}
+                          <strong>{quantity} adet</strong> için indirim
+                          uygulandı.
+                        </>
+                      ) : (
+                        <>
+                          Bu üründen{" "}
+                          <strong>{product.bulkDiscountQty} adet</strong> ve
+                          üzeri alımlarda{" "}
+                          <strong>%{product.bulkDiscountRate} indirim</strong>{" "}
+                          kazanın!
+                          {remainingForBulk > 0 && (
+                            <>
+                              {" "}
+                              Toplu alım için{" "}
+                              <strong className="text-blue-700">
+                                {remainingForBulk} adet
+                              </strong>{" "}
+                              daha ekleyin.
+                            </>
+                          )}
+                        </>
+                      )}
                     </p>
                   </div>
                 )}
@@ -483,6 +590,27 @@ export default function ProductDetailPage() {
                       TL
                     </span>
                   </div>
+                  {bulkDiscount.hasDiscount && (
+                    <div className="flex justify-between text-sm bg-emerald-50 -mx-4 px-4 py-2">
+                      <span className="text-emerald-700 font-semibold flex items-center gap-1">
+                        <Percent size={14} />
+                        Toplu Alım İndirimi (%{bulkDiscount.discountRate})
+                      </span>
+                      <span className="font-bold text-emerald-700">
+                        -
+                        {(
+                          (product.price +
+                            (selectedStock?.priceModifier ?? 0)) *
+                          quantity *
+                          (bulkDiscount.discountRate / 100)
+                        ).toLocaleString("tr-TR", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}{" "}
+                        TL
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">KDV (%10)</span>
                     <span className="font-bold text-slate-900">
@@ -509,67 +637,69 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Özellikler */}
-              <div className="space-y-4 pt-4 border-t border-slate-100">
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                  <Info size={14} className="text-orange-600" /> Ürün
-                  Özellikleri
+              <div className="flex">
+                <div className="space-y-4 pt-4 border-t border-slate-100">
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                    <Info size={14} className="text-orange-600" /> Ürün
+                    Özellikleri
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
+                      <div className="p-2 bg-blue-100 text-blue-600">
+                        <Award size={16} />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-slate-900">
+                          Garanti
+                        </div>
+                        <div className="text-[10px] text-slate-500">
+                          {product.specifications.warranty}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
+                      <div className="p-2 bg-emerald-100 text-emerald-600">
+                        <BadgeCheck size={16} />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-slate-900">
+                          Menşei
+                        </div>
+                        <div className="text-[10px] text-slate-500">
+                          {product.specifications.origin}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
+                      <div className="p-2 bg-orange-100 text-orange-600">
+                        <ShieldCheck size={16} />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-slate-900">
+                          Sertifikalar
+                        </div>
+                        <div className="text-[10px] text-slate-500">
+                          {product.specifications.certifications.join(", ")}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
+                      <div className="p-2 bg-purple-100 text-purple-600">
+                        <HardHat size={16} />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-slate-900">
+                          İSG Uyumu
+                        </div>
+                        <div className="text-[10px] text-slate-500">Onaylı</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className="prose prose-slate max-w-none text-slate-600 text-[13px] leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: product.description }}
+                  />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 text-blue-600">
-                      <Award size={16} />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">
-                        Garanti
-                      </div>
-                      <div className="text-[10px] text-slate-500">
-                        {product.specifications.warranty}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
-                    <div className="p-2 bg-emerald-100 text-emerald-600">
-                      <BadgeCheck size={16} />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">
-                        Menşei
-                      </div>
-                      <div className="text-[10px] text-slate-500">
-                        {product.specifications.origin}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
-                    <div className="p-2 bg-orange-100 text-orange-600">
-                      <ShieldCheck size={16} />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">
-                        Sertifikalar
-                      </div>
-                      <div className="text-[10px] text-slate-500">
-                        {product.specifications.certifications.join(", ")}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
-                    <div className="p-2 bg-purple-100 text-purple-600">
-                      <HardHat size={16} />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">
-                        İSG Uyumu
-                      </div>
-                      <div className="text-[10px] text-slate-500">Onaylı</div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="prose prose-slate max-w-none text-slate-600 text-[13px] leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: product.description }}
-                />
               </div>
             </div>
           </div>
@@ -614,14 +744,14 @@ export default function ProductDetailPage() {
 
         {/* İlgili Ürünler */}
         {product.relatedProducts.length > 0 && (
-          <div className="mt-16 pt-8 border-t border-slate-200">
+          <div className="mt-16 pt-8  border-t border-slate-200">
             <div className="flex items-center gap-3 mb-6">
               <TrendingUp size={20} className="text-orange-600" />
               <h2 className="text-xl font-bold text-slate-900 uppercase tracking-tight">
                 Benzer Ürünler
               </h2>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 ">
               {product.relatedProducts.slice(0, 4).map((rp) => (
                 <ProductCard key={rp.id} product={rp} />
               ))}

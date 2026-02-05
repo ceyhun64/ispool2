@@ -10,17 +10,11 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
 
     // Query parametreleri
-    const type = searchParams.get("type"); // NUMBER, ROMAN, SHOE, GLOVE, STANDARD
     const isActive = searchParams.get("isActive"); // "true" veya "false"
     const includeInactive = searchParams.get("includeInactive"); // "true" ise inaktif bedenler de gelir
 
     // Filtreler
     const where: any = {};
-
-    // Beden tipine göre filtrele
-    if (type) {
-      where.type = type;
-    }
 
     // Aktiflik durumuna göre filtrele
     if (isActive === "true") {
@@ -35,32 +29,12 @@ export async function GET(request: Request) {
     // Bedenleri getir
     const sizes = await prisma.size.findMany({
       where,
-      orderBy: [{ type: "asc" }, { sortOrder: "asc" }],
+      orderBy: { sortOrder: "asc" },
     });
-
-    // Tip bazlı gruplama
-    const groupedByType = sizes.reduce((acc: any, size) => {
-      if (!acc[size.type]) {
-        acc[size.type] = [];
-      }
-      acc[size.type].push({
-        id: size.id,
-        value: size.value,
-        sortOrder: size.sortOrder,
-        isActive: size.isActive,
-      });
-      return acc;
-    }, {});
 
     // İstatistikler
     const stats = {
       total: sizes.length,
-      byType: Object.keys(groupedByType).map((type) => ({
-        type,
-        count: groupedByType[type].length,
-        active: groupedByType[type].filter((s: any) => s.isActive).length,
-        inactive: groupedByType[type].filter((s: any) => !s.isActive).length,
-      })),
       activeCount: sizes.filter((s) => s.isActive).length,
       inactiveCount: sizes.filter((s) => !s.isActive).length,
     };
@@ -69,7 +43,6 @@ export async function GET(request: Request) {
     const formattedSizes = sizes.map((s) => ({
       id: s.id,
       value: s.value,
-      type: s.type,
       sortOrder: s.sortOrder,
       isActive: s.isActive,
     }));
@@ -78,7 +51,6 @@ export async function GET(request: Request) {
       {
         success: true,
         sizes: formattedSizes,
-        grouped: groupedByType,
         stats,
       },
       { status: 200 },
@@ -101,34 +73,22 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { value, type, sortOrder, isActive } = body;
+    const { value, sortOrder, isActive } = body;
 
     // Validasyon
-    if (!value || !type) {
+    if (!value) {
       return NextResponse.json(
         {
           success: false,
-          error: "Beden değeri ve tipi zorunludur",
+          error: "Beden değeri zorunludur",
         },
         { status: 400 },
       );
     }
 
-    // Geçerli tip kontrolü
-    const validTypes = ["NUMBER", "ROMAN", "SHOE", "GLOVE", "STANDARD"];
-    if (!validTypes.includes(type)) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: `Geçersiz beden tipi. Geçerli tipler: ${validTypes.join(", ")}`,
-        },
-        { status: 400 },
-      );
-    }
-
-    // Aynı tip ve değerde beden var mı kontrol et
-    const existing = await prisma.size.findFirst({
-      where: { value, type },
+    // Aynı değerde beden var mı kontrol et
+    const existing = await prisma.size.findUnique({
+      where: { value },
     });
 
     if (existing) {
@@ -141,11 +101,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // sortOrder belirtilmemişse, aynı tipteki son bedenin sortOrder'ını al ve 1 ekle
+    // sortOrder belirtilmemişse, son bedenin sortOrder'ını al ve 1 ekle
     let finalSortOrder = sortOrder;
     if (finalSortOrder === undefined) {
       const lastSize = await prisma.size.findFirst({
-        where: { type },
         orderBy: { sortOrder: "desc" },
       });
       finalSortOrder = lastSize ? lastSize.sortOrder + 1 : 1;
@@ -155,7 +114,6 @@ export async function POST(request: Request) {
     const newSize = await prisma.size.create({
       data: {
         value,
-        type,
         sortOrder: finalSortOrder,
         isActive: isActive !== undefined ? isActive : true,
       },
@@ -168,7 +126,6 @@ export async function POST(request: Request) {
         size: {
           id: newSize.id,
           value: newSize.value,
-          type: newSize.type,
           sortOrder: newSize.sortOrder,
           isActive: newSize.isActive,
         },
@@ -188,12 +145,12 @@ export async function POST(request: Request) {
 }
 
 // ======================================================
-// PATCH /api/size - Toplu Güncelleme (sortOrder, isActive)
+// PATCH /api/size - Toplu Güncelleme (sortOrder, isActive, value)
 // ======================================================
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const { updates } = body; // [{ id: 1, sortOrder: 5, isActive: true }, ...]
+    const { updates } = body; // [{ id: 1, sortOrder: 5, isActive: true, value: "XL" }, ...]
 
     if (!updates || !Array.isArray(updates) || updates.length === 0) {
       return NextResponse.json(
@@ -228,7 +185,6 @@ export async function PATCH(request: Request) {
         sizes: updatedSizes.map((s) => ({
           id: s.id,
           value: s.value,
-          type: s.type,
           sortOrder: s.sortOrder,
           isActive: s.isActive,
         })),
@@ -245,6 +201,16 @@ export async function PATCH(request: Request) {
           error: "Bir veya daha fazla beden bulunamadı",
         },
         { status: 404 },
+      );
+    }
+
+    if (error.code === "P2002") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Bu beden değeri zaten kullanılıyor",
+        },
+        { status: 409 },
       );
     }
 

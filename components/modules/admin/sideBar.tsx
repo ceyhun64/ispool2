@@ -12,9 +12,9 @@ import {
   FileText,
   Settings,
   Bell,
-  ChevronRight,
   Ticket,
-  ShieldCheck,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -30,7 +30,15 @@ interface MenuItem {
   href: string;
 }
 
-export default function AdminSidebar(): React.ReactElement {
+interface AdminSidebarProps {
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
+}
+
+export default function AdminSidebar({
+  isCollapsed = false,
+  onToggleCollapse,
+}: AdminSidebarProps): React.ReactElement {
   const router = useRouter();
   const pathname = usePathname() ?? "";
   const [isOpen, setIsOpen] = useState(false);
@@ -38,49 +46,49 @@ export default function AdminSidebar(): React.ReactElement {
   const menuItems: MenuItem[] = [
     {
       id: "dashboard",
-      label: "GENEL BAKIŞ",
+      label: "Genel Bakış",
       icon: LayoutDashboard,
       href: "/admin/dashboard",
     },
     {
       id: "products",
-      label: "ÜRÜN YÖNETİMİ",
+      label: "Ürünler",
       icon: Package,
       href: "/admin/products",
     },
     {
       id: "orders",
-      label: "SİPARİŞ KAYITLARI",
+      label: "Siparişler",
       icon: ShoppingCart,
       href: "/admin/orders",
     },
     {
       id: "users",
-      label: "MÜŞTERİ PORTFÖYÜ",
+      label: "Müşteriler",
       icon: Users,
       href: "/admin/users",
     },
     {
       id: "blogs",
-      label: "İÇERİK YÖNETİMİ",
+      label: "Blog",
       icon: FileText,
       href: "/admin/blogs",
     },
     {
       id: "subscribers",
-      label: "BÜLTEN ABONELERİ",
+      label: "Bülten",
       icon: Bell,
       href: "/admin/subscribers",
     },
     {
       id: "coupon",
-      label: "PROMOSYON KODLARI",
+      label: "Kuponlar",
       icon: Ticket,
       href: "/admin/coupon",
     },
     {
       id: "settings",
-      label: "SİSTEM AYARLARI",
+      label: "Ayarlar",
       icon: Settings,
       href: "/admin/banner",
     },
@@ -94,99 +102,89 @@ export default function AdminSidebar(): React.ReactElement {
     try {
       const res = await fetch("/api/auth/logout", { method: "POST" });
       if (!res.ok) throw new Error();
-      toast.success("Oturum Kapatıldı", {
-        description: "Sistem güvenli bir şekilde kapatıldı.",
-      });
+      toast.success("Çıkış yapıldı");
       router.push("/admin");
     } catch (error) {
-      toast.error("Çıkış işlemi başarısız.");
+      toast.error("Çıkış işlemi başarısız");
     }
   };
 
-  const NavContent = (isMobile = false) => (
-    <div className="flex flex-col h-full bg-slate-900 text-slate-300 py-8 px-0 border-r border-slate-800">
-      {/* Brand Logo - Keskin Kenarlı Konteynır */}
-      <div className="px-6 mb-12 flex items-center gap-3">
-        <Image
-          src="/logo/logois2.png"
-          alt="Logo"
-          width={40}
-          height={40}
-          className="flex-shrink-0"
-        />
-        <div className="flex flex-col">
-          <span className="text-xl font-black tracking-tighter text-white leading-none">
-            İŞPOOL
-          </span>
-          <span className="text-[10px] font-bold text-amber-500 tracking-[0.2em]">
-            CONTROL
-          </span>
-        </div>
+  const NavContent = (isMobile = false, collapsed = false) => (
+    <div className="flex flex-col h-full bg-white border-r border-slate-200">
+      {/* Brand Logo */}
+      <div
+        className={`px-6 py-6 border-b border-slate-200 ${collapsed ? "px-4" : ""}`}
+      >
+        {!collapsed ? (
+          <div className="flex items-center gap-3">
+            <Image
+              src="/logo/logois2.png"
+              alt="Logo"
+              width={32}
+              height={32}
+              className="flex-shrink-0"
+            />
+            <div className="flex flex-col">
+              <span className="text-lg font-semibold text-slate-900">
+                İŞPOOL
+              </span>
+              <span className="text-xs text-slate-500">Yönetim Paneli</span>
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-center">
+            <Image src="/logo/logois2.png" alt="Logo" width={32} height={32} />
+          </div>
+        )}
       </div>
 
       {/* Navigation Menu */}
-      <nav className="flex-1 px-0 space-y-0.5">
-        <div className="px-6 mb-4 text-[10px] font-black text-slate-500 tracking-[.25em] uppercase">
-          Ana Menü
-        </div>
-        {menuItems.map(({ id, label, icon: Icon, href }) => {
-          const isActive = activeId === id;
-          return (
-            <Link
-              key={id}
-              href={href}
-              onClick={() => isMobile && setIsOpen(false)}
-              className={`relative flex items-center justify-between group px-6 py-3.5 transition-all duration-200 border-l-4 ${
-                isActive
-                  ? "bg-slate-800/50 border-amber-500 text-white"
-                  : "border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-100"
-              }`}
-            >
-              <div className="flex items-center gap-4 z-10 min-w-0">
+      <nav className="flex-1 py-6 px-3 overflow-y-auto">
+        <div className="space-y-1">
+          {menuItems.map(({ id, label, icon: Icon, href }) => {
+            const isActive = activeId === id;
+            return (
+              <Link
+                key={id}
+                href={href}
+                onClick={() => isMobile && setIsOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group title:text-slate-900 ${
+                  collapsed ? "justify-center" : ""
+                } ${
+                  isActive
+                    ? "bg-slate-800 text-slate-50"
+                    : "text-slate-700 hover:bg-slate-100"
+                }`}
+                title={collapsed ? label : undefined}
+              >
                 <Icon
-                  size={18}
-                  className={`flex-shrink-0 ${isActive ? "text-amber-500" : "text-slate-500 group-hover:text-slate-300"}`}
+                  size={20}
+                  className={`flex-shrink-0 ${
+                    isActive
+                      ? "text-slate-50"
+                      : "text-slate-00 group-hover:text-slate-700"
+                  }`}
                 />
-                <span
-                  className={`text-[11px] tracking-widest font-bold uppercase`}
-                >
-                  {label}
-                </span>
-              </div>
-
-              {isActive && (
-                <div className="flex items-center gap-1">
-                  <div className="h-1 w-1 bg-amber-500 rounded-full animate-pulse" />
-                  <ChevronRight size={14} className="text-amber-500" />
-                </div>
-              )}
-            </Link>
-          );
-        })}
+                {!collapsed && (
+                  <span className="text-sm font-medium">{label}</span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
       </nav>
 
-      {/* Footer / Profile Section */}
-      <div className="mt-auto px-4 pt-6 bg-slate-950/50">
-        <div className="flex items-center gap-3 px-3 py-5 border-t border-slate-800">
-          <div className="w-10 h-10 rounded-none bg-slate-800 border border-slate-700 flex items-center justify-center text-amber-500 font-black text-xs">
-            AD
-          </div>
-          <div className="flex flex-col min-w-0">
-            <span className="text-xs font-black text-white uppercase tracking-tight truncate">
-              Yönetici Paneli
-            </span>
-            <span className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-tighter truncate">
-              V2.0.4.88
-            </span>
-          </div>
-        </div>
-
+      {/* Footer */}
+      <div className="border-t border-slate-200 p-4">
         <button
           onClick={handleLogout}
-          className="group flex items-center justify-center gap-3 w-full bg-red-950/20 hover:bg-red-600 px-6 py-4 text-[11px] font-black text-red-500 hover:text-white transition-all duration-300 border-t border-red-900/30"
+          className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-all ${
+            collapsed ? "justify-center" : ""
+          }`}
+          title={collapsed ? "Çıkış Yap" : undefined}
         >
-          <LogOut size={16} />
-          <span className="uppercase tracking-widest">Sistemi Kapat</span>
+          <LogOut size={20} />
+          {!collapsed && <span>Çıkış Yap</span>}
         </button>
       </div>
     </div>
@@ -195,27 +193,42 @@ export default function AdminSidebar(): React.ReactElement {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="fixed left-0 top-0 w-[240px] sm:w-[280px] h-screen bg-slate-900 hidden md:block z-50 shadow-2xl">
-        {NavContent()}
+      <aside
+        className={`fixed left-0 top-0 h-screen bg-white hidden md:block z-50 transition-all duration-300 ${
+          isCollapsed ? "w-[72px]" : "w-[256px]"
+        }`}
+      >
+        {NavContent(false, isCollapsed)}
+
+        {/* Toggle Button */}
+        {onToggleCollapse && (
+          <button
+            onClick={onToggleCollapse}
+            className="absolute -right-3 top-6 w-6 h-6 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:text-slate-900 hover:border-slate-300 transition-all shadow-sm"
+            aria-label={isCollapsed ? "Genişlet" : "Daralt"}
+          >
+            {isCollapsed ? (
+              <ChevronRight size={14} />
+            ) : (
+              <ChevronLeft size={14} />
+            )}
+          </button>
+        )}
       </aside>
 
       {/* Mobile Top Bar */}
-      <div className="md:hidden fixed top-0 left-0 w-full bg-slate-900 border-b border-slate-800 px-5 py-4 z-40 flex justify-between items-center">
+      <div className="md:hidden fixed top-0 left-0 w-full bg-white border-b border-slate-200 px-4 py-3 z-40 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <div className="bg-amber-500 p-1">
-            <ShieldCheck size={18} className="text-black" />
-          </div>
-          <span className="text-sm font-black text-white tracking-widest uppercase">
-            İŞPOOL
-          </span>
+          <Image src="/logo/logois2.png" alt="Logo" width={28} height={28} />
+          <span className="text-base font-semibold text-slate-900">İŞPOOL</span>
         </div>
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setIsOpen(true)}
-          className="rounded-none bg-slate-800 hover:bg-slate-700 h-10 w-10 text-white"
+          className="h-9 w-9"
         >
-          <Menu size={22} />
+          <Menu size={20} />
         </Button>
       </div>
 
@@ -228,26 +241,26 @@ export default function AdminSidebar(): React.ReactElement {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-md z-[60] md:hidden"
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60] md:hidden"
             />
             <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ type: "tween", duration: 0.3 }}
-              className="fixed left-0 top-0 w-[280px] h-screen bg-slate-900 z-[70] md:hidden border-r border-slate-800"
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="fixed left-0 top-0 w-[280px] h-screen bg-white z-[70] md:hidden shadow-xl"
             >
-              <div className="absolute top-6 right-4">
+              <div className="absolute top-4 right-4">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-none hover:bg-slate-800 h-10 w-10 text-slate-400"
+                  className="h-9 w-9"
                   onClick={() => setIsOpen(false)}
                 >
                   <X size={20} />
                 </Button>
               </div>
-              {NavContent(true)}
+              {NavContent(true, false)}
             </motion.aside>
           </>
         )}

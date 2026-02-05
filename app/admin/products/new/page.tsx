@@ -1,11 +1,12 @@
-// app/admin/products/page.tsx
+// app/admin/products/new/page.tsx
 import React from "react";
-import AdminProduct from "@/components/modules/admin/products/products";
+import ProductForm from "@/components/modules/admin/products/productForm";
+import Sidebar from "@/components/modules/admin/sideBar";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export default async function AdminProductPage() {
+export default async function AdminNewProductsPage() {
   const session = await getServerSession(authOptions);
 
   // Eğer giriş yoksa veya role ADMIN değilse login sayfasına yönlendir
@@ -14,8 +15,8 @@ export default async function AdminProductPage() {
   }
 
   return (
-    <div>
-      <AdminProduct />
-    </div>
+     <div>
+         <ProductForm />
+       </div>
   );
 }

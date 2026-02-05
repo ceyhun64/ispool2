@@ -1,11 +1,18 @@
-// app/admin/products/page.tsx
+// app/admin/products/edit/[id]/page.tsx
 import React from "react";
-import AdminProduct from "@/components/modules/admin/products/products";
+import ProductForm from "@/components/modules/admin/products/productForm";
+import Sidebar from "@/components/modules/admin/sideBar";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export default async function AdminProductPage() {
+interface PageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default async function AdminEditProductPage({ params }: PageProps) {
   const session = await getServerSession(authOptions);
 
   // Eğer giriş yoksa veya role ADMIN değilse login sayfasına yönlendir
@@ -13,9 +20,11 @@ export default async function AdminProductPage() {
     redirect("/admin");
   }
 
+  const productId = parseInt(params.id);
+
   return (
     <div>
-      <AdminProduct />
+      <ProductForm productId={productId} />
     </div>
   );
 }

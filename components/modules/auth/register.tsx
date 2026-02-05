@@ -227,7 +227,7 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   placeholder="••••••••"
-                  className="h-11 rounded-sm bg-white border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
+                  className="h-11 rounded-sm placeholder:text-slate-300 bg-white border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
                 />
               </div>
 

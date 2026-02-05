@@ -37,9 +37,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr">
+    <html lang="tr" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${geistSans.variable} antialiased bg-[#fafafa] text-slate-900 overflow-x-hidden`}
+        suppressHydrationWarning
       >
         <CartProvider>
           <FavoriteProvider>

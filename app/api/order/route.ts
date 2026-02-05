@@ -229,19 +229,20 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Veritabanına kaydet
+    // Veritabanına kaydet - UPDATED: Schema'ya göre düzenlendi
     const order = await prisma.order.create({
       data: {
         userId: Number(userId),
         status: "paid",
-        totalPrice: Number(totalPrice),
-        paidPrice: Number(paidPrice),
+        // totalPrice ve paidPrice Int olarak schema'da tanımlı - kuruş cinsinden saklanmalı
+        totalPrice: Math.round(Number(totalPrice) * 100), // TL'yi kuruşa çevir
+        paidPrice: Math.round(Number(paidPrice) * 100), // TL'yi kuruşa çevir
         currency: currency || "TRY",
         paymentMethod: paymentMethod || "iyzipay",
         transactionId: paymentResult?.paymentId || null,
         installment: installment,
-        couponCode: couponCode, // 🎟️ KUPON KODU
-        discountAmount: discountAmount, // 🎟️ İNDİRİM TUTARI
+        couponCode: couponCode || null, // 🎟️ KUPON KODU (nullable)
+        discountAmount: discountAmount ? Number(discountAmount) : null, // Float, nullable
         items: {
           create: basketItems.map((item) => ({
             product: {
@@ -250,6 +251,7 @@ export async function POST(req: NextRequest) {
             quantity: Number(item.quantity || 1),
             unitPrice: Number(item.unitPrice || 0),
             totalPrice: Number(item.totalPrice || 0),
+            // sizeId eklenmedi çünkü basketItems'ta yok - gerekirse ekleyin
           })),
         },
         addresses: {
@@ -286,8 +288,9 @@ export async function POST(req: NextRequest) {
 
     console.log("✅ Sipariş oluşturuldu:", order.id);
 
-    const formatPrice = (price: any) =>
-      Number(price).toLocaleString("tr-TR", {
+    // Format helper - kuruştan TL'ye çevirme
+    const formatPrice = (priceInCents: number) =>
+      (priceInCents / 100).toLocaleString("tr-TR", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       });
@@ -319,21 +322,19 @@ Sayın ${firstName || ""} ${lastName || ""},
 * **Ödeme Şekli:** ${installmentText}
 ${
   monthlyPayment
-    ? `* **Aylık Ödeme:** ${formatPrice(monthlyPayment)} ${currency}`
+    ? `* **Aylık Ödeme:** ${formatPrice(Number(monthlyPayment) * 100)} ${currency}`
     : ""
 }
 ${
-  couponCode
-    ? `* **Kullanılan Kupon:** ${couponCode} (-${formatPrice(
-        discountAmount,
-      )} ${currency})`
+  couponCode && discountAmount
+    ? `* **Kullanılan Kupon:** ${couponCode} (-${discountAmount.toFixed(2)} ${currency})`
     : ""
 }
-* **Toplam Tutar (KDV Dahil):** ${formatPrice(totalPrice)} ${currency || "TRY"}
-* **Ödenen Tutar (KDV Dahil):** ${formatPrice(paidPrice)} ${currency || "TRY"}
+* **Toplam Tutar (KDV Dahil):** ${formatPrice(order.totalPrice)} ${currency || "TRY"}
+* **Ödenen Tutar (KDV Dahil):** ${formatPrice(order.paidPrice)} ${currency || "TRY"}
 ${
   baseTotalPrice && installment > 1
-    ? `* **Taksitsiz Tutar:** ${formatPrice(baseTotalPrice)} ${currency}`
+    ? `* **Taksitsiz Tutar:** ${baseTotalPrice.toFixed(2)} ${currency}`
     : ""
 }
 * **Ödeme Yöntemi:** ${paymentMethod || "Kredi Kartı"}
@@ -342,9 +343,7 @@ ${
 ${basketItems
   .map(
     (item) =>
-      `• ${item.name} (${item.quantity} Adet) — Birim Fiyat: ${formatPrice(
-        item.unitPrice || item.totalPrice,
-      )} ${currency}`,
+      `• ${item.name} (${item.quantity} Adet) — Birim Fiyat: ${(item.unitPrice || item.totalPrice).toFixed(2)} ${currency}`,
   )
   .join("\n")}
 
@@ -358,17 +357,13 @@ ${basketItems
 
 ${
   installment > 1
-    ? `\n**Taksit Bilgisi:**\nÖdemeniz ${installment} taksit olarak alınacaktır. Her ay ${formatPrice(
-        monthlyPayment,
-      )} ${currency} tutarında ödeme kartınızdan çekilecektir.`
+    ? `\n**Taksit Bilgisi:**\nÖdemeniz ${installment} taksit olarak alınacaktır. Her ay ${monthlyPayment} ${currency} tutarında ödeme kartınızdan çekilecektir.`
     : ""
 }
 
 ${
-  couponCode
-    ? `\n**İndirim Bilgisi:**\n${couponCode} kupon koduyla ${formatPrice(
-        discountAmount,
-      )} ${currency} indirim kazandınız!`
+  couponCode && discountAmount
+    ? `\n**İndirim Bilgisi:**\n${couponCode} kupon koduyla ${discountAmount.toFixed(2)} ${currency} indirim kazandınız!`
     : ""
 }
 
@@ -396,28 +391,20 @@ Web sitesi üzerinden yeni bir sipariş başarıyla alınmış ve ödemesi onayl
 * **Müşteri ID:** ${userId}
 * **Müşteri E-posta:** ${buyer.email || "Belirtilmemiş"}
 * **Ödeme Şekli:** ${installmentText}
+${monthlyPayment ? `* **Aylık Ödeme:** ${monthlyPayment} ${currency}` : ""}
 ${
-  monthlyPayment
-    ? `* **Aylık Ödeme:** ${formatPrice(monthlyPayment)} ${currency}`
+  couponCode && discountAmount
+    ? `* **Kullanılan Kupon:** ${couponCode} (-${discountAmount.toFixed(2)} ${currency})`
     : ""
 }
-${
-  couponCode
-    ? `* **Kullanılan Kupon:** ${couponCode} (-${formatPrice(
-        discountAmount,
-      )} ${currency})`
-    : ""
-}
-* **Ödenen Tutar:** ${formatPrice(paidPrice)} ${currency || "TRY"}
+* **Ödenen Tutar:** ${formatPrice(order.paidPrice)} ${currency || "TRY"}
 * **Ödeme Yöntemi:** ${paymentMethod || "Kredi Kartı"}
 
 **Sipariş Kalemleri:**
 ${basketItems
   .map(
     (item) =>
-      `• ${item.name} — Miktar: ${
-        item.quantity
-      } Adet — Toplam Fiyat: ${formatPrice(item.totalPrice)} ${currency}`,
+      `• ${item.name} — Miktar: ${item.quantity} Adet — Toplam Fiyat: ${item.totalPrice.toFixed(2)} ${currency}`,
   )
   .join("\n")}
 
@@ -450,14 +437,21 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     const orders = await prisma.order.findMany({
       include: {
-        items: { include: { product: true } },
+        items: { include: { product: true, size: true } }, // size eklendi
         addresses: true,
         user: true,
       },
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({ status: "success", orders });
+    // Fiyatları TL'ye çevir
+    const formattedOrders = orders.map((order) => ({
+      ...order,
+      totalPrice: order.totalPrice / 100,
+      paidPrice: order.paidPrice / 100,
+    }));
+
+    return NextResponse.json({ status: "success", orders: formattedOrders });
   } catch (error: any) {
     console.error("Order GET Error:", error);
     return NextResponse.json(
@@ -499,7 +493,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
       where: { id: Number(orderId) },
       data: { status },
       include: {
-        items: { include: { product: true } },
+        items: { include: { product: true, size: true } }, // size eklendi
         addresses: true,
         user: true,
       },
@@ -570,7 +564,14 @@ Saygılarımızla,
       adminMessage,
     );
 
-    return NextResponse.json({ status: "success", order: updatedOrder });
+    // Fiyatları TL'ye çevir
+    const formattedOrder = {
+      ...updatedOrder,
+      totalPrice: updatedOrder.totalPrice / 100,
+      paidPrice: updatedOrder.paidPrice / 100,
+    };
+
+    return NextResponse.json({ status: "success", order: formattedOrder });
   } catch (error: any) {
     console.error("Order PATCH Error:", error);
     return NextResponse.json(

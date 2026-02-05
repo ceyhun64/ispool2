@@ -34,7 +34,9 @@ export default function ProductImageGallery({
   productTitle,
 }: ProductImageGalleryProps) {
   const finalCustomImage = customDesign || uploadedImagePreview;
-  const displayImages = finalCustomImage ? [finalCustomImage, ...images] : images;
+  const displayImages = finalCustomImage
+    ? [finalCustomImage, ...images]
+    : images;
 
   return (
     <div className="lg:col-span-6 flex flex-col lg:flex-row gap-4">
@@ -45,7 +47,7 @@ export default function ProductImageGallery({
             key={i}
             onClick={() => onIndexChange(i)}
             className={cn(
-              "relative w-16 aspect-[3/4] rounded-sm overflow-hidden transition-all border-2 flex-shrink-0 bg-white",
+              "relative w-28 aspect-[3/4] rounded-sm overflow-hidden transition-all border-2 flex-shrink-0 bg-white",
               activeIndex === i
                 ? "border-orange-600 shadow-md"
                 : "border-transparent opacity-60",
@@ -76,7 +78,8 @@ export default function ProductImageGallery({
               </span>
             ) : (
               <span className="bg-slate-900/90 backdrop-blur text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5">
-                <ShieldCheck size={11} className="text-orange-500" /> Sertifikalı Koruma
+                <ShieldCheck size={11} className="text-orange-500" />{" "}
+                Sertifikalı Koruma
               </span>
             )}
             {hasDiscount && (
@@ -87,17 +90,21 @@ export default function ProductImageGallery({
           </div>
 
           {/* Design Button */}
-          <div className="absolute bottom-3 right-3 md:bottom-6 md:right-6 z-20 flex gap-2">
+          <div className="absolute bottom-3 right-3 md:bottom-auto md:top-3 md:right-3 z-20 flex gap-2">
             <button
               onClick={onShowPreview}
               className="bg-orange-600 text-white px-3 py-2 text-[10px] sm:px-5 sm:py-3 sm:text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 sm:gap-2 shadow-xl hover:bg-slate-900 transition-all sm:scale-100 sm:hover:scale-105 sm:active:scale-95 rounded-sm"
             >
               <Eye size={14} className="sm:w-4 sm:h-4" />
-              {customDesign || uploadedImagePreview ? "Yeniden Tasarla" : "Logonu Ekle"}
+              {customDesign || uploadedImagePreview
+                ? "Yeniden Tasarla"
+                : "Logonu Ekle"}
             </button>
           </div>
-
-          <CustomImageZoom src={displayImages[activeIndex]} alt={productTitle} />
+          <CustomImageZoom
+            src={displayImages[activeIndex]}
+            alt={productTitle}
+          />
         </div>
 
         {/* Bildirimler */}
@@ -121,7 +128,9 @@ export default function ProductImageGallery({
             <div className="flex items-center justify-between bg-orange-50 border border-orange-200 p-3 rounded">
               <div className="flex items-center gap-2 text-xs text-orange-700">
                 <Sparkles size={14} />
-                <span className="font-semibold">Tasarım paneli ile özelleştirildi</span>
+                <span className="font-semibold">
+                  Tasarım paneli ile özelleştirildi
+                </span>
               </div>
               <button
                 onClick={onRemoveCustomDesign}
