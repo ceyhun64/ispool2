@@ -1,135 +1,172 @@
 // utils/cart.ts
+// Guest sepet yönetimi (localStorage tabanlı)
+
 export interface GuestCartItem {
   productId: number;
   title: string;
   price: number;
   image: string;
   quantity: number;
-  category?: string;
-  sizeId?: number | null; // ← Beden ID (schema CartItem.sizeId)
-  customImage?: string | null; // Özel resim URL / base64
-  isCustom?: boolean; // Özelleştirilmiş mi
+  sizeId?: number | null;
+  customImage?: string | null;
+  bulkDiscountQty?: number | null;
+  bulkDiscountRate?: number | null;
+  category: string;
 }
 
-const CART_KEY = "guestCart";
+const CART_KEY = "guest_cart";
 
-// ---------------------------------------------------------------------------
-// İki sepet satırı "aynı ürün" mü?
-//   → productId  +  sizeId  +  isCustom/customImage üçlüsü eşleşmeli
-// ---------------------------------------------------------------------------
-function isSameItem(
-  a: GuestCartItem,
-  b: Pick<GuestCartItem, "productId" | "sizeId" | "customImage" | "isCustom">,
-) {
-  if (a.productId !== b.productId) return false;
-  if ((a.sizeId ?? null) !== (b.sizeId ?? null)) return false;
-
-  // Özel resim kontrolü: her iki taraf da özel → URL eşleşmeli,
-  //   biri özel diğeri değilse → farklı satır
-  if (a.isCustom && b.isCustom) return a.customImage === b.customImage;
-  return !a.isCustom && !b.isCustom;
-}
-
-// ---------------------------------------------------------------------------
-// Core helpers
-// ---------------------------------------------------------------------------
-export const getCart = (): GuestCartItem[] => {
+/**
+ * Sepeti localStorage'dan al
+ */
+export function getCart(): GuestCartItem[] {
   if (typeof window === "undefined") return [];
   try {
-    const data = localStorage.getItem(CART_KEY);
-    return data ? JSON.parse(data) : [];
+    const cart = localStorage.getItem(CART_KEY);
+    return cart ? JSON.parse(cart) : [];
   } catch {
     return [];
   }
-};
+}
 
-export const saveCart = (cart: GuestCartItem[]) => {
-  if (typeof window !== "undefined") {
+/**
+ * Sepeti localStorage'a kaydet
+ */
+function saveCart(cart: GuestCartItem[]): void {
+  if (typeof window === "undefined") return;
+  try {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
-    window.dispatchEvent(new CustomEvent("cartUpdated"));
+    // Custom event trigger for cart updates
+    window.dispatchEvent(new Event("cartUpdated"));
+  } catch (error) {
+    console.error("Cart save error:", error);
   }
-};
+}
 
-// ---------------------------------------------------------------------------
-// CRUD
-// ---------------------------------------------------------------------------
-export const addToGuestCart = (
-  product: Omit<GuestCartItem, "quantity">,
-  quantity = 1,
-) => {
+/**
+ * Sepete ürün ekle veya miktarını arttır
+ */
+export function addToGuestCart(
+  productId: number,
+  title: string,
+  price: number,
+  image: string,
+  category?: string,
+  quantity: number = 1,
+  sizeId?: number | null,
+  customImage?: string | null,
+  bulkDiscountQty?: number | null,
+  bulkDiscountRate?: number | null,
+): void {
   const cart = getCart();
-  const existing = cart.find((item) => isSameItem(item, product));
 
-  if (existing) {
-    existing.quantity += quantity;
+  // Aynı ürün + beden + özel resim kombinasyonu var mı kontrol et
+  const existingIndex = cart.findIndex(
+    (item) =>
+      item.productId === productId &&
+      item.sizeId === sizeId &&
+      item.customImage === customImage,
+  );
+
+  if (existingIndex > -1) {
+    // Mevcut varsa miktarı arttır
+    cart[existingIndex].quantity += quantity;
   } else {
-    cart.push({ ...product, quantity });
+    // Yeni ürün ekle
+    cart.push({
+      productId,
+      title,
+      price,
+      image,
+      quantity,
+      category: category ?? "",
+      sizeId: sizeId ?? null,
+      customImage: customImage ?? null,
+      bulkDiscountQty: bulkDiscountQty ?? null,
+      bulkDiscountRate: bulkDiscountRate ?? null,
+    });
   }
 
   saveCart(cart);
-};
+}
 
-export const updateGuestCartQuantity = (
+/**
+ * Sepetten ürün çıkar
+ */
+export function removeFromGuestCart(
+  productId: number,
+  sizeId?: number | null,
+  customImage?: string | null,
+): void {
+  const cart = getCart();
+  const filtered = cart.filter(
+    (item) =>
+      !(
+        item.productId === productId &&
+        item.sizeId === sizeId &&
+        item.customImage === customImage
+      ),
+  );
+  saveCart(filtered);
+}
+
+/**
+ * Ürün miktarını güncelle (delta ile +/-)
+ */
+export function updateGuestCartQuantity(
   productId: number,
   delta: number,
   sizeId?: number | null,
   customImage?: string | null,
-) => {
+): void {
   const cart = getCart();
-  const index = cart.findIndex((item) =>
-    isSameItem(item, {
-      productId,
-      sizeId: sizeId ?? null,
-      customImage,
-      isCustom: !!customImage,
-    }),
+  const item = cart.find(
+    (i) =>
+      i.productId === productId &&
+      i.sizeId === sizeId &&
+      i.customImage === customImage,
   );
 
-  if (index !== -1) {
-    cart[index].quantity = Math.max(1, cart[index].quantity + delta);
+  if (item) {
+    item.quantity = Math.max(1, item.quantity + delta);
     saveCart(cart);
   }
-};
+}
 
-export const removeFromGuestCart = (
+/**
+ * Sepeti temizle
+ */
+export function clearGuestCart(): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(CART_KEY);
+    window.dispatchEvent(new Event("cartUpdated"));
+  } catch (error) {
+    console.error("Cart clear error:", error);
+  }
+}
+
+/**
+ * Sepetteki toplam ürün sayısını al
+ */
+export function getCartCount(): number {
+  return getCart().reduce((sum, item) => sum + item.quantity, 0);
+}
+
+/**
+ * Sepetteki belirli bir ürünün miktarını al
+ */
+export function getCartItemQuantity(
   productId: number,
   sizeId?: number | null,
   customImage?: string | null,
-) => {
+): number {
   const cart = getCart();
-  const newCart = cart.filter(
-    (item) =>
-      !isSameItem(item, {
-        productId,
-        sizeId: sizeId ?? null,
-        customImage,
-        isCustom: !!customImage,
-      }),
+  const item = cart.find(
+    (i) =>
+      i.productId === productId &&
+      i.sizeId === sizeId &&
+      i.customImage === customImage,
   );
-  saveCart(newCart);
-};
-
-// ---------------------------------------------------------------------------
-// Readers
-// ---------------------------------------------------------------------------
-export const getGuestCartCount = (): number => {
-  if (typeof window === "undefined") return 0;
-  return getCart().length;
-};
-
-export const getGuestCartTotalItems = (): number => {
-  if (typeof window === "undefined") return 0;
-  return getCart().reduce((t, i) => t + i.quantity, 0);
-};
-
-export const getGuestCartTotal = (): number => {
-  if (typeof window === "undefined") return 0;
-  return getCart().reduce((t, i) => t + i.price * i.quantity, 0);
-};
-
-export const clearGuestCart = () => {
-  if (typeof window !== "undefined") {
-    localStorage.removeItem(CART_KEY);
-    window.dispatchEvent(new CustomEvent("cartUpdated"));
-  }
-};
+  return item ? item.quantity : 0;
+}

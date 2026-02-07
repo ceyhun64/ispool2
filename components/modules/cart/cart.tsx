@@ -26,14 +26,16 @@ interface Product {
   price: number;
   mainImage: string;
   category: string;
+  bulkDiscountQty?: number | null;
+  bulkDiscountRate?: number | null;
 }
 
 export interface CartItemType {
   id: number;
   product: Product;
   quantity: number;
-  sizeId?: number | null; // ← beden ID
-  size?: { id: number; value: string } | null; // ← beden detay (API)
+  sizeId?: number | null;
+  size?: { id: number; value: string } | null;
   customImage?: string | null;
 }
 
@@ -64,8 +66,8 @@ export default function Cart() {
     const guestCart: CartItemType[] = cart.map((item: GuestCartItem) => ({
       id: item.productId,
       quantity: item.quantity,
-      sizeId: item.sizeId ?? null, // ← beden
-      size: null, // guest'te detay yok
+      sizeId: item.sizeId ?? null,
+      size: null,
       customImage: item.customImage ?? null,
       product: {
         id: item.productId,
@@ -73,6 +75,8 @@ export default function Cart() {
         price: item.price,
         mainImage: item.image,
         category: item.category || "Genel",
+        bulkDiscountQty: item.bulkDiscountQty ?? null,
+        bulkDiscountRate: item.bulkDiscountRate ?? null,
       },
     }));
     setCartItems(guestCart);
@@ -86,7 +90,7 @@ export default function Cart() {
       const res = await fetch("/api/cart", { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
-        setCartItems(data); // API sizeId + size döndürüyor
+        setCartItems(data);
       }
     } finally {
       setIsLoading(false);
@@ -152,11 +156,35 @@ export default function Cart() {
     if (res.ok) setCartItems((prev) => prev.filter((c) => c.id !== cartItemId));
   };
 
-  // ─── Totals ──────────────────────────────────────────────────────────────
-  const subtotal = cartItems.reduce(
-    (acc, item) => acc + item.product.price * item.quantity,
-    0,
-  );
+  // ─── Totals with Bulk Discount ───────────────────────────────────────────
+  const subtotal = cartItems.reduce((acc, item) => {
+    let itemTotal = item.product.price * item.quantity;
+
+    // Toplu alım indirimi kontrolü
+    if (
+      item.product.bulkDiscountQty &&
+      item.product.bulkDiscountRate &&
+      item.quantity >= item.product.bulkDiscountQty
+    ) {
+      const discountAmount = (itemTotal * item.product.bulkDiscountRate) / 100;
+      itemTotal = itemTotal - discountAmount;
+    }
+
+    return acc + itemTotal;
+  }, 0);
+
+  const totalBulkDiscount = cartItems.reduce((acc, item) => {
+    if (
+      item.product.bulkDiscountQty &&
+      item.product.bulkDiscountRate &&
+      item.quantity >= item.product.bulkDiscountQty
+    ) {
+      const itemTotal = item.product.price * item.quantity;
+      const discountAmount = (itemTotal * item.product.bulkDiscountRate) / 100;
+      return acc + discountAmount;
+    }
+    return acc;
+  }, 0);
 
   // ─── Loading skeleton ────────────────────────────────────────────────────
   if (isLoading) return <CartLoadingSkeleton />;
@@ -270,7 +298,10 @@ export default function Cart() {
                 {/* Özet panel */}
                 <div className="lg:col-span-5 xl:col-span-4 relative">
                   <div className="sticky top-32">
-                    <CartSummary subtotal={subtotal} />
+                    <CartSummary
+                      subtotal={subtotal}
+                      totalBulkDiscount={totalBulkDiscount}
+                    />
                     <div className="mt-6 p-6 bg-slate-50/50 border border-slate-100 flex items-start gap-4">
                       <ShieldCheck className="h-5 w-5 text-slate-900 shrink-0 mt-0.5" />
                       <p className="text-[10px] text-slate-500 leading-relaxed font-medium uppercase tracking-wider">

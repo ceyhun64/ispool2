@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Trash2, Minus, Plus, Sparkles, Ruler } from "lucide-react";
+import { Trash2, Minus, Plus, Sparkles, Ruler, Tag } from "lucide-react";
 import { CartItemType } from "./cartDropdown";
 
 interface CartItemDropdownProps {
@@ -28,12 +28,26 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
   isLoggedIn,
 }) => {
   const unitPrice = item.product.price || 0;
-  const totalPrice = unitPrice * (item.quantity || 1);
   const displayImage = item.customImage || item.product.mainImage;
   const isCustomized = !!item.customImage;
 
   // guest'te id = productId, logged-in'de id = CartItem.id (DB)
   const callId = isLoggedIn ? item.id : item.productId;
+
+  // Toplu alım indirimi kontrolü
+  const hasBulkDiscount =
+    item.product.bulkDiscountQty &&
+    item.product.bulkDiscountRate &&
+    item.quantity >= item.product.bulkDiscountQty;
+
+  // Fiyat hesaplamaları
+  let totalPrice = unitPrice * item.quantity;
+  let discountAmount = 0;
+
+  if (hasBulkDiscount) {
+    discountAmount = (totalPrice * item.product.bulkDiscountRate!) / 100;
+    totalPrice = totalPrice - discountAmount;
+  }
 
   return (
     <div className="group flex items-center gap-4 py-3 transition-all duration-200">
@@ -43,6 +57,12 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
           <div className="absolute top-0 left-0 z-10 bg-gradient-to-r from-orange-600 to-pink-600 text-white text-[7px] font-bold px-1.5 py-0.5 uppercase tracking-tight flex items-center gap-1">
             <Sparkles size={7} className="animate-pulse" />
             ÖZEL
+          </div>
+        )}
+        {hasBulkDiscount && !isCustomized && (
+          <div className="absolute top-0 left-0 z-10 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-[7px] font-bold px-1.5 py-0.5 uppercase tracking-tight flex items-center gap-1">
+            <Tag size={7} />
+            İNDİRİM
           </div>
         )}
         <img
@@ -78,6 +98,16 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
           </div>
         )}
 
+        {/* Toplu Alım İndirim Bildirimi */}
+        {hasBulkDiscount && (
+          <div className="flex items-center gap-1 mb-0.5">
+            <Tag size={8} className="text-emerald-600" />
+            <span className="text-[8px] text-emerald-600 font-bold uppercase tracking-wide">
+              %{item.product.bulkDiscountRate} Toplu Alım İndirimi
+            </span>
+          </div>
+        )}
+
         {/* ─── Beden badge ──────────────────────────────────────────────── */}
         {item.sizeId && (
           <div className="flex items-center gap-1">
@@ -93,17 +123,37 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
 
         {/* Fiyat */}
         <div className="flex items-baseline gap-2">
-          <span
-            className={`text-sm font-semibold ${isCustomized ? "text-orange-900" : "text-slate-900"}`}
-          >
-            ₺{totalPrice.toLocaleString("tr-TR")}
-          </span>
-          {item.quantity > 1 && (
-            <span className="text-[10px] text-slate-400">
-              (₺{unitPrice.toLocaleString("tr-TR")})
-            </span>
+          {hasBulkDiscount ? (
+            <>
+              <span className="text-sm font-semibold text-emerald-700">
+                ₺{totalPrice.toLocaleString("tr-TR")}
+              </span>
+              <span className="text-[10px] text-slate-400 line-through">
+                ₺{(unitPrice * item.quantity).toLocaleString("tr-TR")}
+              </span>
+            </>
+          ) : (
+            <>
+              <span
+                className={`text-sm font-semibold ${isCustomized ? "text-orange-900" : "text-slate-900"}`}
+              >
+                ₺{totalPrice.toLocaleString("tr-TR")}
+              </span>
+              {item.quantity > 1 && (
+                <span className="text-[10px] text-slate-400">
+                  (₺{unitPrice.toLocaleString("tr-TR")})
+                </span>
+              )}
+            </>
           )}
         </div>
+
+        {/* İndirim miktarı gösterimi */}
+        {hasBulkDiscount && discountAmount > 0 && (
+          <span className="text-[9px] text-emerald-600 font-medium">
+            ₺{discountAmount.toLocaleString("tr-TR")} tasarruf
+          </span>
+        )}
 
         {/* Adet kontrolü */}
         <div className="flex items-center gap-2 mt-1">
@@ -111,7 +161,9 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
             className={`flex items-center border rounded-lg p-0.5 ${
               isCustomized
                 ? "border-orange-200 bg-orange-50/50"
-                : "border-slate-100 bg-slate-50/50"
+                : hasBulkDiscount
+                  ? "border-emerald-200 bg-emerald-50/50"
+                  : "border-slate-100 bg-slate-50/50"
             }`}
           >
             <button
@@ -120,15 +172,31 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
               }
               disabled={item.quantity <= 1}
               className={`p-1 rounded-sm disabled:opacity-30 transition-colors ${
-                isCustomized ? "hover:bg-orange-100" : "hover:bg-white"
+                isCustomized
+                  ? "hover:bg-orange-100"
+                  : hasBulkDiscount
+                    ? "hover:bg-emerald-100"
+                    : "hover:bg-white"
               }`}
             >
               <Minus
-                className={`h-3 w-3 ${isCustomized ? "text-orange-600" : "text-slate-500"}`}
+                className={`h-3 w-3 ${
+                  isCustomized
+                    ? "text-orange-600"
+                    : hasBulkDiscount
+                      ? "text-emerald-600"
+                      : "text-slate-500"
+                }`}
               />
             </button>
             <span
-              className={`text-[11px] font-medium w-5 text-center ${isCustomized ? "text-orange-900" : "text-slate-700"}`}
+              className={`text-[11px] font-medium w-5 text-center ${
+                isCustomized
+                  ? "text-orange-900"
+                  : hasBulkDiscount
+                    ? "text-emerald-900"
+                    : "text-slate-700"
+              }`}
             >
               {item.quantity}
             </span>
@@ -137,14 +205,35 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
                 onQuantityChange(callId, 1, item.sizeId, item.customImage)
               }
               className={`p-1 rounded-sm transition-colors ${
-                isCustomized ? "hover:bg-orange-100" : "hover:bg-white"
+                isCustomized
+                  ? "hover:bg-orange-100"
+                  : hasBulkDiscount
+                    ? "hover:bg-emerald-100"
+                    : "hover:bg-white"
               }`}
             >
               <Plus
-                className={`h-3 w-3 ${isCustomized ? "text-orange-600" : "text-slate-500"}`}
+                className={`h-3 w-3 ${
+                  isCustomized
+                    ? "text-orange-600"
+                    : hasBulkDiscount
+                      ? "text-emerald-600"
+                      : "text-slate-500"
+                }`}
               />
             </button>
           </div>
+
+          {/* Toplu alım hedefe ne kadar kaldı bilgisi */}
+          {item.product.bulkDiscountQty &&
+            item.product.bulkDiscountRate &&
+            !hasBulkDiscount &&
+            item.quantity < item.product.bulkDiscountQty && (
+              <span className="text-[8px] text-slate-400 font-medium">
+                +{item.product.bulkDiscountQty - item.quantity} adet daha al, %
+                {item.product.bulkDiscountRate} kazan
+              </span>
+            )}
         </div>
       </div>
 

@@ -297,20 +297,18 @@ export default function ProductDetailPage() {
 
     // ---------- Guest cart ----------
     if (!isLoggedIn) {
+      // Güncellenmiş fonksiyon signature'ı ile çağrı
       addToGuestCart(
-        {
-          productId: product.id,
-          title: finalCustomImage
-            ? `${product.title} (Özelleştirilmiş)`
-            : product.title,
-          price: finalPrice,
-          image: finalCustomImage || product.mainImage,
-          customImage: finalCustomImage,
-          isCustom: !!finalCustomImage,
-          category: product.category.name,
-          sizeId: selectedSizeId,
-        },
+        product.id,
+        finalCustomImage ? `${product.title} (Özelleştirilmiş)` : product.title,
+        finalPrice,
+        finalCustomImage || product.mainImage,
+        product.category.name,
         quantity,
+        selectedSizeId,
+        finalCustomImage,
+        product.bulkDiscountQty,
+        product.bulkDiscountRate,
       );
 
       const message = bulkDiscount.hasDiscount
@@ -422,7 +420,7 @@ export default function ProductDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Galeri */}
           {/* Galeri - Sticky özelliği eklendi */}
-          <div className="lg:col-span-6 lg:sticky lg:top-20 h-fit">
+          <div className="lg:col-span-6  h-fit">
             <ProductImageGallery
               images={product.images}
               activeIndex={activeIndex}

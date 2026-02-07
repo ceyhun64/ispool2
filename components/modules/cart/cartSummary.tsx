@@ -2,14 +2,18 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShieldCheck, Truck, Lock } from "lucide-react";
+import { ArrowRight, ShieldCheck, Truck, Lock, Tag } from "lucide-react";
 import Link from "next/link";
 
 interface CartSummaryProps {
   subtotal: number;
+  totalBulkDiscount?: number;
 }
 
-export default function CartSummary({ subtotal }: CartSummaryProps) {
+export default function CartSummary({
+  subtotal,
+  totalBulkDiscount = 0,
+}: CartSummaryProps) {
   // Hesaplamalar
   const taxRate = 0.1; // %10 KDV
   const taxAmount = subtotal * taxRate;
@@ -42,9 +46,24 @@ export default function CartSummary({ subtotal }: CartSummaryProps) {
             </span>
           </div>
 
+          {/* Toplu Alım İndirimi */}
+          {totalBulkDiscount > 0 && (
+            <div className="flex justify-between items-center text-[13px] bg-emerald-50 -mx-4 px-4 py-3 rounded">
+              <span className="text-emerald-700 font-medium flex items-center gap-2">
+                <Tag size={14} className="text-emerald-600" />
+                Toplu Alım İndirimi
+              </span>
+              <span className="text-emerald-700 font-bold font-mono">
+                -{formatCurrency(totalBulkDiscount)}
+              </span>
+            </div>
+          )}
+
           {/* KDV Tutarı */}
           <div className="flex justify-between items-center text-[13px]">
-            <span className="text-slate-500 font-medium">Vergi / KDV (%10)</span>
+            <span className="text-slate-500 font-medium">
+              Vergi / KDV (%10)
+            </span>
             <span className="text-slate-900 font-bold font-mono">
               {formatCurrency(taxAmount)}
             </span>
@@ -69,6 +88,11 @@ export default function CartSummary({ subtotal }: CartSummaryProps) {
               <span className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">
                 KDV Dahil Net Tutar
               </span>
+              {totalBulkDiscount > 0 && (
+                <span className="text-[9px] text-emerald-600 font-bold uppercase tracking-wide mt-1">
+                  {formatCurrency(totalBulkDiscount)} tasarruf ettiniz
+                </span>
+              )}
             </div>
             <div className="text-right">
               <span className="text-3xl font-black tracking-tighter text-slate-900 font-mono">

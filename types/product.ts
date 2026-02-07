@@ -18,6 +18,8 @@ export interface ProductFormData {
   brandId?: number;
   sizes: { sizeId: number }[];
   stock: ProductVariant[];
+  bulkDiscountQty?: number;
+  bulkDiscountRate?: number;
 }
 
 export interface Product {
@@ -40,4 +42,6 @@ export interface Product {
   brandId?: number;
   createdAt: string;
   updatedAt: string;
+  bulkDiscountQty?: number;
+  bulkDiscountRate?: number;
 }
