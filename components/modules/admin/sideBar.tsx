@@ -15,6 +15,7 @@ import {
   Ticket,
   ChevronLeft,
   ChevronRight,
+  ImagePlus,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -88,9 +89,9 @@ export default function AdminSidebar({
     },
     {
       id: "settings",
-      label: "Ayarlar",
-      icon: Settings,
-      href: "/admin/banner",
+      label: "Ana Sayfa",
+      icon: ImagePlus,
+      href: "/admin/home_settings",
     },
   ];
 

@@ -70,6 +70,7 @@ export const ModelName = {
   Blog: 'Blog',
   Subscribe: 'Subscribe',
   Banner: 'Banner',
+  HeroSlide: 'HeroSlide',
   Coupon: 'Coupon'
 } as const
 
@@ -348,10 +349,31 @@ export type SubscribeScalarFieldEnum = (typeof SubscribeScalarFieldEnum)[keyof t
 export const BannerScalarFieldEnum = {
   id: 'id',
   title: 'title',
-  subtitle: 'subtitle'
+  subtitle: 'subtitle',
+  image: 'image',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type BannerScalarFieldEnum = (typeof BannerScalarFieldEnum)[keyof typeof BannerScalarFieldEnum]
+
+
+export const HeroSlideScalarFieldEnum = {
+  id: 'id',
+  tag: 'tag',
+  title: 'title',
+  subtitle: 'subtitle',
+  description: 'description',
+  desktopImage: 'desktopImage',
+  mobileImage: 'mobileImage',
+  order: 'order',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HeroSlideScalarFieldEnum = (typeof HeroSlideScalarFieldEnum)[keyof typeof HeroSlideScalarFieldEnum]
 
 
 export const CouponScalarFieldEnum = {

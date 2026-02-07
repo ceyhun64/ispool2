@@ -14,6 +14,7 @@ import {
   Sparkles,
   Flame,
   Tag,
+  Percent,
 } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,9 +23,23 @@ import { useRouter } from "next/navigation";
 interface ProductTopBarProps {
   gridCols: 2 | 3 | 4;
   setGridCols: (cols: 2 | 3 | 4) => void;
-  sort: "az" | "za" | "priceLow" | "priceHigh" | "dateNew" | "dateOld";
+  sort:
+    | "az"
+    | "za"
+    | "priceLow"
+    | "priceHigh"
+    | "dateNew"
+    | "dateOld"
+    | "discountHigh";
   setSort: (
-    sort: "az" | "za" | "priceLow" | "priceHigh" | "dateNew" | "dateOld",
+    sort:
+      | "az"
+      | "za"
+      | "priceLow"
+      | "priceHigh"
+      | "dateNew"
+      | "dateOld"
+      | "discountHigh",
   ) => void;
   onBestSellers?: () => void;
   isDiscountMode?: boolean; // İndirim modu kontrolü
@@ -55,6 +70,7 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
     { id: "priceHigh", label: "Fiyat (Önce En Yüksek)", icon: TrendingUp },
     { id: "dateNew", label: "Tarih (En Yeni)", icon: Calendar },
     { id: "dateOld", label: "Tarih (En Eski)", icon: CalendarClock },
+    { id: "discountHigh", label: "İndirim Oranı (En Yüksek)", icon: Percent },
   ] as const;
 
   // Aktif seçeneği bul
@@ -96,6 +112,12 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
   // Tüm Ürünler butonu handler - Sayfayı yeniden yükle
   const handleAllProducts = () => {
     window.location.href = "/products";
+  };
+
+  // En Çok İndirimli butonu handler
+  const handleMostDiscounted = () => {
+    setSort("discountHigh");
+    setIsOpen(false);
   };
 
   return (
@@ -268,24 +290,21 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
 
           {isDiscountMode && (
             <>
-              {/* En Çok İndirimli */}
+              {/* En Çok İndirimli - İndirim yüzdesine göre */}
               <button
-                onClick={() => {
-                  setSort("priceHigh");
-                  setIsOpen(false);
-                }}
+                onClick={handleMostDiscounted}
                 className={cn(
                   "group flex items-center gap-2 px-4 py-2 rounded-sm transition-all text-[10px] font-bold uppercase tracking-tight border",
-                  sort === "priceHigh"
+                  sort === "discountHigh"
                     ? "border-emerald-600 bg-emerald-50 text-emerald-600 shadow-sm"
                     : "border-slate-200 bg-white text-slate-600 hover:border-emerald-600 hover:text-emerald-600 hover:bg-emerald-50/50",
                 )}
               >
-                <Tag
+                <Percent
                   size={14}
                   className={cn(
                     "transition-all",
-                    sort === "priceHigh"
+                    sort === "discountHigh"
                       ? "text-emerald-600 scale-110"
                       : "text-emerald-500 group-hover:-rotate-12",
                   )}

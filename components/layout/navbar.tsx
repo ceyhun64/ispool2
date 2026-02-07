@@ -139,7 +139,7 @@ export default function Navbar() {
         initial={{ y: 0 }}
         animate={{ y: navbarHidden ? "-100%" : 0 }}
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="sticky top-0 left-0 right-0 z-[50] bg-white "
+        className="sticky top-0 left-0 right-0 z-[50] bg-white shadow-xs "
       >
         <div className=" mx-auto px-5 md:px-12 flex flex-col">
           <div className="h-16 md:h-[100px] flex items-center justify-between gap-4 md:gap-10">

@@ -20,15 +20,24 @@ interface ProductData {
   hasDiscount?: boolean;
 }
 
-//aynen kardeşim ben de öyle diyoeum
-// emin miyiz peki
 export default function ProductCard({ product }: { product: ProductData }) {
   const [isHovered, setIsHovered] = useState(false);
   const { isFavorited, addFavorite, removeFavorite } = useFavorite();
   const favorited = isFavorited(product.id);
 
-  const discount = product.discountPercentage || 30;
-  const oldPrice = product.oldPrice || Math.round(product.price * 1.43);
+  // 1. Kontrol: oldPrice var mı ve price'dan büyük mü?
+  const hasRealDiscount = !!(
+    product.oldPrice && product.oldPrice > product.price
+  );
+
+  // 2. Hesaplama: Sadece oldPrice geçerli bir sayıysa işlemi yap
+  const discount =
+    hasRealDiscount && product.oldPrice
+      ? product.discountPercentage ||
+        Math.round(
+          ((product.oldPrice - product.price) / product.oldPrice) * 100,
+        )
+      : 0;
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -43,7 +52,7 @@ export default function ProductCard({ product }: { product: ProductData }) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <Link href={`/products/${product.id}`}>
-        <div className="relative aspect-[3/4] w-full overflow-hidden bg-transparent shadow-sm  rounded-md">
+        <div className="relative aspect-[3/4] w-full overflow-hidden bg-transparent shadow-sm rounded-md">
           {/* Favori Butonu */}
           <button
             onClick={handleFavoriteClick}
@@ -58,13 +67,11 @@ export default function ProductCard({ product }: { product: ProductData }) {
             />
           </button>
 
-          {/* Animasyonlu Resim Alanı */}
           <motion.div
             className="flex h-full w-[200%]"
             animate={{ x: isHovered && product.subImage ? "-50%" : "0%" }}
             transition={{ duration: 0.8, ease: [0.6, 0.01, -0.05, 0.95] }}
           >
-            {/* İlk Resim */}
             <div className="relative h-full w-1/2">
               <Image
                 src={product.mainImage}
@@ -76,7 +83,6 @@ export default function ProductCard({ product }: { product: ProductData }) {
               />
             </div>
 
-            {/* İkinci Resim */}
             <div className="relative h-full w-1/2">
               <Image
                 src={product.subImage || product.mainImage}
@@ -88,22 +94,20 @@ export default function ProductCard({ product }: { product: ProductData }) {
             </div>
           </motion.div>
 
-          {/* Hızlı Bakış Overlay - Sadece Desktop'ta Göster */}
           <div className="hidden sm:block absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-500 z-10">
             <div className="bg-slate-900/90 backdrop-blur-sm py-3 sm:py-4 text-center text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase text-white">
               Ürünü İncele
             </div>
           </div>
         </div>
-        
-        {/* İçerik Alanı */}
+
         <div className="py-3 sm:py-4 flex flex-col space-y-1">
           <div className="flex justify-between items-center">
             <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-slate-500">
               {product.category}
             </span>
-            {discount > 0 && (
-              <span className="bg-yellow-200 text-yellow-800 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase">
+            {hasRealDiscount && discount > 0 && (
+              <span className="bg-yellow-200 text-yellow-800 px-1.5 py-0.5 text-[10px] font-bold uppercase">
                 %{discount} İndirim
               </span>
             )}
@@ -117,9 +121,10 @@ export default function ProductCard({ product }: { product: ProductData }) {
             <span className="text-sm sm:text-base font-bold text-slate-900">
               {product.price.toLocaleString("tr-TR")} TL
             </span>
-            {oldPrice > product.price && (
+            {/* null kontrolü yapılmış eski fiyat gösterimi */}
+            {hasRealDiscount && product.oldPrice !== null && (
               <span className="text-xs text-slate-400 line-through">
-                {oldPrice.toLocaleString("tr-TR")} TL
+                {product.oldPrice.toLocaleString("tr-TR")} TL
               </span>
             )}
           </div>

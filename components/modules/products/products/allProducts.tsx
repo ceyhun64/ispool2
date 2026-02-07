@@ -32,7 +32,13 @@ export default function AllProducts({
   const [maxPrice, setMaxPrice] = useState<number>(300000);
   const [minPrice, setMinPrice] = useState<number>(0);
   const [sort, setSort] = useState<
-    "az" | "za" | "priceLow" | "priceHigh" | "dateNew" | "dateOld"
+    | "az"
+    | "za"
+    | "priceLow"
+    | "priceHigh"
+    | "dateNew"
+    | "dateOld"
+    | "discountHigh"
   >("az");
   const [gridCols, setGridCols] = useState<2 | 3 | 4>(4);
   const [mobileGridCols, setMobileGridCols] = useState<1 | 2>(2);
@@ -85,8 +91,10 @@ export default function AllProducts({
         subCategoryFilter === "all" || p.subCategory === subCategoryFilter;
       const brandCheck =
         brandFilter === "all" || p.brandId === Number(brandFilter);
-      const discountCheck =
-        !isDiscountMode || (p.oldPrice && p.discountPercentage);
+
+      // İndirim kontrolü: oldPrice var mı ve price'dan büyük mü?
+      const hasDiscount = p.oldPrice && p.oldPrice > p.price;
+      const discountCheck = !isDiscountMode || hasDiscount;
 
       return (
         p.price >= minPrice &&
@@ -104,9 +112,9 @@ export default function AllProducts({
     return result.sort((a, b) => {
       switch (sort) {
         case "az":
-          return a.title.localeCompare(b.title);
+          return a.title.localeCompare(b.title, "tr");
         case "za":
-          return b.title.localeCompare(a.title);
+          return b.title.localeCompare(a.title, "tr");
         case "priceLow":
           return a.price - b.price;
         case "priceHigh":
@@ -119,6 +127,17 @@ export default function AllProducts({
           return (
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
           );
+        case "discountHigh":
+          // İndirim yüzdesine göre sıralama
+          const discountA =
+            a.oldPrice && a.oldPrice > a.price
+              ? ((a.oldPrice - a.price) / a.oldPrice) * 100
+              : 0;
+          const discountB =
+            b.oldPrice && b.oldPrice > b.price
+              ? ((b.oldPrice - b.price) / b.oldPrice) * 100
+              : 0;
+          return discountB - discountA;
         default:
           return 0;
       }

@@ -113,6 +113,11 @@ export type Subscribe = Prisma.SubscribeModel
  */
 export type Banner = Prisma.BannerModel
 /**
+ * Model HeroSlide
+ * 
+ */
+export type HeroSlide = Prisma.HeroSlideModel
+/**
  * Model Coupon
  * 
  */
