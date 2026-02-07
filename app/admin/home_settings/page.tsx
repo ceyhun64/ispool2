@@ -1,11 +1,11 @@
 // app/admin/dashboard/page.tsx
 import React from "react";
-import AdminBanner from "@/components/modules/admin/banner/banner";
+import AdminHomeSettings from "@/components/modules/admin/homeSettings/homeSettings";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export default async function AdminBannersPage() {
+export default async function AdminHomeSettingsPage() {
   // Server-side session kontrolü
   const session = await getServerSession(authOptions);
 
@@ -16,7 +16,7 @@ export default async function AdminBannersPage() {
 
   return (
     <div>
-      <AdminBanner />
+      <AdminHomeSettings />
     </div>
   );
 }

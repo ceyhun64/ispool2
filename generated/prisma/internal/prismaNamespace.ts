@@ -403,6 +403,7 @@ export const ModelName = {
   Blog: 'Blog',
   Subscribe: 'Subscribe',
   Banner: 'Banner',
+  HeroSlide: 'HeroSlide',
   Coupon: 'Coupon'
 } as const
 
@@ -419,7 +420,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "category" | "middleCategory" | "subCategory" | "brand" | "size" | "product" | "productSize" | "productStock" | "user" | "address" | "favorite" | "cartItem" | "order" | "orderItem" | "orderAddress" | "review" | "blog" | "subscribe" | "banner" | "coupon"
+    modelProps: "category" | "middleCategory" | "subCategory" | "brand" | "size" | "product" | "productSize" | "productStock" | "user" | "address" | "favorite" | "cartItem" | "order" | "orderItem" | "orderAddress" | "review" | "blog" | "subscribe" | "banner" | "heroSlide" | "coupon"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1829,6 +1830,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    HeroSlide: {
+      payload: Prisma.$HeroSlidePayload<ExtArgs>
+      fields: Prisma.HeroSlideFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HeroSlideFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroSlidePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HeroSlideFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroSlidePayload>
+        }
+        findFirst: {
+          args: Prisma.HeroSlideFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroSlidePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HeroSlideFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroSlidePayload>
+        }
+        findMany: {
+          args: Prisma.HeroSlideFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroSlidePayload>[]
+        }
+        create: {
+          args: Prisma.HeroSlideCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroSlidePayload>
+        }
+        createMany: {
+          args: Prisma.HeroSlideCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HeroSlideCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroSlidePayload>[]
+        }
+        delete: {
+          args: Prisma.HeroSlideDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroSlidePayload>
+        }
+        update: {
+          args: Prisma.HeroSlideUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroSlidePayload>
+        }
+        deleteMany: {
+          args: Prisma.HeroSlideDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HeroSlideUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HeroSlideUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroSlidePayload>[]
+        }
+        upsert: {
+          args: Prisma.HeroSlideUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroSlidePayload>
+        }
+        aggregate: {
+          args: Prisma.HeroSlideAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHeroSlide>
+        }
+        groupBy: {
+          args: Prisma.HeroSlideGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HeroSlideGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HeroSlideCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HeroSlideCountAggregateOutputType> | number
+        }
+      }
+    }
     Coupon: {
       payload: Prisma.$CouponPayload<ExtArgs>
       fields: Prisma.CouponFieldRefs
@@ -2201,10 +2276,31 @@ export type SubscribeScalarFieldEnum = (typeof SubscribeScalarFieldEnum)[keyof t
 export const BannerScalarFieldEnum = {
   id: 'id',
   title: 'title',
-  subtitle: 'subtitle'
+  subtitle: 'subtitle',
+  image: 'image',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type BannerScalarFieldEnum = (typeof BannerScalarFieldEnum)[keyof typeof BannerScalarFieldEnum]
+
+
+export const HeroSlideScalarFieldEnum = {
+  id: 'id',
+  tag: 'tag',
+  title: 'title',
+  subtitle: 'subtitle',
+  description: 'description',
+  desktopImage: 'desktopImage',
+  mobileImage: 'mobileImage',
+  order: 'order',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HeroSlideScalarFieldEnum = (typeof HeroSlideScalarFieldEnum)[keyof typeof HeroSlideScalarFieldEnum]
 
 
 export const CouponScalarFieldEnum = {
@@ -2473,6 +2569,7 @@ export type GlobalOmitConfig = {
   blog?: Prisma.BlogOmit
   subscribe?: Prisma.SubscribeOmit
   banner?: Prisma.BannerOmit
+  heroSlide?: Prisma.HeroSlideOmit
   coupon?: Prisma.CouponOmit
 }
 

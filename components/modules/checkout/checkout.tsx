@@ -60,6 +60,8 @@ interface Product {
   mainImage: string;
   oldPrice?: number;
   category: string;
+  bulkDiscountQty?: number | null;
+  bulkDiscountRate?: number | null;
 }
 
 interface Size {
@@ -152,7 +154,16 @@ export default function PaymentPage() {
           setCartItems(
             cartData.map((item: any) => ({
               id: item.id,
-              product: item.product,
+              product: {
+                id: item.product.id,
+                title: item.product.title,
+                price: item.product.price,
+                mainImage: item.product.mainImage,
+                oldPrice: item.product.oldPrice,
+                category: item.product.category,
+                bulkDiscountQty: item.product.bulkDiscountQty ?? null,
+                bulkDiscountRate: item.product.bulkDiscountRate ?? null,
+              },
               quantity: item.quantity,
               size: item.size
                 ? {
@@ -180,12 +191,24 @@ export default function PaymentPage() {
     fetchData();
   }, []);
 
+  // Toplu alım indirimi ile birlikte ara toplam hesapla
   const subTotal = useMemo(
     () =>
-      cartItems.reduce(
-        (acc, item) => acc + item.product.price * item.quantity,
-        0,
-      ),
+      cartItems.reduce((acc, item) => {
+        let itemTotal = item.product.price * item.quantity;
+
+        // Toplu alım indirimi kontrolü
+        if (
+          item.product.bulkDiscountQty &&
+          item.product.bulkDiscountRate &&
+          item.quantity >= item.product.bulkDiscountQty
+        ) {
+          const discountAmount = (itemTotal * item.product.bulkDiscountRate) / 100;
+          itemTotal = itemTotal - discountAmount;
+        }
+
+        return acc + itemTotal;
+      }, 0),
     [cartItems],
   );
 
@@ -347,16 +370,30 @@ export default function PaymentPage() {
 
       const payload = {
         userId,
-        basketItems: cartItems.map((item) => ({
-          id: item.product.id.toString(),
-          name: item.product.title,
-          category1: item.product.category || "Genel",
-          itemType: "PHYSICAL",
-          price: (item.product.price * item.quantity).toFixed(2),
-          quantity: item.quantity,
-          unitPrice: item.product.price.toFixed(2),
-          totalPrice: (item.product.price * item.quantity).toFixed(2),
-        })),
+        basketItems: cartItems.map((item) => {
+          // Her ürün için toplu alım indirimi uygula
+          let itemPrice = item.product.price * item.quantity;
+          
+          if (
+            item.product.bulkDiscountQty &&
+            item.product.bulkDiscountRate &&
+            item.quantity >= item.product.bulkDiscountQty
+          ) {
+            const discountAmount = (itemPrice * item.product.bulkDiscountRate) / 100;
+            itemPrice = itemPrice - discountAmount;
+          }
+
+          return {
+            id: item.product.id.toString(),
+            name: item.product.title,
+            category1: item.product.category || "Genel",
+            itemType: "PHYSICAL",
+            price: itemPrice.toFixed(2),
+            quantity: item.quantity,
+            unitPrice: (itemPrice / item.quantity).toFixed(2),
+            totalPrice: itemPrice.toFixed(2),
+          };
+        }),
         shippingAddress: {
           contactName: `${shippingAddr.firstName} ${shippingAddr.lastName}`,
           city: shippingAddr.city,
@@ -422,7 +459,7 @@ export default function PaymentPage() {
         router.push("/checkout/success");
       } else {
         throw new Error(data.error || "Ödeme başarısız");
-      }
+      };
     } catch (err) {
       console.error("Payment error:", err);
       router.push("/checkout/unsuccess");

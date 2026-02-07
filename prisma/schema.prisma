@@ -318,9 +318,31 @@ model Subscribe {
 }
 
 model Banner {
-  id       Int     @id @default(autoincrement())
-  title    String?
-  subtitle String?
+  id        Int      @id @default(autoincrement())
+  title     String
+  subtitle  String
+  image     String? // Resim yolu eklendi
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("banner")
+}
+
+model HeroSlide {
+  id           Int      @id @default(autoincrement())
+  tag          String
+  title        String
+  subtitle     String
+  description  String   @db.Text
+  desktopImage String // Resim yolu
+  mobileImage  String? // Opsiyonel mobil resim
+  order        Int      @default(0) // Sıralama için
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("hero_slide")
 }
 
 model Coupon {

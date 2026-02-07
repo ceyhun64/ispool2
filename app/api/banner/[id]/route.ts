@@ -1,14 +1,17 @@
+// app/api/banner/[id]/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import type { NextRequest } from "next/server";
+import { unlink } from "fs/promises";
+import path from "path";
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> } // 👈 Promise olarak
+  context: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await context.params; // 👈 await ile çöz
+  const { id } = await context.params;
   const bannerId = Number(id);
 
   const session = await getServerSession(authOptions);
@@ -27,8 +30,19 @@ export async function DELETE(
     if (!banner) {
       return NextResponse.json(
         { message: "Banner bulunamadı." },
-        { status: 404 }
+        { status: 404 },
       );
+    }
+
+    // Resim dosyasını sil
+    if (banner.image) {
+      try {
+        const imagePath = path.join(process.cwd(), "public", banner.image);
+        await unlink(imagePath);
+      } catch (error) {
+        console.error("Resim silinirken hata:", error);
+        // Hata olsa bile devam et
+      }
     }
 
     await prisma.banner.delete({ where: { id: bannerId } });
@@ -38,7 +52,7 @@ export async function DELETE(
     console.error(err);
     return NextResponse.json(
       { message: "Silme işleminde hata oluştu." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
