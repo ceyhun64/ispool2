@@ -45,6 +45,8 @@ interface Product {
   title: string;
   price: number;
   mainImage: string;
+  bulkDiscountQty?: number | null;
+  bulkDiscountRate?: number | null;
 }
 
 interface Size {
@@ -120,6 +122,8 @@ export default function BasketSummaryCard({
                   title: item.product.title,
                   price: item.product.price,
                   mainImage: item.product.mainImage,
+                  bulkDiscountQty: item.product.bulkDiscountQty ?? null,
+                  bulkDiscountRate: item.product.bulkDiscountRate ?? null,
                 },
                 quantity: item.quantity,
                 size: item.size
@@ -154,17 +158,42 @@ export default function BasketSummaryCard({
           title: item.title,
           price: item.price,
           mainImage: item.image,
+          bulkDiscountQty: item.bulkDiscountQty ?? null,
+          bulkDiscountRate: item.bulkDiscountRate ?? null,
         },
         quantity: item.quantity,
         size: undefined,
       }));
 
-  const calculatedSubTotal =
-    externalSubTotal ||
-    itemsToRender.reduce(
-      (acc, item) => acc + item.product.price * item.quantity,
-      0,
-    );
+  // Toplu alım indirimini hesapla
+  const calculatedSubTotal = itemsToRender.reduce((acc, item) => {
+    let itemTotal = item.product.price * item.quantity;
+
+    // Toplu alım indirimi kontrolü
+    if (
+      item.product.bulkDiscountQty &&
+      item.product.bulkDiscountRate &&
+      item.quantity >= item.product.bulkDiscountQty
+    ) {
+      const discountAmount = (itemTotal * item.product.bulkDiscountRate) / 100;
+      itemTotal = itemTotal - discountAmount;
+    }
+
+    return acc + itemTotal;
+  }, 0);
+
+  const totalBulkDiscount = itemsToRender.reduce((acc, item) => {
+    if (
+      item.product.bulkDiscountQty &&
+      item.product.bulkDiscountRate &&
+      item.quantity >= item.product.bulkDiscountQty
+    ) {
+      const itemTotal = item.product.price * item.quantity;
+      const discountAmount = (itemTotal * item.product.bulkDiscountRate) / 100;
+      return acc + discountAmount;
+    }
+    return acc;
+  }, 0);
 
   const calculatedKdv = calculatedSubTotal * KDV_RATE;
   const baseTotalBeforeDiscount =
@@ -435,7 +464,19 @@ export default function BasketSummaryCard({
               </div>
             ))}
 
-            {/* Show discount as a separate line */}
+            {/* Toplu Alım İndirimi */}
+            {totalBulkDiscount > 0 && (
+              <div className="flex justify-between items-center text-[13px] pt-2 border-t border-dashed border-emerald-200 bg-emerald-50/50 -mx-4 px-4 py-2 rounded">
+                <span className="text-emerald-600 font-medium flex items-center gap-2">
+                  <Tag size={14} strokeWidth={1.5} /> Toplu Alım İndirimi
+                </span>
+                <span className="font-bold text-emerald-600">
+                  -₺{totalBulkDiscount.toFixed(2)}
+                </span>
+              </div>
+            )}
+
+            {/* Show coupon discount as a separate line */}
             {appliedCoupon && (
               <div className="flex justify-between items-center text-[13px] pt-2 border-t border-dashed border-emerald-200">
                 <span className="text-emerald-600 font-medium flex items-center gap-2">
@@ -506,6 +547,17 @@ export default function BasketSummaryCard({
                 >
                   ₺{totalWithInstallment.toFixed(2)}
                 </p>
+                {(totalBulkDiscount > 0 || appliedCoupon) && (
+                  <p
+                    className={`text-[9px] ${selectedInstallment > 1 ? "text-emerald-600" : "text-emerald-400"}`}
+                  >
+                    {totalBulkDiscount > 0 && appliedCoupon
+                      ? `₺${(totalBulkDiscount + discountAmount).toFixed(2)} toplam tasarruf`
+                      : totalBulkDiscount > 0
+                        ? `₺${totalBulkDiscount.toFixed(2)} toplu alım tasarrufu`
+                        : `₺${discountAmount.toFixed(2)} kupon tasarrufu`}
+                  </p>
+                )}
               </div>
               <CheckCircle2
                 size={28}

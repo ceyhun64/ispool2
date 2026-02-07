@@ -361,7 +361,7 @@ export default function CategoryBar({
 
       {/* ================= DESKTOP NAV ================= */}
       <nav
-        className="hidden lg:block sticky top-0 z-[100]"
+        className="hidden lg:block sticky top-0 z-49"
         onMouseLeave={() => {
           setActiveCategory(null);
           setShowBrands(false);

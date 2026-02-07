@@ -41,13 +41,13 @@ export default function ProductImageGallery({
   return (
     <div className="lg:col-span-6 flex flex-col lg:flex-row gap-4">
       {/* Thumbnail Gallery */}
-      <div className="order-2 lg:order-1 flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto max-h-[600px] no-scrollbar">
+      <div className="order-2 lg:order-1 flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto max-h-[800px] no-scrollbar">
         {displayImages.map((img, i) => (
           <button
             key={i}
             onClick={() => onIndexChange(i)}
             className={cn(
-              "relative w-28 aspect-[3/4] rounded-sm overflow-hidden transition-all border-2 flex-shrink-0 bg-white",
+              "relative w-20 md:w-27 aspect-[3/4] rounded-sm overflow-hidden transition-all border-2 flex-shrink-0 bg-white",
               activeIndex === i
                 ? "border-orange-600 shadow-md"
                 : "border-transparent opacity-60",

@@ -24,6 +24,7 @@ import {
   Package,
   X,
   Lock,
+  Tag,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -44,6 +45,8 @@ interface Product {
   title: string;
   price: number;
   mainImage: string;
+  bulkDiscountQty?: number | null;
+  bulkDiscountRate?: number | null;
 }
 
 export interface CartItemType {
@@ -51,8 +54,8 @@ export interface CartItemType {
   productId: number;
   quantity: number;
   product: Product;
-  sizeId?: number | null; // ← beden ID
-  size?: { id: number; value: string } | null; // ← beden detay (API'den)
+  sizeId?: number | null;
+  size?: { id: number; value: string } | null;
   customImage?: string | null;
 }
 
@@ -108,7 +111,7 @@ const CartDropdown = forwardRef(
         });
         if (!res.ok) throw new Error("API hatası");
         const data = await res.json();
-        setCartItems(data); // API zaten sizeId + size döndürüyor
+        setCartItems(data);
       } catch {
         setCartItems([]);
       } finally {
@@ -121,17 +124,19 @@ const CartDropdown = forwardRef(
       try {
         const cart = getCart();
         const guestCart: CartItemType[] = cart.map((item: GuestCartItem) => ({
-          id: item.productId, // guest'te DB id yok → productId kullan
+          id: item.productId,
           productId: item.productId,
           quantity: item.quantity,
-          sizeId: item.sizeId ?? null, // ← beden
-          size: null, // guest'te size detay yok (sadece ID var)
+          sizeId: item.sizeId ?? null,
+          size: null,
           customImage: item.customImage ?? null,
           product: {
             id: item.productId,
             title: item.title,
             price: item.price,
             mainImage: item.image,
+            bulkDiscountQty: item.bulkDiscountQty ?? null,
+            bulkDiscountRate: item.bulkDiscountRate ?? null,
           },
         }));
         setCartItems(guestCart);
@@ -183,13 +188,11 @@ const CartDropdown = forwardRef(
       customImage?: string | null,
     ) => {
       if (!isLoggedIn) {
-        // guest: id burada productId
         updateGuestCartQuantity(id, delta, sizeId, customImage);
         loadGuestCart();
         return;
       }
 
-      // logged-in: id = CartItem.id (DB primary key)
       const item = cartItems.find((c) => c.id === id);
       if (!item) return;
 
@@ -245,11 +248,36 @@ const CartDropdown = forwardRef(
       }
     };
 
-    // ─── Totals ────────────────────────────────────────────────────────────
-    const subtotal = cartItems.reduce(
-      (acc, i) => acc + i.product.price * i.quantity,
-      0,
-    );
+    // ─── Totals with Bulk Discount ─────────────────────────────────────────
+    const subtotal = cartItems.reduce((acc, i) => {
+      let itemTotal = i.product.price * i.quantity;
+      
+      // Toplu alım indirimi kontrolü
+      if (
+        i.product.bulkDiscountQty &&
+        i.product.bulkDiscountRate &&
+        i.quantity >= i.product.bulkDiscountQty
+      ) {
+        const discountAmount = (itemTotal * i.product.bulkDiscountRate) / 100;
+        itemTotal = itemTotal - discountAmount;
+      }
+      
+      return acc + itemTotal;
+    }, 0);
+    
+    const totalBulkDiscount = cartItems.reduce((acc, i) => {
+      if (
+        i.product.bulkDiscountQty &&
+        i.product.bulkDiscountRate &&
+        i.quantity >= i.product.bulkDiscountQty
+      ) {
+        const itemTotal = i.product.price * i.quantity;
+        const discountAmount = (itemTotal * i.product.bulkDiscountRate) / 100;
+        return acc + discountAmount;
+      }
+      return acc;
+    }, 0);
+    
     const taxAmount = subtotal * 0.1;
     const total = subtotal + taxAmount;
 
@@ -378,6 +406,23 @@ const CartDropdown = forwardRef(
                     })}
                   </span>
                 </div>
+                
+                {/* Toplu Alım İndirimi */}
+                {totalBulkDiscount > 0 && (
+                  <div className="flex justify-between text-[11px] font-bold text-emerald-600 uppercase tracking-widest">
+                    <span className="flex items-center gap-1">
+                      <Tag size={12} />
+                      TOPLU ALIM İNDİRİMİ
+                    </span>
+                    <span className="font-mono">
+                      -₺
+                      {totalBulkDiscount.toLocaleString("tr-TR", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
+                )}
+                
                 <div className="flex justify-between text-[11px] font-bold text-slate-400 uppercase tracking-widest">
                   <span>KDV (%10)</span>
                   <span className="text-slate-900 font-mono">

@@ -31,6 +31,7 @@ export default function Navbar() {
   const [navbarHidden, setNavbarHidden] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false); // YENİ
 
   // --- ARAMA STATE'LERİ ---
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,6 +41,16 @@ export default function Navbar() {
   const { favorites } = useFavorite();
   const { scrollY } = useScroll();
 
+  // Mobil kontrolü
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
   // Arama Fonksiyonu
   useEffect(() => {
     const fetchResults = async () => {
@@ -91,14 +102,13 @@ export default function Navbar() {
     setSearchQuery("");
   }, [typeof window !== "undefined" ? window.location.pathname : ""]);
 
-  // SCROLL LOGIC: Navbar aşağı inince gizlenecek
   useMotionValueEvent(scrollY, "change", (latest) => {
-    if (isMobileMenuOpen) {
+    if (isMobileMenuOpen || isMobile) {
       setNavbarHidden(false);
       return;
     }
 
-    // 100px'den fazla scroll edildiğinde navbar'ı gizle
+    // Desktop'ta 100px'den fazla scroll edildiğinde navbar'ı gizle
     if (latest > 100) {
       setNavbarHidden(true);
     } else {
@@ -246,7 +256,7 @@ export default function Navbar() {
       </motion.div>
 
       {/* CATEGORYBAR - Her zaman sticky top-0'da kalacak */}
-      <div className="sticky top-0 z-[90]">
+      <div className="sticky top-0 z-[49]">
         <CategoryBar
           isMobileMenuOpen={isMobileMenuOpen}
           setIsMobileMenuOpen={setIsMobileMenuOpen}

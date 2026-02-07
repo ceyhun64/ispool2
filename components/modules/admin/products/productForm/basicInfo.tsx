@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Package } from "lucide-react";
 import type { ProductFormData } from "@/types/product";
 
 interface Category {
@@ -70,11 +71,15 @@ export default function BasicInfoSection({
         name === "rating" ||
         name === "reviewCount" ||
         name === "discountPercentage" ||
-        name === "brandId"
+        name === "brandId" ||
+        name === "bulkDiscountQty" ||
+        name === "bulkDiscountRate"
           ? value === ""
             ? name === "oldPrice" ||
               name === "discountPercentage" ||
-              name === "brandId"
+              name === "brandId" ||
+              name === "bulkDiscountQty" ||
+              name === "bulkDiscountRate"
               ? undefined
               : 0
             : Number(value)
@@ -190,6 +195,85 @@ export default function BasicInfoSection({
         />
       </div>
 
+      {/* Bulk Discount Section */}
+      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-6 border-2 border-emerald-200 rounded-lg space-y-4">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+            <Package className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 text-base">
+              Toplu Satış İndirimi
+            </h3>
+            <p className="text-xs text-slate-600">
+              Çoklu alımlarda otomatik indirim uygulayın
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <InputGroup
+            label="Minimum Adet"
+            value={productData.bulkDiscountQty ?? ""}
+            name="bulkDiscountQty"
+            onChange={handleChange}
+            type="number"
+            min={2}
+            placeholder="Örn: 3"
+            helperText="Bu adetten itibaren indirim uygulanır"
+          />
+          <InputGroup
+            label="İndirim Oranı (%)"
+            value={productData.bulkDiscountRate ?? ""}
+            name="bulkDiscountRate"
+            onChange={handleChange}
+            type="number"
+            min={1}
+            max={100}
+            step="0.1"
+            placeholder="Örn: 10"
+            helperText="Uygulanacak indirim yüzdesi"
+          />
+        </div>
+
+        {productData.bulkDiscountQty &&
+          productData.bulkDiscountQty > 0 &&
+          productData.bulkDiscountRate &&
+          productData.bulkDiscountRate > 0 && (
+            <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-emerald-300">
+              <p className="text-sm text-slate-700">
+                <span className="font-semibold text-emerald-700">Örnek:</span>{" "}
+                {productData.bulkDiscountQty} veya daha fazla ürün alındığında{" "}
+                <span className="font-bold text-emerald-700">
+                  %{productData.bulkDiscountRate}
+                </span>{" "}
+                indirim uygulanacak.
+                {productData.price > 0 && (
+                  <>
+                    {" "}
+                    Birim fiyat:{" "}
+                    <span className="font-bold">
+                      {(
+                        productData.price *
+                        (1 - productData.bulkDiscountRate / 100)
+                      ).toFixed(2)}{" "}
+                      ₺
+                    </span>
+                  </>
+                )}
+              </p>
+            </div>
+          )}
+
+        <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg">
+          <p className="text-xs text-amber-800">
+            💡 <span className="font-semibold">İpucu:</span> Toplu satış
+            indirimi, müşterilerinizin daha fazla ürün almasını teşvik eder ve
+            satışlarınızı artırır.
+          </p>
+        </div>
+      </div>
+
       {/* Categories */}
       <div className="bg-white p-6 border border-slate-200 rounded space-y-4">
         <h3 className="font-semibold text-slate-900 text-base mb-4">
@@ -220,7 +304,7 @@ export default function BasicInfoSection({
         {availableMiddleCategories.length > 0 && (
           <div>
             <Label className="text-sm font-semibold text-slate-700 mb-2 block">
-              Alt Kategori
+              Orta Kategori
             </Label>
             <Select
               value={productData.middleCategory || "none"}
@@ -237,7 +321,7 @@ export default function BasicInfoSection({
                 }
               }}
             >
-              <SelectTrigger className="w-full h-11 border-slate-200 bg-slate-50">
+              <SelectTrigger className="w-full h-11 border-slate-200 bg-slate-50 rounded-xl">
                 <SelectValue placeholder="Seçiniz" />
               </SelectTrigger>
               <SelectContent>
@@ -245,6 +329,42 @@ export default function BasicInfoSection({
                 {availableMiddleCategories.map((mid) => (
                   <SelectItem key={mid.id} value={mid.name}>
                     {mid.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        {availableSubCategories.length > 0 && (
+          <div>
+            <Label className="text-sm font-semibold text-slate-700 mb-2 block">
+              Alt Kategori
+            </Label>
+            <Select
+              value={productData.subCategory || "none"}
+              onValueChange={(val) => {
+                if (val === "none") {
+                  setProductData((prev) => ({
+                    ...prev,
+                    subCategory: "",
+                  }));
+                } else {
+                  setProductData((prev) => ({
+                    ...prev,
+                    subCategory: val,
+                  }));
+                }
+              }}
+            >
+              <SelectTrigger className="w-full h-11 border-slate-200 bg-slate-50 rounded-xl">
+                <SelectValue placeholder="Seçiniz" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Seçim yapma</SelectItem>
+                {availableSubCategories.map((sub) => (
+                  <SelectItem key={sub.id} value={sub.name}>
+                    {sub.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -314,14 +434,17 @@ export default function BasicInfoSection({
   );
 }
 
-const InputGroup = ({ label, ...props }: any) => (
+const InputGroup = ({ label, helperText, ...props }: any) => (
   <div>
     <Label className="text-sm font-semibold text-slate-700 mb-2 block">
       {label}
     </Label>
     <Input
-      className="w-full h-11 border-slate-200 bg-slate-50 focus:bg-white transition-all"
+      className="w-full h-11 border-slate-200 bg-slate-50 focus:bg-white transition-all rounded-xl"
       {...props}
     />
+    {helperText && (
+      <p className="text-xs text-slate-500 mt-1.5">{helperText}</p>
+    )}
   </div>
 );

@@ -66,6 +66,8 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
     brandId: undefined,
     sizes: [],
     stock: [],
+    bulkDiscountQty: undefined,
+    bulkDiscountRate: undefined,
   });
 
   const [mainFile, setMainFile] = useState<File | null>(null);
@@ -154,6 +156,8 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
               brandId: product.brand?.id ?? undefined,
               sizes: [],
               stock: product.stockMatrix || [],
+              bulkDiscountQty: product.bulkDiscountQty ?? undefined,
+              bulkDiscountRate: product.bulkDiscountRate ?? undefined,
             });
 
             // Mevcut bedenleri seç
@@ -194,6 +198,18 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
       return;
     }
 
+    // Toplu satış indirimi validasyonu
+    if (productData.bulkDiscountQty && productData.bulkDiscountQty > 0) {
+      if (!productData.bulkDiscountRate || productData.bulkDiscountRate <= 0) {
+        toast.error("Toplu satış için indirim oranı girilmelidir");
+        return;
+      }
+      if (productData.bulkDiscountRate > 100) {
+        toast.error("İndirim oranı 100'den fazla olamaz");
+        return;
+      }
+    }
+
     const dataForm = new FormData();
 
     // Temel alanlar
@@ -221,6 +237,20 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
     }
     if (productData.brandId !== undefined) {
       dataForm.append("brandId", String(productData.brandId));
+    }
+
+    // Toplu satış indirimi
+    if (
+      productData.bulkDiscountQty !== undefined &&
+      productData.bulkDiscountQty > 0
+    ) {
+      dataForm.append("bulkDiscountQty", String(productData.bulkDiscountQty));
+    }
+    if (
+      productData.bulkDiscountRate !== undefined &&
+      productData.bulkDiscountRate > 0
+    ) {
+      dataForm.append("bulkDiscountRate", String(productData.bulkDiscountRate));
     }
 
     // Beden ve stok verileri
