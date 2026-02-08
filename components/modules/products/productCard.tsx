@@ -103,11 +103,11 @@ export default function ProductCard({ product }: { product: ProductData }) {
 
         <div className="py-3 sm:py-4 flex flex-col space-y-1">
           <div className="flex justify-between items-center">
-            <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-slate-500">
+            <span className="text-[8px] sm:text-[10px] uppercase tracking-widest text-slate-500">
               {product.category}
             </span>
             {hasRealDiscount && discount > 0 && (
-              <span className="bg-yellow-200 text-yellow-800 px-1.5 py-0.5 text-[10px] font-bold uppercase">
+              <span className="bg-red-200 text-red-800 px-1.5 py-0.5 text-[8px] sm:text-[10px] font-bold uppercase">
                 %{discount} İndirim
               </span>
             )}
