@@ -495,66 +495,71 @@ export default function ProductDetailPage() {
                 )}
 
                 {/* ─── TOPLU ALIM İNDİRİMİ BİLDİRİMİ ────────────────────── */}
-                {product.bulkDiscountQty && product.bulkDiscountRate && (
-                  <div
-                    className={`border p-4 rounded space-y-2 ${
-                      bulkDiscount.hasDiscount
-                        ? "bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200"
-                        : "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
-                      <Percent
-                        size={14}
-                        className={
-                          bulkDiscount.hasDiscount
-                            ? "text-emerald-700"
-                            : "text-blue-700"
-                        }
-                      />
-                      <span
-                        className={
-                          bulkDiscount.hasDiscount
-                            ? "text-emerald-700"
-                            : "text-blue-700"
-                        }
-                      >
-                        {bulkDiscount.hasDiscount
-                          ? `🎉 Toplu Alım İndirimi Uygulandı! %${bulkDiscount.discountRate}`
-                          : `Toplu Alım Fırsatı`}
-                      </span>
+                {/* ─── TOPLU ALIM İNDİRİMİ BİLDİRİMİ ────────────────────── */}
+                {product.bulkDiscountQty !== null &&
+                  product.bulkDiscountRate !== null &&
+                  product.bulkDiscountQty > 0 &&
+                  product.bulkDiscountRate > 0 && (
+                    <div
+                      className={`border p-4 rounded space-y-2 ${
+                        bulkDiscount.hasDiscount
+                          ? "bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200"
+                          : "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
+                        <Percent
+                          size={14}
+                          className={
+                            bulkDiscount.hasDiscount
+                              ? "text-emerald-700"
+                              : "text-blue-700"
+                          }
+                        />
+                        <span
+                          className={
+                            bulkDiscount.hasDiscount
+                              ? "text-emerald-700"
+                              : "text-blue-700"
+                          }
+                        >
+                          {bulkDiscount.hasDiscount
+                            ? `🎉 Toplu Alım İndirimi Uygulandı! %${bulkDiscount.discountRate}`
+                            : `Toplu Alım Fırsatı`}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        {bulkDiscount.hasDiscount ? (
+                          <>
+                            Bu üründen {product.bulkDiscountQty} adet ve üzeri
+                            alımlarda{" "}
+                            <strong>%{product.bulkDiscountRate}</strong> indirim
+                            kazanıyorsunuz! Sepetinizdeki{" "}
+                            <strong>{quantity} adet</strong> için indirim
+                            uygulandı.
+                          </>
+                        ) : (
+                          <>
+                            Bu üründen{" "}
+                            <strong>{product.bulkDiscountQty} adet</strong> ve
+                            üzeri alımlarda{" "}
+                            <strong>%{product.bulkDiscountRate} indirim</strong>{" "}
+                            kazanın!
+                            {remainingForBulk > 0 && (
+                              <>
+                                {" "}
+                                Toplu alım için{" "}
+                                <strong className="text-blue-700">
+                                  {remainingForBulk} adet
+                                </strong>{" "}
+                                daha ekleyin.
+                              </>
+                            )}
+                          </>
+                        )}
+                      </p>
                     </div>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      {bulkDiscount.hasDiscount ? (
-                        <>
-                          Bu üründen {product.bulkDiscountQty} adet ve üzeri
-                          alımlarda <strong>%{product.bulkDiscountRate}</strong>{" "}
-                          indirim kazanıyorsunuz! Sepetinizdeki{" "}
-                          <strong>{quantity} adet</strong> için indirim
-                          uygulandı.
-                        </>
-                      ) : (
-                        <>
-                          Bu üründen{" "}
-                          <strong>{product.bulkDiscountQty} adet</strong> ve
-                          üzeri alımlarda{" "}
-                          <strong>%{product.bulkDiscountRate} indirim</strong>{" "}
-                          kazanın!
-                          {remainingForBulk > 0 && (
-                            <>
-                              {" "}
-                              Toplu alım için{" "}
-                              <strong className="text-blue-700">
-                                {remainingForBulk} adet
-                              </strong>{" "}
-                              daha ekleyin.
-                            </>
-                          )}
-                        </>
-                      )}
-                    </p>
-                  </div>
-                )}
+                  )}
 
                 {/* Aksiyon Butonları */}
                 <ProductActions
