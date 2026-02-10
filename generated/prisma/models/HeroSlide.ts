@@ -221,10 +221,10 @@ export type HeroSlideGroupByArgs<ExtArgs extends runtime.Types.Extensions.Intern
 
 export type HeroSlideGroupByOutputType = {
   id: number
-  tag: string
-  title: string
-  subtitle: string
-  description: string
+  tag: string | null
+  title: string | null
+  subtitle: string | null
+  description: string | null
   desktopImage: string
   mobileImage: string | null
   order: number
@@ -258,10 +258,10 @@ export type HeroSlideWhereInput = {
   OR?: Prisma.HeroSlideWhereInput[]
   NOT?: Prisma.HeroSlideWhereInput | Prisma.HeroSlideWhereInput[]
   id?: Prisma.IntFilter<"HeroSlide"> | number
-  tag?: Prisma.StringFilter<"HeroSlide"> | string
-  title?: Prisma.StringFilter<"HeroSlide"> | string
-  subtitle?: Prisma.StringFilter<"HeroSlide"> | string
-  description?: Prisma.StringFilter<"HeroSlide"> | string
+  tag?: Prisma.StringNullableFilter<"HeroSlide"> | string | null
+  title?: Prisma.StringNullableFilter<"HeroSlide"> | string | null
+  subtitle?: Prisma.StringNullableFilter<"HeroSlide"> | string | null
+  description?: Prisma.StringNullableFilter<"HeroSlide"> | string | null
   desktopImage?: Prisma.StringFilter<"HeroSlide"> | string
   mobileImage?: Prisma.StringNullableFilter<"HeroSlide"> | string | null
   order?: Prisma.IntFilter<"HeroSlide"> | number
@@ -272,10 +272,10 @@ export type HeroSlideWhereInput = {
 
 export type HeroSlideOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  tag?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  subtitle?: Prisma.SortOrder
-  description?: Prisma.SortOrder
+  tag?: Prisma.SortOrderInput | Prisma.SortOrder
+  title?: Prisma.SortOrderInput | Prisma.SortOrder
+  subtitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   desktopImage?: Prisma.SortOrder
   mobileImage?: Prisma.SortOrderInput | Prisma.SortOrder
   order?: Prisma.SortOrder
@@ -289,10 +289,10 @@ export type HeroSlideWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.HeroSlideWhereInput | Prisma.HeroSlideWhereInput[]
   OR?: Prisma.HeroSlideWhereInput[]
   NOT?: Prisma.HeroSlideWhereInput | Prisma.HeroSlideWhereInput[]
-  tag?: Prisma.StringFilter<"HeroSlide"> | string
-  title?: Prisma.StringFilter<"HeroSlide"> | string
-  subtitle?: Prisma.StringFilter<"HeroSlide"> | string
-  description?: Prisma.StringFilter<"HeroSlide"> | string
+  tag?: Prisma.StringNullableFilter<"HeroSlide"> | string | null
+  title?: Prisma.StringNullableFilter<"HeroSlide"> | string | null
+  subtitle?: Prisma.StringNullableFilter<"HeroSlide"> | string | null
+  description?: Prisma.StringNullableFilter<"HeroSlide"> | string | null
   desktopImage?: Prisma.StringFilter<"HeroSlide"> | string
   mobileImage?: Prisma.StringNullableFilter<"HeroSlide"> | string | null
   order?: Prisma.IntFilter<"HeroSlide"> | number
@@ -303,10 +303,10 @@ export type HeroSlideWhereUniqueInput = Prisma.AtLeast<{
 
 export type HeroSlideOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  tag?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  subtitle?: Prisma.SortOrder
-  description?: Prisma.SortOrder
+  tag?: Prisma.SortOrderInput | Prisma.SortOrder
+  title?: Prisma.SortOrderInput | Prisma.SortOrder
+  subtitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   desktopImage?: Prisma.SortOrder
   mobileImage?: Prisma.SortOrderInput | Prisma.SortOrder
   order?: Prisma.SortOrder
@@ -325,10 +325,10 @@ export type HeroSlideScalarWhereWithAggregatesInput = {
   OR?: Prisma.HeroSlideScalarWhereWithAggregatesInput[]
   NOT?: Prisma.HeroSlideScalarWhereWithAggregatesInput | Prisma.HeroSlideScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"HeroSlide"> | number
-  tag?: Prisma.StringWithAggregatesFilter<"HeroSlide"> | string
-  title?: Prisma.StringWithAggregatesFilter<"HeroSlide"> | string
-  subtitle?: Prisma.StringWithAggregatesFilter<"HeroSlide"> | string
-  description?: Prisma.StringWithAggregatesFilter<"HeroSlide"> | string
+  tag?: Prisma.StringNullableWithAggregatesFilter<"HeroSlide"> | string | null
+  title?: Prisma.StringNullableWithAggregatesFilter<"HeroSlide"> | string | null
+  subtitle?: Prisma.StringNullableWithAggregatesFilter<"HeroSlide"> | string | null
+  description?: Prisma.StringNullableWithAggregatesFilter<"HeroSlide"> | string | null
   desktopImage?: Prisma.StringWithAggregatesFilter<"HeroSlide"> | string
   mobileImage?: Prisma.StringNullableWithAggregatesFilter<"HeroSlide"> | string | null
   order?: Prisma.IntWithAggregatesFilter<"HeroSlide"> | number
@@ -338,10 +338,10 @@ export type HeroSlideScalarWhereWithAggregatesInput = {
 }
 
 export type HeroSlideCreateInput = {
-  tag: string
-  title: string
-  subtitle: string
-  description: string
+  tag?: string | null
+  title?: string | null
+  subtitle?: string | null
+  description?: string | null
   desktopImage: string
   mobileImage?: string | null
   order?: number
@@ -352,10 +352,10 @@ export type HeroSlideCreateInput = {
 
 export type HeroSlideUncheckedCreateInput = {
   id?: number
-  tag: string
-  title: string
-  subtitle: string
-  description: string
+  tag?: string | null
+  title?: string | null
+  subtitle?: string | null
+  description?: string | null
   desktopImage: string
   mobileImage?: string | null
   order?: number
@@ -365,10 +365,10 @@ export type HeroSlideUncheckedCreateInput = {
 }
 
 export type HeroSlideUpdateInput = {
-  tag?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  subtitle?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
+  tag?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subtitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   desktopImage?: Prisma.StringFieldUpdateOperationsInput | string
   mobileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
@@ -379,10 +379,10 @@ export type HeroSlideUpdateInput = {
 
 export type HeroSlideUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  tag?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  subtitle?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
+  tag?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subtitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   desktopImage?: Prisma.StringFieldUpdateOperationsInput | string
   mobileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
@@ -393,10 +393,10 @@ export type HeroSlideUncheckedUpdateInput = {
 
 export type HeroSlideCreateManyInput = {
   id?: number
-  tag: string
-  title: string
-  subtitle: string
-  description: string
+  tag?: string | null
+  title?: string | null
+  subtitle?: string | null
+  description?: string | null
   desktopImage: string
   mobileImage?: string | null
   order?: number
@@ -406,10 +406,10 @@ export type HeroSlideCreateManyInput = {
 }
 
 export type HeroSlideUpdateManyMutationInput = {
-  tag?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  subtitle?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
+  tag?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subtitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   desktopImage?: Prisma.StringFieldUpdateOperationsInput | string
   mobileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
@@ -420,10 +420,10 @@ export type HeroSlideUpdateManyMutationInput = {
 
 export type HeroSlideUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  tag?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  subtitle?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
+  tag?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subtitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   desktopImage?: Prisma.StringFieldUpdateOperationsInput | string
   mobileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
@@ -549,10 +549,10 @@ export type $HeroSlidePayload<ExtArgs extends runtime.Types.Extensions.InternalA
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
-    tag: string
-    title: string
-    subtitle: string
-    description: string
+    tag: string | null
+    title: string | null
+    subtitle: string | null
+    description: string | null
     desktopImage: string
     mobileImage: string | null
     order: number

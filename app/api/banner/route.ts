@@ -4,8 +4,6 @@ import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import type { NextRequest } from "next/server";
-import { writeFile } from "fs/promises";
-import path from "path";
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,38 +26,36 @@ export async function POST(request: NextRequest) {
 
   try {
     const formData = await request.formData();
-    const title = formData.get("title") as string;
-    const subtitle = formData.get("subtitle") as string;
+    const title = formData.get("title") as string | null;
+    const subtitle = formData.get("subtitle") as string | null;
     const imageFile = formData.get("image") as File | null;
 
-    if (!title || !subtitle) {
+    // Resim zorunlu kontrolü
+    if (!imageFile) {
       return NextResponse.json(
-        { message: "Başlık ve açıklama zorunludur." },
+        { message: "Resim zorunludur." },
         { status: 400 },
       );
     }
 
-    let imagePath: string | null = null;
+    // Resim yükleme
+    const uploadFormData = new FormData();
+    uploadFormData.append("file", imageFile);
+    uploadFormData.append("folderName", "banners");
 
-    // Resim yüklemesi varsa
-    if (imageFile) {
-      const bytes = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+    const uploadRes = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`,
+      {
+        method: "POST",
+        body: uploadFormData,
+      },
+    );
 
-      // Benzersiz dosya adı oluştur
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      const filename = `banner-${uniqueSuffix}${path.extname(imageFile.name)}`;
-
-      // Public klasörüne kaydet
-      const filepath = path.join(
-        process.cwd(),
-        "public/uploads/banners",
-        filename,
-      );
-      await writeFile(filepath, buffer);
-
-      imagePath = `/uploads/banners/${filename}`;
+    if (!uploadRes.ok) {
+      throw new Error("Resim yüklenemedi");
     }
+
+    const { path: imagePath } = await uploadRes.json();
 
     // Eski banner'ları pasif yap
     await prisma.banner.updateMany({
@@ -69,9 +65,9 @@ export async function POST(request: NextRequest) {
     // Yeni banner oluştur
     const banner = await prisma.banner.create({
       data: {
-        title,
-        subtitle,
-        image: imagePath,
+        title: title || null,
+        subtitle: subtitle || null,
+        image: imagePath, // Schema'da String türünde
         isActive: true,
       },
     });

@@ -1,10 +1,10 @@
+// app/api/hero-slides/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import type { NextRequest } from "next/server";
 
-// GET - Tüm slide'ları getir
 export async function GET() {
   try {
     const slides = await prisma.heroSlide.findMany({
@@ -21,7 +21,6 @@ export async function GET() {
   }
 }
 
-// POST - Yeni slide ekle
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user?.id) {
@@ -30,16 +29,17 @@ export async function POST(request: NextRequest) {
 
   try {
     const formData = await request.formData();
-    const tag = formData.get("tag") as string;
-    const title = formData.get("title") as string;
-    const subtitle = formData.get("subtitle") as string;
-    const description = formData.get("description") as string;
-    const desktopImage = formData.get("desktopImage") as File;
+    const tag = formData.get("tag") as string | null;
+    const title = formData.get("title") as string | null;
+    const subtitle = formData.get("subtitle") as string | null;
+    const description = formData.get("description") as string | null;
+    const desktopImage = formData.get("desktopImage") as File | null;
     const order = parseInt(formData.get("order") as string) || 0;
 
-    if (!tag || !title || !subtitle || !description || !desktopImage) {
+    // Resim zorunlu kontrolü
+    if (!desktopImage) {
       return NextResponse.json(
-        { message: "Tüm alanlar zorunludur." },
+        { message: "Resim zorunludur." },
         { status: 400 },
       );
     }
@@ -63,14 +63,17 @@ export async function POST(request: NextRequest) {
 
     const { path: imageUrl } = await uploadRes.json();
 
+    // Hero slide oluştur
     const slide = await prisma.heroSlide.create({
       data: {
-        tag,
-        title,
-        subtitle,
-        description,
-        desktopImage: imageUrl,
+        tag: tag || null,
+        title: title || null,
+        subtitle: subtitle || null,
+        description: description || null,
+        desktopImage: imageUrl, // Schema'da String türünde
+        mobileImage: null, // Schema'da String? türünde - opsiyonel
         order,
+        isActive: true, // Default true zaten ama explicit belirtiyoruz
       },
     });
 

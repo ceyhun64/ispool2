@@ -31,23 +31,24 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
   const displayImage = item.customImage || item.product.mainImage;
   const isCustomized = !!item.customImage;
 
-  // guest'te id = productId, logged-in'de id = CartItem.id (DB)
   const callId = isLoggedIn ? item.id : item.productId;
 
-  // Toplu alım indirimi kontrolü
-  const hasBulkDiscount =
+  const hasBulkDiscount = !!(
     item.product.bulkDiscountQty &&
     item.product.bulkDiscountRate &&
-    item.quantity >= item.product.bulkDiscountQty;
+    item.quantity >= item.product.bulkDiscountQty
+  );
 
-  // Fiyat hesaplamaları
   let totalPrice = unitPrice * item.quantity;
   let discountAmount = 0;
 
-  if (hasBulkDiscount) {
-    discountAmount = (totalPrice * item.product.bulkDiscountRate!) / 100;
+  if (hasBulkDiscount && item.product.bulkDiscountRate) {
+    discountAmount = (totalPrice * item.product.bulkDiscountRate) / 100;
     totalPrice = totalPrice - discountAmount;
   }
+
+  // Fiyat bilgisi hiç yoksa render'ı kısıtlayabilirsiniz (Opsiyonel)
+  if (!unitPrice && totalPrice === 0) return null;
 
   return (
     <div className="group flex items-center gap-4 py-3 transition-all duration-200">
@@ -65,28 +66,32 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
             İNDİRİM
           </div>
         )}
-        <img
-          src={displayImage}
-          alt={item.product.title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+        {displayImage && (
+          <img
+            src={displayImage}
+            alt={item.product.title || "Ürün"}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        )}
       </div>
 
       {/* Ürün Bilgileri */}
       <div className="flex flex-col flex-1 min-w-0 gap-1">
         {/* Başlık */}
-        <h4
-          className={`text-[13px] font-medium leading-none truncate ${
-            isCustomized ? "text-orange-900" : "text-slate-800"
-          }`}
-        >
-          {item.product.title}
-          {isCustomized && (
-            <span className="ml-1 text-[9px] font-normal text-orange-600">
-              (Özel)
-            </span>
-          )}
-        </h4>
+        {item.product.title && (
+          <h4
+            className={`text-[13px] font-medium leading-none truncate ${
+              isCustomized ? "text-orange-900" : "text-slate-800"
+            }`}
+          >
+            {item.product.title}
+            {isCustomized && (
+              <span className="ml-1 text-[9px] font-normal text-orange-600">
+                (Özel)
+              </span>
+            )}
+          </h4>
+        )}
 
         {/* Özelleştirme bilgisi */}
         {isCustomized && (
@@ -99,7 +104,7 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
         )}
 
         {/* Toplu Alım İndirim Bildirimi */}
-        {hasBulkDiscount && (
+        {hasBulkDiscount && item.product.bulkDiscountRate && (
           <div className="flex items-center gap-1 mb-0.5">
             <Tag size={8} className="text-emerald-600" />
             <span className="text-[8px] text-emerald-600 font-bold uppercase tracking-wide">
@@ -108,50 +113,70 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
           </div>
         )}
 
-        {/* ─── Beden badge ──────────────────────────────────────────────── */}
+        {/* Beden badge */}
         {item.sizeId && (
           <div className="flex items-center gap-1">
             <Ruler size={9} className="text-indigo-500" />
             <span className="text-[9px] text-indigo-600 font-bold uppercase tracking-wide">
-              Beden:{" "}
-              {item.size?.value // API'den gelen size detay
-                ? item.size.value
-                : item.sizeId}{" "}
+              Beden: {item.size?.value || item.sizeId}
             </span>
           </div>
         )}
 
-        {/* Fiyat */}
+        {/* Fiyat Bölümü */}
         <div className="flex items-baseline gap-2">
           {hasBulkDiscount ? (
             <>
-              <span className="text-sm font-semibold text-emerald-700">
-                ₺{totalPrice.toLocaleString("tr-TR")}
-              </span>
-              <span className="text-[10px] text-slate-400 line-through">
-                ₺{(unitPrice * item.quantity).toLocaleString("tr-TR")}
-              </span>
+              {totalPrice > 0 && (
+                <span className="text-sm font-semibold text-emerald-700">
+                  ₺
+                  {totalPrice.toLocaleString("tr-TR", {
+                    minimumFractionDigits: 2,
+                  })}
+                </span>
+              )}
+              {unitPrice * item.quantity > 0 && (
+                <span className="text-[10px] text-slate-400 line-through">
+                  ₺
+                  {(unitPrice * item.quantity).toLocaleString("tr-TR", {
+                    minimumFractionDigits: 2,
+                  })}
+                </span>
+              )}
             </>
           ) : (
             <>
-              <span
-                className={`text-sm font-semibold ${isCustomized ? "text-orange-900" : "text-slate-900"}`}
-              >
-                ₺{totalPrice.toLocaleString("tr-TR")}
-              </span>
-              {item.quantity > 1 && (
+              {totalPrice > 0 && (
+                <span
+                  className={`text-sm font-semibold ${isCustomized ? "text-orange-900" : "text-slate-900"}`}
+                >
+                  ₺
+                  {totalPrice.toLocaleString("tr-TR", {
+                    minimumFractionDigits: 2,
+                  })}
+                </span>
+              )}
+              {item.quantity > 1 && unitPrice > 0 && (
                 <span className="text-[10px] text-slate-400">
-                  (₺{unitPrice.toLocaleString("tr-TR")})
+                  (₺
+                  {unitPrice.toLocaleString("tr-TR", {
+                    minimumFractionDigits: 2,
+                  })}
+                  )
                 </span>
               )}
             </>
           )}
         </div>
 
-        {/* İndirim miktarı gösterimi */}
+        {/* İndirim miktarı (tasarruf) */}
         {hasBulkDiscount && discountAmount > 0 && (
-          <span className="text-[9px] text-emerald-600 font-medium">
-            ₺{discountAmount.toLocaleString("tr-TR")} tasarruf
+          <span className="text-[10px] text-emerald-600 font-medium">
+            ₺
+            {discountAmount.toLocaleString("tr-TR", {
+              minimumFractionDigits: 2,
+            })}{" "}
+            tasarruf
           </span>
         )}
 
@@ -171,73 +196,48 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
                 onQuantityChange(callId, -1, item.sizeId, item.customImage)
               }
               disabled={item.quantity <= 1}
-              className={`p-1 rounded-sm disabled:opacity-30 transition-colors ${
-                isCustomized
-                  ? "hover:bg-orange-100"
-                  : hasBulkDiscount
-                    ? "hover:bg-emerald-100"
-                    : "hover:bg-white"
-              }`}
+              className="p-1 rounded-sm disabled:opacity-30 transition-colors hover:bg-white/50"
             >
-              <Minus
-                className={`h-3 w-3 ${
-                  isCustomized
-                    ? "text-orange-600"
-                    : hasBulkDiscount
-                      ? "text-emerald-600"
-                      : "text-slate-500"
-                }`}
-              />
+              <Minus className="h-3 w-3" />
             </button>
-            <span
-              className={`text-[11px] font-medium w-5 text-center ${
-                isCustomized
-                  ? "text-orange-900"
-                  : hasBulkDiscount
-                    ? "text-emerald-900"
-                    : "text-slate-700"
-              }`}
-            >
+            <span className="text-[11px] font-medium w-5 text-center">
               {item.quantity}
             </span>
             <button
               onClick={() =>
                 onQuantityChange(callId, 1, item.sizeId, item.customImage)
               }
-              className={`p-1 rounded-sm transition-colors ${
-                isCustomized
-                  ? "hover:bg-orange-100"
-                  : hasBulkDiscount
-                    ? "hover:bg-emerald-100"
-                    : "hover:bg-white"
-              }`}
+              className="p-1 rounded-sm transition-colors hover:bg-white/50"
             >
-              <Plus
-                className={`h-3 w-3 ${
-                  isCustomized
-                    ? "text-orange-600"
-                    : hasBulkDiscount
-                      ? "text-emerald-600"
-                      : "text-slate-500"
-                }`}
-              />
+              <Plus className="h-3 w-3" />
             </button>
           </div>
 
-          {/* Toplu alım hedefe ne kadar kaldı bilgisi */}
-          {item.product.bulkDiscountQty &&
-            item.product.bulkDiscountRate &&
-            !hasBulkDiscount &&
-            item.quantity < item.product.bulkDiscountQty && (
-              <span className="text-[8px] text-slate-400 font-medium">
-                +{item.product.bulkDiscountQty - item.quantity} adet daha al, %
-                {item.product.bulkDiscountRate} kazan
-              </span>
-            )}
+          {/* Kalan adet bilgisi */}
+          {/* Kalan adet bilgisi */}
+          {(() => {
+            const remainingQty =
+              (item.product.bulkDiscountQty || 0) - item.quantity;
+
+            // Sadece indirim uygulanmadıysa VE gerçekten kalan bir miktar varsa VE indirim oranı tanımlıysa göster
+            if (
+              !hasBulkDiscount &&
+              remainingQty > 0 &&
+              item.product.bulkDiscountRate
+            ) {
+              return (
+                <span className="text-[10px] text-slate-400 font-medium animate-in fade-in duration-300">
+                  +{remainingQty} adet daha al, %{item.product.bulkDiscountRate}{" "}
+                  kazan
+                </span>
+              );
+            }
+            return null;
+          })()}
         </div>
       </div>
 
-      {/* Kaldır */}
+      {/* Kaldır butonu */}
       <button
         onClick={() =>
           onRemove(item.id, item.productId, item.sizeId, item.customImage)

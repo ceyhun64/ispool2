@@ -55,6 +55,7 @@ export const ModelName = {
   MiddleCategory: 'MiddleCategory',
   SubCategory: 'SubCategory',
   Brand: 'Brand',
+  Color: 'Color',
   Size: 'Size',
   product: 'product',
   ProductSize: 'ProductSize',
@@ -134,6 +135,17 @@ export const BrandScalarFieldEnum = {
 export type BrandScalarFieldEnum = (typeof BrandScalarFieldEnum)[keyof typeof BrandScalarFieldEnum]
 
 
+export const ColorScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  hexCode: 'hexCode',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ColorScalarFieldEnum = (typeof ColorScalarFieldEnum)[keyof typeof ColorScalarFieldEnum]
+
+
 export const SizeScalarFieldEnum = {
   id: 'id',
   value: 'value',
@@ -160,6 +172,8 @@ export const ProductScalarFieldEnum = {
   subImage3: 'subImage3',
   subImage4: 'subImage4',
   description: 'description',
+  colorId: 'colorId',
+  productGroupId: 'productGroupId',
   bulkDiscountQty: 'bulkDiscountQty',
   bulkDiscountRate: 'bulkDiscountRate',
   brandId: 'brandId',

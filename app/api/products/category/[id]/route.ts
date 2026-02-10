@@ -20,6 +20,9 @@ interface ProductData {
   middleCategory?: string;
   subCategory?: string;
   brandId?: number;
+  colorId?: number;
+  colorName?: string;
+  colorHexCode?: string;
   createdAt: Date;
 }
 
@@ -36,6 +39,7 @@ export async function GET(
         category: true,
         middleCategory: true,
         subCategory: true,
+        color: true,
       },
       orderBy: { createdAt: "desc" },
     });
@@ -45,6 +49,7 @@ export async function GET(
         category: { name: string };
         middleCategory: { name: string } | null;
         subCategory: { name: string } | null;
+        color: { id: number; name: string; hexCode: string | null } | null;
       };
 
       return {
@@ -65,6 +70,9 @@ export async function GET(
         middleCategory: product.middleCategory?.name ?? undefined,
         subCategory: product.subCategory?.name ?? undefined,
         brandId: product.brandId ?? undefined,
+        colorId: product.color?.id ?? undefined,
+        colorName: product.color?.name ?? undefined,
+        colorHexCode: product.color?.hexCode ?? undefined,
         createdAt: product.createdAt,
       };
     });

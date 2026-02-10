@@ -41,6 +41,8 @@ interface ProductInput {
   stock: StockInput[];
   bulkDiscountQty?: number;
   bulkDiscountRate?: number;
+  color?: string;
+  productGroupId?: string;
 }
 
 // Data casting
@@ -64,6 +66,19 @@ const BRANDS = [
   "GVS",
   "POLYBOOT",
   "THERMOFORM",
+];
+
+const COLORS = [
+  { name: "Siyah", hex: "#000000" },
+  { name: "Lacivert", hex: "#1a237e" },
+  { name: "Gri", hex: "#424242" },
+  { name: "Haki", hex: "#4b5320" },
+  { name: "Fosforlu Turuncu", hex: "#ff6d00" }, // EN ISO 20471 İkaz
+  { name: "Fosforlu Sarı", hex: "#ccff00" }, // EN ISO 20471 İkaz
+  { name: "Kırmızı", hex: "#b71c1c" },
+  { name: "Beyaz", hex: "#ffffff" },
+  { name: "Kraliyet Mavisi", hex: "#0d47a1" },
+  { name: "Antrasit", hex: "#263238" },
 ];
 
 enum UserRole {
@@ -129,6 +144,7 @@ async function resetDatabase() {
     "cartitem",
     "favorite",
     "address",
+    "color",
     "product",
     "size",
     "sub_category",
@@ -194,6 +210,16 @@ async function seedBrands() {
   });
 }
 
+async function seedColors() {
+  console.log("🎨 Renkler ekleniyor...");
+  await prisma.color.createMany({
+    data: COLORS.map((c) => ({
+      name: c.name,
+      hexCode: c.hex,
+    })),
+  });
+}
+
 async function seedHierarchy() {
   console.log("📂 Kategori hiyerarşisi oluşturuluyor...");
   const categoryMap = new Map<string, number>();
@@ -253,7 +279,9 @@ async function seedProducts() {
       console.warn(`⚠️  Kategori bulunamadı: ${p.category} - Ürün: ${p.title}`);
       continue;
     }
-
+    const color = p.color
+      ? await prisma.color.findUnique({ where: { name: p.color } })
+      : null;
     const middle = p.middleCategory
       ? await prisma.middleCategory.findFirst({
           where: { name: p.middleCategory, categoryId: category.id },
@@ -290,6 +318,8 @@ async function seedProducts() {
           brandId: brand?.id || null,
           bulkDiscountQty: p.bulkDiscountQty || 0,
           bulkDiscountRate: p.bulkDiscountRate || 0,
+          colorId: color?.id || null,
+          productGroupId: p.productGroupId || null,
         },
       });
 
@@ -360,6 +390,7 @@ async function main() {
   await seedAdmin();
   await seedSizes();
   await seedBrands();
+  await seedColors();
   await seedHierarchy();
   await seedProducts();
   console.log("\n✨ TÜM İŞLEMLER BAŞARIYLA TAMAMLANDI ✨");

@@ -1,7 +1,8 @@
+// components/modules/admin/login/login.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Eye, EyeOff, Lock, Mail, ArrowRight, ShieldCheck } from "lucide-react"; // ShieldCheck eklendi
+import { Eye, EyeOff, Lock, Mail, ArrowRight, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,11 +18,17 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [mounted, setMounted] = useState(false); // Hydration hatasını engellemek için
   const router = useRouter();
 
   useEffect(() => {
+    setMounted(true);
     const logoutExistingSession = async () => {
-      await signOut({ redirect: false });
+      try {
+        await signOut({ redirect: false });
+      } catch (error) {
+        console.error("Çıkış yapılırken hata oluştu:", error);
+      }
     };
     logoutExistingSession();
   }, []);
@@ -48,6 +55,7 @@ export default function AdminLogin() {
 
         if (sessionData?.user?.role !== "ADMIN") {
           toast.error("Yetkisiz erişim denemesi.");
+          await signOut({ redirect: false });
           return;
         }
 
@@ -61,12 +69,16 @@ export default function AdminLogin() {
     }
   };
 
+  // Hydration hatasını önlemek için bileşen yüklenene kadar içeriği göstermeyebilir
+  // veya sadece statik kısımları render edebiliriz.
+  if (!mounted) return null;
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 relative overflow-hidden font-sans">
-      {/* Arka Plan Dekorasyonu - Endüstriyel Tema */}
+      {/* Arka Plan Dekorasyonu */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-orange-500/5  blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-slate-900/5  blur-[120px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-orange-500/5 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-slate-900/5 blur-[120px]" />
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -132,7 +144,7 @@ export default function AdminLogin() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@ispool.com"
                   required
-                  className="bg-slate-50 border-slate-200  pl-12 h-13 focus-visible:ring-orange-500/20 focus-visible:border-orange-500 transition-all placeholder:text-slate-300"
+                  className="bg-slate-50 border-slate-200 rounded-xl pl-12 h-13 focus-visible:ring-orange-500/20 focus-visible:border-orange-500 transition-all placeholder:text-slate-300"
                 />
               </div>
             </div>
@@ -155,7 +167,7 @@ export default function AdminLogin() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="bg-slate-50 border-slate-200  pl-12 h-13 focus-visible:ring-orange-500/20 focus-visible:border-orange-500 transition-all placeholder:text-slate-300"
+                  className="bg-slate-50 border-slate-200 rounded-xl pl-12 h-13 focus-visible:ring-orange-500/20 focus-visible:border-orange-500 transition-all placeholder:text-slate-300"
                 />
                 <button
                   type="button"
@@ -170,11 +182,11 @@ export default function AdminLogin() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-4 bg-slate-900 hover:bg-orange-600 text-white font-semibold tracking-wide h-13  shadow-lg shadow-slate-900/10 transition-all duration-300 group"
+              className="w-full mt-4 bg-slate-900 hover:bg-orange-600 rounded-full text-white font-semibold tracking-wide h-13 shadow-lg shadow-slate-900/10 transition-all duration-300 group"
             >
               {isLoading ? (
                 <div className="flex items-center gap-3">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white  animate-spin" />
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white animate-spin" />
                   <span>Doğrulanıyor...</span>
                 </div>
               ) : (

@@ -1,5 +1,5 @@
 import DesignPaths from "@/components/modules/home/designPaths";
-import HeroSection from "@/components/modules/home/carousel";
+import HeroSlider from "@/components/modules/home/heroSlider";
 import Banner from "@/components/modules/home/banner";
 import Products from "@/components/modules/home/products";
 import ProductsRow from "@/components/modules/home/newArrivals";
@@ -11,7 +11,7 @@ import Categories from "@/components/modules/home/categories";
 export default function Home() {
   return (
     <div>
-      <HeroSection />
+      <HeroSlider />
       <DesignPaths />
       <Products />
       <Categories />

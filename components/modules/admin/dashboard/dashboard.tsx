@@ -11,6 +11,7 @@ import {
   Ticket,
   Settings,
   ArrowRight,
+  Palette,
 } from "lucide-react";
 import Link from "next/link";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -112,6 +113,14 @@ export default function AdminDashboard() {
           description: "Toplam Ürün",
           icon: <Package className="w-5 h-5" />,
           href: "/admin/products",
+        },
+        {
+          id: "color_size",
+          title: "Renkler & Bedenler",
+          stat: orders.orders?.length || 0,
+          description: "Renkler & Bedenler",
+          icon: <Palette className="w-5 h-5" />,
+          href: "/admin/color_size",
         },
         {
           id: "orders",

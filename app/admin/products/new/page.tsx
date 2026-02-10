@@ -1,7 +1,5 @@
 // app/admin/products/new/page.tsx
-import React from "react";
 import ProductForm from "@/components/modules/admin/products/productForm";
-import Sidebar from "@/components/modules/admin/sideBar";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
