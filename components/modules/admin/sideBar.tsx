@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ImagePlus,
+  Palette,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -56,6 +57,12 @@ export default function AdminSidebar({
       label: "Ürünler",
       icon: Package,
       href: "/admin/products",
+    },
+    {
+      id: "color_sizes",
+      label: "Renk & Beden",
+      icon: Palette,
+      href: "/admin/color_size",
     },
     {
       id: "orders",

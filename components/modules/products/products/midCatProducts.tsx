@@ -19,6 +19,7 @@ import {
   Percent,
 } from "lucide-react";
 import MobileFilter from "../mobileFilter";
+import { useSearchParams } from "next/navigation";
 
 interface MidCatProductsProps {
   id: number;
@@ -31,14 +32,33 @@ export default function MidCatProducts({
   midId,
   showDiscountOnly = false,
 }: MidCatProductsProps) {
+  const searchParams = useSearchParams();
+  const sortParam = searchParams.get("sort") as
+    | "az"
+    | "za"
+    | "priceLow"
+    | "priceHigh"
+    | "dateNew"
+    | "dateOld"
+    | "discountHigh"
+    | null;
+
   const [currentCategory, setCurrentCategory] = useState<any>(null);
   const [subCategoryFilter, setSubCategoryFilter] = useState<string>("all");
   const [brandFilter, setBrandFilter] = useState<string>("all");
+  const [colorFilter, setColorFilter] = useState<string>("all");
+  const [sizeFilter, setSizeFilter] = useState<string>("all");
   const [maxPrice, setMaxPrice] = useState<number>(300000);
   const [minPrice, setMinPrice] = useState<number>(0);
   const [sort, setSort] = useState<
-    "az" | "za" | "priceLow" | "priceHigh" | "dateNew" | "dateOld"
-  >("az");
+    | "az"
+    | "za"
+    | "priceLow"
+    | "priceHigh"
+    | "dateNew"
+    | "dateOld"
+    | "discountHigh"
+  >(sortParam || "az");
   const [gridCols, setGridCols] = useState<2 | 3 | 4>(4);
   const [mobileGridCols, setMobileGridCols] = useState<1 | 2>(2);
   const [products, setProducts] = useState<any[]>([]);
@@ -47,6 +67,13 @@ export default function MidCatProducts({
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [isBestSellers, setIsBestSellers] = useState(false);
   const [isDiscountMode] = useState(showDiscountOnly);
+
+  // URL'den gelen sort parametresini uygula
+  useEffect(() => {
+    if (sortParam) {
+      setSort(sortParam);
+    }
+  }, [sortParam]);
 
   // Fetch category information
   useEffect(() => {
@@ -96,10 +123,16 @@ export default function MidCatProducts({
   };
 
   useEffect(() => {
-    if (sort !== "az" || subCategoryFilter !== "all" || brandFilter !== "all") {
+    if (
+      sort !== "az" ||
+      subCategoryFilter !== "all" ||
+      brandFilter !== "all" ||
+      colorFilter !== "all" ||
+      sizeFilter !== "all"
+    ) {
       setIsBestSellers(false);
     }
-  }, [sort, subCategoryFilter, brandFilter]);
+  }, [sort, subCategoryFilter, brandFilter, colorFilter, sizeFilter]);
 
   const filteredProducts = useMemo(() => {
     let result = products.filter((p) => {
@@ -107,14 +140,28 @@ export default function MidCatProducts({
         subCategoryFilter === "all" || p.subCategory === subCategoryFilter;
       const brandCheck =
         brandFilter === "all" || p.brandId === Number(brandFilter);
-      const discountCheck =
-        !isDiscountMode || (p.oldPrice && p.discountPercentage);
+
+      // Renk filtresi
+      const colorCheck =
+        colorFilter === "all" || p.colorId === Number(colorFilter);
+
+      // Beden filtresi - ürünün bedenlerini kontrol et
+      const sizeCheck =
+        sizeFilter === "all" ||
+        (p.sizes &&
+          p.sizes.some((size: any) => size.sizeId === Number(sizeFilter)));
+
+      // İndirim kontrolü: oldPrice var mı ve price'dan büyük mü?
+      const hasDiscount = p.oldPrice && p.oldPrice > p.price;
+      const discountCheck = !isDiscountMode || hasDiscount;
 
       return (
         p.price >= minPrice &&
         p.price <= maxPrice &&
         subCategoryCheck &&
         brandCheck &&
+        colorCheck &&
+        sizeCheck &&
         discountCheck
       );
     });
@@ -126,9 +173,9 @@ export default function MidCatProducts({
     return result.sort((a, b) => {
       switch (sort) {
         case "az":
-          return a.title.localeCompare(b.title);
+          return a.title.localeCompare(b.title, "tr");
         case "za":
-          return b.title.localeCompare(a.title);
+          return b.title.localeCompare(a.title, "tr");
         case "priceLow":
           return a.price - b.price;
         case "priceHigh":
@@ -141,6 +188,17 @@ export default function MidCatProducts({
           return (
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
           );
+        case "discountHigh":
+          // İndirim yüzdesine göre sıralama
+          const discountA =
+            a.oldPrice && a.oldPrice > a.price
+              ? ((a.oldPrice - a.price) / a.oldPrice) * 100
+              : 0;
+          const discountB =
+            b.oldPrice && b.oldPrice > b.price
+              ? ((b.oldPrice - b.price) / b.oldPrice) * 100
+              : 0;
+          return discountB - discountA;
         default:
           return 0;
       }
@@ -148,6 +206,8 @@ export default function MidCatProducts({
   }, [
     subCategoryFilter,
     brandFilter,
+    colorFilter,
+    sizeFilter,
     minPrice,
     maxPrice,
     products,
@@ -319,6 +379,10 @@ export default function MidCatProducts({
                     setSubCategoryFilter={setSubCategoryFilter}
                     brandFilter={brandFilter}
                     setBrandFilter={setBrandFilter}
+                    colorFilter={colorFilter}
+                    setColorFilter={setColorFilter}
+                    sizeFilter={sizeFilter}
+                    setSizeFilter={setSizeFilter}
                     maxPrice={maxPrice}
                     setMaxPrice={setMaxPrice}
                     minPrice={minPrice}
@@ -412,6 +476,10 @@ export default function MidCatProducts({
                 setSubCategoryFilter={setSubCategoryFilter}
                 brandFilter={brandFilter}
                 setBrandFilter={setBrandFilter}
+                colorFilter={colorFilter}
+                setColorFilter={setColorFilter}
+                sizeFilter={sizeFilter}
+                setSizeFilter={setSizeFilter}
                 minPrice={minPrice}
                 maxPrice={maxPrice}
                 setMinPrice={setMinPrice}

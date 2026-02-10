@@ -1,6 +1,7 @@
+// components/modules/admin/products/productForm/imageUpload.tsx
 "use client";
 
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
@@ -66,14 +67,9 @@ export default function ImageUploadSection({
     urlSetter(null);
   };
 
-  const preview = (file: File | null, url?: string | null) => {
-    if (file) return URL.createObjectURL(file);
-    return url || null;
-  };
-
   return (
     <div className="space-y-6 w-full">
-      <div className="bg-white p-6 border border-slate-200 rounded">
+      <div className="bg-white p-6 border border-slate-200 rounded-sm">
         <h3 className="font-semibold text-slate-900 text-base mb-4">
           Ürün Görselleri
         </h3>
@@ -81,7 +77,7 @@ export default function ImageUploadSection({
         {/* Main Image */}
         <div className="mb-6">
           <Label className="text-sm font-semibold text-slate-700 mb-2 block">
-            Ana Görsel
+            Ana Görsel <span className="text-red-500">*</span>
           </Label>
           <input
             type="file"
@@ -94,7 +90,7 @@ export default function ImageUploadSection({
             <ImagePreview
               file={mainFile}
               url={mainUrl}
-              label="Ana Görsel"
+              label="Ana Görsel Ekle"
               onRemove={() => removeImage(setMainFile, setMainUrl)}
               isMain={true}
             />
@@ -149,7 +145,7 @@ export default function ImageUploadSection({
                   <ImagePreview
                     file={file}
                     url={url}
-                    label={`Görsel ${index + 1}`}
+                    label={`Görsel ${index + 1} ekle` }
                     onRemove={() => removeImage(setter, urlSetter)}
                     isMain={false}
                   />
@@ -183,21 +179,37 @@ const ImagePreview = ({
   onRemove,
   isMain = false,
 }: ImagePreviewProps) => {
-  const preview = (f: File | null, u?: string | null) => {
-    if (f) return URL.createObjectURL(f);
-    return u || null;
-  };
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const previewUrl = preview(file, url);
+  useEffect(() => {
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
+
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+      };
+    } else if (url) {
+      setPreviewUrl(url);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [file, url]);
 
   return (
     <div className="relative group">
       <div
-        className={`relative w-full aspect-[3/4] overflow-hidden border-2 border-slate-200 rounded bg-slate-50 hover:border-slate-400 transition-all ${isMain ? "max-w-md mx-auto" : ""}`}
+        className={`relative w-full aspect-[3/4] overflow-hidden border-2 border-slate-200 rounded-xl bg-slate-50 hover:border-slate-400 transition-all ${isMain ? "max-w-md mx-auto" : ""}`}
       >
         {previewUrl ? (
           <>
-            <Image src={previewUrl} alt={label} fill className="object-cover" />
+            <Image
+              src={previewUrl}
+              alt={label}
+              fill
+              className="object-cover"
+              unoptimized={!!file}
+            />
             <button
               type="button"
               onClick={(e) => {

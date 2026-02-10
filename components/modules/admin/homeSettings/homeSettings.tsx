@@ -9,10 +9,7 @@ import {
   Plus,
   Trash2,
   Eye,
-  Edit,
   Image as ImageIcon,
-  ArrowUp,
-  ArrowDown,
   X,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -28,22 +25,29 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 
+// Schema'ya göre tipler
 interface Banner {
   id: number;
-  title: string;
-  subtitle: string;
-  image?: string | null;
+  title: string | null;
+  subtitle: string | null;
+  image: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface HeroSlide {
   id: number;
-  tag: string;
-  title: string;
-  subtitle: string;
-  description: string;
+  tag: string | null;
+  title: string | null;
+  subtitle: string | null;
+  description: string | null;
   desktopImage: string;
+  mobileImage: string | null;
   order: number;
   isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const BannerPreviewCard = ({
@@ -51,15 +55,15 @@ const BannerPreviewCard = ({
   subtitle,
   image,
 }: {
-  title: string;
-  subtitle: string;
+  title?: string | null;
+  subtitle?: string | null;
   image?: string;
 }) => (
   <div className="relative w-full h-[240px] overflow-hidden bg-slate-900 border border-slate-200 rounded-sm">
     {image ? (
       <Image
         src={image}
-        alt={title}
+        alt={title || "Banner"}
         fill
         className="object-cover brightness-50"
       />
@@ -149,7 +153,7 @@ export default function HomePageManagement() {
 
   const fetchHeroSlides = async () => {
     try {
-      const res = await fetch("/api/admin/hero-slides");
+      const res = await fetch("/api/hero-slides");
       const data = await res.json();
       if (res.ok) setHeroSlides(data.slides);
     } catch (err) {
@@ -182,18 +186,37 @@ export default function HomePageManagement() {
     setBannerImagePreview("");
   };
 
-  // Banner handlers
+  // Hero handlers
+  const handleHeroImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setHeroImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setHeroImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeHeroImage = () => {
+    setHeroImage(null);
+    setHeroImagePreview("");
+  };
+
+  // Banner ekleme - sadece resim zorunlu
   const handleAddBanner = async () => {
-    if (!newTitle) return toast.error("Başlık boş olamaz.");
+    if (!bannerImage) {
+      return toast.error("Resim yüklemek zorunludur.");
+    }
 
     setIsAdding(true);
     try {
       const formData = new FormData();
-      formData.append("title", newTitle);
-      formData.append("subtitle", newSubtitle);
-      if (bannerImage) {
-        formData.append("image", bannerImage);
-      }
+      // Title ve subtitle opsiyonel - sadece dolu olanları gönder
+      if (newTitle.trim()) formData.append("title", newTitle.trim());
+      if (newSubtitle.trim()) formData.append("subtitle", newSubtitle.trim());
+      formData.append("image", bannerImage);
 
       const res = await fetch("/api/banner", {
         method: "POST",
@@ -218,41 +241,27 @@ export default function HomePageManagement() {
     }
   };
 
-  // Hero handlers
-  const handleHeroImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setHeroImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setHeroImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
+  // Hero slide ekleme - sadece resim zorunlu
   const handleAddHeroSlide = async () => {
-    if (
-      !heroForm.tag ||
-      !heroForm.title ||
-      !heroForm.subtitle ||
-      !heroForm.description ||
-      !heroImage
-    ) {
-      return toast.error("Tüm alanları doldurun ve resim yükleyin.");
+    if (!heroImage) {
+      return toast.error("Resim yüklemek zorunludur.");
     }
 
     setIsAdding(true);
     try {
       const formData = new FormData();
-      formData.append("tag", heroForm.tag);
-      formData.append("title", heroForm.title);
-      formData.append("subtitle", heroForm.subtitle);
-      formData.append("description", heroForm.description);
+      // Tüm alanlar opsiyonel - sadece dolu olanları gönder
+      if (heroForm.tag.trim()) formData.append("tag", heroForm.tag.trim());
+      if (heroForm.title.trim())
+        formData.append("title", heroForm.title.trim());
+      if (heroForm.subtitle.trim())
+        formData.append("subtitle", heroForm.subtitle.trim());
+      if (heroForm.description.trim())
+        formData.append("description", heroForm.description.trim());
       formData.append("order", heroForm.order.toString());
       formData.append("desktopImage", heroImage);
 
-      const res = await fetch("/api/admin/hero-slides", {
+      const res = await fetch("/api/hero-slides", {
         method: "POST",
         body: formData,
       });
@@ -341,17 +350,17 @@ export default function HomePageManagement() {
                       Canlı Önizleme
                     </label>
                     <BannerPreviewCard
-                      title={newTitle || "Başlık Örneği"}
-                      subtitle={newSubtitle || "Açıklama metni örneği."}
+                      title={newTitle || null}
+                      subtitle={newSubtitle || null}
                       image={bannerImagePreview}
                     />
                   </div>
 
                   <div className="space-y-4">
-                    {/* Resim Yükleme Alanı */}
+                    {/* Resim Yükleme Alanı - ZORUNLU */}
                     <div>
                       <label className="text-xs font-semibold text-slate-700 mb-2 block">
-                        Arka Plan Resmi (Opsiyonel)
+                        Arka Plan Resmi <span className="text-red-500">*</span>
                       </label>
 
                       {bannerImagePreview ? (
@@ -397,7 +406,7 @@ export default function HomePageManagement() {
 
                     <div>
                       <label className="text-xs font-semibold text-slate-700 mb-2 block">
-                        Başlık
+                        Başlık (Opsiyonel)
                       </label>
                       <Input
                         placeholder="Örn: Yeni Koleksiyon"
@@ -409,7 +418,7 @@ export default function HomePageManagement() {
 
                     <div>
                       <label className="text-xs font-semibold text-slate-700 mb-2 block">
-                        Alt Metin
+                        Alt Metin (Opsiyonel)
                       </label>
                       <textarea
                         placeholder="Açıklama yazınız..."
@@ -421,7 +430,7 @@ export default function HomePageManagement() {
 
                     <Button
                       onClick={handleAddBanner}
-                      disabled={isAdding || !newTitle.trim()}
+                      disabled={isAdding || !bannerImage}
                       className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-full"
                     >
                       {isAdding ? (
@@ -456,7 +465,7 @@ export default function HomePageManagement() {
                       <BannerPreviewCard
                         title={banner.title}
                         subtitle={banner.subtitle}
-                        image={banner.image || undefined}
+                        image={banner.image}
                       />
                       <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button
@@ -494,43 +503,65 @@ export default function HomePageManagement() {
                     </label>
                     <HeroSlidePreviewCard
                       slide={{
-                        tag: heroForm.tag,
-                        title: heroForm.title,
-                        subtitle: heroForm.subtitle,
-                        description: heroForm.description,
+                        tag: heroForm.tag || null,
+                        title: heroForm.title || null,
+                        subtitle: heroForm.subtitle || null,
+                        description: heroForm.description || null,
                         desktopImage: heroImagePreview,
                       }}
                     />
                   </div>
 
                   <div className="space-y-4">
+                    {/* Resim Yükleme - ZORUNLU */}
                     <div>
                       <label className="text-xs font-semibold text-slate-700 mb-2 block">
-                        Resim Yükle
+                        Resim Yükle <span className="text-red-500">*</span>
                       </label>
-                      <div className="relative">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleHeroImageChange}
-                          className="hidden"
-                          id="hero-image-upload"
-                        />
-                        <label
-                          htmlFor="hero-image-upload"
-                          className="flex items-center justify-center gap-2 w-full p-4 border-2 border-dashed border-slate-300 rounded-xl hover:border-slate-400 cursor-pointer transition-colors"
-                        >
-                          <ImageIcon className="w-5 h-5 text-slate-400" />
-                          <span className="text-sm text-slate-600">
-                            {heroImage ? heroImage.name : "Resim Seçin"}
-                          </span>
-                        </label>
-                      </div>
+                      {heroImagePreview ? (
+                        <div className="relative">
+                          <div className="relative w-full h-32 rounded-xl overflow-hidden border-2 border-slate-200">
+                            <Image
+                              src={heroImagePreview}
+                              alt="Preview"
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <Button
+                            size="icon"
+                            variant="destructive"
+                            className="absolute top-2 right-2 h-8 w-8 rounded-full"
+                            onClick={removeHeroImage}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="relative">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleHeroImageChange}
+                            className="hidden"
+                            id="hero-image-upload"
+                          />
+                          <label
+                            htmlFor="hero-image-upload"
+                            className="flex items-center justify-center gap-2 w-full p-4 border-2 border-dashed border-slate-300 rounded-xl hover:border-slate-400 cursor-pointer transition-colors"
+                          >
+                            <ImageIcon className="w-5 h-5 text-slate-400" />
+                            <span className="text-sm text-slate-600">
+                              Resim Seçin
+                            </span>
+                          </label>
+                        </div>
+                      )}
                     </div>
 
                     <div>
                       <label className="text-xs font-semibold text-slate-700 mb-2 block">
-                        Tag
+                        Tag (Opsiyonel)
                       </label>
                       <Input
                         placeholder="PRO-TECH SERİSİ 2026"
@@ -544,7 +575,7 @@ export default function HomePageManagement() {
 
                     <div>
                       <label className="text-xs font-semibold text-slate-700 mb-2 block">
-                        Başlık
+                        Başlık (Opsiyonel)
                       </label>
                       <Input
                         placeholder="Üst Düzey Şantiye"
@@ -558,7 +589,7 @@ export default function HomePageManagement() {
 
                     <div>
                       <label className="text-xs font-semibold text-slate-700 mb-2 block">
-                        Alt Başlık
+                        Alt Başlık (Opsiyonel)
                       </label>
                       <Input
                         placeholder="Performansı"
@@ -572,7 +603,7 @@ export default function HomePageManagement() {
 
                     <div>
                       <label className="text-xs font-semibold text-slate-700 mb-2 block">
-                        Açıklama
+                        Açıklama (Opsiyonel)
                       </label>
                       <textarea
                         placeholder="Detaylı açıklama..."
@@ -607,7 +638,7 @@ export default function HomePageManagement() {
 
                     <Button
                       onClick={handleAddHeroSlide}
-                      disabled={isAdding}
+                      disabled={isAdding || !heroImage}
                       className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-full"
                     >
                       {isAdding ? (

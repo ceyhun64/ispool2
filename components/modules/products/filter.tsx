@@ -12,6 +12,8 @@ import {
   ChevronDown,
   ChevronUp,
   Tag,
+  Palette,
+  Ruler,
 } from "lucide-react";
 
 import categoriesDataRaw from "@/data/categories.json";
@@ -42,12 +44,28 @@ interface DbBrand {
   image?: string;
 }
 
+interface DbColor {
+  id: number;
+  name: string;
+  hexCode: string;
+}
+
+interface DbSize {
+  id: number;
+  value: string;
+  sortOrder: number;
+}
+
 interface FilterProps {
   currentCategory: DbCategory | null;
   subCategoryFilter: string;
   setSubCategoryFilter: (subCat: string) => void;
   brandFilter: string;
   setBrandFilter: (brandId: string) => void;
+  colorFilter: string;
+  setColorFilter: (colorId: string) => void;
+  sizeFilter: string;
+  setSizeFilter: (sizeId: string) => void;
   maxPrice: number;
   setMaxPrice: (price: number) => void;
   minPrice: number;
@@ -61,6 +79,10 @@ const Filter: React.FC<FilterProps> = ({
   setSubCategoryFilter,
   brandFilter,
   setBrandFilter,
+  colorFilter,
+  setColorFilter,
+  sizeFilter,
+  setSizeFilter,
   maxPrice,
   setMaxPrice,
   minPrice,
@@ -69,6 +91,8 @@ const Filter: React.FC<FilterProps> = ({
 }) => {
   const router = useRouter();
   const [expandedCategories, setExpandedCategories] = useState<number[]>([]);
+  const [colors, setColors] = useState<DbColor[]>([]);
+  const [sizes, setSizes] = useState<DbSize[]>([]);
 
   // JSON dosyalarını type-cast et
   const categoriesData = categoriesDataRaw as { name: string }[];
@@ -80,6 +104,45 @@ const Filter: React.FC<FilterProps> = ({
     name: string;
     middleCategoryName: string;
   }[];
+
+  // Renk ve beden verilerini API'den çek
+  useEffect(() => {
+    async function fetchFilters() {
+      try {
+        // Renkleri çek - API doğrudan array dönüyor
+        const colorsRes = await fetch("/api/color"); // endpoint ismini şemanıza göre güncelledim
+        const colorsData = await colorsRes.json();
+
+        // Eğer colorsData bir array ise doğrudan set et
+        if (Array.isArray(colorsData)) {
+          setColors(colorsData);
+        } else if (colorsData.colors) {
+          // Yedek plan: Eğer bir objeyle sarmalanmışsa
+          setColors(colorsData.colors);
+        }
+
+        // Bedenleri çek
+        const sizesRes = await fetch("/api/size");
+        const sizesData = await sizesRes.json();
+
+        // Bedenler için de benzer kontrol (Array mi yoksa obje içinde mi?)
+        const sizesArray = Array.isArray(sizesData)
+          ? sizesData
+          : sizesData.sizes;
+
+        if (sizesArray) {
+          setSizes(
+            [...sizesArray].sort(
+              (a: DbSize, b: DbSize) => a.sortOrder - b.sortOrder,
+            ),
+          );
+        }
+      } catch (error) {
+        console.error("Filtre verileri yüklenemedi:", error);
+      }
+    }
+    fetchFilters();
+  }, []);
 
   // JSON dosyalarından hiyerarşik yapı oluştur
   const allCategories = React.useMemo(() => {
@@ -345,6 +408,96 @@ const Filter: React.FC<FilterProps> = ({
         </div>
       </section>
 
+      {/* RENK FİLTRESİ */}
+      <section className="pt-8 border-t border-slate-100 mt-8">
+        <div className="flex items-center gap-2 mb-6">
+          <Palette size={14} className="text-orange-600" />
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">
+            RENK
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          {/* TÜMÜ Butonu */}
+          <button
+            onClick={() => setColorFilter("all")}
+            className={cn(
+              "flex items-center gap-2 py-2 px-3 border rounded-sm text-[10px] font-bold uppercase transition-all",
+              colorFilter === "all"
+                ? "border-orange-500 bg-orange-50 text-orange-600 shadow-sm"
+                : "border-slate-100 bg-white text-slate-600 hover:border-slate-300",
+            )}
+          >
+            <div className="w-6 h-6 flex items-center justify-center border border-dashed border-slate-300 rounded-full text-[10px] shrink-0">
+              ∞
+            </div>
+            <span className="truncate">TÜMÜ</span>
+          </button>
+
+          {/* Dinamik Renkler */}
+          {colors?.map((color) => (
+            <button
+              key={color.id}
+              onClick={() => setColorFilter(String(color.id))}
+              className={cn(
+                "group flex items-center gap-2 py-2 px-3 border rounded-sm text-[10px] font-bold uppercase text-left transition-all",
+                colorFilter === String(color.id)
+                  ? "border-orange-500 bg-orange-50 text-orange-600 shadow-sm"
+                  : "border-slate-100 bg-white text-slate-600 hover:border-slate-300",
+              )}
+            >
+              <div
+                className="w-6 h-6 shrink-0 rounded-full border border-slate-200 shadow-sm"
+                style={{ backgroundColor: color.hexCode }}
+                title={color.name} // Hover durumunda isim gösterir
+              />
+              <span className="truncate">{color.name}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* BEDEN FİLTRESİ */}
+      <section className="pt-8 border-t border-slate-100 mt-8">
+        <div className="flex items-center gap-2 mb-6">
+          <Ruler size={14} className="text-orange-600" />
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">
+            BEDEN
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
+          {/* TÜMÜ Butonu */}
+          <button
+            onClick={() => setSizeFilter("all")}
+            className={cn(
+              "flex items-center justify-center py-2.5 px-2 border rounded-sm text-[10px] font-bold uppercase transition-all",
+              sizeFilter === "all"
+                ? "border-orange-500 bg-orange-50 text-orange-600 shadow-sm"
+                : "border-slate-100 bg-white text-slate-600 hover:border-slate-300",
+            )}
+          >
+            TÜMÜ
+          </button>
+
+          {/* Dinamik Bedenler */}
+          {sizes.map((size) => (
+            <button
+              key={size.id}
+              onClick={() => setSizeFilter(String(size.id))}
+              className={cn(
+                "flex items-center justify-center py-2.5 px-2 border rounded-sm text-[10px] font-bold uppercase transition-all",
+                sizeFilter === String(size.id)
+                  ? "border-orange-500 bg-orange-50 text-orange-600 shadow-sm"
+                  : "border-slate-100 bg-white text-slate-600 hover:border-slate-300",
+              )}
+            >
+              {size.value}
+            </button>
+          ))}
+        </div>
+      </section>
+
       {/* FİYAT ARALIĞI */}
       <section className="pt-8 border-t border-slate-100 mt-8">
         <div className="flex items-center gap-2 mb-8">
@@ -378,6 +531,8 @@ const Filter: React.FC<FilterProps> = ({
         onClick={() => {
           setSubCategoryFilter("all");
           setBrandFilter("all");
+          setColorFilter("all");
+          setSizeFilter("all");
           setMinPrice(0);
           setMaxPrice(300000);
           setExpandedCategories([]);
@@ -388,7 +543,6 @@ const Filter: React.FC<FilterProps> = ({
         <span className="text-[10px] font-black uppercase tracking-[0.2em]">
           Parametreleri Sıfırla
         </span>
-        
       </button>
     </div>
   );

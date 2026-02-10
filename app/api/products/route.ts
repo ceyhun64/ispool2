@@ -20,6 +20,9 @@ interface ProductData {
   middleCategory?: string;
   subCategory?: string;
   brandId?: number;
+  colorId?: number;
+  colorName?: string;
+  colorHexCode?: string;
   createdAt?: string;
   updatedAt?: string;
   bulkDiscountQty?: number;
@@ -36,11 +39,16 @@ export async function GET() {
         category: true,
         middleCategory: true,
         subCategory: true,
+        color: true,
+        sizes: {
+          include: { size: true },
+          orderBy: { size: { sortOrder: "asc" } },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
 
-    const productsData: ProductData[] = products.map((p) => ({
+    const productsData = products.map((p) => ({
       id: p.id,
       title: p.title,
       price: p.price,
@@ -58,6 +66,16 @@ export async function GET() {
       middleCategory: p.middleCategory?.name ?? undefined,
       subCategory: p.subCategory?.name ?? undefined,
       brandId: p.brandId ?? undefined,
+      colorId: p.color?.id ?? undefined,
+      colorName: p.color?.name ?? undefined,
+      colorHexCode: p.color?.hexCode ?? undefined,
+      // Bedenleri ekle
+      sizes: p.sizes.map((ps) => ({
+        id: ps.size.id,
+        sizeId: ps.sizeId,
+        value: ps.size.value,
+        sortOrder: ps.size.sortOrder,
+      })),
       createdAt: p.createdAt.toISOString(),
       updatedAt: p.updatedAt.toISOString(),
       bulkDiscountQty: p.bulkDiscountQty ?? undefined,
@@ -151,6 +169,8 @@ export async function POST(request: Request) {
     const ratingStr = formData.get("rating") as string;
     const reviewCountStr = formData.get("reviewCount") as string;
     const brandIdStr = formData.get("brandId") as string;
+    const colorIdStr = formData.get("colorId") as string;
+    const productGroupId = formData.get("productGroupId") as string | null;
 
     const bulkDiscountQtyStr = formData.get("bulkDiscountQty") as string;
     const bulkDiscountRateStr = formData.get("bulkDiscountRate") as string;
@@ -161,6 +181,7 @@ export async function POST(request: Request) {
     const rating = ratingStr ? parseFloat(ratingStr) : 0;
     const reviewCount = reviewCountStr ? parseInt(reviewCountStr) : 0;
     const brandId = brandIdStr ? parseInt(brandIdStr) : null;
+    const colorId = colorIdStr ? parseInt(colorIdStr) : null;
 
     const bulkDiscountQty = bulkDiscountQtyStr
       ? parseInt(bulkDiscountQtyStr)
@@ -267,6 +288,9 @@ export async function POST(request: Request) {
           subImage3: subImage3Path,
           subImage4: subImage4Path,
           brandId,
+          colorId,
+          productGroupId:
+            productGroupId && productGroupId !== "" ? productGroupId : null,
           categoryId: category.id,
           middleCategoryId,
           subCategoryId,
@@ -277,6 +301,7 @@ export async function POST(request: Request) {
           category: true,
           middleCategory: true,
           subCategory: true,
+          color: true,
         },
       });
 
@@ -326,7 +351,7 @@ export async function POST(request: Request) {
       return product;
     });
 
-    const productData: ProductData = {
+    const productData = {
       id: newProduct.id,
       title: newProduct.title,
       price: newProduct.price,
@@ -344,6 +369,10 @@ export async function POST(request: Request) {
       middleCategory: newProduct.middleCategory?.name ?? undefined,
       subCategory: newProduct.subCategory?.name ?? undefined,
       brandId: newProduct.brandId ?? undefined,
+      colorId: newProduct.color?.id ?? undefined,
+      colorName: newProduct.color?.name ?? undefined,
+      colorHexCode: newProduct.color?.hexCode ?? undefined,
+      productGroupId: newProduct.productGroupId ?? undefined,
     };
 
     return NextResponse.json(

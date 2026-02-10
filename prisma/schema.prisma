@@ -60,6 +60,18 @@ model Brand {
   @@map("brand")
 }
 
+model Color {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique // Örn: "Siyah", "Lila"
+  hexCode   String? // Örn: "#000000" (Frontend'de renk kutucukları için)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products product[] // Bu rengi kullanan ürünler
+
+  @@map("color")
+}
+
 // --- BEDEN TABLOSU (sizeType / type kaldırıldı) ---
 model Size {
   id        Int      @id @default(autoincrement())
@@ -92,8 +104,12 @@ model product {
   subImage4          String?
   description        String  @db.Text
 
-  bulkDiscountQty  Int? @default(0)
-  bulkDiscountRate Int? @default(0)
+  colorId          Int?
+  color            Color?  @relation(fields: [colorId], references: [id])
+  productGroupId   String?
+  
+  bulkDiscountQty  Int?    @default(0)
+  bulkDiscountRate Int?    @default(0)
 
   brandId Int?
   brand   Brand? @relation(fields: [brandId], references: [id])
@@ -319,9 +335,9 @@ model Subscribe {
 
 model Banner {
   id        Int      @id @default(autoincrement())
-  title     String
-  subtitle  String
-  image     String? // Resim yolu eklendi
+  title     String?
+  subtitle  String?
+  image     String // Resim yolu eklendi
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -331,10 +347,10 @@ model Banner {
 
 model HeroSlide {
   id           Int      @id @default(autoincrement())
-  tag          String
-  title        String
-  subtitle     String
-  description  String   @db.Text
+  tag          String?
+  title        String?
+  subtitle     String?
+  description  String?  @db.Text
   desktopImage String // Resim yolu
   mobileImage  String? // Opsiyonel mobil resim
   order        Int      @default(0) // Sıralama için

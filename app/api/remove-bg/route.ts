@@ -13,7 +13,8 @@ export async function POST(req: Request) {
     }
 
     // API Key kontrolü
-    if (!process.env.REMOVE_BG_API_KEY) {
+    const apiKey = process.env.REMOVE_BG_API_KEY;
+    if (!apiKey) {
       console.error("REMOVE_BG_API_KEY tanımlanmamış!");
       return NextResponse.json(
         {
@@ -24,6 +25,7 @@ export async function POST(req: Request) {
       );
     }
 
+    console.log("API Key mevcut:", apiKey.substring(0, 10) + "...");
     console.log("Base64 uzunluğu:", imageBase64.length);
 
     // Base64'ü binary'ye çevir
@@ -32,20 +34,18 @@ export async function POST(req: Request) {
 
     console.log("Binary data boyutu:", binaryData.length);
 
-    // Blob oluştur
-    const blob = new Blob([binaryData], { type: "image/png" });
-
-    // FormData oluştur ve binary dosyayı ekle
+    // FormData oluştur
     const formData = new FormData();
+    const blob = new Blob([binaryData], { type: "image/png" });
     formData.append("image_file", blob, "image.png");
-    formData.append("size", "full"); // "preview" | "medium" | "hd" | "full"
+    formData.append("size", "auto");
 
     console.log("Remove.bg API'sine istek gönderiliyor...");
 
-    const response = await fetch("https://removebgapi.com/api/v1/remove", {
+    const response = await fetch("https://api.remove.bg/v1.0/removebg", {
       method: "POST",
       headers: {
-        "X-Api-Key": process.env.REMOVE_BG_API_KEY,
+        "X-Api-Key": apiKey,
       },
       body: formData,
     });
@@ -60,8 +60,8 @@ export async function POST(req: Request) {
       try {
         const errorJson = JSON.parse(errorText);
         errorMessage =
-          errorJson.error?.message ||
           errorJson.errors?.[0]?.title ||
+          errorJson.error?.message ||
           errorMessage;
       } catch (e) {
         errorMessage = errorText || errorMessage;

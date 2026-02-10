@@ -1,3 +1,4 @@
+// components/modules/admin/products/productForm.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -34,6 +35,12 @@ interface Brand {
   name: string;
 }
 
+interface Color {
+  id: number;
+  name: string;
+  hexCode: string;
+}
+
 interface Size {
   id: number;
   value: string;
@@ -64,6 +71,8 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
     middleCategory: "",
     subCategory: "",
     brandId: undefined,
+    colorId: undefined,
+    productGroupId: undefined,
     sizes: [],
     stock: [],
     bulkDiscountQty: undefined,
@@ -84,6 +93,7 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
+  const [colors, setColors] = useState<Color[]>([]);
   const [allSizes, setAllSizes] = useState<Size[]>([]);
   const [availableMiddleCategories, setAvailableMiddleCategories] = useState<
     MiddleCategory[]
@@ -98,15 +108,23 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
     const fetchData = async () => {
       setDataLoading(true);
       try {
-        const [categoriesRes, sizesRes] = await Promise.all([
+        // 1. Kategori, size ve renk verilerini çek
+        const [categoriesRes, sizesRes, colorsRes] = await Promise.all([
           fetch("/api/category"),
           fetch("/api/size"),
+          fetch("/api/color"),
         ]);
+
+        let categoriesData: Category[] = [];
+        let brandsData: Brand[] = [];
+        let colorsData: Color[] = [];
 
         if (categoriesRes.ok) {
           const data = await categoriesRes.json();
-          setCategories(data.categories || []);
-          setBrands(data.brands || []);
+          categoriesData = data.categories || [];
+          brandsData = data.brands || [];
+          setCategories(categoriesData);
+          setBrands(brandsData);
         }
 
         if (sizesRes.ok) {
@@ -114,18 +132,25 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
           setAllSizes(sizesData.sizes || []);
         }
 
+        if (colorsRes.ok) {
+          const colorsResponse = await colorsRes.json();
+          colorsData = colorsResponse.data || [];
+          setColors(colorsData);
+        }
+
+        // 2. Eğer düzenleme modundaysa ürün verilerini çek
         if (productId) {
           const productRes = await fetch(`/api/products/${productId}`);
           if (productRes.ok) {
             const response = await productRes.json();
             const product = response.product;
 
+            console.log("Loaded product:", product); // Debug için
+
             // Kategori hiyerarşisini ayarla
-            const cat = categoriesRes.ok
-              ? (await categoriesRes.json()).categories.find(
-                  (c: Category) => c.name === product.category.name,
-                )
-              : null;
+            const cat = categoriesData.find(
+              (c: Category) => c.name === product.category.name,
+            );
 
             if (cat) {
               setAvailableMiddleCategories(cat.middleCategories || []);
@@ -143,17 +168,19 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
 
             // Ürün verilerini set et
             setProductData({
-              title: product.title,
-              description: product.description,
-              price: product.price,
+              title: product.title || "",
+              description: product.description || "",
+              price: product.price || 0,
               oldPrice: product.oldPrice ?? undefined,
               discountPercentage: product.discountPercentage ?? undefined,
-              rating: product.rating,
+              rating: product.rating || 0,
               reviewCount: product.reviewCount || 0,
-              category: product.category.name,
+              category: product.category?.name || "",
               middleCategory: product.middleCategory?.name || "",
               subCategory: product.subCategory?.name || "",
               brandId: product.brand?.id ?? undefined,
+              colorId: product.color?.id ?? undefined,
+              productGroupId: product.productGroupId ?? undefined,
               sizes: [],
               stock: product.stockMatrix || [],
               bulkDiscountQty: product.bulkDiscountQty ?? undefined,
@@ -172,6 +199,9 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
             setSubUrl2(product.images?.[2] || null);
             setSubUrl3(product.images?.[3] || null);
             setSubUrl4(product.images?.[4] || null);
+          } else {
+            toast.error("Ürün bilgileri yüklenemedi");
+            router.push("/admin/products");
           }
         }
       } catch (error) {
@@ -183,11 +213,12 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
     };
 
     fetchData();
-  }, [productId]);
+  }, [productId, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Temel validasyonlar
     if (!productData.title || !productData.category) {
       toast.error("Lütfen zorunlu alanları doldurun");
       return;
@@ -195,6 +226,12 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
 
     if (productData.price <= 0) {
       toast.error("Fiyat sıfırdan büyük olmalıdır");
+      return;
+    }
+
+    // Ana görsel kontrolü (sadece yeni ürün için)
+    if (!productId && !mainFile && !mainUrl) {
+      toast.error("Ana görsel zorunludur");
       return;
     }
 
@@ -208,6 +245,25 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
         toast.error("İndirim oranı 100'den fazla olamaz");
         return;
       }
+    }
+
+    // Beden validasyonu
+    if (selectedSizeIds.length === 0) {
+      toast.error("En az bir beden seçmelisiniz");
+      return;
+    }
+
+    // Stok validasyonu
+    const invalidStock = selectedSizeIds.some((sizeId) => {
+      const stockData = productData.stock.find((s) => s.sizeId === sizeId);
+      return !stockData || stockData.stock < 0;
+    });
+
+    if (invalidStock) {
+      toast.error(
+        "Lütfen tüm bedenler için geçerli stok miktarı girin (0 veya daha fazla)",
+      );
+      return;
     }
 
     const dataForm = new FormData();
@@ -237,6 +293,15 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
     }
     if (productData.brandId !== undefined) {
       dataForm.append("brandId", String(productData.brandId));
+    }
+    if (productData.colorId !== undefined) {
+      dataForm.append("colorId", String(productData.colorId));
+    }
+    if (
+      productData.productGroupId !== undefined &&
+      productData.productGroupId !== ""
+    ) {
+      dataForm.append("productGroupId", productData.productGroupId);
     }
 
     // Toplu satış indirimi
@@ -342,7 +407,9 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
               {productId ? "Ürünü Düzenle" : "Yeni Ürün Ekle"}
             </h1>
             <p className="text-sm text-slate-600">
-              Ürün bilgilerini girin ve kaydedin
+              {productId
+                ? `Ürün ID: #${productId} - Bilgileri güncelleyin`
+                : "Ürün bilgilerini girin ve kaydedin"}
             </p>
           </div>
         </div>
@@ -373,6 +440,7 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
                 setProductData={setProductData}
                 categories={categories}
                 brands={brands}
+                colors={colors}
                 availableMiddleCategories={availableMiddleCategories}
                 availableSubCategories={availableSubCategories}
                 setAvailableMiddleCategories={setAvailableMiddleCategories}

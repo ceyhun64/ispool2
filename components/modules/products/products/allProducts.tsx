@@ -19,6 +19,7 @@ import {
   Percent,
 } from "lucide-react";
 import MobileFilter from "../mobileFilter";
+import { useSearchParams } from "next/navigation";
 
 interface AllProductsProps {
   showDiscountOnly?: boolean;
@@ -27,8 +28,21 @@ interface AllProductsProps {
 export default function AllProducts({
   showDiscountOnly = false,
 }: AllProductsProps) {
+  const searchParams = useSearchParams();
+  const sortParam = searchParams.get("sort") as
+    | "az"
+    | "za"
+    | "priceLow"
+    | "priceHigh"
+    | "dateNew"
+    | "dateOld"
+    | "discountHigh"
+    | null;
+
   const [subCategoryFilter, setSubCategoryFilter] = useState<string>("all");
   const [brandFilter, setBrandFilter] = useState<string>("all");
+  const [colorFilter, setColorFilter] = useState<string>("all");
+  const [sizeFilter, setSizeFilter] = useState<string>("all");
   const [maxPrice, setMaxPrice] = useState<number>(300000);
   const [minPrice, setMinPrice] = useState<number>(0);
   const [sort, setSort] = useState<
@@ -39,7 +53,7 @@ export default function AllProducts({
     | "dateNew"
     | "dateOld"
     | "discountHigh"
-  >("az");
+  >(sortParam || "az");
   const [gridCols, setGridCols] = useState<2 | 3 | 4>(4);
   const [mobileGridCols, setMobileGridCols] = useState<1 | 2>(2);
   const [products, setProducts] = useState<any[]>([]);
@@ -48,6 +62,13 @@ export default function AllProducts({
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [isBestSellers, setIsBestSellers] = useState(false);
   const [isDiscountMode] = useState(showDiscountOnly);
+
+  // URL'den gelen sort parametresini uygula
+  useEffect(() => {
+    if (sortParam) {
+      setSort(sortParam);
+    }
+  }, [sortParam]);
 
   // Fetch all products
   useEffect(() => {
@@ -80,10 +101,16 @@ export default function AllProducts({
   };
 
   useEffect(() => {
-    if (sort !== "az" || subCategoryFilter !== "all" || brandFilter !== "all") {
+    if (
+      sort !== "az" ||
+      subCategoryFilter !== "all" ||
+      brandFilter !== "all" ||
+      colorFilter !== "all" ||
+      sizeFilter !== "all"
+    ) {
       setIsBestSellers(false);
     }
-  }, [sort, subCategoryFilter, brandFilter]);
+  }, [sort, subCategoryFilter, brandFilter, colorFilter, sizeFilter]);
 
   const filteredProducts = useMemo(() => {
     let result = products.filter((p) => {
@@ -91,6 +118,16 @@ export default function AllProducts({
         subCategoryFilter === "all" || p.subCategory === subCategoryFilter;
       const brandCheck =
         brandFilter === "all" || p.brandId === Number(brandFilter);
+
+      // Renk filtresi
+      const colorCheck =
+        colorFilter === "all" || p.colorId === Number(colorFilter);
+
+      // Beden filtresi - ürünün bedenlerini kontrol et
+      const sizeCheck =
+        sizeFilter === "all" ||
+        (p.sizes &&
+          p.sizes.some((size: any) => size.sizeId === Number(sizeFilter)));
 
       // İndirim kontrolü: oldPrice var mı ve price'dan büyük mü?
       const hasDiscount = p.oldPrice && p.oldPrice > p.price;
@@ -101,6 +138,8 @@ export default function AllProducts({
         p.price <= maxPrice &&
         subCategoryCheck &&
         brandCheck &&
+        colorCheck &&
+        sizeCheck &&
         discountCheck
       );
     });
@@ -145,6 +184,8 @@ export default function AllProducts({
   }, [
     subCategoryFilter,
     brandFilter,
+    colorFilter,
+    sizeFilter,
     minPrice,
     maxPrice,
     products,
@@ -301,6 +342,10 @@ export default function AllProducts({
                     setSubCategoryFilter={setSubCategoryFilter}
                     brandFilter={brandFilter}
                     setBrandFilter={setBrandFilter}
+                    colorFilter={colorFilter}
+                    setColorFilter={setColorFilter}
+                    sizeFilter={sizeFilter}
+                    setSizeFilter={setSizeFilter}
                     maxPrice={maxPrice}
                     setMaxPrice={setMaxPrice}
                     minPrice={minPrice}
@@ -394,6 +439,10 @@ export default function AllProducts({
                 setSubCategoryFilter={setSubCategoryFilter}
                 brandFilter={brandFilter}
                 setBrandFilter={setBrandFilter}
+                colorFilter={colorFilter}
+                setColorFilter={setColorFilter}
+                sizeFilter={sizeFilter}
+                setSizeFilter={setSizeFilter}
                 minPrice={minPrice}
                 maxPrice={maxPrice}
                 setMinPrice={setMinPrice}

@@ -1,3 +1,4 @@
+// components/modules/admin/products/products.tsx
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
@@ -23,16 +24,38 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Search, Trash2, Plus, Loader2 } from "lucide-react";
+import { Search, Trash2, Plus, Loader2, Filter } from "lucide-react";
 import type { Product } from "@/types/product";
 
+// JSON dosyalarını import et
+import categoriesDataRaw from "@/data/categories.json";
+import middleCategoriesDataRaw from "@/data/middleCategories.json";
+import subCategoriesDataRaw from "@/data/subCategories.json";
+
 const ITEMS_PER_PAGE = 15;
+
+// Tip tanımlamaları
+interface CategoryData {
+  name: string;
+}
+
+interface MiddleCategoryData {
+  name: string;
+  categoryName: string;
+}
+
+interface SubCategoryData {
+  name: string;
+  middleCategoryName: string;
+}
 
 export default function Products(): React.ReactElement {
   const router = useRouter();
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<Product[]>([]);
-  const [filter, setFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [middleCategoryFilter, setMiddleCategoryFilter] = useState("all");
+  const [subCategoryFilter, setSubCategoryFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,11 +63,17 @@ export default function Products(): React.ReactElement {
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // JSON verilerini type-cast et
+  const categoriesData = categoriesDataRaw as CategoryData[];
+  const middleCategoriesData = middleCategoriesDataRaw as MiddleCategoryData[];
+  const subCategoriesData = subCategoriesDataRaw as SubCategoryData[];
+
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/products");
       const data = await res.json();
+      console.log("products:", data);
       if (res.ok) setProducts(data.products || []);
       else toast.error(data.error || "Ürünler yüklenemedi");
     } catch (err) {
@@ -58,24 +87,67 @@ export default function Products(): React.ReactElement {
     fetchProducts();
   }, [fetchProducts]);
 
-  const categories = [
-    "Oturma Takımları",
-    "Masa Takımları",
-    "Salıncak",
-    "Şezlong",
-    "Şemsiye",
-    "Barbekü",
-  ];
+  // Tüm kategorileri al
+  const allCategories = useMemo(() => {
+    return categoriesData.map((cat) => cat.name);
+  }, [categoriesData]);
 
+  // Seçili kategoriye göre orta kategorileri filtrele
+  const availableMiddleCategories = useMemo(() => {
+    if (categoryFilter === "all") {
+      return middleCategoriesData.map((mid) => mid.name);
+    }
+    return middleCategoriesData
+      .filter((mid) => mid.categoryName === categoryFilter)
+      .map((mid) => mid.name);
+  }, [categoryFilter, middleCategoriesData]);
+
+  // Seçili orta kategoriye göre alt kategorileri filtrele
+  const availableSubCategories = useMemo(() => {
+    if (middleCategoryFilter === "all") {
+      return subCategoriesData.map((sub) => sub.name);
+    }
+    return subCategoriesData
+      .filter((sub) => sub.middleCategoryName === middleCategoryFilter)
+      .map((sub) => sub.name);
+  }, [middleCategoryFilter, subCategoriesData]);
+
+  // Ürünleri filtrele
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
-      const matchesCategory = filter === "all" || p.category === filter;
-      const matchesSearch = p.title
-        .toLowerCase()
-        .includes(search.toLowerCase());
-      return matchesCategory && matchesSearch;
+      // Kategori filtresi
+      const matchesCategory =
+        categoryFilter === "all" || p.category === categoryFilter;
+
+      // Orta kategori filtresi
+      const matchesMiddleCategory =
+        middleCategoryFilter === "all" ||
+        p.middleCategory === middleCategoryFilter;
+
+      // Alt kategori filtresi
+      const matchesSubCategory =
+        subCategoryFilter === "all" || p.subCategory === subCategoryFilter;
+
+      // Arama filtresi
+      const matchesSearch =
+        p.title.toLowerCase().includes(search.toLowerCase()) ||
+        p.description?.toLowerCase().includes(search.toLowerCase()) ||
+        p.id.toString().includes(search);
+
+      return (
+        matchesCategory &&
+        matchesMiddleCategory &&
+        matchesSubCategory &&
+        matchesSearch
+      );
     });
-  }, [products, filter, search]);
+  }, [
+    products,
+    categoryFilter,
+    middleCategoryFilter,
+    subCategoryFilter,
+    search,
+  ]);
 
   const paginatedProducts = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -107,6 +179,42 @@ export default function Products(): React.ReactElement {
     );
   };
 
+  // DÜZELTME: Edit handler - productId'yi doğru şekilde geç
+  const handleEditClick = (product: Product) => {
+    console.log("Editing product:", product.id); // Debug
+    router.push(`/admin/products/edit/${product.id}`);
+  };
+
+  // Ana kategori değiştiğinde alt kategorileri sıfırla
+  const handleCategoryChange = (value: string) => {
+    setCategoryFilter(value);
+    setMiddleCategoryFilter("all");
+    setSubCategoryFilter("all");
+    setCurrentPage(1);
+  };
+
+  // Orta kategori değiştiğinde alt kategoriyi sıfırla
+  const handleMiddleCategoryChange = (value: string) => {
+    setMiddleCategoryFilter(value);
+    setSubCategoryFilter("all");
+    setCurrentPage(1);
+  };
+
+  // Alt kategori değiştiğinde
+  const handleSubCategoryChange = (value: string) => {
+    setSubCategoryFilter(value);
+    setCurrentPage(1);
+  };
+
+  // Tüm filtreleri temizle
+  const clearAllFilters = () => {
+    setCategoryFilter("all");
+    setMiddleCategoryFilter("all");
+    setSubCategoryFilter("all");
+    setSearch("");
+    setCurrentPage(1);
+  };
+
   return (
     <div
       className={`flex-1 bg-slate-50 min-h-screen p-6 sm:p-8 ${isMobile ? "mt-14" : ""}`}
@@ -119,7 +227,7 @@ export default function Products(): React.ReactElement {
               Ürün Yönetimi
             </h1>
             <p className="text-sm text-slate-600">
-              Ürün kataloğunuzu yönetin ve güncelleyin
+              Toplam {products.length} ürün • {filteredProducts.length} sonuç
             </p>
           </div>
 
@@ -148,11 +256,11 @@ export default function Products(): React.ReactElement {
         </div>
 
         {/* Search & Filter */}
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input
-              placeholder="Ürün adı veya kodu ara..."
+              placeholder="Ürün adı, açıklama veya ID ara..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -161,44 +269,110 @@ export default function Products(): React.ReactElement {
               className="pl-10 bg-white border-slate-200 rounded-xl"
             />
           </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Ana Kategori */}
+            <div className="flex-1 min-w-[150px]">
+              <Select
+                onValueChange={handleCategoryChange}
+                value={categoryFilter}
+              >
+                <SelectTrigger className="bg-white border-slate-200 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <Filter className="w-4 h-4 text-slate-500" />
+                    <SelectValue placeholder="Ana Kategori" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="all">Tüm Ana Kategoriler</SelectItem>
+                  {allCategories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <Select
-            onValueChange={(val) => {
-              setFilter(val);
-              setCurrentPage(1);
-            }}
-            defaultValue="all"
-          >
-            <SelectTrigger className="w-full sm:w-64 bg-white border-slate-200 rounded-xl">
-              <SelectValue placeholder="Kategori" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="all">Tüm Kategoriler</SelectItem>
-              {categories.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {/* Orta Kategori */}
+            <div className="flex-1 min-w-[150px]">
+              <Select
+                onValueChange={handleMiddleCategoryChange}
+                value={middleCategoryFilter}
+                disabled={availableMiddleCategories.length === 0}
+              >
+                <SelectTrigger className="bg-white border-slate-200 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <Filter className="w-4 h-4 text-slate-500" />
+                    <SelectValue placeholder="Orta Kategori" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="all">Tüm Orta Kategoriler</SelectItem>
+                  {availableMiddleCategories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Alt Kategori */}
+            <div className="flex-1 min-w-[150px]">
+              <Select
+                onValueChange={handleSubCategoryChange}
+                value={subCategoryFilter}
+                disabled={availableSubCategories.length === 0}
+              >
+                <SelectTrigger className="bg-white border-slate-200 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <Filter className="w-4 h-4 text-slate-500" />
+                    <SelectValue placeholder="Alt Kategori" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="all">Tüm Alt Kategoriler</SelectItem>
+                  {availableSubCategories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Filtreleri Temizle Butonu */}
+            {(categoryFilter !== "all" ||
+              middleCategoryFilter !== "all" ||
+              subCategoryFilter !== "all" ||
+              search) && (
+              <Button
+                variant="outline"
+                onClick={clearAllFilters}
+                className="rounded-full px-4 h-10 border-slate-200 text-slate-600 hover:bg-slate-50"
+              >
+                Temizle
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
       {/* Products Table */}
-      <div className="bg-white  relative min-h-[500px] ">
+      <div className="bg-white relative min-h-[500px]">
         {loading ? (
           <div className="absolute inset-0 flex items-center justify-center">
             <Loader2 className="w-8 h-8 text-slate-400 animate-spin" />
           </div>
         ) : (
-          <div className=" border border-slate-200 rounded-sm">
+          <div className="border border-slate-200 rounded-sm">
             <ProductTable
               products={paginatedProducts}
               onDeleteClick={(p) => {
                 setProductToDelete(p);
                 setDeleteDialogOpen(true);
               }}
-              onUpdateClick={(p) => router.push(`/admin/products/edit/${p.id}`)}
+              onUpdateClick={handleEditClick} // DÜZELTME: Doğru handler kullan
               onSelectAll={(e) =>
                 setSelectedIds(
                   e.target.checked ? paginatedProducts.map((p) => p.id) : [],
@@ -216,7 +390,14 @@ export default function Products(): React.ReactElement {
 
             {filteredProducts.length === 0 && (
               <div className="py-16 flex flex-col items-center justify-center">
-                <p className="text-sm text-slate-500">Ürün bulunamadı</p>
+                <p className="text-sm text-slate-500">
+                  {search ||
+                  categoryFilter !== "all" ||
+                  middleCategoryFilter !== "all" ||
+                  subCategoryFilter !== "all"
+                    ? "Filtreye uygun ürün bulunamadı"
+                    : "Henüz ürün eklenmemiş"}
+                </p>
               </div>
             )}
           </div>
@@ -256,12 +437,13 @@ export default function Products(): React.ReactElement {
           </DialogHeader>
           <DialogFooter>
             <Button
+              className="rounded-full"
               variant="outline"
               onClick={() => setDeleteDialogOpen(false)}
             >
               İptal
             </Button>
-            <Button variant="destructive" onClick={handleDelete}>
+            <Button className="rounded-full" variant="destructive" onClick={handleDelete}>
               Evet, Sil
             </Button>
           </DialogFooter>

@@ -20,6 +20,8 @@ export interface ProductFormData {
   stock: ProductVariant[];
   bulkDiscountQty?: number;
   bulkDiscountRate?: number;
+  colorId?: number;
+  productGroupId?: string;
 }
 
 export interface Product {

@@ -1,3 +1,4 @@
+// components/modules/admin/products/productForm/basicInfo.tsx
 "use client";
 
 import React, { ChangeEvent } from "react";
@@ -10,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Package } from "lucide-react";
+import { Package, Palette, Link2 } from "lucide-react";
 import type { ProductFormData } from "@/types/product";
 
 interface Category {
@@ -35,11 +36,18 @@ interface Brand {
   name: string;
 }
 
+interface Color {
+  id: number;
+  name: string;
+  hexCode: string;
+}
+
 interface BasicInfoSectionProps {
   productData: ProductFormData;
   setProductData: React.Dispatch<React.SetStateAction<ProductFormData>>;
   categories: Category[];
   brands: Brand[];
+  colors: Color[];
   availableMiddleCategories: MiddleCategory[];
   availableSubCategories: SubCategory[];
   setAvailableMiddleCategories: React.Dispatch<
@@ -55,6 +63,7 @@ export default function BasicInfoSection({
   setProductData,
   categories,
   brands,
+  colors,
   availableMiddleCategories,
   availableSubCategories,
   setAvailableMiddleCategories,
@@ -63,42 +72,80 @@ export default function BasicInfoSection({
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    setProductData((prev) => ({
-      ...prev,
-      [name]:
-        name === "price" ||
-        name === "oldPrice" ||
-        name === "rating" ||
-        name === "reviewCount" ||
-        name === "discountPercentage" ||
-        name === "brandId" ||
-        name === "bulkDiscountQty" ||
-        name === "bulkDiscountRate"
+    setProductData((prev) => {
+      const numValue = value === "" ? undefined : Number(value);
+
+      // Otomatik fiyat ve indirim hesaplamaları
+      if (name === "oldPrice" && numValue && prev.price > 0) {
+        const discount = ((numValue - prev.price) / numValue) * 100;
+        return {
+          ...prev,
+          oldPrice: numValue,
+          discountPercentage: Number(discount.toFixed(2)),
+        };
+      }
+
+      if (name === "discountPercentage" && numValue && prev.price > 0) {
+        const oldPrice = prev.price / (1 - numValue / 100);
+        return {
+          ...prev,
+          discountPercentage: numValue,
+          oldPrice: Number(oldPrice.toFixed(2)),
+        };
+      }
+
+      if (name === "price" && numValue) {
+        if (prev.discountPercentage) {
+          const oldPrice = numValue / (1 - prev.discountPercentage / 100);
+          return {
+            ...prev,
+            price: numValue,
+            oldPrice: Number(oldPrice.toFixed(2)),
+          };
+        }
+      }
+
+      // Tip dönüşümleri ve normal atama
+      return {
+        ...prev,
+        [name]: [
+          "price",
+          "oldPrice",
+          "rating",
+          "reviewCount",
+          "discountPercentage",
+          "brandId",
+          "colorId",
+          "bulkDiscountQty",
+          "bulkDiscountRate",
+        ].includes(name)
           ? value === ""
-            ? name === "oldPrice" ||
-              name === "discountPercentage" ||
-              name === "brandId" ||
-              name === "bulkDiscountQty" ||
-              name === "bulkDiscountRate"
+            ? [
+                "oldPrice",
+                "discountPercentage",
+                "brandId",
+                "colorId",
+                "bulkDiscountQty",
+                "bulkDiscountRate",
+              ].includes(name)
               ? undefined
               : 0
             : Number(value)
           : value,
-    }));
+      };
+    });
   };
 
   const handleCategoryChange = (categoryName: string) => {
     const selectedCategory = categories.find(
       (cat) => cat.name === categoryName,
     );
-
     setProductData((prev) => ({
       ...prev,
       category: categoryName,
       middleCategory: "",
       subCategory: "",
     }));
-
     setAvailableMiddleCategories(selectedCategory?.middleCategories || []);
     setAvailableSubCategories([]);
   };
@@ -107,20 +154,20 @@ export default function BasicInfoSection({
     const selectedMiddle = availableMiddleCategories.find(
       (mid) => mid.name === middleCategoryName,
     );
-
     setProductData((prev) => ({
       ...prev,
       middleCategory: middleCategoryName,
       subCategory: "",
     }));
-
     setAvailableSubCategories(selectedMiddle?.subCategories || []);
   };
 
+  const selectedColor = colors.find((c) => c.id === productData.colorId);
+
   return (
     <div className="space-y-6 w-full">
-      {/* Basic Info */}
-      <div className="bg-white p-6 border border-slate-200 rounded space-y-4">
+      {/* Temel Bilgiler Bölümü */}
+      <div className="bg-white p-6 border border-slate-200 rounded-sm space-y-4">
         <h3 className="font-semibold text-slate-900 text-base mb-4">
           Temel Bilgiler
         </h3>
@@ -148,13 +195,13 @@ export default function BasicInfoSection({
               }))
             }
             placeholder="Ürün açıklaması..."
-            className="w-full min-h-[120px] px-4 py-3 border border-slate-200 rounded bg-slate-50 focus:border-slate-400 focus:bg-white outline-none transition-all resize-none text-sm"
+            className="w-full min-h-[120px] px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:border-slate-400 focus:bg-white outline-none transition-all resize-none text-sm"
           />
         </div>
       </div>
 
-      {/* Pricing */}
-      <div className="bg-white p-6 border border-slate-200 rounded space-y-4">
+      {/* Fiyatlandırma Bölümü */}
+      <div className="bg-white p-6 border border-slate-200 rounded-sm space-y-4">
         <h3 className="font-semibold text-slate-900 text-base mb-4">
           Fiyatlandırma
         </h3>
@@ -195,10 +242,10 @@ export default function BasicInfoSection({
         />
       </div>
 
-      {/* Bulk Discount Section */}
-      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-6 border-2 border-emerald-200 rounded-lg space-y-4">
+      {/* Toplu Satış İndirimi Bölümü */}
+      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-6 border-2 border-emerald-200 rounded-sm space-y-4">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center">
             <Package className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -240,7 +287,7 @@ export default function BasicInfoSection({
           productData.bulkDiscountQty > 0 &&
           productData.bulkDiscountRate &&
           productData.bulkDiscountRate > 0 && (
-            <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-emerald-300">
+            <div className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-emerald-300">
               <p className="text-sm text-slate-700">
                 <span className="font-semibold text-emerald-700">Örnek:</span>{" "}
                 {productData.bulkDiscountQty} veya daha fazla ürün alındığında{" "}
@@ -264,18 +311,10 @@ export default function BasicInfoSection({
               </p>
             </div>
           )}
-
-        <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg">
-          <p className="text-xs text-amber-800">
-            💡 <span className="font-semibold">İpucu:</span> Toplu satış
-            indirimi, müşterilerinizin daha fazla ürün almasını teşvik eder ve
-            satışlarınızı artırır.
-          </p>
-        </div>
       </div>
 
-      {/* Categories */}
-      <div className="bg-white p-6 border border-slate-200 rounded space-y-4">
+      {/* Kategori Seçimi Bölümü */}
+      <div className="bg-white p-6 border border-slate-200 rounded-sm space-y-4">
         <h3 className="font-semibold text-slate-900 text-base mb-4">
           Kategori
         </h3>
@@ -288,10 +327,10 @@ export default function BasicInfoSection({
             value={productData.category}
             onValueChange={handleCategoryChange}
           >
-            <SelectTrigger className="w-full h-11 border-slate-200 bg-slate-50">
+            <SelectTrigger className="w-full h-11 border-slate-200 bg-slate-50 rounded-xl">
               <SelectValue placeholder="Kategori seçin" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-xl">
               {categories.map((cat) => (
                 <SelectItem key={cat.id} value={cat.name}>
                   {cat.name}
@@ -324,7 +363,7 @@ export default function BasicInfoSection({
               <SelectTrigger className="w-full h-11 border-slate-200 bg-slate-50 rounded-xl">
                 <SelectValue placeholder="Seçiniz" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-xl">
                 <SelectItem value="none">Seçim yapma</SelectItem>
                 {availableMiddleCategories.map((mid) => (
                   <SelectItem key={mid.id} value={mid.name}>
@@ -360,7 +399,7 @@ export default function BasicInfoSection({
               <SelectTrigger className="w-full h-11 border-slate-200 bg-slate-50 rounded-xl">
                 <SelectValue placeholder="Seçiniz" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-xl">
                 <SelectItem value="none">Seçim yapma</SelectItem>
                 {availableSubCategories.map((sub) => (
                   <SelectItem key={sub.id} value={sub.name}>
@@ -373,37 +412,143 @@ export default function BasicInfoSection({
         )}
       </div>
 
-      {/* Brand & Rating */}
-      <div className="bg-white p-6 border border-slate-200 rounded space-y-4">
+      {/* Ürün Grubu Bölümü */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 border-2 border-blue-200 rounded-sm space-y-4">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+            <Link2 className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 text-base">
+              Ürün Grubu
+            </h3>
+            <p className="text-xs text-slate-600">
+              Aynı üründen farklı renkleri gruplandırın
+            </p>
+          </div>
+        </div>
+
+        <InputGroup
+          label="Grup ID"
+          value={productData.productGroupId ?? ""}
+          name="productGroupId"
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setProductData((prev) => ({
+              ...prev,
+              productGroupId: e.target.value || undefined,
+            }))
+          }
+          placeholder="Örn: tshirt-basic-2024"
+          helperText="Aynı grup ID'ye sahip ürünler 'Diğer Renkler' olarak gösterilir"
+        />
+
+        {productData.productGroupId && (
+          <div className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-blue-300">
+            <p className="text-sm text-slate-700">
+              <span className="font-semibold text-blue-700">Grup ID:</span>{" "}
+              <code className="px-2 py-1 bg-blue-100 rounded text-blue-800 font-mono text-xs">
+                {productData.productGroupId}
+              </code>
+            </p>
+            <p className="text-xs text-slate-500 mt-2">
+              💡 Bu ID'ye sahip tüm ürünler birbirine bağlanacak ve ürün
+              sayfasında "Diğer Renkler" olarak gösterilecektir.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Diğer Bilgiler (Marka, Renk & Puan) */}
+      <div className="bg-white p-6 border border-slate-200 rounded-sm space-y-4">
         <h3 className="font-semibold text-slate-900 text-base mb-4">
           Diğer Bilgiler
         </h3>
 
-        <div>
-          <Label className="text-sm font-semibold text-slate-700 mb-2 block">
-            Marka
-          </Label>
-          <Select
-            value={productData.brandId ? String(productData.brandId) : "none"}
-            onValueChange={(val) =>
-              setProductData((prev) => ({
-                ...prev,
-                brandId: val === "none" ? undefined : Number(val),
-              }))
-            }
-          >
-            <SelectTrigger className="w-full h-11 border-slate-200 bg-slate-50">
-              <SelectValue placeholder="Marka seçin" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">Marka yok</SelectItem>
-              {brands.map((brand) => (
-                <SelectItem key={brand.id} value={String(brand.id)}>
-                  {brand.name}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Marka */}
+          <div>
+            <Label className="text-sm font-semibold text-slate-700 mb-2 block">
+              Marka
+            </Label>
+            <Select
+              value={productData.brandId ? String(productData.brandId) : "none"}
+              onValueChange={(val) =>
+                setProductData((prev) => ({
+                  ...prev,
+                  brandId: val === "none" ? undefined : Number(val),
+                }))
+              }
+            >
+              <SelectTrigger className="w-full h-11 border-slate-200 bg-slate-50 rounded-xl">
+                <SelectValue placeholder="Marka seçin" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="none">Marka yok</SelectItem>
+                {brands.map((brand) => (
+                  <SelectItem key={brand.id} value={String(brand.id)}>
+                    {brand.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Renk */}
+          <div>
+            <Label className="text-sm font-semibold text-slate-700 mb-2 block">
+              Renk
+            </Label>
+            <Select
+              value={productData.colorId ? String(productData.colorId) : "none"}
+              onValueChange={(val) =>
+                setProductData((prev) => ({
+                  ...prev,
+                  colorId: val === "none" ? undefined : Number(val),
+                }))
+              }
+            >
+              <SelectTrigger className="w-full h-11 border-slate-200 bg-slate-50 rounded-xl">
+                <div className="flex items-center gap-2">
+                  {selectedColor ? (
+                    <>
+                      <div
+                        className="w-5 h-5 rounded-full border-2 border-slate-300"
+                        style={{ backgroundColor: selectedColor.hexCode }}
+                      />
+                      <SelectValue />
+                    </>
+                  ) : (
+                    <>
+                      <Palette className="w-4 h-4 text-slate-400" />
+                      <SelectValue placeholder="Renk seçin" />
+                    </>
+                  )}
+                </div>
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="none">
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full border-2 border-slate-300 bg-white" />
+                    <span>Renk yok</span>
+                  </div>
                 </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                {colors.map((color) => (
+                  <SelectItem key={color.id} value={String(color.id)}>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-5 h-5 rounded-full border-2 border-slate-300"
+                        style={{ backgroundColor: color.hexCode }}
+                      />
+                      <span>{color.name}</span>
+                      <span className="text-xs text-slate-400 ml-auto">
+                        {color.hexCode}
+                      </span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

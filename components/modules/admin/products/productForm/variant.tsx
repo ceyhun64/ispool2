@@ -1,3 +1,4 @@
+// components/modules/admin/products/productForm/variant.tsx
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -66,8 +67,23 @@ export default function VariantsSection({
   const toggleSizeSelection = (sizeId: number) => {
     setSelectedSizeIds((prev) => {
       if (prev.includes(sizeId)) {
+        setProductData((data) => ({
+          ...data,
+          stock: data.stock.filter((s) => s.sizeId !== sizeId),
+        }));
         return prev.filter((id) => id !== sizeId);
       } else {
+        setProductData((data) => ({
+          ...data,
+          stock: [
+            ...data.stock,
+            {
+              sizeId,
+              stock: 0,
+              priceModifier: 0,
+            },
+          ],
+        }));
         return [...prev, sizeId];
       }
     });
@@ -104,8 +120,43 @@ export default function VariantsSection({
     });
   };
 
+  const toggleAllSizes = () => {
+    const allFilteredIds = filteredSizes.map((s) => s.id);
+    const allSelected = allFilteredIds.every((id) =>
+      selectedSizeIds.includes(id),
+    );
+
+    if (allSelected) {
+      setSelectedSizeIds((prev) =>
+        prev.filter((id) => !allFilteredIds.includes(id)),
+      );
+      setProductData((data) => ({
+        ...data,
+        stock: data.stock.filter(
+          (s) => !allFilteredIds.includes(s.sizeId as number),
+        ),
+      }));
+    } else {
+      const newIds = allFilteredIds.filter(
+        (id) => !selectedSizeIds.includes(id),
+      );
+      setSelectedSizeIds((prev) => [...prev, ...newIds]);
+
+      const newStockRecords = newIds.map((sizeId) => ({
+        sizeId,
+        stock: 0,
+        priceModifier: 0,
+      }));
+
+      setProductData((data) => ({
+        ...data,
+        stock: [...data.stock, ...newStockRecords],
+      }));
+    }
+  };
+
   return (
-    <div className="bg-white p-6 border border-slate-200 rounded space-y-6">
+    <div className="bg-white p-6 border border-slate-200 rounded-sm space-y-6">
       <div>
         <h3 className="font-semibold text-slate-900 text-base mb-1">
           Beden Varyantları
@@ -115,13 +166,13 @@ export default function VariantsSection({
 
       {/* Size Selection */}
       <div className="space-y-4">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 items-center">
           {(Object.keys(SIZE_CATEGORIES) as SizeCategory[]).map((category) => (
             <button
               key={category}
               type="button"
               onClick={() => setActiveFilter(category)}
-              className={`px-4 py-2 text-sm font-semibold rounded transition-all ${
+              className={`px-4 py-2 text-sm font-semibold rounded-full transition-all ${
                 activeFilter === category
                   ? "bg-slate-900 text-white"
                   : "bg-slate-100 text-slate-700 hover:bg-slate-200"
@@ -130,6 +181,18 @@ export default function VariantsSection({
               {SIZE_CATEGORIES[category].label}
             </button>
           ))}
+
+          {filteredSizes.length > 0 && (
+            <button
+              type="button"
+              onClick={toggleAllSizes}
+              className="ml-auto px-4 py-2 text-sm font-semibold rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all"
+            >
+              {filteredSizes.every((s) => selectedSizeIds.includes(s.id))
+                ? "Tümünü Kaldır"
+                : "Tümünü Seç"}
+            </button>
+          )}
         </div>
 
         {filteredSizes.length > 0 ? (
@@ -141,7 +204,7 @@ export default function VariantsSection({
                   key={size.id}
                   type="button"
                   onClick={() => toggleSizeSelection(size.id)}
-                  className={`h-11 px-3 border-2 rounded transition-all text-sm font-semibold ${
+                  className={`h-11 px-3 border-2 rounded-xl transition-all text-sm font-semibold ${
                     isSelected
                       ? "bg-slate-900 text-white border-slate-900"
                       : "bg-white text-slate-700 border-slate-300 hover:border-slate-900"
@@ -153,80 +216,102 @@ export default function VariantsSection({
             })}
           </div>
         ) : (
-          <div className="bg-slate-50 border border-slate-200 rounded p-8 text-center">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-8 text-center">
             <p className="text-sm text-slate-500">Bu kategoride beden yok</p>
           </div>
         )}
       </div>
 
+      {selectedSizeIds.length > 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
+          <p className="text-sm text-blue-800 font-medium">
+            ✓ {selectedSizeIds.length} beden seçildi
+          </p>
+        </div>
+      )}
+
       {/* Stock Management */}
       {selectedSizeIds.length > 0 && (
         <div className="space-y-3">
-          <h4 className="font-semibold text-slate-900 text-sm">
-            Stok Ayarları
-          </h4>
-          <div className="space-y-3 max-h-96 overflow-y-auto">
-            {selectedSizeIds.map((sizeId) => {
-              const size = allSizes.find((s) => s.id === sizeId);
-              const stockData = productData.stock.find(
-                (s) => s.sizeId === sizeId,
-              );
+          <div className="flex items-center justify-between">
+            <h4 className="font-semibold text-slate-900 text-sm">
+              Stok Ayarları
+            </h4>
+            <p className="text-xs text-slate-500">
+              Her beden için stok miktarı ve fiyat farkı belirleyin
+            </p>
+          </div>
 
-              return (
-                <div
-                  key={sizeId}
-                  className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded"
-                >
-                  <div className="w-20 flex items-center justify-center">
-                    <span className="text-sm font-bold text-slate-900 bg-white px-3 py-2 rounded border border-slate-200">
-                      {size?.value}
-                    </span>
-                  </div>
-                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <Label className="text-xs text-slate-600 mb-1.5 block font-semibold">
-                        Stok Adedi
-                      </Label>
-                      <Input
-                        type="number"
-                        min={0}
-                        value={stockData?.stock ?? 0}
-                        onChange={(e) =>
-                          updateStock(sizeId, "stock", Number(e.target.value))
-                        }
-                        className="h-10 text-sm bg-white border-slate-200"
-                      />
+          <div className="space-y-3 max-h-96 overflow-y-auto">
+            {selectedSizeIds
+              .sort((a, b) => {
+                const sizeA = allSizes.find((s) => s.id === a);
+                const sizeB = allSizes.find((s) => s.id === b);
+                return (sizeA?.sortOrder || 0) - (sizeB?.sortOrder || 0);
+              })
+              .map((sizeId) => {
+                const size = allSizes.find((s) => s.id === sizeId);
+                const stockData = productData.stock.find(
+                  (s) => s.sizeId === sizeId,
+                );
+
+                return (
+                  <div
+                    key={sizeId}
+                    className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-slate-300 transition-colors"
+                  >
+                    <div className="w-20 flex items-center justify-center">
+                      <span className="text-sm font-bold text-slate-900 bg-white px-3 py-2 rounded-xl border border-slate-200">
+                        {size?.value}
+                      </span>
                     </div>
-                    <div>
-                      <Label className="text-xs text-slate-600 mb-1.5 block font-semibold">
-                        Fiyat Farkı (₺)
-                      </Label>
-                      <Input
-                        type="number"
-                        value={stockData?.priceModifier ?? 0}
-                        onChange={(e) =>
-                          updateStock(
-                            sizeId,
-                            "priceModifier",
-                            Number(e.target.value),
-                          )
-                        }
-                        className="h-10 text-sm bg-white border-slate-200"
-                        placeholder="0"
-                      />
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <Label className="text-xs text-slate-600 mb-1.5 block font-semibold">
+                          Stok Adedi
+                        </Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          value={stockData?.stock ?? 0}
+                          onChange={(e) =>
+                            updateStock(sizeId, "stock", Number(e.target.value))
+                          }
+                          className="h-10 text-sm bg-white border-slate-200 rounded-xl"
+                          placeholder="0"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-slate-600 mb-1.5 block font-semibold">
+                          Fiyat Farkı (₺)
+                        </Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={stockData?.priceModifier ?? 0}
+                          onChange={(e) =>
+                            updateStock(
+                              sizeId,
+                              "priceModifier",
+                              Number(e.target.value),
+                            )
+                          }
+                          className="h-10 text-sm bg-white border-slate-200 rounded-xl"
+                          placeholder="0"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         </div>
       )}
 
       {selectedSizeIds.length === 0 && (
-        <div className="bg-amber-50 border border-amber-200 p-4 rounded">
+        <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl">
           <p className="text-sm text-amber-800">
-            ℹ️ En az bir beden seçmeniz gerekmektedir.
+            ⚠️ En az bir beden seçmeniz gerekmektedir.
           </p>
         </div>
       )}
