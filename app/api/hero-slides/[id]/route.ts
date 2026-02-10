@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> }, // ✅ Promise eklendi
 ) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user?.id) {
@@ -14,7 +14,8 @@ export async function DELETE(
   }
 
   try {
-    const slideId = parseInt(params.id);
+    const { id } = await params; // ✅ await eklendi
+    const slideId = parseInt(id);
 
     await prisma.heroSlide.delete({
       where: { id: slideId },
@@ -32,7 +33,7 @@ export async function DELETE(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> }, // ✅ Promise eklendi
 ) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user?.id) {
@@ -40,7 +41,8 @@ export async function PATCH(
   }
 
   try {
-    const slideId = parseInt(params.id);
+    const { id } = await params; // ✅ await eklendi
+    const slideId = parseInt(id);
     const body = await request.json();
 
     // Schema'ya uygun alanları güncelle
