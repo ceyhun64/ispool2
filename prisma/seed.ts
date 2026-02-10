@@ -191,11 +191,16 @@ async function seedAdmin() {
 
 async function seedSizes() {
   console.log("📏 Bedenler ekleniyor...");
+
+  const now = new Date();
+
   await prisma.size.createMany({
     data: ALL_SIZES.map((s) => ({
       value: s.value,
       sortOrder: s.sortOrder,
       isActive: true,
+      createdAt: now,
+      updatedAt: now,
     })),
   });
 }
