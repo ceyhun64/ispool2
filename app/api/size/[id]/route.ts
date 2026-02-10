@@ -4,16 +4,16 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>; // ✅ Promise eklendi
 }
 
 /**
  * GET /api/size/[id]
- * Belirli bir bedenin detaylarını getirir
  */
 export async function GET(request: Request, { params }: RouteParams) {
   try {
-    const sizeId = parseInt(params.id);
+    const { id } = await params; // ✅ await eklendi
+    const sizeId = parseInt(id);
 
     if (isNaN(sizeId)) {
       return NextResponse.json(
@@ -66,7 +66,6 @@ export async function GET(request: Request, { params }: RouteParams) {
 
 /**
  * PATCH /api/size/[id]
- * Belirli bir bedeni günceller (Sadece ADMIN)
  */
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
@@ -82,7 +81,8 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       );
     }
 
-    const sizeId = parseInt(params.id);
+    const { id } = await params; // ✅ await eklendi
+    const sizeId = parseInt(id);
 
     if (isNaN(sizeId)) {
       return NextResponse.json(
@@ -97,7 +97,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     const body = await request.json();
     const { value, sortOrder, isActive } = body;
 
-    // Validasyon
     const updateData: any = {};
 
     if (value !== undefined) {
@@ -111,7 +110,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         );
       }
 
-      // Aynı değerde başka beden var mı kontrol et
       const existingSize = await prisma.size.findFirst({
         where: {
           value: value.trim().toUpperCase(),
@@ -204,7 +202,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 
 /**
  * DELETE /api/size/[id]
- * Belirli bir bedeni siler (Sadece ADMIN)
  */
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
@@ -220,7 +217,8 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       );
     }
 
-    const sizeId = parseInt(params.id);
+    const { id } = await params; // ✅ await eklendi
+    const sizeId = parseInt(id);
 
     if (isNaN(sizeId)) {
       return NextResponse.json(
@@ -232,7 +230,6 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       );
     }
 
-    // Bedenin kullanıldığı yerleri kontrol et
     const usageCount = await prisma.size.findUnique({
       where: { id: sizeId },
       select: {

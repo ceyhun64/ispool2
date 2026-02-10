@@ -4,16 +4,16 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>; // ✅ Promise eklendi
 }
 
 /**
  * GET /api/color/[id]
- * Belirli bir rengin detaylarını getirir
  */
 export async function GET(req: Request, { params }: RouteParams) {
   try {
-    const colorId = parseInt(params.id);
+    const { id } = await params; // ✅ await eklendi
+    const colorId = parseInt(id);
 
     if (isNaN(colorId)) {
       return NextResponse.json(
@@ -64,7 +64,6 @@ export async function GET(req: Request, { params }: RouteParams) {
 
 /**
  * PATCH /api/color/[id]
- * Belirli bir rengi günceller (Sadece ADMIN)
  */
 export async function PATCH(req: Request, { params }: RouteParams) {
   try {
@@ -80,7 +79,8 @@ export async function PATCH(req: Request, { params }: RouteParams) {
       );
     }
 
-    const colorId = parseInt(params.id);
+    const { id } = await params; // ✅ await eklendi
+    const colorId = parseInt(id);
 
     if (isNaN(colorId)) {
       return NextResponse.json(
@@ -95,7 +95,6 @@ export async function PATCH(req: Request, { params }: RouteParams) {
     const body = await req.json();
     const { name, hexCode } = body;
 
-    // Validasyon
     const updateData: any = {};
 
     if (name !== undefined) {
@@ -109,7 +108,6 @@ export async function PATCH(req: Request, { params }: RouteParams) {
         );
       }
 
-      // Aynı isimde başka renk var mı kontrol et
       const existingColor = await prisma.color.findFirst({
         where: {
           name: name.trim(),
@@ -188,7 +186,6 @@ export async function PATCH(req: Request, { params }: RouteParams) {
 
 /**
  * DELETE /api/color/[id]
- * Belirli bir rengi siler (Sadece ADMIN)
  */
 export async function DELETE(req: Request, { params }: RouteParams) {
   try {
@@ -204,7 +201,8 @@ export async function DELETE(req: Request, { params }: RouteParams) {
       );
     }
 
-    const colorId = parseInt(params.id);
+    const { id } = await params; // ✅ await eklendi
+    const colorId = parseInt(id);
 
     if (isNaN(colorId)) {
       return NextResponse.json(
@@ -216,7 +214,6 @@ export async function DELETE(req: Request, { params }: RouteParams) {
       );
     }
 
-    // Rengin ürünlerde kullanılıp kullanılmadığını kontrol et
     const productCount = await prisma.product.count({
       where: { colorId },
     });
