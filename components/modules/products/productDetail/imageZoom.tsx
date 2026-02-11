@@ -27,6 +27,77 @@ export function CustomImageZoom({ src, alt }: Props) {
     checkTouch();
   }, []);
 
+  const handleClose = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
+
+  // Modal açıldığında body scroll'u, topbar, navbar ve CategoryBar'ı gizle
+  useEffect(() => {
+    if (isModalOpen) {
+      // Body scroll'u kapat
+      document.body.style.overflow = "hidden";
+
+      // Topbar'ı gizle
+      const topbar = document.querySelector("[data-topbar]") as HTMLElement;
+      if (topbar) {
+        topbar.style.display = "none";
+      }
+
+      // Navbar'ı gizle
+      const navbar = document.querySelector("[data-navbar]") as HTMLElement;
+      if (navbar) {
+        navbar.style.display = "none";
+      }
+
+      // CategoryBar'ı gizle
+      const categoryBar = document.querySelector(
+        "[data-category-bar]",
+      ) as HTMLElement;
+      if (categoryBar) {
+        categoryBar.style.display = "none";
+      }
+    } else {
+      // Modal kapandığında her şeyi geri yükle
+      document.body.style.overflow = "unset";
+
+      const topbar = document.querySelector("[data-topbar]") as HTMLElement;
+      if (topbar) {
+        topbar.style.display = "";
+      }
+
+      const navbar = document.querySelector("[data-navbar]") as HTMLElement;
+      if (navbar) {
+        navbar.style.display = "";
+      }
+
+      const categoryBar = document.querySelector(
+        "[data-category-bar]",
+      ) as HTMLElement;
+      if (categoryBar) {
+        categoryBar.style.display = "";
+      }
+    }
+
+    return () => {
+      // Cleanup
+      document.body.style.overflow = "unset";
+    };
+  }, [isModalOpen]);
+
+  // ESC tuşu ile kapatma
+  useEffect(() => {
+    if (!isModalOpen) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isModalOpen, handleClose]);
+
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       // Dokunmatik cihazsa veya ref'ler yoksa zoom yapma
@@ -86,22 +157,47 @@ export function CustomImageZoom({ src, alt }: Props) {
         )}
       </div>
 
-      {/* Modal Kısmı - z-[9999] ile CategoryBar'ın (z-49) çok üstünde */}
+      {/* Modal - Full screen overlay with maximum z-index */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 animate-in fade-in duration-300"
-          onClick={() => setIsModalOpen(false)}
+          className="fixed inset-0 flex items-center justify-center bg-black/95 backdrop-blur-sm animate-in fade-in duration-300"
+          style={{
+            zIndex: 999999,
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+          onClick={handleClose}
         >
+          {/* Close Button */}
           <button
-            className="rounded-sm absolute top-6 right-6 text-white hover:text-slate-300 transition-transform duration-300 z-[10000] p-2 hover:bg-white/10 rounded-full"
+            className="absolute top-6 right-6 text-white hover:text-slate-300 transition-all duration-300 p-3 hover:bg-white/10 rounded-full group"
+            style={{ zIndex: 1000000 }}
             onClick={(e) => {
               e.stopPropagation();
-              setIsModalOpen(false);
+              handleClose();
             }}
+            aria-label="Kapat"
           >
-            <X size={32} />
+            <X
+              size={32}
+              className="group-hover:rotate-90 transition-transform duration-300"
+            />
           </button>
-          <div className="relative w-full h-full flex items-center justify-center">
+
+          {/* ESC tuşu ile kapatma hint */}
+          <div
+            className="absolute hidden top-6 left-6 text-white/60 text-sm font-medium md:flex items-center gap-2"
+            style={{ zIndex: 1000000 }}
+          >
+            <kbd className="px-2 py-1 bg-white/10 rounded text-xs">ESC</kbd>
+            <span>veya herhangi bir yere tıkla</span>
+          </div>
+
+          {/* Image Container */}
+          <div className="relative w-[95vw] h-[95vh] flex items-center justify-center">
             <div className="relative w-full h-full">
               <Image
                 src={src}
@@ -110,6 +206,7 @@ export function CustomImageZoom({ src, alt }: Props) {
                 className="object-contain"
                 quality={100}
                 priority
+                sizes="95vw"
               />
             </div>
           </div>

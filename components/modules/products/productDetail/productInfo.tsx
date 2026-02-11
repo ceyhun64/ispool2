@@ -197,7 +197,7 @@ export default function ProductInfo({
               <span className="text-lg text-slate-400 line-through font-semibold">
                 {oldPrice?.toLocaleString("tr-TR")} TL
               </span>
-              <span className="bg-orange-600 text-white px-2 py-1 rounded text-xs font-bold">
+              <span className="bg-orange-600 text-white px-2 py-1 text-xs font-bold">
                 %{discountPercentage} İndirim
               </span>
             </>

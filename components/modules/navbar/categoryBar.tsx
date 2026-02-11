@@ -1,18 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import {
-  Shirt,
-  Footprints,
-  Hand,
-  HardHat,
-  Shield,
-  Flame,
-  Mountain,
-  X,
+  motion,
+  AnimatePresence,
+} from "framer-motion";
+import {
   Plus,
   Minus,
   Instagram,
@@ -20,14 +14,12 @@ import {
   Phone,
   MessageCircleMore,
   Mail,
-  Users,
-  Settings,
-  Info,
   Truck,
   ChevronRight,
   Briefcase,
   Ruler,
   Package,
+  Info,
 } from "lucide-react";
 import {
   Sheet,
@@ -39,6 +31,7 @@ import categoriesDataRaw from "@/data/categories.json";
 import middleCategoriesDataRaw from "@/data/middleCategories.json";
 import subCategoriesDataRaw from "@/data/subCategories.json";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 // ─── Tip Tanımlamaları ───────────────────────────────────────────────────────
 interface CategoryInput {
@@ -359,8 +352,9 @@ export default function CategoryBar({
         </SheetContent>
       </Sheet>
 
-      {/* ================= DESKTOP NAV ================= */}
+      {/* ================= DESKTOP NAV - data-category-bar attribute eklendi ================= */}
       <nav
+        data-category-bar="true"
         className="hidden lg:block sticky top-0 z-49"
         onMouseLeave={() => {
           setActiveCategory(null);
