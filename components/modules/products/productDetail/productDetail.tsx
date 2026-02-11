@@ -15,7 +15,6 @@ import {
   TrendingUp,
   Users,
   Percent,
-  Palette,
 } from "lucide-react";
 import { toast } from "sonner";
 import ProductTabs from "./productTabs";
@@ -28,6 +27,7 @@ import ProductImageGallery from "./productImageGallery";
 import ProductInfo from "./productInfo";
 import ProductVariantSelector from "./productVariantSelector";
 import ProductActions from "./productActions";
+import ProductCarousel from "./productCarousel";
 
 // --------------------
 // İNTERFACES
@@ -471,95 +471,19 @@ export default function ProductDetailPage() {
               />
 
               <div className="space-y-6">
-                {/* ─── DİĞER RENK SEÇENEKLERİ ─── */}
-                {product.productGroupId && product.otherColors.length > 0 && (
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Palette size={16} className="text-purple-600" />
-                      <label className="text-sm font-bold text-slate-900">
-                        Diğer Renk Seçenekleri
-                        {product.color && (
-                          <span className="ml-2 text-purple-600">
-                            (Mevcut: {product.color.name})
-                          </span>
-                        )}
-                      </label>
-                    </div>
-
-                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
-                      {/* Mevcut ürün */}
-                      <button
-                        className="relative group border-2 border-purple-600 bg-purple-50 rounded-lg p-2 cursor-default"
-                        title={product.color?.name || "Mevcut Renk"}
-                      >
-                        <div className="aspect-square rounded overflow-hidden bg-white mb-2">
-                          <img
-                            src={product.mainImage}
-                            alt={product.title}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        {product.color && (
-                          <div className="flex items-center gap-1 justify-center">
-                            <div
-                              className="w-4 h-4 rounded-full border border-slate-300"
-                              style={{ backgroundColor: product.color.hexCode }}
-                            />
-                            <span className="text-[10px] font-semibold text-purple-700">
-                              {product.color.name}
-                            </span>
-                          </div>
-                        )}
-                      </button>
-
-                      {/* Diğer renkler */}
-                      {product.otherColors.map((colorOption) => (
-                        <button
-                          key={colorOption.id}
-                          onClick={() =>
-                            router.push(`/products/${colorOption.id}`)
-                          }
-                          className="relative group border-2 border-slate-200 hover:border-purple-400 rounded-lg p-2 transition-all"
-                          title={colorOption.color?.name || colorOption.title}
-                        >
-                          <div className="aspect-square rounded overflow-hidden bg-white mb-2">
-                            <img
-                              src={colorOption.mainImage}
-                              alt={colorOption.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                            />
-                          </div>
-                          {colorOption.color && (
-                            <div className="flex items-center gap-1 justify-center">
-                              <div
-                                className="w-4 h-4 rounded-full border border-slate-300"
-                                style={{
-                                  backgroundColor: colorOption.color.hexCode,
-                                }}
-                              />
-                              <span className="text-[10px] font-medium text-slate-600 truncate max-w-[60px]">
-                                {colorOption.color.name}
-                              </span>
-                            </div>
-                          )}
-                          {colorOption.hasDiscount && (
-                            <div className="absolute top-1 right-1 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded">
-                              -{colorOption.discountPercentage}%
-                            </div>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Beden Seçimi */}
+                {/* Renk ve Beden Seçimi */}
                 <ProductVariantSelector
                   availableSizes={product.availableSizes}
                   stockMatrix={product.stockMatrix}
                   selectedSizeId={selectedSizeId}
                   selectedStock={selectedStock}
                   onSizeChange={setSelectedSizeId}
+                  productGroupId={product.productGroupId}
+                  currentProductId={product.id}
+                  currentColor={product.color}
+                  currentMainImage={product.mainImage}
+                  currentTitle={product.title}
+                  otherColors={product.otherColors}
                 />
 
                 {/* Özelleştirme bildirim */}
@@ -829,38 +753,22 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* İlgili Ürünler */}
+        {/* İlgili Ürünler - Carousel */}
         {product.relatedProducts.length > 0 && (
-          <div className="mt-16 pt-8 border-t border-slate-200">
-            <div className="flex items-center gap-3 mb-6">
-              <TrendingUp size={20} className="text-orange-600" />
-              <h2 className="text-xl font-bold text-slate-900 uppercase tracking-tight">
-                Benzer Ürünler
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {product.relatedProducts.slice(0, 4).map((rp) => (
-                <ProductCard key={rp.id} product={rp} />
-              ))}
-            </div>
-          </div>
+          <ProductCarousel
+            products={product.relatedProducts}
+            title="Benzer Ürünler"
+            icon={<TrendingUp size={20} className="text-orange-600" />}
+          />
         )}
 
-        {/* Marka Ürünleri */}
+        {/* Marka Ürünleri - Carousel */}
         {product.brand && product.brandProducts.length > 0 && (
-          <div className="mt-12">
-            <div className="flex items-center gap-3 mb-6">
-              <Users size={20} className="text-orange-600" />
-              <h2 className="text-xl font-bold text-slate-900 uppercase tracking-tight">
-                {product.brand.name} Markalı Diğer Ürünler
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {product.brandProducts.map((bp) => (
-                <ProductCard key={bp.id} product={bp} />
-              ))}
-            </div>
-          </div>
+          <ProductCarousel
+            products={product.brandProducts}
+            title={`${product.brand.name} Markalı Diğer Ürünler`}
+            icon={<Users size={20} className="text-orange-600" />}
+          />
         )}
 
         {/* Sekmeleri */}

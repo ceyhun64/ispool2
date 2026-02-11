@@ -57,7 +57,10 @@ export default function TopBar() {
   ];
 
   return (
-    <div className="w-full relative z-50 shadow-sm border-b border-white/10">
+    <div
+      data-topbar="true"
+      className="w-full relative z-50 shadow-sm border-b border-white/10"
+    >
       {/* MOBILE TOPBAR - Yatay Kaydırılabilir Modern Tasarım */}
       <div className="lg:hidden bg-slate-950 px-4 py-2.5 flex items-center gap-3 overflow-x-auto no-scrollbar">
         {highlightItems.map((item, i) => (

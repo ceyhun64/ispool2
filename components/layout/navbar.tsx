@@ -136,6 +136,7 @@ export default function Navbar() {
 
       {/* NAVBAR - Scroll'da gizlenecek */}
       <motion.div
+        data-navbar="true"
         initial={{ y: 0 }}
         animate={{ y: navbarHidden ? "-100%" : 0 }}
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
