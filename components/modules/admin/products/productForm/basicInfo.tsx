@@ -511,10 +511,7 @@ export default function BasicInfoSection({
                 <div className="flex items-center gap-2">
                   {selectedColor ? (
                     <>
-                      <div
-                        className="w-5 h-5 rounded-full border-2 border-slate-300"
-                        style={{ backgroundColor: selectedColor.hexCode }}
-                      />
+                      <Palette className="w-4 h-4 text-slate-400" />
                       <SelectValue />
                     </>
                   ) : (
