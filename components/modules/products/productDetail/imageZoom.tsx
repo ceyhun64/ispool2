@@ -21,7 +21,7 @@ export function CustomImageZoom({ src, alt }: Props) {
   useEffect(() => {
     const checkTouch = () => {
       setIsTouchDevice(
-        "ontouchstart" in window || navigator.maxTouchPoints > 0
+        "ontouchstart" in window || navigator.maxTouchPoints > 0,
       );
     };
     checkTouch();
@@ -45,7 +45,7 @@ export function CustomImageZoom({ src, alt }: Props) {
       zoomLayerRef.current.style.setProperty("--zoom-x", `${boundedX}%`);
       zoomLayerRef.current.style.setProperty("--zoom-y", `${boundedY}%`);
     },
-    [isTouchDevice]
+    [isTouchDevice],
   );
 
   return (
@@ -86,7 +86,7 @@ export function CustomImageZoom({ src, alt }: Props) {
         )}
       </div>
 
-      {/* Modal Kısmı */}
+      {/* Modal Kısmı - z-[9999] ile CategoryBar'ın (z-49) çok üstünde */}
       {isModalOpen && (
         <div
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 animate-in fade-in duration-300"

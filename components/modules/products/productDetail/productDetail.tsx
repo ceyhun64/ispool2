@@ -422,8 +422,8 @@ export default function ProductDetailPage() {
 
       <div className="mx-auto px-6 pb-20 pt-4 md:pt-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* Galeri */}
-          <div className="lg:col-span-6 h-fit">
+          {/* Galeri - Sticky positioned with proper z-index */}
+          <div className="lg:col-span-6 lg:sticky lg:top-20 lg:self-start lg:z-40">
             <ProductImageGallery
               images={product.images}
               activeIndex={activeIndex}
@@ -506,7 +506,7 @@ export default function ProductDetailPage() {
                               style={{ backgroundColor: product.color.hexCode }}
                             />
                             <span className="text-[10px] font-semibold text-purple-700">
-                              Seçili
+                              {product.color.name}
                             </span>
                           </div>
                         )}
@@ -517,7 +517,7 @@ export default function ProductDetailPage() {
                         <button
                           key={colorOption.id}
                           onClick={() =>
-                            router.push(`/product/${colorOption.id}`)
+                            router.push(`/products/${colorOption.id}`)
                           }
                           className="relative group border-2 border-slate-200 hover:border-purple-400 rounded-lg p-2 transition-all"
                           title={colorOption.color?.name || colorOption.title}
