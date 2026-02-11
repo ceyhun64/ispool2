@@ -129,13 +129,22 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
 
         if (sizesRes.ok) {
           const sizesData = await sizesRes.json();
-          setAllSizes(sizesData.sizes || []);
+          console.log("Sizes:", sizesData);
+
+          // API yanıtı: { success: true, data: Array, stats: {...} }
+          if (sizesData.success && Array.isArray(sizesData.data)) {
+            setAllSizes(sizesData.data);
+          }
         }
 
         if (colorsRes.ok) {
           const colorsResponse = await colorsRes.json();
-          colorsData = colorsResponse.data || [];
-          setColors(colorsData);
+
+          // API yanıtı: { success: true, data: Array, count: number }
+          if (colorsResponse.success && Array.isArray(colorsResponse.data)) {
+            colorsData = colorsResponse.data;
+            setColors(colorsData);
+          }
         }
 
         // 2. Eğer düzenleme modundaysa ürün verilerini çek

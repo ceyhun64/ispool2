@@ -109,30 +109,25 @@ const Filter: React.FC<FilterProps> = ({
   useEffect(() => {
     async function fetchFilters() {
       try {
-        // Renkleri çek - API doğrudan array dönüyor
-        const colorsRes = await fetch("/api/color"); // endpoint ismini şemanıza göre güncelledim
+        // Renkleri çek
+        const colorsRes = await fetch("/api/color");
         const colorsData = await colorsRes.json();
+        console.log("Renkler:", colorsData);
 
-        // Eğer colorsData bir array ise doğrudan set et
-        if (Array.isArray(colorsData)) {
-          setColors(colorsData);
-        } else if (colorsData.colors) {
-          // Yedek plan: Eğer bir objeyle sarmalanmışsa
-          setColors(colorsData.colors);
+        // API yanıtı: { success: true, data: Array, count: number }
+        if (colorsData.success && Array.isArray(colorsData.data)) {
+          setColors(colorsData.data);
         }
 
         // Bedenleri çek
         const sizesRes = await fetch("/api/size");
         const sizesData = await sizesRes.json();
+        console.log("Bedenler:", sizesData);
 
-        // Bedenler için de benzer kontrol (Array mi yoksa obje içinde mi?)
-        const sizesArray = Array.isArray(sizesData)
-          ? sizesData
-          : sizesData.sizes;
-
-        if (sizesArray) {
+        // API yanıtı: { success: true, data: Array, stats: {...} }
+        if (sizesData.success && Array.isArray(sizesData.data)) {
           setSizes(
-            [...sizesArray].sort(
+            [...sizesData.data].sort(
               (a: DbSize, b: DbSize) => a.sortOrder - b.sortOrder,
             ),
           );

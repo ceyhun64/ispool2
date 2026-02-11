@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   Heart,
   Sparkles,
@@ -15,6 +15,7 @@ import {
   TrendingUp,
   Users,
   Percent,
+  Palette,
 } from "lucide-react";
 import { toast } from "sonner";
 import ProductTabs from "./productTabs";
@@ -60,6 +61,18 @@ interface ProductData {
   middleCategory: { id: number; name: string } | null;
   subCategory: { id: number; name: string } | null;
   brand: { id: number; name: string; image: string | null } | null;
+  color: { id: number; name: string; hexCode: string } | null;
+  productGroupId: string | null;
+  otherColors: Array<{
+    id: number;
+    title: string;
+    price: number;
+    oldPrice: number | null;
+    mainImage: string;
+    color: { id: number; name: string; hexCode: string } | null;
+    hasDiscount: boolean;
+    discountPercentage: number;
+  }>;
   rating: number;
   reviewCount: number;
   ratingDistribution: { [key: number]: number };
@@ -115,13 +128,13 @@ interface ProductData {
   };
   availableSizes: Size[];
   stockMatrix: StockEntry[];
-  // ─── Toplu alım indirimi ────────────────────────────────────────────────
   bulkDiscountQty: number | null;
   bulkDiscountRate: number | null;
 }
 
 export default function ProductDetailPage() {
   const params = useParams() as { id?: string };
+  const router = useRouter();
   const productId = Number(params.id);
 
   const [product, setProduct] = useState<ProductData | null>(null);
@@ -216,7 +229,6 @@ export default function ProductDetailPage() {
 
     const { bulkDiscountQty, bulkDiscountRate } = product;
 
-    // Toplu alım indirimi aktif mi?
     if (
       !bulkDiscountQty ||
       !bulkDiscountRate ||
@@ -226,7 +238,6 @@ export default function ProductDetailPage() {
       return { hasDiscount: false, discountRate: 0 };
     }
 
-    // Miktar kontrolü
     if (quantity >= bulkDiscountQty) {
       return { hasDiscount: true, discountRate: bulkDiscountRate };
     }
@@ -285,7 +296,6 @@ export default function ProductDetailPage() {
 
     const finalCustomImage = customDesign || uploadedImagePreview;
 
-    // ─── Toplu alım indirimli fiyat hesaplama ───────────────────────────────
     const bulkDiscount = calculateBulkDiscount();
     let basePrice = product.price + (selectedStock?.priceModifier ?? 0);
 
@@ -295,9 +305,7 @@ export default function ProductDetailPage() {
 
     const finalPrice = basePrice;
 
-    // ---------- Guest cart ----------
     if (!isLoggedIn) {
-      // Güncellenmiş fonksiyon signature'ı ile çağrı
       addToGuestCart(
         product.id,
         finalCustomImage ? `${product.title} (Özelleştirilmiş)` : product.title,
@@ -320,7 +328,6 @@ export default function ProductDetailPage() {
       return;
     }
 
-    // ---------- Auth'd cart ----------
     try {
       const formData = new FormData();
       formData.append("productId", product.id.toString());
@@ -381,18 +388,15 @@ export default function ProductDetailPage() {
   const finalCustomImage = customDesign || uploadedImagePreview;
   const bulkDiscount = calculateBulkDiscount();
 
-  // Fiyat hesaplama (toplu alım indirimli)
   let currentPrice = product.price + (selectedStock?.priceModifier ?? 0);
   if (bulkDiscount.hasDiscount) {
     currentPrice = currentPrice * (1 - bulkDiscount.discountRate / 100);
   }
 
-  // KDV (%10)
   const subtotal = currentPrice * quantity;
   const vatAmount = subtotal * 0.1;
   const totalWithVat = subtotal + vatAmount;
 
-  // Kalan adet (toplu alıma ulaşmak için)
   const remainingForBulk = product.bulkDiscountQty
     ? Math.max(0, product.bulkDiscountQty - quantity)
     : 0;
@@ -419,8 +423,7 @@ export default function ProductDetailPage() {
       <div className="mx-auto px-6 pb-20 pt-4 md:pt-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Galeri */}
-          {/* Galeri - Sticky özelliği eklendi */}
-          <div className="lg:col-span-6  h-fit">
+          <div className="lg:col-span-6 h-fit">
             <ProductImageGallery
               images={product.images}
               activeIndex={activeIndex}
@@ -468,6 +471,88 @@ export default function ProductDetailPage() {
               />
 
               <div className="space-y-6">
+                {/* ─── DİĞER RENK SEÇENEKLERİ ─── */}
+                {product.productGroupId && product.otherColors.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Palette size={16} className="text-purple-600" />
+                      <label className="text-sm font-bold text-slate-900">
+                        Diğer Renk Seçenekleri
+                        {product.color && (
+                          <span className="ml-2 text-purple-600">
+                            (Mevcut: {product.color.name})
+                          </span>
+                        )}
+                      </label>
+                    </div>
+
+                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+                      {/* Mevcut ürün */}
+                      <button
+                        className="relative group border-2 border-purple-600 bg-purple-50 rounded-lg p-2 cursor-default"
+                        title={product.color?.name || "Mevcut Renk"}
+                      >
+                        <div className="aspect-square rounded overflow-hidden bg-white mb-2">
+                          <img
+                            src={product.mainImage}
+                            alt={product.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        {product.color && (
+                          <div className="flex items-center gap-1 justify-center">
+                            <div
+                              className="w-4 h-4 rounded-full border border-slate-300"
+                              style={{ backgroundColor: product.color.hexCode }}
+                            />
+                            <span className="text-[10px] font-semibold text-purple-700">
+                              Seçili
+                            </span>
+                          </div>
+                        )}
+                      </button>
+
+                      {/* Diğer renkler */}
+                      {product.otherColors.map((colorOption) => (
+                        <button
+                          key={colorOption.id}
+                          onClick={() =>
+                            router.push(`/product/${colorOption.id}`)
+                          }
+                          className="relative group border-2 border-slate-200 hover:border-purple-400 rounded-lg p-2 transition-all"
+                          title={colorOption.color?.name || colorOption.title}
+                        >
+                          <div className="aspect-square rounded overflow-hidden bg-white mb-2">
+                            <img
+                              src={colorOption.mainImage}
+                              alt={colorOption.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                          </div>
+                          {colorOption.color && (
+                            <div className="flex items-center gap-1 justify-center">
+                              <div
+                                className="w-4 h-4 rounded-full border border-slate-300"
+                                style={{
+                                  backgroundColor: colorOption.color.hexCode,
+                                }}
+                              />
+                              <span className="text-[10px] font-medium text-slate-600 truncate max-w-[60px]">
+                                {colorOption.color.name}
+                              </span>
+                            </div>
+                          )}
+                          {colorOption.hasDiscount && (
+                            <div className="absolute top-1 right-1 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded">
+                              -{colorOption.discountPercentage}%
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Beden Seçimi */}
                 <ProductVariantSelector
                   availableSizes={product.availableSizes}
@@ -494,8 +579,7 @@ export default function ProductDetailPage() {
                   </div>
                 )}
 
-                {/* ─── TOPLU ALIM İNDİRİMİ BİLDİRİMİ ────────────────────── */}
-                {/* ─── TOPLU ALIM İNDİRİMİ BİLDİRİMİ ────────────────────── */}
+                {/* Toplu alım indirimi bildirimi */}
                 {product.bulkDiscountQty !== null &&
                   product.bulkDiscountRate !== null &&
                   product.bulkDiscountQty > 0 &&
@@ -747,14 +831,14 @@ export default function ProductDetailPage() {
 
         {/* İlgili Ürünler */}
         {product.relatedProducts.length > 0 && (
-          <div className="mt-16 pt-8  border-t border-slate-200">
+          <div className="mt-16 pt-8 border-t border-slate-200">
             <div className="flex items-center gap-3 mb-6">
               <TrendingUp size={20} className="text-orange-600" />
               <h2 className="text-xl font-bold text-slate-900 uppercase tracking-tight">
                 Benzer Ürünler
               </h2>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 ">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {product.relatedProducts.slice(0, 4).map((rp) => (
                 <ProductCard key={rp.id} product={rp} />
               ))}

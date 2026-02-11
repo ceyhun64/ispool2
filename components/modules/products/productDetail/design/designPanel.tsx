@@ -340,8 +340,8 @@ export default function DesignPanel({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
-      <div className="bg-slate-900 w-full max-w-[1600px] overflow-hidden shadow-2xl flex flex-col h-[98vh] sm:h-[95vh] border border-slate-700">
+    <div className="fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-sm flex items-center justify-center">
+      <div className="bg-slate-900 w-full max-w-[1600px] overflow-hidden shadow-2xl flex flex-col h-full border border-slate-700">
         {/* Toolbar */}
         <Toolbar
           historyIndex={historyIndex}

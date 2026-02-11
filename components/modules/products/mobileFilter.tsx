@@ -125,18 +125,24 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
           fetch("/api/size"),
         ]);
 
-        const colorsDataRaw = await colorsRes.json();
-        const colorsArray = Array.isArray(colorsDataRaw)
-          ? colorsDataRaw
-          : colorsDataRaw.colors;
-        if (colorsArray) setColors(colorsArray);
+        const colorsData = await colorsRes.json();
+        const sizesData = await sizesRes.json();
 
-        const sizesDataRaw = await sizesRes.json();
-        const sizesArray = Array.isArray(sizesDataRaw)
-          ? sizesDataRaw
-          : sizesDataRaw.sizes;
-        if (sizesArray) {
-          setSizes([...sizesArray].sort((a, b) => a.sortOrder - b.sortOrder));
+        console.log("Renkler:", colorsData);
+        console.log("Bedenler:", sizesData);
+
+        // API yanıtı: { success: true, data: Array, count: number }
+        if (colorsData.success && Array.isArray(colorsData.data)) {
+          setColors(colorsData.data);
+        }
+
+        // API yanıtı: { success: true, data: Array, stats: {...} }
+        if (sizesData.success && Array.isArray(sizesData.data)) {
+          setSizes(
+            [...sizesData.data].sort(
+              (a: DbSize, b: DbSize) => a.sortOrder - b.sortOrder,
+            ),
+          );
         }
       } catch (error) {
         console.error("Filtre verileri yüklenemedi:", error);
