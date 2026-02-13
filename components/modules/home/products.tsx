@@ -74,7 +74,7 @@ export default function Products() {
               <div className="w-6 h-6 md:w-8 md:h-8  bg-slate-950 flex items-center justify-center border border-white/20">
                 <Shield className="w-3 h-3 md:w-4 md:h-4 text-orange-500" />
               </div>
-              <span className="text-[8px] md:text-[10px] font-black tracking-[0.3em] uppercase text-slate-400">
+              <span className="text-[8px] md:text-[10px] font-black tracking-[0.3em] uppercase text-slate-500">
                 Üst Düzey Güvenlik Çözümleri
               </span>
             </div>
@@ -100,7 +100,7 @@ export default function Products() {
                 <span className="text-base font-black text-slate-950 uppercase leading-none">
                   ISO-9001
                 </span>
-                <span className="text-[8px] font-bold text-slate-400 tracking-widest uppercase mt-1">
+                <span className="text-[8px] font-bold text-slate-500 tracking-widest uppercase mt-1">
                   Sertifikalı Üretim
                 </span>
               </div>
@@ -111,7 +111,7 @@ export default function Products() {
                 <span className="text-base font-black text-slate-950 uppercase leading-none">
                   +500B
                 </span>
-                <span className="text-[8px] font-bold text-slate-400 tracking-widest uppercase mt-1">
+                <span className="text-[8px] font-bold text-slate-500 tracking-widest uppercase mt-1">
                   Aktif Kullanıcı
                 </span>
               </div>
@@ -151,7 +151,7 @@ export default function Products() {
                 <span className="text-orange-600">PROFESYONEL</span> TEDARİK
               </h3>
 
-              <p className="text-slate-400 font-medium tracking-wide text-xs md:text-sm max-w-xl mx-auto lg:mx-0 opacity-80 leading-relaxed">
+              <p className="text-slate-500 font-medium tracking-wide text-xs md:text-sm max-w-xl mx-auto lg:mx-0 opacity-80 leading-relaxed">
                 Şirketinizin kurumsal kimliğine özel tasarım, yüksek adetli
                 üretim kapasitesi ve lojistik gücümüzle küresel standartlarda
                 çözüm sunuyoruz. Toptan satış avantajlarını keşfedin.

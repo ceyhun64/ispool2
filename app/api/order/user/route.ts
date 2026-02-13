@@ -1,4 +1,4 @@
-// app/api/order/user/route.ts
+// app/api/order/user/route.ts - Schema'ya Uygun Düzenlenmiş
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         items: {
           include: {
             product: true,
-            size: true, // Beden bilgisi eklendi
+            size: true, // Beden bilgisi
           },
         },
         addresses: true,
@@ -91,7 +91,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
         items: {
           include: {
             product: true,
-            size: true, // Beden bilgisi eklendi
+            size: true, // Beden bilgisi
           },
         },
         addresses: true,
@@ -122,7 +122,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
         items: {
           include: {
             product: true,
-            size: true, // Beden bilgisi eklendi
+            size: true, // Beden bilgisi
           },
         },
         addresses: true,
@@ -134,15 +134,19 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
     const userName = order.user?.name ?? order.user?.email ?? "User";
     const userEmail = order.user?.email ?? "";
     if (userEmail) {
-      const userMessage = `Hello ${userName},\n\nYour order ${order.id} has been successfully cancelled.\n\nThank you.`;
-      await sendMail([userEmail], `Order ${order.id} Cancelled`, userMessage);
+      const userMessage = `Sayın ${userName},\n\n#${order.id} numaralı siparişiniz başarıyla iptal edilmiştir.\n\nTeşekkür ederiz.`;
+      await sendMail(
+        [userEmail],
+        `Sipariş #${order.id} İptal Edildi`,
+        userMessage,
+      );
     }
 
     // Admin'e mail
-    const adminMessage = `User ${userEmail} has cancelled order ${order.id}.`;
+    const adminMessage = `Kullanıcı ${userEmail}, #${order.id} numaralı siparişi iptal etti.`;
     await sendMail(
       ["ceyhunturkmen4@gmail.com"],
-      `Order ${order.id} Cancelled by User`,
+      `Sipariş #${order.id} Kullanıcı Tarafından İptal Edildi`,
       adminMessage,
     );
 

@@ -51,7 +51,7 @@ const CardItem = ({ icon: Icon, title, desc, index }: any) => (
           {title}
         </h3>
       </div>
-      <p className="text-[13px] text-slate-500 group-hover:text-slate-400 leading-relaxed font-medium max-w-[240px] transition-colors duration-500">
+      <p className="text-[13px] text-slate-500 group-hover:text-slate-500 leading-relaxed font-medium max-w-[240px] transition-colors duration-500">
         {desc}
       </p>
     </div>

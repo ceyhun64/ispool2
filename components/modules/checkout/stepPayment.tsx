@@ -313,7 +313,7 @@ export default function StepPaymentCard({
                 <span className="text-xs font-semibold text-slate-900 uppercase tracking-tighter">
                   Toplam
                 </span>
-              
+
                 <span className="text-xl font-bold tracking-tight text-slate-900">
                   ₺{installmentCalculation.total.toFixed(2)}
                 </span>

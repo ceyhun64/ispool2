@@ -1,4 +1,4 @@
-// app/api/order/route.ts - Kupon İndirimini Payment API'ye Geçir
+// app/api/order/route.ts - Schema'ya Uygun Düzenlenmiş Versiyon
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
@@ -10,6 +10,8 @@ interface BasketItem {
   unitPrice: number;
   category?: string;
   quantity?: number;
+  sizeId?: number; // Değişti: size yerine sizeId
+  customImage?: string;
 }
 
 interface Address {
@@ -42,8 +44,8 @@ interface CreateOrderBody {
   paymentCard: any;
   buyer: any;
   installment?: number;
-  couponCode?: string; // 🎟️ KUPON KODU
-  discountAmount?: number; // 🎟️ İNDİRİM TUTARI
+  couponCode?: string;
+  discountAmount?: number;
 }
 
 interface UpdateOrderBody {
@@ -83,8 +85,8 @@ export async function POST(req: NextRequest) {
       email,
       paymentCard,
       installment = 1,
-      couponCode = null, // 🎟️ KUPON KODU
-      discountAmount = 0, // 🎟️ İNDİRİM TUTARI
+      couponCode = null,
+      discountAmount = 0,
     } = body;
 
     if (!userId || !basketItems || basketItems.length === 0) {
@@ -147,7 +149,7 @@ export async function POST(req: NextRequest) {
       cvc: paymentCard.cvc,
     };
 
-    // 🎟️ Payment API payload (KUPON BİLGİSİ DAHİL)
+    // Payment API payload (KUPON BİLGİSİ DAHİL)
     const paymentPayload = {
       paymentCard: paymentCardFormatted,
       buyer,
@@ -157,8 +159,8 @@ export async function POST(req: NextRequest) {
       currency: currency ?? "TRY",
       basketId: "B" + Date.now(),
       installment: installment,
-      discountAmount: discountAmount, // 🎟️ İNDİRİM TUTARI
-      couponCode: couponCode, // 🎟️ KUPON KODU
+      discountAmount: discountAmount,
+      couponCode: couponCode,
     };
 
     // Payment API çağrısı
@@ -211,7 +213,7 @@ export async function POST(req: NextRequest) {
 
     console.log("✅ Ödeme başarılı! Sipariş oluşturuluyor...");
 
-    // 🎟️ Kupon kullanımını güncelle (eğer kupon varsa)
+    // Kupon kullanımını güncelle (eğer kupon varsa)
     if (couponCode && discountAmount > 0) {
       try {
         await prisma.coupon.update({
@@ -229,7 +231,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Veritabanına kaydet - UPDATED: Schema'ya göre düzenlendi
+    // Veritabanına kaydet - Schema'ya göre düzenlendi
     const order = await prisma.order.create({
       data: {
         userId: Number(userId),
@@ -241,17 +243,23 @@ export async function POST(req: NextRequest) {
         paymentMethod: paymentMethod || "iyzipay",
         transactionId: paymentResult?.paymentId || null,
         installment: installment,
-        couponCode: couponCode || null, // 🎟️ KUPON KODU (nullable)
+        couponCode: couponCode || null,
         discountAmount: discountAmount ? Number(discountAmount) : null, // Float, nullable
         items: {
           create: basketItems.map((item) => ({
             product: {
               connect: { id: Number(item.id) },
             },
+            customImage: item.customImage || null,
             quantity: Number(item.quantity || 1),
             unitPrice: Number(item.unitPrice || 0),
             totalPrice: Number(item.totalPrice || 0),
-            // sizeId eklenmedi çünkü basketItems'ta yok - gerekirse ekleyin
+            // Size ilişkisi - Schema'da sizeId kullanılıyor
+            ...(item.sizeId && {
+              size: {
+                connect: { id: Number(item.sizeId) },
+              },
+            }),
           })),
         },
         addresses: {
@@ -437,7 +445,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     const orders = await prisma.order.findMany({
       include: {
-        items: { include: { product: true, size: true } }, // size eklendi
+        items: { include: { product: true, size: true } },
         addresses: true,
         user: true,
       },
@@ -493,7 +501,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
       where: { id: Number(orderId) },
       data: { status },
       include: {
-        items: { include: { product: true, size: true } }, // size eklendi
+        items: { include: { product: true, size: true } },
         addresses: true,
         user: true,
       },

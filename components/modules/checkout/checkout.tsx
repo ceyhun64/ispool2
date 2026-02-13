@@ -73,7 +73,8 @@ interface CartItem {
   id: number;
   product: Product;
   quantity: number;
-  size?: Size;
+  size?: Size; // Size objesi - schema'daki ilişki
+  customImage?: string | null;
 }
 
 interface UserUser {
@@ -171,6 +172,7 @@ export default function PaymentPage() {
                     value: item.size.value,
                   }
                 : undefined,
+              customImage: item.customImage || null,
             })),
           );
         } else {
@@ -203,7 +205,8 @@ export default function PaymentPage() {
           item.product.bulkDiscountRate &&
           item.quantity >= item.product.bulkDiscountQty
         ) {
-          const discountAmount = (itemTotal * item.product.bulkDiscountRate) / 100;
+          const discountAmount =
+            (itemTotal * item.product.bulkDiscountRate) / 100;
           itemTotal = itemTotal - discountAmount;
         }
 
@@ -373,13 +376,14 @@ export default function PaymentPage() {
         basketItems: cartItems.map((item) => {
           // Her ürün için toplu alım indirimi uygula
           let itemPrice = item.product.price * item.quantity;
-          
+
           if (
             item.product.bulkDiscountQty &&
             item.product.bulkDiscountRate &&
             item.quantity >= item.product.bulkDiscountQty
           ) {
-            const discountAmount = (itemPrice * item.product.bulkDiscountRate) / 100;
+            const discountAmount =
+              (itemPrice * item.product.bulkDiscountRate) / 100;
             itemPrice = itemPrice - discountAmount;
           }
 
@@ -392,6 +396,9 @@ export default function PaymentPage() {
             quantity: item.quantity,
             unitPrice: (itemPrice / item.quantity).toFixed(2),
             totalPrice: itemPrice.toFixed(2),
+            // SCHEMA'YA UYGUN: sizeId ve customImage ekle (varsa)
+            sizeId: item.size?.id,
+            customImage: item.customImage,
           };
         }),
         shippingAddress: {
@@ -459,7 +466,7 @@ export default function PaymentPage() {
         router.push("/checkout/success");
       } else {
         throw new Error(data.error || "Ödeme başarısız");
-      };
+      }
     } catch (err) {
       console.error("Payment error:", err);
       router.push("/checkout/unsuccess");

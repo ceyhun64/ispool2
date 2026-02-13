@@ -169,7 +169,7 @@ export default function ÇokSatanlarCarousel() {
           <div className="mt-16 flex flex-col md:flex-row items-center justify-between border-t border-slate-200 pt-10 gap-8">
             <div className="flex items-center gap-8">
               <div className="flex flex-col">
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">
                   Envanter Akışı
                 </span>
                 <div className="flex items-baseline gap-2">
@@ -177,7 +177,7 @@ export default function ÇokSatanlarCarousel() {
                     {current + 1 < 10 ? `0${current + 1}` : current + 1}
                   </span>
                   <span className="text-slate-300 font-bold text-xl">/</span>
-                  <span className="text-slate-400 font-bold text-sm">
+                  <span className="text-slate-500 font-bold text-sm">
                     {products.length < 10
                       ? `0${products.length}`
                       : products.length}
