@@ -145,7 +145,7 @@ export default function HeroSlider() {
                 key={`tag-${current}`}
                 className="flex items-center gap-3"
               >
-                <span className="bg-orange-600 px-3 py-1 text-[10px] font-black text-white tracking-widest uppercase">
+                <span className="bg-orange-800 px-3 py-1 text-[10px] font-black text-white tracking-widest uppercase">
                   2026 EDITION
                 </span>
                 <span className="text-white/70 font-bold text-[10px] tracking-widest uppercase">

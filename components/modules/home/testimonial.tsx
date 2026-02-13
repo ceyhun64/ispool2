@@ -141,22 +141,22 @@ const Testimonials: React.FC = () => {
       </div>
 
       {/* Sertifika Barı - Daha Zarif */}
-      <div className="mt-12 flex flex-wrap justify-center items-center gap-8 px-6 opacity-50">
+      <div className="mt-12 flex flex-wrap justify-center items-center gap-8 px-6 opacity-100">
         <div className="flex items-center gap-2">
-          <ShieldCheck size={14} className="text-slate-900" />
-          <span className="text-[9px] font-bold tracking-widest text-slate-900 uppercase">
+          <ShieldCheck size={14} className="text-slate-800" />
+          <span className="text-[9px] font-bold tracking-widest text-slate-800 uppercase">
             CE Sertifikalı
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <Zap size={14} className="text-slate-900" />
-          <span className="text-[9px] font-bold tracking-widest text-slate-900 uppercase">
+          <Zap size={14} className="text-slate-800" />
+          <span className="text-[9px] font-bold tracking-widest text-slate-800 uppercase">
             Antistatik
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <Activity size={14} className="text-slate-900" />
-          <span className="text-[9px] font-bold tracking-widest text-slate-900 uppercase">
+          <Activity size={14} className="text-slate-800" />
+          <span className="text-[9px] font-bold tracking-widest text-slate-800 uppercase">
             ISO 9001
           </span>
         </div>
