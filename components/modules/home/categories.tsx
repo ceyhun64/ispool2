@@ -142,7 +142,7 @@ export default function CategoriesSection() {
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-amber-600 font-bold tracking-[0.2em] text-xs uppercase"
+            className="text-amber-800 font-bold tracking-[0.2em] text-xs uppercase"
           >
             Endüstriyel Güvenlikte Zirve
           </motion.span>

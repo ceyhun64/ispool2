@@ -60,7 +60,7 @@ const CardItem = ({ icon: Icon, title, desc, index }: any) => (
    
 
     {/* Dekoratif Büyük Numara */}
-    <span className="absolute -bottom-4 -right-2 text-7xl font-black text-slate-100 group-hover:text-white/[0.03] transition-colors duration-700 select-none pointer-events-none">
+    <span className="absolute -bottom-4 -right-2 text-7xl font-black text-slate-500 group-hover:text-white/[0.03] transition-colors duration-700 select-none pointer-events-none">
       0{index + 1}
     </span>
 

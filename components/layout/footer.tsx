@@ -68,6 +68,7 @@ export default function Footer() {
         { label: "İş Ortaklarımız", href: "/institutional/partners" },
       ],
     },
+    // ... diğer gruplar aynı kalıyor ...
     musteriIliskileri: {
       title: "Müşteri İlişkileri",
       links: [
@@ -126,6 +127,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-slate-950 text-slate-400 relative border-t-4 border-orange-600 font-sans">
+      {/* Avantajlar Barı */}
       <div className="hidden md:block border-b border-white/5 bg-white/5">
         <div className="container mx-auto px-6 md:px-12 py-6">
           <div className="flex flex-wrap justify-between items-center gap-6 md:gap-8">
@@ -140,7 +142,7 @@ export default function Footer() {
                   size={24}
                   aria-hidden="true"
                 />
-                <span className="text-[11px] font-black tracking-widest text-white uppercase whitespace-nowrap">
+                <span className="text-[11px] font-black tracking-widest text-white uppercase">
                   {item.text}
                 </span>
               </div>
@@ -148,12 +150,14 @@ export default function Footer() {
           </div>
         </div>
       </div>
+
       <div className="container mx-auto px-6 md:px-12 py-12 md:py-16">
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-12">
+          {/* Sol Kolon: Logo ve Bülten */}
           <div className="xl:col-span-3 space-y-8">
             <Link
               href="/"
-              className="inline-block brightness-0 invert opacity-100"
+              className="inline-block brightness-0 invert"
               aria-label="İşPool Ana Sayfa"
             >
               <Image
@@ -169,40 +173,47 @@ export default function Footer() {
               <h4 className="text-white text-[11px] font-black tracking-widest uppercase">
                 Bültene Katılın
               </h4>
-              <form onSubmit={handleSubscribe} className="relative group">
+              <form
+                onSubmit={handleSubscribe}
+                className="relative group max-w-sm"
+              >
                 <input
                   type="email"
                   placeholder="E-posta adresiniz"
                   aria-label="E-posta bültenine kayıt olun"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-sm bg-slate-900 border border-slate-800 p-3 pr-12 text-[13px] text-white focus:outline-none focus:border-orange-600 transition-all"
+                  // p-4 pr-14 yaparak input yüksekliğini ve sağdaki buton boşluğunu artırdık
+                  className="w-full rounded-sm bg-slate-900 border border-slate-800 p-4 pr-14 text-[13px] text-white focus:outline-none focus:border-orange-600 transition-all"
                 />
                 <button
                   type="submit"
                   disabled={loading}
                   aria-label="Gönder"
-                  className="absolute rounded-sm right-4 top-1/2 -translate-y-1/2 text-orange-600 hover:text-white transition-colors"
+                  // w-12 h-full yaparak butonu 48px genişliğine ulaştırdık
+                  className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-orange-600 hover:text-orange-400 transition-colors"
                 >
-                  <Mail size={20} aria-hidden="true" />
+                  <Mail size={22} aria-hidden="true" />
                 </button>
               </form>
             </div>
 
-            <div className="flex items-center gap-3">
+            {/* Sosyal Medya - İkon tıklama alanları p-2.5 ile genişletildi */}
+            <div className="flex items-center gap-4">
               {socialLinks.map((social, i) => (
                 <a
                   key={i}
                   href={social.href}
                   aria-label={social.aria}
-                  className="w-9 h-9 flex rounded-sm items-center justify-center bg-white/5 text-slate-400 hover:bg-orange-600 hover:text-white transition-all"
+                  className="p-2.5 bg-white/5 text-slate-400 hover:bg-orange-600 hover:text-white transition-all rounded-sm flex items-center justify-center min-w-[44px] min-h-[44px]"
                 >
-                  <social.icon size={16} aria-hidden="true" />
+                  <social.icon size={20} aria-hidden="true" />
                 </a>
               ))}
             </div>
           </div>
 
+          {/* Sağ Kolon: Menüler */}
           <div className="xl:col-span-9 grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-8">
             {Object.entries(menuGroups).map(([key, group]) => (
               <div key={key} className="border-b border-white/5 md:border-none">
@@ -210,27 +221,27 @@ export default function Footer() {
                   onClick={() => toggleSection(key)}
                   aria-expanded={openSection === key}
                   aria-controls={`section-${key}`}
-                  className="w-full rounded-sm md:cursor-default py-4 md:py-0 flex items-center justify-between text-left focus:outline-none group"
+                  // min-h-[48px] ile mobil menü başlıkları kolay tıklanır hale getirildi
+                  className="w-full py-4 md:py-0 md:mb-6 flex items-center justify-between text-left focus:outline-none min-h-[48px] md:min-h-0"
                 >
-                  <h4 className="text-white text-[15px] font-bold">
+                  <h4 className="text-white text-[15px] font-bold uppercase tracking-tight">
                     {group.title}
                   </h4>
                   <ChevronDown
-                    size={18}
+                    size={20}
                     className={cn(
                       "text-slate-500 transition-transform md:hidden",
                       openSection === key && "rotate-180",
                     )}
-                    aria-hidden="true"
                   />
                 </button>
 
                 <ul
                   id={`section-${key}`}
                   className={cn(
-                    "space-y-3 overflow-hidden transition-all duration-300 ease-in-out md:max-h-none md:mt-6 md:pb-0",
+                    "space-y-4 overflow-hidden transition-all duration-300 md:max-h-none",
                     openSection === key
-                      ? "max-h-96 pb-6 mt-2"
+                      ? "max-h-96 pb-6"
                       : "max-h-0 md:max-h-none",
                   )}
                 >
@@ -238,8 +249,7 @@ export default function Footer() {
                     <li key={link.label}>
                       <Link
                         href={link.href}
-                        aria-label={`${link.label} sayfasına git`}
-                        className="text-[13px] text-slate-400 hover:text-white hover:translate-x-1 transition-all inline-block"
+                        className="text-[13px] text-slate-400 hover:text-white hover:translate-x-1 transition-all py-1.5 inline-block"
                       >
                         {link.label}
                       </Link>
@@ -252,18 +262,21 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="bg-white py-4 border-t border-white/5">
-        <div className="container mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-600 text-center md:text-left">
-            © {currentYear} İŞPOOL ENDÜSTRİYEL GÜVENLİK SİSTEMLERİ.
+      {/* Alt Bar: Copyright ve Ödeme */}
+      <div className="bg-white py-6 border-t border-slate-200">
+        <div className="container mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 text-center md:text-left leading-relaxed">
+            © {currentYear} İŞPOOL ENDÜSTRİYEL GÜVENLİK SİSTEMLERİ.{" "}
+            <br className="md:hidden" /> TÜM HAKLARI SAKLIDIR.
           </div>
-          <Image
-            src="/iyzico/logo_band_colored@3x.webp"
-            alt="iyzico ile güvenli ödeme seçenekleri"
-            width={300}
-            height={53}
-            className="object-contain"
-          />
+          <div className="relative h-8 w-64">
+            <Image
+              src="/iyzico/logo_band_colored@3x.webp"
+              alt="iyzico ile güvenli ödeme seçenekleri"
+              fill
+              className="object-contain"
+            />
+          </div>
         </div>
       </div>
     </footer>
