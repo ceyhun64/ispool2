@@ -67,7 +67,7 @@ const Testimonials: React.FC = () => {
             </div>
             <h2 className="text-2xl sm:text-5xl font-black tracking-tighter text-slate-900 leading-[1.1] uppercase">
               PROFESYONELLERİN <br />
-              <span className="text-slate-400">GÜVEN REHBERİ</span>
+              <span className="text-slate-500">GÜVEN REHBERİ</span>
             </h2>
           </div>
 
@@ -75,13 +75,13 @@ const Testimonials: React.FC = () => {
           <div className="flex items-center gap-8 border-l border-slate-100 pl-8 hidden md:flex">
             <div>
               <p className="text-xl font-bold text-slate-900">500+</p>
-              <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest">
+              <p className="text-[9px] font-semibold text-slate-500 uppercase tracking-widest">
                 Kurumsal Müşteri
               </p>
             </div>
             <div>
               <p className="text-xl font-bold text-slate-900">10k+</p>
-              <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest">
+              <p className="text-[9px] font-semibold text-slate-500 uppercase tracking-widest">
                 Teslimat
               </p>
             </div>
@@ -110,7 +110,7 @@ const Testimonials: React.FC = () => {
                           />
                         ))}
                       </div>
-                      <span className="text-[8px] font-bold text-slate-400 border border-slate-100 px-1.5 py-0.5 tracking-wider uppercase">
+                      <span className="text-[8px] font-bold text-slate-500 border border-slate-100 px-1.5 py-0.5 tracking-wider uppercase">
                         {t.tag}
                       </span>
                     </div>

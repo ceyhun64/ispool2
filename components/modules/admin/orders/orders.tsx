@@ -47,6 +47,15 @@ export default function Orders() {
     "delivered",
   ];
 
+  const getCurrencySymbol = (currency?: string) => {
+    const symbols: Record<string, string> = {
+      TRY: "₺",
+      USD: "$",
+      EUR: "€",
+    };
+    return symbols[currency || "TRY"] || "₺";
+  };
+
   const getStatusInTurkish = (status: string) => {
     const map: Record<string, string> = {
       pending: "Beklemede",
@@ -228,6 +237,7 @@ export default function Orders() {
           <tbody className="divide-y divide-slate-100">
             {paginatedOrders.map((order) => {
               const nextStatus = getNextStatus(order.status);
+              const currencySymbol = getCurrencySymbol(order.currency);
               return (
                 <tr
                   key={order.id}
@@ -250,8 +260,13 @@ export default function Orders() {
                   </td>
                   <td className="px-6 py-4 text-center">
                     <p className="text-sm font-semibold text-slate-900">
-                      {order.paidPrice.toLocaleString("tr-TR")} ₺
+                      {order.paidPrice.toLocaleString("tr-TR")} {currencySymbol}
                     </p>
+                    {order.installment && order.installment > 1 && (
+                      <p className="text-xs text-blue-600">
+                        💳 {order.installment} Taksit
+                      </p>
+                    )}
                     {order.couponCode && (
                       <p className="text-xs text-green-600">
                         🎟️ {order.couponCode}
@@ -294,6 +309,7 @@ export default function Orders() {
       <div className="md:hidden space-y-3">
         {paginatedOrders.map((order) => {
           const nextStatus = getNextStatus(order.status);
+          const currencySymbol = getCurrencySymbol(order.currency);
           return (
             <Card key={order.id} className="bg-white border-slate-200">
               <CardContent className="p-4">
@@ -311,8 +327,13 @@ export default function Orders() {
                 <div className="flex justify-between items-center pt-3 border-t border-slate-100">
                   <div>
                     <p className="text-sm font-bold text-slate-900">
-                      {order.paidPrice.toLocaleString("tr-TR")} ₺
+                      {order.paidPrice.toLocaleString("tr-TR")} {currencySymbol}
                     </p>
+                    {order.installment && order.installment > 1 && (
+                      <p className="text-xs text-blue-600">
+                        💳 {order.installment} Taksit
+                      </p>
+                    )}
                     {order.couponCode && (
                       <p className="text-xs text-green-600">
                         🎟️ {order.couponCode}
@@ -371,6 +392,7 @@ export default function Orders() {
             getStatusInTurkish={getStatusInTurkish}
             getStatusBadge={getStatusBadge}
             getNextStatus={getNextStatus}
+            getCurrencySymbol={getCurrencySymbol}
           />
         )}
       </Dialog>

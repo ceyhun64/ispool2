@@ -137,7 +137,7 @@ export default function Banner() {
             <button
               onClick={() => setIsModalOpen(false)}
               disabled={isFormLoading}
-              className="absolute rounded-sm top-4 right-4 text-slate-400 hover:text-slate-950 p-2 border border-slate-100 disabled:opacity-50"
+              className="absolute rounded-sm top-4 right-4 text-slate-500 hover:text-slate-950 p-2 border border-slate-100 disabled:opacity-50"
             >
               <X size={18} />
             </button>
@@ -152,7 +152,7 @@ export default function Banner() {
             <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                  <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
                     Ad Soyad
                   </label>
                   <input
@@ -165,7 +165,7 @@ export default function Banner() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                  <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
                     Şirket Adı
                   </label>
                   <input
@@ -180,7 +180,7 @@ export default function Banner() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                  <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
                     E-Posta Adresi
                   </label>
                   <input
@@ -194,7 +194,7 @@ export default function Banner() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                  <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
                     İletişim Numarası
                   </label>
                   <input
@@ -209,7 +209,7 @@ export default function Banner() {
                 </div>
               </div>
               <div className="space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
                   Detaylar ve İhtiyaçlarınız
                 </label>
                 <textarea

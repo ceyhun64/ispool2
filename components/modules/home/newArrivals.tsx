@@ -159,13 +159,13 @@ export default function YeniUrunlerCarousel() {
           <div className="mt-10 md:mt-16 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-slate-200 pt-8">
             <div className="flex items-center gap-6 w-full sm:w-auto">
               <div className="flex flex-col min-w-[60px]">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">
                   Aşama
                 </span>
                 <div className="text-xl font-mono font-bold text-slate-950 flex items-baseline">
                   <span>0{current + 1}</span>
                   <span className="text-slate-300 mx-2 text-sm">/</span>
-                  <span className="text-slate-400 text-sm">
+                  <span className="text-slate-500 text-sm">
                     0{products.length}
                   </span>
                 </div>

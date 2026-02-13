@@ -285,7 +285,7 @@ const CartDropdown = forwardRef(
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
-          <button className="relative p-2.5 text-slate-900 rounded-sm hover:text-slate-500 transition-colors duration-300">
+          <button aria-label="Sepeti Aç" className="relative p-2.5 text-slate-900 rounded-sm hover:text-slate-500 transition-colors duration-300">
             <div className="w-9 h-9 md:w-10 md:h-10 text-slate-900 flex items-center justify-center">
               <ShoppingCart size={18} strokeWidth={2.5} />
             </div>

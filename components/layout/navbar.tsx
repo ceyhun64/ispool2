@@ -216,6 +216,7 @@ export default function Navbar() {
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="group flex items-center gap-4 pl-2 pr-1 md:pr-4 py-2 hover:bg-slate-50 transition-all"
+                aria-label="User Menu"
               >
                 <div className="w-9 h-9 rounded-sm md:w-10 md:h-10 text-slate-900 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
                   <User size={18} strokeWidth={2.5} />
@@ -235,6 +236,7 @@ export default function Navbar() {
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
                 className="lg:hidden p-2 text-slate-900"
+                aria-label="Mobile Menu"
               >
                 <Menu size={26} />
               </button>
@@ -247,7 +249,7 @@ export default function Navbar() {
               onClick={() => setSearchOpen(true)}
               className="w-full h-11 rounded-sm flex items-center gap-3 px-4 bg-slate-100 border border-slate-100 text-slate-500"
             >
-              <Search size={18} className="text-slate-400" />
+              <Search size={18} className="text-slate-500" />
               <span className="text-[11px] font-bold uppercase tracking-wider">
                 Ürün veya kategori ara...
               </span>

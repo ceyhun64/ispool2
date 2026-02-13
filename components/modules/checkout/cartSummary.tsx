@@ -58,7 +58,8 @@ interface BasketItem {
   id: number;
   product: Product;
   quantity: number;
-  size?: Size;
+  size?: Size; // Size objesi olarak - schema'da ilişki var
+  customImage?: string | null;
 }
 
 interface CouponData {
@@ -132,6 +133,7 @@ export default function BasketSummaryCard({
                       value: item.size.value,
                     }
                   : undefined,
+                customImage: item.customImage || null,
               })),
             );
             setGuestItems([]);
