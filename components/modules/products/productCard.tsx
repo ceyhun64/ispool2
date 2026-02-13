@@ -123,7 +123,7 @@ export default function ProductCard({ product }: { product: ProductData }) {
             </span>
             {/* null kontrolü yapılmış eski fiyat gösterimi */}
             {hasRealDiscount && product.oldPrice !== null && (
-              <span className="text-xs text-slate-400 line-through">
+              <span className="text-xs text-slate-500 line-through">
                 {product.oldPrice.toLocaleString("tr-TR")} TL
               </span>
             )}
