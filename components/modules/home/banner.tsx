@@ -342,7 +342,7 @@ export default function Banner() {
               >
                 <Link
                   href="/products"
-                  className="group rounded-sm relative flex items-center justify-center gap-4 px-12 py-5 bg-orange-600 hover:bg-white transition-all duration-500 shadow-[0_20px_40px_rgba(234,88,12,0.3)]"
+                  className="group rounded-sm relative flex items-center justify-center gap-4 px-12 py-5 bg-orange-700 hover:bg-white transition-all duration-500 shadow-[0_20px_40px_rgba(234,88,12,0.3)]"
                 >
                   <span className="text-[11px] tracking-[0.2em] uppercase text-white group-hover:text-black font-black">
                     Koleksiyonu Keşfet

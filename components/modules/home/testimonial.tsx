@@ -61,7 +61,7 @@ const Testimonials: React.FC = () => {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="w-6 h-[1.5px] bg-orange-600" />
-              <span className="text-[10px] font-bold tracking-[0.3em] text-orange-600 uppercase">
+              <span className="text-[10px] font-bold tracking-[0.3em] text-orange-800 uppercase">
                 Saha Referansları
               </span>
             </div>
@@ -128,7 +128,7 @@ const Testimonials: React.FC = () => {
                       <span className="text-[12px] font-bold text-slate-900 tracking-tight uppercase">
                         {t.name}
                       </span>
-                      <span className="text-[10px] text-orange-600 font-semibold mt-0.5">
+                      <span className="text-[10px] text-orange-800 font-semibold mt-0.5">
                         {t.company}
                       </span>
                     </div>
