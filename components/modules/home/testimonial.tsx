@@ -49,39 +49,37 @@ const workwearTestimonials: Testimonial[] = [
     tag: "Kurumsal Kalite",
   },
 ];
+
 const Testimonials: React.FC = () => {
   return (
     <div className="py-20 md:py-24 bg-slate-100 relative overflow-hidden font-sans">
-      {/* İnce Üst Çizgi */}
-      <div className="absolute top-0 left-0 w-full h-[1px] bg-slate-100" />
+      <div className="absolute top-0 left-0 w-full h-[1px] bg-slate-200" />
 
-      {/* Header - Boyutlar Optimize Edildi */}
       <div className="max-w-[1400px] mx-auto px-6 mb-16 relative z-10">
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-[1.5px] bg-orange-600" />
-              <span className="text-[10px] font-bold tracking-[0.3em] text-orange-800 uppercase">
+              <div className="w-6 h-[1.5px] bg-orange-700" />
+              <span className="text-[10px] font-bold tracking-[0.3em] text-orange-900 uppercase">
                 Saha Referansları
               </span>
             </div>
             <h2 className="text-2xl sm:text-5xl font-black tracking-tighter text-slate-900 leading-[1.1] uppercase">
               PROFESYONELLERİN <br />
-              <span className="text-slate-500">GÜVEN REHBERİ</span>
+              <span className="text-slate-600">GÜVEN REHBERİ</span>
             </h2>
           </div>
 
-          {/* Küçük İstatistikler */}
-          <div className="flex items-center gap-8 border-l border-slate-100 pl-8 hidden md:flex">
+          <div className="flex items-center gap-8 border-l border-slate-300 pl-8 hidden md:flex">
             <div>
               <p className="text-xl font-bold text-slate-900">500+</p>
-              <p className="text-[9px] font-semibold text-slate-700 uppercase tracking-widest">
+              <p className="text-[9px] font-bold text-slate-800 uppercase tracking-widest">
                 Kurumsal Müşteri
               </p>
             </div>
             <div>
               <p className="text-xl font-bold text-slate-900">10k+</p>
-              <p className="text-[9px] font-semibold text-slate-700 uppercase tracking-widest">
+              <p className="text-[9px] font-bold text-slate-800 uppercase tracking-widest">
                 Teslimat
               </p>
             </div>
@@ -89,7 +87,6 @@ const Testimonials: React.FC = () => {
         </div>
       </div>
 
-      {/* Marquee Alanı */}
       <div className="relative flex overflow-hidden group py-6 ">
         <div className="flex animate-marquee gap-6 whitespace-nowrap">
           {[...Array(4)].map((_, i) => (
@@ -106,21 +103,21 @@ const Testimonials: React.FC = () => {
                           <Star
                             key={i}
                             size={10}
-                            className="fill-orange-500 text-orange-500"
+                            className="fill-orange-600 text-orange-600"
                           />
                         ))}
                       </div>
-                      <span className="text-[8px] font-bold text-slate-500 border border-slate-100 px-1.5 py-0.5 tracking-wider uppercase">
+                      <span className="text-[8px] font-bold text-slate-600 border border-slate-200 px-1.5 py-0.5 tracking-wider uppercase">
                         {t.tag}
                       </span>
                     </div>
 
-                    <p className="text-slate-600 text-[13px] md:text-[14px] leading-relaxed font-normal whitespace-normal italic">
+                    <p className="text-slate-700 text-[13px] md:text-[14px] leading-relaxed font-medium whitespace-normal italic">
                       "{t.message}"
                     </p>
                   </div>
 
-                  <div className="mt-8 flex items-center gap-4 pt-6 border-t border-slate-50">
+                  <div className="mt-8 flex items-center gap-4 pt-6 border-t border-slate-100">
                     <div className="w-10 h-10 bg-slate-900 text-white flex items-center justify-center text-[14px] font-bold">
                       {t.avatarLetter}
                     </div>
@@ -128,7 +125,7 @@ const Testimonials: React.FC = () => {
                       <span className="text-[12px] font-bold text-slate-900 tracking-tight uppercase">
                         {t.name}
                       </span>
-                      <span className="text-[10px] text-orange-800 font-semibold mt-0.5">
+                      <span className="text-[10px] text-orange-900 font-bold mt-0.5">
                         {t.company}
                       </span>
                     </div>
@@ -140,23 +137,22 @@ const Testimonials: React.FC = () => {
         </div>
       </div>
 
-      {/* Sertifika Barı - Daha Zarif */}
-      <div className="mt-12 flex flex-wrap justify-center items-center gap-8 px-6 opacity-100">
+      <div className="mt-12 flex flex-wrap justify-center items-center gap-8 px-6">
         <div className="flex items-center gap-2">
-          <ShieldCheck size={14} className="text-slate-800" />
-          <span className="text-[9px] font-bold tracking-widest text-slate-800 uppercase">
+          <ShieldCheck size={14} className="text-slate-900" />
+          <span className="text-[10px] font-bold tracking-widest text-slate-900 uppercase">
             CE Sertifikalı
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <Zap size={14} className="text-slate-800" />
-          <span className="text-[9px] font-bold tracking-widest text-slate-800 uppercase">
+          <Zap size={14} className="text-slate-900" />
+          <span className="text-[10px] font-bold tracking-widest text-slate-900 uppercase">
             Antistatik
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <Activity size={14} className="text-slate-800" />
-          <span className="text-[9px] font-bold tracking-widest text-slate-800 uppercase">
+          <Activity size={14} className="text-slate-900" />
+          <span className="text-[10px] font-bold tracking-widest text-slate-900 uppercase">
             ISO 9001
           </span>
         </div>
