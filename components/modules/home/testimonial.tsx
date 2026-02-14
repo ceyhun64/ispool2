@@ -75,13 +75,13 @@ const Testimonials: React.FC = () => {
           <div className="flex items-center gap-8 border-l border-slate-100 pl-8 hidden md:flex">
             <div>
               <p className="text-xl font-bold text-slate-900">500+</p>
-              <p className="text-[9px] font-semibold text-slate-500 uppercase tracking-widest">
+              <p className="text-[9px] font-semibold text-slate-700 uppercase tracking-widest">
                 Kurumsal Müşteri
               </p>
             </div>
             <div>
               <p className="text-xl font-bold text-slate-900">10k+</p>
-              <p className="text-[9px] font-semibold text-slate-500 uppercase tracking-widest">
+              <p className="text-[9px] font-semibold text-slate-700 uppercase tracking-widest">
                 Teslimat
               </p>
             </div>

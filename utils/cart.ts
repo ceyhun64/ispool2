@@ -19,6 +19,8 @@ const CART_KEY = "guest_cart";
 /**
  * Sepeti localStorage'dan al
  */
+
+
 export function getCart(): GuestCartItem[] {
   if (typeof window === "undefined") return [];
   try {
