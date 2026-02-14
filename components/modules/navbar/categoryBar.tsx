@@ -359,7 +359,7 @@ export default function CategoryBar({
         }}
       >
         <div
-          className="absolute inset-0 bg-amber-500"
+          className="absolute inset-0 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500"
           aria-hidden="true"
         />
         <div
