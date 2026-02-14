@@ -2,10 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import {
-  motion,
-  AnimatePresence,
-} from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
   Minus,
@@ -362,7 +359,7 @@ export default function CategoryBar({
         }}
       >
         <div
-          className="absolute inset-0 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600"
+          className="absolute inset-0 bg-amber-500"
           aria-hidden="true"
         />
         <div
@@ -423,16 +420,15 @@ export default function CategoryBar({
                 </Link>
               ))}
 
-              {/* REFERANSLAR */}
+              {/* REFERANSLAR - Link yerine div kullanarak 404 hatasını engelledik */}
               <div
-                className="group"
+                className="group relative cursor-pointer"
                 onMouseEnter={() => {
                   setActiveCategory(null);
                   setShowBrands(true);
                 }}
               >
-                <Link
-                  href="/brands"
+                <div
                   className="relative py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center h-full transition-colors duration-300"
                   style={{
                     color: scrollProgress > 0.5 ? "#334155" : "#ffffff",
@@ -449,6 +445,7 @@ export default function CategoryBar({
                     }}
                   />
                   REFERANSLAR
+                  {/* Alt Çizgi Efekti */}
                   <span
                     className="absolute left-1/2 w-0 h-[4px] transition-all duration-500 ease-out -translate-x-1/2 group-hover:w-full z-[110]"
                     style={{
@@ -458,7 +455,7 @@ export default function CategoryBar({
                       clipPath: "polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%)",
                     }}
                   />
-                </Link>
+                </div>
               </div>
 
               {/* EN YENİLER - Query parameter ile sort bilgisi eklendi */}
@@ -494,7 +491,7 @@ export default function CategoryBar({
                 href="/products?discount=true"
                 className="py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center"
               >
-                <span className="bg-[#ff2d2d] text-white px-4 py-1.5 rounded-md shadow-sm hover:bg-red-700 transition-colors">
+                <span className="bg-red-800 text-white px-4 py-1.5 rounded-md shadow-sm hover:bg-red-700 transition-colors">
                   İNDİRİM
                 </span>
               </Link>
@@ -561,10 +558,10 @@ export default function CategoryBar({
               <div className="mx-auto px-8 py-10">
                 <div className="grid grid-cols-6 gap-6">
                   {brands.map((brand) => (
-                    <Link
+                    /* Link yerine div kullanıyoruz */
+                    <div
                       key={brand.id}
-                      href={`/brands/${brand.id}`}
-                      className="flex items-center justify-center p-6 bg-slate-50 rounded-lg hover:bg-slate-100 transition-all hover:shadow-md group"
+                      className="flex items-center justify-center p-6 bg-slate-50 rounded-lg hover:bg-slate-100 transition-all hover:shadow-md group cursor-default"
                     >
                       <div className="relative w-full h-16">
                         <Image
@@ -574,7 +571,7 @@ export default function CategoryBar({
                           className="object-contain"
                         />
                       </div>
-                    </Link>
+                    </div>
                   ))}
                 </div>
               </div>
