@@ -215,7 +215,7 @@ export default function Navbar() {
                 className="group flex items-center gap-4 pl-2 pr-1 md:pr-4 py-2 hover:bg-slate-50 transition-all outline-none focus-visible:ring-2 focus-visible:ring-orange-600"
                 aria-label="Kullanıcı Menüsü"
               >
-                <div className="w-9 h-9 rounded-sm md:w-10 md:h-10 text-slate-950 flex items-center justify-center border border-slate-200 group-hover:bg-orange-600 group-hover:text-white transition-all">
+                <div className="w-9 h-9 rounded-sm md:w-10 md:h-10 text-slate-950 flex items-center justify-center  group-hover:bg-orange-600 group-hover:text-white transition-all">
                   <User size={18} strokeWidth={2.5} />
                 </div>
                 <div className="hidden xl:flex flex-col items-start leading-none">
