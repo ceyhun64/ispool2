@@ -183,7 +183,7 @@ export default function YeniUrunlerCarousel() {
               </div>
             </div>
 
-            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] bg-slate-100 px-4 py-2 rounded-full hidden md:block">
+            <div className="text-[10px] font-bold text-slate-800 uppercase tracking-[0.3em] bg-slate-100 px-4 py-2 rounded-full hidden md:block">
               Saha Testleri Tamamlandı — v.2026
             </div>
           </div>

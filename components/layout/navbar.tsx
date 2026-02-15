@@ -186,21 +186,24 @@ export default function Navbar() {
             </div>
 
             {/* AKSİYONLAR */}
-            <div className="flex items-center gap-1 md:gap-3">
+            <div className="flex items-center gap-0.5 md:gap-3">
+              {/* ── FAVORİLER ── */}
               <NextLink
                 href="/favorites"
-                className="hidden md:flex p-3 text-slate-900 hover:text-orange-600 relative"
+                className="flex group items-center gap-4 pl-2 pr-1 md:pr-4 py-2 hover:bg-slate-50 transition-all relative outline-none focus-visible:ring-2 focus-visible:ring-orange-600"
                 aria-label="Favorilerim"
               >
-                <Heart
-                  size={22}
-                  strokeWidth={2}
-                  className={
-                    favorites.length > 0
-                      ? "fill-orange-600 text-orange-600"
-                      : "text-slate-900"
-                  }
-                />
+                <div className="w-9 h-9 md:w-10 md:h-10 rounded-sm text-slate-950 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                  <Heart
+                    size={18}
+                    strokeWidth={2.5}
+                    className={
+                      favorites.length > 0
+                        ? "fill-orange-600 text-orange-600 group-hover:fill-white group-hover:text-white"
+                        : "group-hover:text-white"
+                    }
+                  />
+                </div>
                 {favorites.length > 0 && (
                   <span className="absolute top-2 right-2 text-[9px] rounded-full font-black bg-slate-950 text-white w-4 h-4 flex items-center justify-center">
                     {favorites.length}
@@ -210,12 +213,13 @@ export default function Navbar() {
 
               <div className="hidden md:block w-[1px] h-8 bg-slate-200 mx-2" />
 
+              {/* ── KULLANICI ── */}
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="group flex items-center gap-4 pl-2 pr-1 md:pr-4 py-2 hover:bg-slate-50 transition-all outline-none focus-visible:ring-2 focus-visible:ring-orange-600"
                 aria-label="Kullanıcı Menüsü"
               >
-                <div className="w-9 h-9 rounded-sm md:w-10 md:h-10 text-slate-950 flex items-center justify-center  group-hover:bg-orange-600 group-hover:text-white transition-all">
+                <div className="w-9 h-9 rounded-sm md:w-10 md:h-10 text-slate-950 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
                   <User size={18} strokeWidth={2.5} />
                 </div>
                 <div className="hidden xl:flex flex-col items-start leading-none">

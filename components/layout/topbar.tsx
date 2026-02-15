@@ -66,7 +66,7 @@ export default function TopBar() {
       className="w-full relative z-50 shadow-sm border-b border-white/10"
     >
       {/* MOBILE TOPBAR */}
-      <div className="lg:hidden bg-slate-950 px-4 py-2.5 flex items-center gap-3 overflow-x-auto no-scrollbar">
+      <div className="lg:hidden bg-slate-950 px-4 py-2.5 flex items-center justify-center gap-1 overflow-x-auto no-scrollbar">
         {highlightItems.map((item, i) => (
           <Link
             key={i}

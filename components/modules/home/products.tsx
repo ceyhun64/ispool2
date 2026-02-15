@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import ProductCard from "../products/productCard";
 import { Skeleton } from "@/components/ui/skeleton";
