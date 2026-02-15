@@ -1,15 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Ticket, Percent, Banknote, Calendar, Loader2 } from "lucide-react";
+import {
+  Ticket,
+  Percent,
+  Banknote,
+  Loader2,
+  Trash2,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Copy,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 
+interface Coupon {
+  id: number;
+  code: string;
+  type: "PERCENTAGE" | "FIXED";
+  value: number;
+  minAmount: number | null;
+  usageLimit: number | null;
+  usedCount: number;
+  expiryDate: string | null;
+  isActive: boolean;
+  createdAt: string;
+}
+
 export default function CouponAdmin() {
   const [loading, setLoading] = useState(false);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [couponsLoading, setCouponsLoading] = useState(true);
   const [formData, setFormData] = useState({
     code: "",
     type: "PERCENTAGE",
@@ -20,6 +45,28 @@ export default function CouponAdmin() {
   });
 
   const isMobile = useIsMobile();
+
+  // Kuponları getir
+  const fetchCoupons = async () => {
+    setCouponsLoading(true);
+    try {
+      const res = await fetch("/api/coupon");
+      const data = await res.json();
+      if (data.success) {
+        setCoupons(data.data);
+      } else {
+        toast.error(data.error || "Kuponlar yüklenemedi");
+      }
+    } catch {
+      toast.error("Sunucu ile bağlantı kurulamadı");
+    } finally {
+      setCouponsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCoupons();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,11 +88,49 @@ export default function CouponAdmin() {
         usageLimit: "",
         expiryDate: "",
       });
+      fetchCoupons();
     } catch (err: any) {
       toast.error(err.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm("Bu kuponu silmek istediğinizden emin misiniz?")) return;
+    try {
+      const res = await fetch("/api/coupon", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || "Silinemedi");
+      toast.success("Kupon silindi");
+      fetchCoupons();
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleCopy = (code: string) => {
+    navigator.clipboard.writeText(code);
+    toast.success(`"${code}" kopyalandı`);
+  };
+
+  const isExpired = (expiryDate: string | null) => {
+    if (!expiryDate) return false;
+    return new Date() > new Date(expiryDate);
+  };
+
+  const getCouponStatus = (coupon: Coupon) => {
+    if (!coupon.isActive)
+      return { label: "Pasif", color: "text-slate-500 bg-slate-100" };
+    if (isExpired(coupon.expiryDate))
+      return { label: "Süresi Doldu", color: "text-red-600 bg-red-50" };
+    if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit)
+      return { label: "Limit Doldu", color: "text-orange-600 bg-orange-50" };
+    return { label: "Aktif", color: "text-green-700 bg-green-50" };
   };
 
   return (
@@ -64,7 +149,7 @@ export default function CouponAdmin() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: Form */}
-        <form onSubmit={handleSubmit} className="lg:col-span-2 space-y-6 ">
+        <form onSubmit={handleSubmit} className="lg:col-span-2 space-y-6">
           <Card className="bg-white border-slate-200 rounded-sm">
             <CardContent className="p-6">
               <h3 className="text-sm font-semibold text-slate-900 mb-6">
@@ -268,6 +353,172 @@ export default function CouponAdmin() {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Coupon List */}
+      <div className="mt-8">
+        <Card className="bg-white border-slate-200 rounded-sm">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-sm font-semibold text-slate-900">
+                Tüm Kuponlar
+              </h3>
+              <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+                {coupons.length} kupon
+              </span>
+            </div>
+
+            {couponsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+                <span className="ml-2 text-sm text-slate-500">
+                  Yükleniyor...
+                </span>
+              </div>
+            ) : coupons.length === 0 ? (
+              <div className="text-center py-12">
+                <Ticket className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+                <p className="text-sm text-slate-500">
+                  Henüz kupon oluşturulmamış
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-100">
+                      <th className="text-left text-xs font-semibold text-slate-500 uppercase pb-3 pr-4">
+                        Kod
+                      </th>
+                      <th className="text-left text-xs font-semibold text-slate-500 uppercase pb-3 pr-4">
+                        İndirim
+                      </th>
+                      <th className="text-left text-xs font-semibold text-slate-500 uppercase pb-3 pr-4">
+                        Min. Sepet
+                      </th>
+                      <th className="text-left text-xs font-semibold text-slate-500 uppercase pb-3 pr-4">
+                        Kullanım
+                      </th>
+                      <th className="text-left text-xs font-semibold text-slate-500 uppercase pb-3 pr-4">
+                        Son Tarih
+                      </th>
+                      <th className="text-left text-xs font-semibold text-slate-500 uppercase pb-3 pr-4">
+                        Durum
+                      </th>
+                      <th className="text-right text-xs font-semibold text-slate-500 uppercase pb-3">
+                        İşlem
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    {coupons.map((coupon) => {
+                      const status = getCouponStatus(coupon);
+                      return (
+                        <tr
+                          key={coupon.id}
+                          className="hover:bg-slate-50 transition-colors"
+                        >
+                          {/* Kod */}
+                          <td className="py-3 pr-4">
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono font-semibold text-slate-900 text-xs tracking-wider">
+                                {coupon.code}
+                              </span>
+                              <button
+                                onClick={() => handleCopy(coupon.code)}
+                                className="text-slate-400 hover:text-slate-700 transition-colors"
+                                title="Kopyala"
+                              >
+                                <Copy className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </td>
+
+                          {/* İndirim */}
+                          <td className="py-3 pr-4">
+                            <div className="flex items-center gap-1.5">
+                              {coupon.type === "PERCENTAGE" ? (
+                                <Percent className="w-3.5 h-3.5 text-slate-400" />
+                              ) : (
+                                <Banknote className="w-3.5 h-3.5 text-slate-400" />
+                              )}
+                              <span className="font-semibold text-slate-800">
+                                {coupon.type === "PERCENTAGE"
+                                  ? `%${coupon.value}`
+                                  : `${coupon.value} TL`}
+                              </span>
+                            </div>
+                          </td>
+
+                          {/* Min. Sepet */}
+                          <td className="py-3 pr-4 text-slate-600">
+                            {coupon.minAmount ? `${coupon.minAmount} TL` : "—"}
+                          </td>
+
+                          {/* Kullanım */}
+                          <td className="py-3 pr-4">
+                            <span className="text-slate-700">
+                              {coupon.usedCount}
+                              {coupon.usageLimit ? (
+                                <span className="text-slate-400">
+                                  {" "}
+                                  / {coupon.usageLimit}
+                                </span>
+                              ) : (
+                                <span className="text-slate-400"> / ∞</span>
+                              )}
+                            </span>
+                          </td>
+
+                          {/* Son Tarih */}
+                          <td className="py-3 pr-4">
+                            {coupon.expiryDate ? (
+                              <div className="flex items-center gap-1 text-slate-600">
+                                <Clock className="w-3 h-3" />
+                                <span>
+                                  {new Date(
+                                    coupon.expiryDate,
+                                  ).toLocaleDateString("tr-TR")}
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-slate-400">—</span>
+                            )}
+                          </td>
+
+                          {/* Durum */}
+                          <td className="py-3 pr-4">
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${status.color}`}
+                            >
+                              {status.label === "Aktif" ? (
+                                <CheckCircle2 className="w-3 h-3" />
+                              ) : (
+                                <XCircle className="w-3 h-3" />
+                              )}
+                              {status.label}
+                            </span>
+                          </td>
+
+                          {/* İşlem */}
+                          <td className="py-3 text-right">
+                            <button
+                              onClick={() => handleDelete(coupon.id)}
+                              className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                              title="Sil"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

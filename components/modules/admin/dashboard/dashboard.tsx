@@ -168,11 +168,11 @@ export default function AdminDashboard() {
         },
         {
           id: "settings",
-          title: "Ayarlar",
+          title: "Ana Sayfa",
           stat: "Yönet",
           description: "Site Ayarları",
           icon: <Settings className="w-5 h-5" />,
-          href: "/admin/banner",
+          href: "/admin/home_settings",
         },
       ]);
 
