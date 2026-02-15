@@ -96,7 +96,7 @@ function ModernCategoryCard({ category }: { category: CategoryData }) {
   return (
     <Link
       href={category.href}
-      className="group relative block overflow-hidden bg-slate-950 aspect-[11/9] sm:aspect-[11/9] rounded-xl border border-white/10 shadow-2xl"
+      className="group relative block overflow-hidden bg-slate-950 aspect-[11/12] sm:aspect-[11/9] rounded-xl border border-white/10 shadow-2xl"
     >
       {/* Görsel Katmanı */}
       <div className="relative w-full h-full rounded-xl">
@@ -104,16 +104,17 @@ function ModernCategoryCard({ category }: { category: CategoryData }) {
           src={category.image}
           alt={category.name}
           fill
-          className="object-cover rounded-xl transition-transform duration-1000 ease-out group-hover:scale-105 opacity-60 group-hover:opacity-80 grayscale-[0.2] group-hover:grayscale-0"
+          className="object-cover rounded-xl transition-transform duration-1000 ease-out lg:group-hover:scale-105 opacity-70 lg:opacity-60 lg:group-hover:opacity-80 grayscale-[0.2] lg:group-hover:grayscale-0"
         />
-        {/* Gradient koyuluğu artırıldı (Metin kontrastı için) */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent z-10" />
+        {/* Mobilde gradyan daha koyu ve sabit, desktopta hover ile değişebilir */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent z-10" />
       </div>
 
       {/* İçerik Katmanı */}
       <div className="absolute inset-0 p-6 sm:p-10 md:p-12 flex flex-col justify-between z-20">
         <div className="flex justify-between items-start">
-          <div className="p-3 md:p-4 -translate-y-1 md:-translate-y-2 group-hover:translate-y-0 transition-transform duration-500 bg-white/10 backdrop-blur-md rounded-sm border border-white/20">
+          {/* İkon: Mobilde sabit durur, desktopta hover animasyonu yapar */}
+          <div className="p-3 md:p-4 lg:-translate-y-2 lg:group-hover:translate-y-0 transition-transform duration-500 bg-white/10 backdrop-blur-md rounded-sm border border-white/20">
             {category.id === 1 ? (
               <Cpu className="w-5 h-5 md:w-6 md:h-6 text-orange-500" />
             ) : (
@@ -121,7 +122,7 @@ function ModernCategoryCard({ category }: { category: CategoryData }) {
             )}
           </div>
 
-          <div className="flex flex-col items-end opacity-60 group-hover:opacity-100 transition-opacity">
+          <div className="flex flex-col items-end opacity-80 lg:opacity-60 lg:group-hover:opacity-100 transition-opacity">
             <span className="text-white font-mono text-[8px] md:text-[10px] tracking-widest uppercase">
               System.Process // {category.id}
             </span>
@@ -134,32 +135,35 @@ function ModernCategoryCard({ category }: { category: CategoryData }) {
             <h3 className="text-2xl sm:text-3xl text-white font-black tracking-tighter uppercase leading-none drop-shadow-lg">
               {category.name}
             </h3>
-            {/* KONTRAST DÜZELTMESİ: Turuncu tonu metin üzerinde daha parlak yapıldı */}
             <p className="text-orange-400 text-[11px] md:text-xs font-black tracking-[0.15em] uppercase">
               {category.subTitle}
             </p>
           </div>
 
-          <p className="text-slate-100 text-xs md:text-sm max-w-[280px] sm:max-w-sm leading-relaxed tracking-tight opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100 font-medium">
+          {/* AÇIKLAMA: Mobilde her zaman görünür (opacity-100), desktopta hover ile gelir (lg:opacity-0) */}
+          <p
+            className="text-slate-100 text-xs md:text-sm max-w-[280px] sm:max-w-sm leading-relaxed tracking-tight 
+            opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-700 delay-100 font-medium"
+          >
             {category.description}
           </p>
 
           <div className="flex items-center gap-4 md:gap-6 pt-2 md:pt-4">
-            <div className="flex items-center gap-2 md:gap-3 text-[10px] md:text-[11px] font-black text-white uppercase tracking-[0.2em] md:tracking-[0.3em] group-hover:text-orange-400 transition-colors duration-300">
+            <div className="flex items-center gap-2 md:gap-3 text-[10px] md:text-[11px] font-black text-white uppercase tracking-[0.2em] md:tracking-[0.3em] lg:group-hover:text-orange-400 transition-colors duration-300">
               TASARIMA BAŞLA
-              <ArrowRight className="w-3 h-3 md:w-4 md:h-4 transition-transform duration-500 group-hover:translate-x-2" />
+              <ArrowRight className="w-3 h-3 md:w-4 md:h-4 transition-transform duration-500 lg:group-hover:translate-x-2" />
             </div>
-            <div className="flex-1 h-[1px] bg-white/30 group-hover:bg-orange-500/50 transition-colors duration-500" />
+            <div className="flex-1 h-[1px] bg-white/30 lg:group-hover:bg-orange-500/50 transition-colors duration-500" />
           </div>
         </div>
       </div>
 
-      {/* Tarayıcı Çizgisi Animasyonu */}
-      <div className="absolute top-0 left-0 w-full h-[2px] bg-orange-500/80 -translate-y-full group-hover:animate-scan pointer-events-none z-30 shadow-[0_0_15px_rgba(234,88,12,0.9)]" />
+      {/* Tarayıcı Çizgisi Animasyonu: Mobilde devre dışı bırakmak daha iyi olabilir veya her zaman çalışabilir */}
+      <div className="absolute top-0 left-0 w-full h-[2px] bg-orange-500/80 -translate-y-full lg:group-hover:animate-scan pointer-events-none z-30 shadow-[0_0_15px_rgba(234,88,12,0.9)]" />
 
-      {/* Köşe Detayları */}
-      <div className="absolute top-3 left-3 md:top-4 md:left-4 w-4 h-4 border-t-2 border-l-2 border-orange-500/0 group-hover:border-orange-500 transition-all duration-500 z-30" />
-      <div className="absolute bottom-3 right-3 md:bottom-4 md:right-4 w-4 h-4 border-b-2 border-r-2 border-orange-500/0 group-hover:border-orange-500 transition-all duration-500 z-30" />
+      {/* Köşe Detayları: Mobilde her zaman görünür, desktopta hover ile gelir */}
+      <div className="absolute top-3 left-3 md:top-4 md:left-4 w-4 h-4 border-t-2 border-l-2 border-orange-500 lg:border-orange-500/0 lg:group-hover:border-orange-500 transition-all duration-500 z-30" />
+      <div className="absolute bottom-3 right-3 md:bottom-4 md:right-4 w-4 h-4 border-b-2 border-r-2 border-orange-500 lg:border-orange-500/0 lg:group-hover:border-orange-500 transition-all duration-500 z-30" />
     </Link>
   );
 }

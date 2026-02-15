@@ -9,10 +9,7 @@ import {
   X,
   Palette,
   Maximize,
-  AlertCircle,
   Loader2,
-  CheckCircle2,
-  Info,
 } from "lucide-react";
 import {
   ColorPicker,
@@ -24,6 +21,7 @@ import {
 } from "@/components/ui/color-picker";
 import Color from "color";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { toast } from "sonner";
 
 type EntityType = "color" | "size";
 
@@ -77,10 +75,6 @@ export default function VariantManagement() {
   const [items, setItems] = useState<(Color | Size)[]>([]);
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [notification, setNotification] = useState<{
-    type: "success" | "error" | "info";
-    message: string;
-  } | null>(null);
 
   const isMobile = useIsMobile();
 
@@ -92,15 +86,6 @@ export default function VariantManagement() {
     isActive: true,
   });
 
-  // Bildirim göster
-  const showNotification = (
-    type: "success" | "error" | "info",
-    message: string,
-  ) => {
-    setNotification({ type, message });
-    setTimeout(() => setNotification(null), 5000);
-  };
-
   // Verileri getir
   const fetchItems = async () => {
     setLoading(true);
@@ -111,10 +96,10 @@ export default function VariantManagement() {
       if (result.success) {
         setItems(result.data || []);
       } else {
-        showNotification("error", result.error || "Veriler yüklenemedi");
+        toast.error(result.error || "Veriler yüklenemedi");
       }
     } catch (error) {
-      showNotification("error", "Sunucu ile bağlantı kurulamadı");
+      toast.error("Sunucu ile bağlantı kurulamadı");
       console.error("[FETCH_ERROR]", error);
     } finally {
       setLoading(false);
@@ -165,18 +150,17 @@ export default function VariantManagement() {
       const result: ApiResponse = await res.json();
 
       if (result.success) {
-        showNotification(
-          "success",
+        toast.success(
           result.message || `${editingId ? "Güncelleme" : "Ekleme"} başarılı`,
         );
         fetchItems();
         resetForm();
         setEditingId(null);
       } else {
-        showNotification("error", result.error || "İşlem başarısız");
+        toast.error(result.error || "İşlem başarısız");
       }
     } catch (error) {
-      showNotification("error", "Sunucu hatası oluştu");
+      toast.error("Sunucu hatası oluştu");
       console.error("[SUBMIT_ERROR]", error);
     }
   };
@@ -190,13 +174,13 @@ export default function VariantManagement() {
       const result: ApiResponse = await res.json();
 
       if (result.success) {
-        showNotification("success", "Kayıt başarıyla silindi");
+        toast.success("Kayıt başarıyla silindi");
         fetchItems();
       } else {
-        showNotification("error", result.error || "Silme işlemi başarısız");
+        toast.error(result.error || "Silme işlemi başarısız");
       }
     } catch (error) {
-      showNotification("error", "Silme sırasında bir hata oluştu");
+      toast.error("Silme sırasında bir hata oluştu");
       console.error("[DELETE_ERROR]", error);
     }
   };
@@ -268,31 +252,6 @@ export default function VariantManagement() {
           Renkleri ve bedenleri yönetmek için kullanılır.
         </p>
       </header>
-
-      {notification && (
-        <div
-          className={`p-3 rounded-lg border flex items-center gap-3 mb-6 ${
-            notification.type === "success"
-              ? "bg-green-50 border-green-200 text-green-800"
-              : notification.type === "error"
-                ? "bg-red-50 border-red-200 text-red-800"
-                : "bg-blue-50 border-blue-200 text-blue-800"
-          }`}
-        >
-          {notification.type === "success" ? (
-            <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-          ) : (
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          )}
-          <p className="flex-1 text-sm font-medium">{notification.message}</p>
-          <button
-            onClick={() => setNotification(null)}
-            className="text-gray-400 hover:text-gray-600 transition"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
 
       {/* Tab Navigation */}
       <div className="bg-white border border-gray-200 rounded-lg p-1 mb-6">

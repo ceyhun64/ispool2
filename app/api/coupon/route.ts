@@ -4,6 +4,28 @@ import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
+// GET: Aktif kuponları listele
+export async function GET() {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const coupons = await prisma.coupon.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+
+    return NextResponse.json({ success: true, data: coupons });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Kuponlar yüklenemedi" },
+      { status: 500 },
+    );
+  }
+}
+
+// POST: Yeni kupon oluştur
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user?.id) {
@@ -17,7 +39,7 @@ export async function POST(req: Request) {
     const newCoupon = await prisma.coupon.create({
       data: {
         code: code.toUpperCase(),
-        type: type, // "PERCENTAGE" veya "FIXED"
+        type,
         value: parseFloat(value),
         minAmount: minAmount ? parseFloat(minAmount) : null,
         usageLimit: usageLimit ? parseInt(usageLimit) : null,
@@ -25,17 +47,35 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json(newCoupon);
+    return NextResponse.json({ success: true, data: newCoupon });
   } catch (error: any) {
     if (error.code === "P2002") {
       return NextResponse.json(
         { error: "Bu kupon kodu zaten mevcut" },
-        { status: 400 }
+        { status: 400 },
       );
     }
     return NextResponse.json(
       { error: "Kupon oluşturulamadı" },
-      { status: 500 }
+      { status: 500 },
     );
+  }
+}
+
+// DELETE: Kupon sil
+export async function DELETE(req: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const { id } = await req.json();
+
+    await prisma.coupon.delete({ where: { id } });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ error: "Kupon silinemedi" }, { status: 500 });
   }
 }

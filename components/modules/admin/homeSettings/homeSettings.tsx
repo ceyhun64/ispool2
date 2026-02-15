@@ -204,7 +204,7 @@ export default function HomePageManagement() {
     setHeroImagePreview("");
   };
 
-  // Banner ekleme - sadece resim zorunlu
+  // Banner ekleme - yeni banner eklenince eskiler silinir
   const handleAddBanner = async () => {
     if (!bannerImage) {
       return toast.error("Resim yüklemek zorunludur.");
@@ -213,7 +213,6 @@ export default function HomePageManagement() {
     setIsAdding(true);
     try {
       const formData = new FormData();
-      // Title ve subtitle opsiyonel - sadece dolu olanları gönder
       if (newTitle.trim()) formData.append("title", newTitle.trim());
       if (newSubtitle.trim()) formData.append("subtitle", newSubtitle.trim());
       formData.append("image", bannerImage);
@@ -225,12 +224,19 @@ export default function HomePageManagement() {
 
       const data = await res.json();
       if (res.ok) {
-        setBanners((prev) => [...prev, data.banner]);
+        // Mevcut tüm bannerları sil
+        await Promise.all(
+          banners.map((b) =>
+            fetch(`/api/banner/${b.id}`, { method: "DELETE" }),
+          ),
+        );
+
+        setBanners([data.banner]);
         setNewTitle("");
         setNewSubtitle("");
         setBannerImage(null);
         setBannerImagePreview("");
-        toast.success("Banner eklendi.");
+        toast.success("Banner eklendi, eski bannerlar silindi.");
       } else {
         toast.error(data.message || "Ekleme başarısız.");
       }
@@ -250,7 +256,6 @@ export default function HomePageManagement() {
     setIsAdding(true);
     try {
       const formData = new FormData();
-      // Tüm alanlar opsiyonel - sadece dolu olanları gönder
       if (heroForm.tag.trim()) formData.append("tag", heroForm.tag.trim());
       if (heroForm.title.trim())
         formData.append("title", heroForm.title.trim());
