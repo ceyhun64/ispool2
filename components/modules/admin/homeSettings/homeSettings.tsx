@@ -627,17 +627,25 @@ export default function HomePageManagement() {
                       <label className="text-xs font-semibold text-slate-700 mb-2 block">
                         Sıralama
                       </label>
-                      <Input
+                      <input
                         type="number"
                         min="0"
-                        value={heroForm.order}
+                        value={heroForm.order === 0 ? "" : heroForm.order}
+                        placeholder="0"
                         onChange={(e) =>
                           setHeroForm({
                             ...heroForm,
                             order: parseInt(e.target.value) || 0,
                           })
                         }
-                        className="bg-slate-50 border-slate-200 rounded-xl"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none
+    [appearance:textfield]
+    [&::-webkit-outer-spin-button]:appearance-auto
+    [&::-webkit-inner-spin-button]:appearance-auto
+    [&::-webkit-outer-spin-button]:opacity-100
+    [&::-webkit-inner-spin-button]:opacity-100
+    [&::-webkit-outer-spin-button]:cursor-pointer
+    [&::-webkit-inner-spin-button]:cursor-pointer"
                       />
                     </div>
 

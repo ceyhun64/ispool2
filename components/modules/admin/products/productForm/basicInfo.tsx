@@ -576,17 +576,46 @@ export default function BasicInfoSection({
   );
 }
 
-const InputGroup = ({ label, helperText, ...props }: any) => (
-  <div>
-    <Label className="text-sm font-semibold text-slate-700 mb-2 block">
-      {label}
-    </Label>
-    <Input
-      className="w-full h-11 border-slate-200 bg-slate-50 focus:bg-white transition-all rounded-xl"
-      {...props}
-    />
-    {helperText && (
-      <p className="text-xs text-slate-500 mt-1.5">{helperText}</p>
-    )}
-  </div>
-);
+const InputGroup = ({
+  label,
+  helperText,
+  value,
+  type,
+  onChange,
+  ...props
+}: any) => {
+  const isNumber = type === "number";
+  const displayValue = isNumber && (value === 0 || value === "0") ? "" : value;
+
+  return (
+    <div>
+      <Label className="text-sm font-semibold text-slate-700 mb-2 block">
+        {label}
+      </Label>
+      <input
+        type={type || "text"}
+        value={displayValue}
+        onChange={onChange}
+        className={`w-full h-11 px-3 border border-slate-200 bg-slate-50 focus:bg-white focus:border-slate-400 outline-none transition-all rounded-xl text-sm
+          ${
+            isNumber
+              ? `
+            [appearance:textfield]
+            [&::-webkit-outer-spin-button]:appearance-auto
+            [&::-webkit-inner-spin-button]:appearance-auto
+            [&::-webkit-outer-spin-button]:opacity-100
+            [&::-webkit-inner-spin-button]:opacity-100
+            [&::-webkit-outer-spin-button]:cursor-pointer
+            [&::-webkit-inner-spin-button]:cursor-pointer
+          `
+              : ""
+          }
+        `}
+        {...props}
+      />
+      {helperText && (
+        <p className="text-xs text-slate-500 mt-1.5">{helperText}</p>
+      )}
+    </div>
+  );
+};

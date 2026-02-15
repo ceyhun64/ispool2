@@ -398,8 +398,15 @@ export default function VariantManagement() {
                 <input
                   type="number"
                   placeholder="0"
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-900 focus:border-transparent transition"
-                  value={formData.sortOrder}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-900 focus:border-transparent transition
+    [appearance:textfield]
+    [&::-webkit-outer-spin-button]:appearance-auto
+    [&::-webkit-inner-spin-button]:appearance-auto
+    [&::-webkit-outer-spin-button]:opacity-100
+    [&::-webkit-inner-spin-button]:opacity-100
+    [&::-webkit-outer-spin-button]:cursor-pointer
+    [&::-webkit-inner-spin-button]:cursor-pointer"
+                  value={formData.sortOrder === 0 ? "" : formData.sortOrder}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
