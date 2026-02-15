@@ -270,25 +270,40 @@ export default function VariantsSection({
                         <Label className="text-xs text-slate-600 mb-1.5 block font-semibold">
                           Stok Adedi
                         </Label>
-                        <Input
+                        <input
                           type="number"
                           min={0}
-                          value={stockData?.stock ?? 0}
+                          value={
+                            stockData?.stock === 0
+                              ? ""
+                              : (stockData?.stock ?? "")
+                          }
                           onChange={(e) =>
                             updateStock(sizeId, "stock", Number(e.target.value))
                           }
-                          className="h-10 text-sm bg-white border-slate-200 rounded-xl"
                           placeholder="0"
+                          className="h-10 w-full px-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-slate-400 transition-colors
+    [appearance:textfield]
+    [&::-webkit-outer-spin-button]:appearance-auto
+    [&::-webkit-inner-spin-button]:appearance-auto
+    [&::-webkit-outer-spin-button]:opacity-100
+    [&::-webkit-inner-spin-button]:opacity-100
+    [&::-webkit-outer-spin-button]:cursor-pointer
+    [&::-webkit-inner-spin-button]:cursor-pointer"
                         />
                       </div>
                       <div>
                         <Label className="text-xs text-slate-600 mb-1.5 block font-semibold">
                           Fiyat Farkı (₺)
                         </Label>
-                        <Input
+                        <input
                           type="number"
                           step="0.01"
-                          value={stockData?.priceModifier ?? 0}
+                          value={
+                            stockData?.priceModifier === 0
+                              ? ""
+                              : (stockData?.priceModifier ?? "")
+                          }
                           onChange={(e) =>
                             updateStock(
                               sizeId,
@@ -296,8 +311,15 @@ export default function VariantsSection({
                               Number(e.target.value),
                             )
                           }
-                          className="h-10 text-sm bg-white border-slate-200 rounded-xl"
                           placeholder="0"
+                          className="h-10 w-full px-3 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-slate-400 transition-colors
+    [appearance:textfield]
+    [&::-webkit-outer-spin-button]:appearance-auto
+    [&::-webkit-inner-spin-button]:appearance-auto
+    [&::-webkit-outer-spin-button]:opacity-100
+    [&::-webkit-inner-spin-button]:opacity-100
+    [&::-webkit-outer-spin-button]:cursor-pointer
+    [&::-webkit-inner-spin-button]:cursor-pointer"
                         />
                       </div>
                     </div>
