@@ -82,13 +82,12 @@ export default function Footer() {
     populerLinkler: {
       title: "Popüler Linkler",
       links: [
-        { label: "İş Ayakkabıları", href: "/category/shoes" },
-        { label: "Toz Maskeleri", href: "/category/masks" },
-        { label: "İş Pantolonları", href: "/category/pants" },
-        { label: "İkaz Yelekleri", href: "/category/vests" },
-        { label: "İş Yelekleri", href: "/category/work-vests" },
-        { label: "Koruyucu Teknik Giysiler", href: "/category/protective" },
-        { label: "Yüksek Görünümlü Ürünler", href: "/category/hi-vis" },
+        { label: "İş Elbiseleri", href: "/products/category/1" },
+        { label: "İş Ayakkabıları", href: "/products/category/2"},
+        { label: "İş Eldivenleri", href: "/products/category/3" },
+        { label: "Koruyucu Teknik Kıyafet", href: "/products/category/4"},
+        { label: "İş Güvenlik Ekipmanları", href: "/products/category/5" },
+        { label: "Outdoor", href: "/products/category/6"},
       ],
     },
     yardim: {

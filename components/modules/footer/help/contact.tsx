@@ -80,7 +80,7 @@ export default function Contact() {
             </motion.div>
           </div>
           <div className="lg:col-span-4 flex items-end">
-            <p className="text-slate-400 text-sm leading-relaxed max-w-[280px]">
+            <p className="text-slate-600 text-sm leading-relaxed max-w-[280px]">
               Projeleriniz, talepleriniz veya teknik destek ihtiyaçlarınız için
               küresel standartlarda kurumsal destek sağlıyoruz.
             </p>
@@ -129,7 +129,7 @@ export default function Contact() {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full bg-transparent border-b border-slate-200 py-4 outline-none focus:border-orange-600 transition-all text-lg font-light placeholder:text-slate-200"
+                  className="w-full bg-transparent border-b border-slate-400 py-4 outline-none focus:border-orange-600 transition-all text-lg font-light placeholder:text-slate-400"
                   placeholder="Ali Yılmaz"
                   required
                 />
@@ -143,7 +143,7 @@ export default function Contact() {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full bg-transparent border-b border-slate-200 py-4 outline-none focus:border-orange-600 transition-all text-lg font-light placeholder:text-slate-200"
+                  className="w-full bg-transparent border-b border-slate-400 py-4 outline-none focus:border-orange-600 transition-all text-lg font-light placeholder:text-slate-400"
                   placeholder="office@company.com"
                   required
                 />
@@ -157,7 +157,7 @@ export default function Contact() {
                   value={formData.message}
                   onChange={handleInputChange}
                   rows={4}
-                  className="w-full bg-transparent border-b border-slate-200 py-4 outline-none focus:border-orange-600 transition-all text-lg font-light resize-none placeholder:text-slate-200"
+                  className="w-full bg-transparent border-b border-slate-400 py-4 outline-none focus:border-orange-600 transition-all text-lg font-light resize-none placeholder:text-slate-400"
                   placeholder="Projenizden kısaca bahsedin..."
                   required
                 />
@@ -166,7 +166,7 @@ export default function Contact() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="group rounded-sm relative flex items-center gap-4 bg-slate-900 text-white px-12 py-6 overflow-hidden transition-all hover:bg-orange-600 disabled:bg-slate-200 disabled:cursor-not-allowed"
+                  className="group rounded-sm relative flex items-center gap-4 bg-slate-900 text-white px-12 py-6 overflow-hidden transition-all hover:bg-orange-600 disabled:bg-slate-400 disabled:cursor-not-allowed"
                 >
                   <span className="relative z-10 text-[11px] font-bold uppercase tracking-[0.3em]">
                     {isLoading ? "Gönderiliyor..." : "Mesajı İletin"}
@@ -190,7 +190,7 @@ export default function Contact() {
             <h5 className="text-[10px] uppercase tracking-[0.4em] font-bold text-slate-400 italic">
               Location Terminal v1.0
             </h5>
-            <div className="flex items-center gap-2 text-slate-300">
+            <div className="flex items-center gap-2 text-slate-500">
               <Clock size={12} />
               <span className="text-[10px] uppercase">GMT +3</span>
             </div>
