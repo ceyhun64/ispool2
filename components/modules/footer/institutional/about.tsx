@@ -129,7 +129,7 @@ export default function AboutPage() {
               <h4 className="text-xl font-black uppercase italic">
                 Ar-Ge Merkezi
               </h4>
-              <p className="text-orange-500 text-sm leading-relaxed bg-white/10 p-2 rounded">
+              <p className="text-orange-50 text-sm leading-relaxed bg-white/10 p-2 rounded">
                 Güvenliği artıran akıllı tekstiller ve ergonomik kalıplar
                 üzerine uzmanlaşıyoruz.
               </p>
