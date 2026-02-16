@@ -176,7 +176,7 @@ export default function HeroSlider() {
                     delay: 0.1,
                     ease: [0.16, 1, 0.3, 1],
                   }}
-                  className="text-3xl sm:text-5xl lg:text-7xl font-black text-orange-500 italic uppercase tracking-tighter leading-[0.95]"
+                  className="text-3xl sm:text-5xl lg:text-7xl font-black text-orange-500 uppercase tracking-tighter leading-[0.95]"
                 >
                   {currentSlide.subtitle}
                 </motion.h2>
