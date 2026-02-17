@@ -593,6 +593,7 @@ export default function ProductDetailPage() {
                     <span className="text-slate-600">
                       Ürün Fiyatı ({quantity} adet)
                     </span>
+                    
                     <span className="font-bold text-slate-900">
                       {subtotal.toLocaleString("tr-TR", {
                         minimumFractionDigits: 2,
