@@ -14,6 +14,8 @@ import subCategoriesDataRaw from "@/data/subCategories.json" assert { type: "jso
 // --------------------
 // TİP TANIMLARI
 // --------------------
+
+//deneme 1 2
 interface StockInput {
   size: string;
   stock: number;
