@@ -105,6 +105,7 @@ const Filter: React.FC<FilterProps> = ({
     middleCategoryName: string;
   }[];
 
+  //deneme 1 2 
   // Renk ve beden verilerini API'den çek
   useEffect(() => {
     async function fetchFilters() {
@@ -336,6 +337,7 @@ const Filter: React.FC<FilterProps> = ({
                             </button>
                           ))}
                         </div>
+
                       </div>
                     ))}
                   </div>
