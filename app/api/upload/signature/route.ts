@@ -17,19 +17,25 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { folderName } = await req.json();
+    const { folderName, isVideo } = await req.json();
 
-    const folder = `products/${
+    const folder =
       (folderName || "genel")
         .trim()
         .toLowerCase()
         .replace(/\s+/g, "_")
-        .replace(/[^a-z0-9_]/g, "") || "genel"
-    }`;
+        .replace(/[^a-z0-9_/]/g, "") || "genel";
 
     const timestamp = Math.round(new Date().getTime() / 1000);
+
+    // İmzaya dahil edilecek parametreler — upload'da gönderileceklerle BİREBİR aynı olmalı
+    const paramsToSign: Record<string, any> = { timestamp, folder };
+    if (!isVideo) {
+      paramsToSign.format = "webp";
+    }
+
     const signature = cloudinary.utils.api_sign_request(
-      { timestamp, folder },
+      paramsToSign,
       process.env.API_SECRET!,
     );
 
