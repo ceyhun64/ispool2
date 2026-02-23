@@ -1,6 +1,7 @@
 // app/api/products/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { uploadToCloudinary } from "@/lib/server-upload";
 
 // ======================================================
 // GET /api/products
@@ -35,7 +36,7 @@ export async function GET() {
       subImage2: p.subImage2 ?? undefined,
       subImage3: p.subImage3 ?? undefined,
       subImage4: p.subImage4 ?? undefined,
-      videoUrl: p.videoUrl ?? undefined, // ← YENİ
+      videoUrl: p.videoUrl ?? undefined,
       category: p.category.name,
       middleCategory: p.middleCategory?.name ?? undefined,
       subCategory: p.subCategory?.name ?? undefined,
@@ -77,7 +78,7 @@ export async function POST(request: Request) {
     const subFile2 = formData.get("subImage2File") as File | null;
     const subFile3 = formData.get("subImage3File") as File | null;
     const subFile4 = formData.get("subImage4File") as File | null;
-    const videoFile = formData.get("videoFile") as File | null; // ← YENİ
+    const videoFile = formData.get("videoFile") as File | null;
 
     if (!mainFile) {
       return NextResponse.json(
@@ -86,35 +87,22 @@ export async function POST(request: Request) {
       );
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-
-    async function uploadFile(file: File, folder: string) {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("folderName", folder);
-      const res = await fetch(`${baseUrl}/api/upload`, {
-        method: "POST",
-        body: fd,
-      });
-      if (!res.ok) throw new Error("Dosya yüklenemedi");
-      const data = await res.json();
-      return data.path as string;
-    }
-
-    const mainImagePath = await uploadFile(mainFile, "products");
-    const subImagePath = subFile ? await uploadFile(subFile, "products") : null;
+    const mainImagePath = await uploadToCloudinary(mainFile, "products");
+    const subImagePath = subFile
+      ? await uploadToCloudinary(subFile, "products")
+      : null;
     const subImage2Path = subFile2
-      ? await uploadFile(subFile2, "products")
+      ? await uploadToCloudinary(subFile2, "products")
       : null;
     const subImage3Path = subFile3
-      ? await uploadFile(subFile3, "products")
+      ? await uploadToCloudinary(subFile3, "products")
       : null;
     const subImage4Path = subFile4
-      ? await uploadFile(subFile4, "products")
+      ? await uploadToCloudinary(subFile4, "products")
       : null;
     const videoPath = videoFile
-      ? await uploadFile(videoFile, "products")
-      : null; // ← YENİ
+      ? await uploadToCloudinary(videoFile, "products")
+      : null;
 
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
@@ -247,7 +235,7 @@ export async function POST(request: Request) {
           subImage2: subImage2Path,
           subImage3: subImage3Path,
           subImage4: subImage4Path,
-          videoUrl: videoPath, // ← YENİ
+          videoUrl: videoPath,
           brandId,
           colorId,
           productGroupId:
@@ -316,7 +304,7 @@ export async function POST(request: Request) {
           title: newProduct.title,
           price: newProduct.price,
           mainImage: newProduct.mainImage,
-          videoUrl: newProduct.videoUrl ?? undefined, // ← YENİ
+          videoUrl: newProduct.videoUrl ?? undefined,
           category: newProduct.category.name,
         },
       },

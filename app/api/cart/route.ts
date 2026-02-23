@@ -3,24 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-
-// ---------------------------------------------------------------------------
-// Upload helper
-// ---------------------------------------------------------------------------
-async function uploadToCloudinary(file: File, folder: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const fd = new FormData();
-  fd.append("file", file);
-  fd.append("folderName", folder);
-
-  const res = await fetch(`${baseUrl}/api/upload`, {
-    method: "POST",
-    body: fd,
-  });
-  if (!res.ok) throw new Error("Cloudinary yükleme hatası");
-  const data = await res.json();
-  return data.path as string;
-}
+import { uploadToCloudinary } from "@/lib/server-upload";
 
 // ---------------------------------------------------------------------------
 // GET  /api/cart
@@ -34,7 +17,7 @@ export async function GET() {
       where: { userId: Number(session.user.id) },
       include: {
         product: true,
-        size: true, // ← beden adı / bilgi ile birlikte döndür
+        size: true,
       },
       orderBy: { createdAt: "desc" },
     });
@@ -59,7 +42,7 @@ export async function POST(req: Request) {
     const productId = Number(formData.get("productId"));
     const quantity = Number(formData.get("quantity") || 1);
     const sizeIdRaw = formData.get("sizeId") as string | null;
-    const sizeId = sizeIdRaw ? Number(sizeIdRaw) : null; // ← beden
+    const sizeId = sizeIdRaw ? Number(sizeIdRaw) : null;
     const customFile = formData.get("customImageFile") as File | null;
     let customImageUrl = formData.get("customImage") as string | null;
 
@@ -71,7 +54,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Geçersiz miktar" }, { status: 400 });
     }
 
-    // ürün var mı
     const product = await prisma.product.findUnique({
       where: { id: productId },
     });
@@ -79,7 +61,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Ürün bulunamadı" }, { status: 404 });
     }
 
-    // beden var mı (gönderilmişse)
     if (sizeId) {
       const size = await prisma.size.findUnique({ where: { id: sizeId } });
       if (!size) {
@@ -121,18 +102,17 @@ export async function POST(req: Request) {
       }
     }
 
-    // ─── Duplicate kontrolü: productId + sizeId + customImage ──────────────
+    // ─── Duplicate kontrolü ────────────────────────────────────────────────
     const existing = await prisma.cartItem.findFirst({
       where: {
         userId: Number(session.user.id),
         productId,
-        sizeId, // null === null → normal ürün
-        customImage: customImageUrl || null, // null === null → özel resim yok
+        sizeId,
+        customImage: customImageUrl || null,
       },
     });
 
     if (existing) {
-      // aynı kombinasyon → adet arttır
       const updated = await prisma.cartItem.update({
         where: { id: existing.id },
         data: { quantity: existing.quantity + quantity },
@@ -147,7 +127,7 @@ export async function POST(req: Request) {
         userId: Number(session.user.id),
         productId,
         quantity,
-        sizeId, // ← beden kaydedildi
+        sizeId,
         customImage: customImageUrl || null,
       },
       include: { product: true, size: true },
