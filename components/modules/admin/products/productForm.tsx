@@ -47,46 +47,6 @@ interface ProductFormPageProps {
   productId?: number;
 }
 
-// ---------------------------------------------------------------------------
-// Cloudinary'e client-side upload (Vercel limitini bypass eder)
-// ---------------------------------------------------------------------------
-async function uploadFileToCloudinary(
-  file: File,
-  folderName: string,
-): Promise<string> {
-  // 1. Sunucudan imza al
-  const sigRes = await fetch("/api/upload/signature", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ folderName }),
-  });
-  if (!sigRes.ok) throw new Error("İmza alınamadı");
-  const { timestamp, signature, folder, apiKey, cloudName } =
-    await sigRes.json();
-
-  const isVideo = file.type.startsWith("video/");
-
-  // 2. Direkt Cloudinary'e yükle
-  const fd = new FormData();
-  fd.append("file", file);
-  fd.append("timestamp", String(timestamp));
-  fd.append("signature", signature);
-  fd.append("api_key", apiKey);
-  fd.append("folder", folder);
-  if (!isVideo) fd.append("format", "webp");
-
-  const uploadRes = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/${isVideo ? "video" : "image"}/upload`,
-    { method: "POST", body: fd },
-  );
-  if (!uploadRes.ok) {
-    const err = await uploadRes.json().catch(() => ({}));
-    throw new Error(err?.error?.message || "Cloudinary yükleme hatası");
-  }
-  const data = await uploadRes.json();
-  return data.secure_url as string;
-}
-
 export default function ProductForm({ productId }: ProductFormPageProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -118,15 +78,15 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
   const [sub2, setSub2] = useState<File | null>(null);
   const [sub3, setSub3] = useState<File | null>(null);
   const [sub4, setSub4] = useState<File | null>(null);
-  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoFile, setVideoFile] = useState<File | null>(null); // ← YENİ
 
   const [mainUrl, setMainUrl] = useState<string | null>(null);
   const [subUrl1, setSubUrl1] = useState<string | null>(null);
   const [subUrl2, setSubUrl2] = useState<string | null>(null);
   const [subUrl3, setSubUrl3] = useState<string | null>(null);
   const [subUrl4, setSubUrl4] = useState<string | null>(null);
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [removeVideo, setRemoveVideo] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null); // ← YENİ
+  const [removeVideo, setRemoveVideo] = useState(false); // ← YENİ
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -227,7 +187,7 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
             setSubUrl2(product.images?.[2] || null);
             setSubUrl3(product.images?.[3] || null);
             setSubUrl4(product.images?.[4] || null);
-            setVideoUrl(product.videoUrl || null);
+            setVideoUrl(product.videoUrl || null); // ← YENİ
           } else {
             toast.error("Ürün bilgileri yüklenemedi");
             router.push("/admin/products");
@@ -273,113 +233,93 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
       return;
     }
 
-    setLoading(true);
+    const dataForm = new FormData();
+    dataForm.append("title", productData.title);
+    dataForm.append("description", productData.description);
+    dataForm.append("price", String(productData.price));
+    dataForm.append("rating", String(productData.rating));
+    dataForm.append("reviewCount", String(productData.reviewCount));
+    dataForm.append("category", productData.category);
 
-    try {
-      // ─── 1. Dosyaları önce Cloudinary'e yükle ───────────────────────────
-      toast.loading("Görseller yükleniyor...", { id: "upload" });
+    if (productData.oldPrice !== undefined && productData.oldPrice > 0)
+      dataForm.append("oldPrice", String(productData.oldPrice));
+    if (productData.discountPercentage !== undefined)
+      dataForm.append(
+        "discountPercentage",
+        String(productData.discountPercentage),
+      );
+    if (productData.middleCategory)
+      dataForm.append("middleCategory", productData.middleCategory);
+    if (productData.subCategory)
+      dataForm.append("subCategory", productData.subCategory);
+    if (productData.brandId !== undefined)
+      dataForm.append("brandId", String(productData.brandId));
+    if (productData.colorId !== undefined)
+      dataForm.append("colorId", String(productData.colorId));
+    if (
+      productData.productGroupId !== undefined &&
+      productData.productGroupId !== ""
+    )
+      dataForm.append("productGroupId", productData.productGroupId);
+    if (
+      productData.bulkDiscountQty !== undefined &&
+      productData.bulkDiscountQty > 0
+    )
+      dataForm.append("bulkDiscountQty", String(productData.bulkDiscountQty));
+    if (
+      productData.bulkDiscountRate !== undefined &&
+      productData.bulkDiscountRate > 0
+    )
+      dataForm.append("bulkDiscountRate", String(productData.bulkDiscountRate));
 
-      const [
-        uploadedMainUrl,
-        uploadedSub1,
-        uploadedSub2,
-        uploadedSub3,
-        uploadedSub4,
-        uploadedVideoUrl,
-      ] = await Promise.all([
-        mainFile
-          ? uploadFileToCloudinary(mainFile, "products")
-          : Promise.resolve(mainUrl),
-        sub1
-          ? uploadFileToCloudinary(sub1, "products")
-          : Promise.resolve(subUrl1),
-        sub2
-          ? uploadFileToCloudinary(sub2, "products")
-          : Promise.resolve(subUrl2),
-        sub3
-          ? uploadFileToCloudinary(sub3, "products")
-          : Promise.resolve(subUrl3),
-        sub4
-          ? uploadFileToCloudinary(sub4, "products")
-          : Promise.resolve(subUrl4),
-        videoFile
-          ? uploadFileToCloudinary(videoFile, "products")
-          : Promise.resolve(removeVideo ? null : videoUrl),
-      ]);
-
-      toast.dismiss("upload");
-
-      // ─── 2. Sadece URL'leri JSON olarak API'ye gönder ───────────────────
-      const payload: Record<string, any> = {
-        title: productData.title,
-        description: productData.description,
-        price: productData.price,
-        rating: productData.rating,
-        reviewCount: productData.reviewCount,
-        category: productData.category,
-        mainImage: uploadedMainUrl,
-        subImage: uploadedSub1 || null,
-        subImage2: uploadedSub2 || null,
-        subImage3: uploadedSub3 || null,
-        subImage4: uploadedSub4 || null,
-        videoUrl: uploadedVideoUrl || null,
-        removeVideo,
+    if (selectedSizeIds.length > 0) {
+      dataForm.append(
+        "sizes",
+        JSON.stringify(selectedSizeIds.map((id) => ({ sizeId: id }))),
+      );
+      dataForm.append(
+        "stock",
+        JSON.stringify(
+          selectedSizeIds.map((sizeId) => {
+            const existing = productData.stock.find((s) => s.sizeId === sizeId);
+            return {
+              sizeId,
+              stock: existing?.stock ?? 0,
+              priceModifier: existing?.priceModifier ?? 0,
+            };
+          }),
+        ),
+      );
+    } else {
+      dataForm.append("sizes", JSON.stringify([]));
+      const singleStock = productData.stock.find((s) => s.sizeId === null) || {
+        sizeId: null,
+        stock: 50,
+        priceModifier: 0,
       };
+      dataForm.append("stock", JSON.stringify([singleStock]));
+    }
 
-      if (productData.oldPrice && productData.oldPrice > 0)
-        payload.oldPrice = productData.oldPrice;
-      if (productData.discountPercentage !== undefined)
-        payload.discountPercentage = productData.discountPercentage;
-      if (productData.middleCategory)
-        payload.middleCategory = productData.middleCategory;
-      if (productData.subCategory)
-        payload.subCategory = productData.subCategory;
-      if (productData.brandId !== undefined)
-        payload.brandId = productData.brandId;
-      if (productData.colorId !== undefined)
-        payload.colorId = productData.colorId;
-      if (productData.productGroupId)
-        payload.productGroupId = productData.productGroupId;
-      if (productData.bulkDiscountQty && productData.bulkDiscountQty > 0)
-        payload.bulkDiscountQty = productData.bulkDiscountQty;
-      if (productData.bulkDiscountRate && productData.bulkDiscountRate > 0)
-        payload.bulkDiscountRate = productData.bulkDiscountRate;
+    if (mainFile) dataForm.append("file", mainFile);
+    if (sub1) dataForm.append("subImageFile", sub1);
+    if (sub2) dataForm.append("subImage2File", sub2);
+    if (sub3) dataForm.append("subImage3File", sub3);
+    if (sub4) dataForm.append("subImage4File", sub4);
+    if (videoFile) dataForm.append("videoFile", videoFile); // ← YENİ
+    if (removeVideo) dataForm.append("removeVideo", "true"); // ← YENİ
 
-      if (selectedSizeIds.length > 0) {
-        payload.sizes = selectedSizeIds.map((id) => ({ sizeId: id }));
-        payload.stock = selectedSizeIds.map((sizeId) => {
-          const existing = productData.stock.find((s) => s.sizeId === sizeId);
-          return {
-            sizeId,
-            stock: existing?.stock ?? 0,
-            priceModifier: existing?.priceModifier ?? 0,
-          };
-        });
-      } else {
-        payload.sizes = [];
-        const singleStock = productData.stock.find(
-          (s) => s.sizeId === null,
-        ) || { sizeId: null, stock: 50, priceModifier: 0 };
-        payload.stock = [singleStock];
-      }
+    const url = productId ? `/api/products/${productId}` : "/api/products";
+    const method = productId ? "PUT" : "POST";
 
-      const url = productId ? `/api/products/${productId}` : "/api/products";
-      const method = productId ? "PUT" : "POST";
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
+    setLoading(true);
+    try {
+      const res = await fetch(url, { method, body: dataForm });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "İşlem başarısız");
-
       toast.success(productId ? "Ürün güncellendi" : "Ürün eklendi");
       router.push("/admin/products");
       router.refresh();
     } catch (error: any) {
-      toast.dismiss("upload");
       toast.error(error.message || "Bir hata oluştu");
     } finally {
       setLoading(false);
@@ -454,6 +394,8 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
                 setAvailableMiddleCategories={setAvailableMiddleCategories}
                 setAvailableSubCategories={setAvailableSubCategories}
               />
+
+              {/* ← YENİ: videoFile/videoUrl props eklendi */}
               <ImageUploadSection
                 mainFile={mainFile}
                 setMainFile={setMainFile}
