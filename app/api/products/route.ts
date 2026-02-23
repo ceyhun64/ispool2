@@ -1,11 +1,9 @@
 // app/api/products/route.ts
+// Dosyalar client-side'dan direkt Cloudinary'e yükleniyor.
+// Bu route sadece Cloudinary URL'lerini JSON olarak alır.
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { uploadToCloudinary } from "@/lib/server-upload";
 
-// ======================================================
-// GET /api/products
-// ======================================================
 export async function GET() {
   try {
     const products = await prisma.product.findMany({
@@ -66,108 +64,76 @@ export async function GET() {
   }
 }
 
-// ======================================================
-// POST /api/products
-// ======================================================
+// POST — JSON alır, formData/dosya almaz
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData();
+    const body = await request.json();
+    const {
+      title,
+      description,
+      price: priceRaw,
+      oldPrice: oldPriceRaw,
+      discountPercentage: discountRaw,
+      rating: ratingRaw,
+      reviewCount: reviewCountRaw,
+      category: categoryName,
+      middleCategory: middleCategoryName,
+      subCategory: subCategoryName,
+      brandId: brandIdRaw,
+      colorId: colorIdRaw,
+      productGroupId,
+      bulkDiscountQty: bulkQtyRaw,
+      bulkDiscountRate: bulkRateRaw,
+      sizes: sizesInput = [],
+      stock: stockInput = [],
+      mainImage,
+      subImage,
+      subImage2,
+      subImage3,
+      subImage4,
+      videoUrl,
+    } = body;
 
-    const mainFile = formData.get("file") as File | null;
-    const subFile = formData.get("subImageFile") as File | null;
-    const subFile2 = formData.get("subImage2File") as File | null;
-    const subFile3 = formData.get("subImage3File") as File | null;
-    const subFile4 = formData.get("subImage4File") as File | null;
-    const videoFile = formData.get("videoFile") as File | null;
-
-    if (!mainFile) {
-      return NextResponse.json(
-        { success: false, error: "Ana görsel zorunludur." },
-        { status: 400 },
-      );
-    }
-
-    const mainImagePath = await uploadToCloudinary(mainFile, "products");
-    const subImagePath = subFile
-      ? await uploadToCloudinary(subFile, "products")
-      : null;
-    const subImage2Path = subFile2
-      ? await uploadToCloudinary(subFile2, "products")
-      : null;
-    const subImage3Path = subFile3
-      ? await uploadToCloudinary(subFile3, "products")
-      : null;
-    const subImage4Path = subFile4
-      ? await uploadToCloudinary(subFile4, "products")
-      : null;
-    const videoPath = videoFile
-      ? await uploadToCloudinary(videoFile, "products")
-      : null;
-
-    const title = formData.get("title") as string;
-    const description = formData.get("description") as string;
-    const priceStr = formData.get("price") as string;
-
-    if (!title || !priceStr) {
+    if (!title || !priceRaw)
       return NextResponse.json(
         { success: false, error: "Başlık ve fiyat zorunludur" },
         { status: 400 },
       );
-    }
-
-    const price = parseFloat(priceStr);
-    if (isNaN(price) || price <= 0) {
+    if (!mainImage)
       return NextResponse.json(
-        { success: false, error: "Geçersiz fiyat" },
+        { success: false, error: "Ana görsel zorunludur." },
         { status: 400 },
       );
-    }
-
-    const oldPriceStr = formData.get("oldPrice") as string;
-    const discountPercentageStr = formData.get("discountPercentage") as string;
-    const ratingStr = formData.get("rating") as string;
-    const reviewCountStr = formData.get("reviewCount") as string;
-    const brandIdStr = formData.get("brandId") as string;
-    const colorIdStr = formData.get("colorId") as string;
-    const productGroupId = formData.get("productGroupId") as string | null;
-    const bulkDiscountQtyStr = formData.get("bulkDiscountQty") as string;
-    const bulkDiscountRateStr = formData.get("bulkDiscountRate") as string;
-
-    const oldPrice = oldPriceStr ? parseFloat(oldPriceStr) : null;
-    const discountPercentage = discountPercentageStr
-      ? parseFloat(discountPercentageStr)
-      : null;
-    const rating = ratingStr ? parseFloat(ratingStr) : 0;
-    const reviewCount = reviewCountStr ? parseInt(reviewCountStr) : 0;
-    const brandId = brandIdStr ? parseInt(brandIdStr) : null;
-    const colorId = colorIdStr ? parseInt(colorIdStr) : null;
-    const bulkDiscountQty = bulkDiscountQtyStr
-      ? parseInt(bulkDiscountQtyStr)
-      : null;
-    const bulkDiscountRate = bulkDiscountRateStr
-      ? parseFloat(bulkDiscountRateStr)
-      : null;
-
-    const categoryName = formData.get("category") as string;
-    const middleCategoryName = formData.get("middleCategory") as string | null;
-    const subCategoryName = formData.get("subCategory") as string | null;
-
-    if (!categoryName) {
+    if (!categoryName)
       return NextResponse.json(
         { success: false, error: "Ana kategori gerekli" },
         { status: 400 },
       );
-    }
+
+    const price = parseFloat(priceRaw);
+    if (isNaN(price) || price <= 0)
+      return NextResponse.json(
+        { success: false, error: "Geçersiz fiyat" },
+        { status: 400 },
+      );
+
+    const oldPrice = oldPriceRaw ? parseFloat(oldPriceRaw) : null;
+    const discountPercentage = discountRaw ? parseFloat(discountRaw) : null;
+    const rating = ratingRaw ? parseFloat(ratingRaw) : 0;
+    const reviewCount = reviewCountRaw ? parseInt(reviewCountRaw) : 0;
+    const brandId = brandIdRaw ? parseInt(brandIdRaw) : null;
+    const colorId = colorIdRaw ? parseInt(colorIdRaw) : null;
+    const bulkDiscountQty = bulkQtyRaw ? parseInt(bulkQtyRaw) : null;
+    const bulkDiscountRate = bulkRateRaw ? parseFloat(bulkRateRaw) : null;
 
     const category = await prisma.category.findFirst({
       where: { name: categoryName },
     });
-    if (!category) {
+    if (!category)
       return NextResponse.json(
         { success: false, error: "Ana kategori bulunamadı" },
         { status: 404 },
       );
-    }
 
     let middleCategoryId: number | null = null;
     if (middleCategoryName && middleCategoryName !== "") {
@@ -195,31 +161,6 @@ export async function POST(request: Request) {
       subCategoryId = sc.id;
     }
 
-    let sizesInput: { sizeId: number }[] = [];
-    let stockInput: {
-      sizeId: number | null;
-      stock: number;
-      priceModifier: number;
-    }[] = [];
-
-    const sizesRaw = formData.get("sizes");
-    const stockRaw = formData.get("stock");
-
-    if (sizesRaw) {
-      try {
-        sizesInput = JSON.parse(sizesRaw as string);
-      } catch (e) {
-        sizesInput = [];
-      }
-    }
-    if (stockRaw) {
-      try {
-        stockInput = JSON.parse(stockRaw as string);
-      } catch (e) {
-        stockInput = [];
-      }
-    }
-
     const newProduct = await prisma.$transaction(async (tx) => {
       const product = await tx.product.create({
         data: {
@@ -230,16 +171,15 @@ export async function POST(request: Request) {
           rating,
           reviewCount,
           description,
-          mainImage: mainImagePath,
-          subImage: subImagePath,
-          subImage2: subImage2Path,
-          subImage3: subImage3Path,
-          subImage4: subImage4Path,
-          videoUrl: videoPath,
+          mainImage,
+          subImage: subImage || null,
+          subImage2: subImage2 || null,
+          subImage3: subImage3 || null,
+          subImage4: subImage4 || null,
+          videoUrl: videoUrl || null,
           brandId,
           colorId,
-          productGroupId:
-            productGroupId && productGroupId !== "" ? productGroupId : null,
+          productGroupId: productGroupId || null,
           categoryId: category.id,
           middleCategoryId,
           subCategoryId,
@@ -256,24 +196,22 @@ export async function POST(request: Request) {
 
       if (sizesInput.length > 0) {
         await tx.productSize.createMany({
-          data: sizesInput.map((s) => ({
+          data: sizesInput.map((s: any) => ({
             productId: product.id,
             sizeId: s.sizeId,
           })),
         });
-
         const stockToCreate =
           stockInput.length > 0
-            ? stockInput.filter((s) => s.sizeId !== null)
-            : sizesInput.map((s) => ({
+            ? stockInput.filter((s: any) => s.sizeId !== null)
+            : sizesInput.map((s: any) => ({
                 sizeId: s.sizeId,
                 stock: 10,
                 priceModifier: 0,
               }));
-
         if (stockToCreate.length > 0) {
           await tx.productStock.createMany({
-            data: stockToCreate.map((s) => ({
+            data: stockToCreate.map((s: any) => ({
               productId: product.id,
               sizeId: s.sizeId,
               stock: s.stock,
@@ -282,7 +220,7 @@ export async function POST(request: Request) {
           });
         }
       } else {
-        const singleStock = stockInput.find((s) => s.sizeId === null);
+        const singleStock = stockInput.find((s: any) => s.sizeId === null);
         await tx.productStock.create({
           data: {
             productId: product.id,
@@ -292,7 +230,6 @@ export async function POST(request: Request) {
           },
         });
       }
-
       return product;
     });
 
