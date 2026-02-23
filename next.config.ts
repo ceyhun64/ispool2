@@ -3,7 +3,7 @@ const nextConfig = {
   serverExternalPackages: ["fluent-ffmpeg", "@ffmpeg-installer/ffmpeg"],
   experimental: {
     serverActions: {
-      bodySizeLimit: "50mb",
+      bodySizeLimit: "150mb",
     },
   },
   images: {
