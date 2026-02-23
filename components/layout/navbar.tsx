@@ -216,7 +216,7 @@ export default function Navbar() {
               {/* ── KULLANICI ── */}
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="group flex items-center gap-4 pl-2 pr-1 md:pr-4 py-2 hover:bg-slate-50 transition-all outline-none focus-visible:ring-2 focus-visible:ring-orange-600"
+                className="flex group items-center gap-4 pl-2 pr-1 md:pr-4 py-2 hover:bg-slate-50 transition-all outline-none focus-visible:ring-2 focus-visible:ring-orange-600"
                 aria-label="Kullanıcı Menüsü"
               >
                 <div className="w-9 h-9 rounded-sm md:w-10 md:h-10 text-slate-950 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
@@ -232,7 +232,9 @@ export default function Navbar() {
                 </div>
               </button>
 
-              <CartDropdown />
+              <div>
+                <CartDropdown />
+              </div>
 
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
@@ -389,6 +391,75 @@ export default function Navbar() {
         userMenuOpen={userMenuOpen}
         setUserMenuOpen={setUserMenuOpen}
       />
+
+      {/* ===== MOBİL ALT NAVİGASYON BAR ===== */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+        <div className="grid grid-cols-4 h-16">
+          {/* Ana Sayfa */}
+          <NextLink
+            href="/"
+            className="flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-orange-600 active:text-orange-600 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+            <span className="text-[9px] font-black uppercase tracking-wider">
+              Ana Sayfa
+            </span>
+          </NextLink>
+
+          {/* Favorilerim */}
+          <NextLink
+            href="/favorites"
+            className="flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-orange-600 active:text-orange-600 transition-colors relative"
+          >
+            <div className="relative">
+              <Heart
+                size={20}
+                strokeWidth={2.5}
+                className={
+                  favorites.length > 0 ? "fill-orange-600 text-orange-600" : ""
+                }
+              />
+              {favorites.length > 0 && (
+                <span className="absolute -top-1.5 -right-2 text-[8px] rounded-full font-black bg-slate-950 text-white w-3.5 h-3.5 flex items-center justify-center leading-none">
+                  {favorites.length > 9 ? "9+" : favorites.length}
+                </span>
+              )}
+            </div>
+            <span className="text-[9px] font-black uppercase tracking-wider">
+              Favoriler
+            </span>
+          </NextLink>
+
+          {/* Sepetim - CartDropdown'ı trigger eder */}
+          <div className="flex flex-col items-center justify-center">
+            <CartDropdown mobileBottomBar />
+          </div>
+
+          {/* Hesabım */}
+          <button
+            onClick={() => setUserMenuOpen(!userMenuOpen)}
+            className="flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-orange-600 active:text-orange-600 transition-colors"
+          >
+            <User size={20} strokeWidth={2.5} />
+            <span className="text-[9px] font-black uppercase tracking-wider">
+              Hesabım
+            </span>
+          </button>
+        </div>
+      </div>
     </>
   );
 }

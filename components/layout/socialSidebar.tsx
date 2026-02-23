@@ -8,7 +8,7 @@ export default function SocialSidebar() {
   const whatsappLink = `https://wa.me/${whatsappNumber.replace(/[^\d]/g, "")}`;
 
   return (
-    <div className="fixed left-0 bottom-6 md:bottom-10 z-[10]">
+    <div className="fixed left-0 bottom-18 md:bottom-10 z-[10]">
       <motion.a
         href={whatsappLink}
         target="_blank"

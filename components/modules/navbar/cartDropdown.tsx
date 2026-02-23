@@ -62,13 +62,21 @@ export interface CartItemType {
 interface CartDropdownProps {
   showCount?: boolean;
   guest?: boolean;
+  mobileBottomBar?: boolean; // Alt bar modu
 }
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 const CartDropdown = forwardRef(
-  ({ showCount = true, guest = false }: CartDropdownProps, ref) => {
+  (
+    {
+      showCount = true,
+      guest = false,
+      mobileBottomBar = false,
+    }: CartDropdownProps,
+    ref,
+  ) => {
     const [cartItems, setCartItems] = useState<CartItemType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isOpen, setIsOpen] = useState(false);
@@ -252,7 +260,6 @@ const CartDropdown = forwardRef(
     const subtotal = cartItems.reduce((acc, i) => {
       let itemTotal = i.product.price * i.quantity;
 
-      // Toplu alım indirimi kontrolü
       if (
         i.product.bulkDiscountQty &&
         i.product.bulkDiscountRate &&
@@ -281,24 +288,45 @@ const CartDropdown = forwardRef(
     const taxAmount = subtotal * 0.1;
     const total = subtotal + taxAmount;
 
+    // ─── Trigger Button ────────────────────────────────────────────────────
+    // Mobil alt bar için özel görünüm
+    const TriggerButton = mobileBottomBar ? (
+      <button
+        aria-label="Sepeti Aç"
+        className="flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-orange-600 active:text-orange-600 transition-colors relative w-full h-full"
+      >
+        <div className="relative">
+          <ShoppingCart size={20} strokeWidth={2.5} />
+          {showCount && cartItems.length > 0 && (
+            <span className="absolute -top-1.5 -right-2 h-3.5 w-3.5 rounded-full bg-slate-900 text-white text-[8px] flex items-center justify-center font-bold leading-none">
+              {cartItems.length > 9 ? "9+" : cartItems.length}
+            </span>
+          )}
+        </div>
+        <span className="text-[9px] font-black uppercase tracking-wider">
+          Sepetim
+        </span>
+      </button>
+    ) : (
+      <button
+        aria-label="Sepeti Aç"
+        className="group relative flex items-center gap-4 pl-2 pr-1 md:pr-4 py-2 hover:bg-slate-50 transition-all outline-none focus-visible:ring-2 focus-visible:ring-orange-600"
+      >
+        <div className="w-9 h-9 md:w-10 md:h-10 rounded-sm text-slate-950 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+          <ShoppingCart size={18} strokeWidth={2.5} />
+        </div>
+        {showCount && cartItems.length > 0 && (
+          <span className="absolute top-2 right-2 h-4 w-4 rounded-full bg-slate-900 text-white text-[9px] flex items-center justify-center font-bold font-mono shadow-sm">
+            {cartItems.length}
+          </span>
+        )}
+      </button>
+    );
+
     // ─── Render ────────────────────────────────────────────────────────────
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger asChild>
-          <button
-            aria-label="Sepeti Aç"
-            className="group relative flex items-center gap-4 pl-2 pr-1 md:pr-4 py-2 hover:bg-slate-50 transition-all outline-none focus-visible:ring-2 focus-visible:ring-orange-600"
-          >
-            <div className="w-9 h-9 md:w-10 md:h-10 rounded-sm  text-slate-950 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
-              <ShoppingCart size={18} strokeWidth={2.5} />
-            </div>
-            {showCount && cartItems.length > 0 && (
-              <span className="absolute top-2 right-2 h-4 w-4 rounded-full bg-slate-900 text-white text-[9px] flex items-center justify-center font-bold font-mono shadow-sm">
-                {cartItems.length}
-              </span>
-            )}
-          </button>
-        </SheetTrigger>
+        <SheetTrigger asChild>{TriggerButton}</SheetTrigger>
 
         <SheetContent
           side="right"
@@ -410,7 +438,6 @@ const CartDropdown = forwardRef(
                   </span>
                 </div>
 
-                {/* Toplu Alım İndirimi */}
                 {totalBulkDiscount > 0 && (
                   <div className="flex justify-between text-[11px] font-bold text-emerald-600 uppercase tracking-widest">
                     <span className="flex items-center gap-1">
