@@ -71,6 +71,7 @@ export type ProductMinAggregateOutputType = {
   subImage2: string | null
   subImage3: string | null
   subImage4: string | null
+  videoUrl: string | null
   description: string | null
   colorId: number | null
   productGroupId: string | null
@@ -97,6 +98,7 @@ export type ProductMaxAggregateOutputType = {
   subImage2: string | null
   subImage3: string | null
   subImage4: string | null
+  videoUrl: string | null
   description: string | null
   colorId: number | null
   productGroupId: string | null
@@ -123,6 +125,7 @@ export type ProductCountAggregateOutputType = {
   subImage2: number
   subImage3: number
   subImage4: number
+  videoUrl: number
   description: number
   colorId: number
   productGroupId: number
@@ -183,6 +186,7 @@ export type ProductMinAggregateInputType = {
   subImage2?: true
   subImage3?: true
   subImage4?: true
+  videoUrl?: true
   description?: true
   colorId?: true
   productGroupId?: true
@@ -209,6 +213,7 @@ export type ProductMaxAggregateInputType = {
   subImage2?: true
   subImage3?: true
   subImage4?: true
+  videoUrl?: true
   description?: true
   colorId?: true
   productGroupId?: true
@@ -235,6 +240,7 @@ export type ProductCountAggregateInputType = {
   subImage2?: true
   subImage3?: true
   subImage4?: true
+  videoUrl?: true
   description?: true
   colorId?: true
   productGroupId?: true
@@ -348,6 +354,7 @@ export type ProductGroupByOutputType = {
   subImage2: string | null
   subImage3: string | null
   subImage4: string | null
+  videoUrl: string | null
   description: string
   colorId: number | null
   productGroupId: string | null
@@ -397,6 +404,7 @@ export type productWhereInput = {
   subImage2?: Prisma.StringNullableFilter<"product"> | string | null
   subImage3?: Prisma.StringNullableFilter<"product"> | string | null
   subImage4?: Prisma.StringNullableFilter<"product"> | string | null
+  videoUrl?: Prisma.StringNullableFilter<"product"> | string | null
   description?: Prisma.StringFilter<"product"> | string
   colorId?: Prisma.IntNullableFilter<"product"> | number | null
   productGroupId?: Prisma.StringNullableFilter<"product"> | string | null
@@ -434,6 +442,7 @@ export type productOrderByWithRelationInput = {
   subImage2?: Prisma.SortOrderInput | Prisma.SortOrder
   subImage3?: Prisma.SortOrderInput | Prisma.SortOrder
   subImage4?: Prisma.SortOrderInput | Prisma.SortOrder
+  videoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrder
   colorId?: Prisma.SortOrderInput | Prisma.SortOrder
   productGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -474,6 +483,7 @@ export type productWhereUniqueInput = Prisma.AtLeast<{
   subImage2?: Prisma.StringNullableFilter<"product"> | string | null
   subImage3?: Prisma.StringNullableFilter<"product"> | string | null
   subImage4?: Prisma.StringNullableFilter<"product"> | string | null
+  videoUrl?: Prisma.StringNullableFilter<"product"> | string | null
   description?: Prisma.StringFilter<"product"> | string
   colorId?: Prisma.IntNullableFilter<"product"> | number | null
   productGroupId?: Prisma.StringNullableFilter<"product"> | string | null
@@ -511,6 +521,7 @@ export type productOrderByWithAggregationInput = {
   subImage2?: Prisma.SortOrderInput | Prisma.SortOrder
   subImage3?: Prisma.SortOrderInput | Prisma.SortOrder
   subImage4?: Prisma.SortOrderInput | Prisma.SortOrder
+  videoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrder
   colorId?: Prisma.SortOrderInput | Prisma.SortOrder
   productGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -545,6 +556,7 @@ export type productScalarWhereWithAggregatesInput = {
   subImage2?: Prisma.StringNullableWithAggregatesFilter<"product"> | string | null
   subImage3?: Prisma.StringNullableWithAggregatesFilter<"product"> | string | null
   subImage4?: Prisma.StringNullableWithAggregatesFilter<"product"> | string | null
+  videoUrl?: Prisma.StringNullableWithAggregatesFilter<"product"> | string | null
   description?: Prisma.StringWithAggregatesFilter<"product"> | string
   colorId?: Prisma.IntNullableWithAggregatesFilter<"product"> | number | null
   productGroupId?: Prisma.StringNullableWithAggregatesFilter<"product"> | string | null
@@ -570,6 +582,7 @@ export type productCreateInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   productGroupId?: string | null
   bulkDiscountQty?: number | null
@@ -602,6 +615,7 @@ export type productUncheckedCreateInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -633,6 +647,7 @@ export type productUpdateInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkDiscountQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -665,6 +680,7 @@ export type productUncheckedUpdateInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -697,6 +713,7 @@ export type productCreateManyInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -722,6 +739,7 @@ export type productUpdateManyMutationInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkDiscountQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -743,6 +761,7 @@ export type productUncheckedUpdateManyInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -779,6 +798,7 @@ export type productCountOrderByAggregateInput = {
   subImage2?: Prisma.SortOrder
   subImage3?: Prisma.SortOrder
   subImage4?: Prisma.SortOrder
+  videoUrl?: Prisma.SortOrder
   description?: Prisma.SortOrder
   colorId?: Prisma.SortOrder
   productGroupId?: Prisma.SortOrder
@@ -821,6 +841,7 @@ export type productMaxOrderByAggregateInput = {
   subImage2?: Prisma.SortOrder
   subImage3?: Prisma.SortOrder
   subImage4?: Prisma.SortOrder
+  videoUrl?: Prisma.SortOrder
   description?: Prisma.SortOrder
   colorId?: Prisma.SortOrder
   productGroupId?: Prisma.SortOrder
@@ -847,6 +868,7 @@ export type productMinOrderByAggregateInput = {
   subImage2?: Prisma.SortOrder
   subImage3?: Prisma.SortOrder
   subImage4?: Prisma.SortOrder
+  videoUrl?: Prisma.SortOrder
   description?: Prisma.SortOrder
   colorId?: Prisma.SortOrder
   productGroupId?: Prisma.SortOrder
@@ -1195,6 +1217,7 @@ export type productCreateWithoutCategoryInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   productGroupId?: string | null
   bulkDiscountQty?: number | null
@@ -1226,6 +1249,7 @@ export type productUncheckedCreateWithoutCategoryInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -1286,6 +1310,7 @@ export type productScalarWhereInput = {
   subImage2?: Prisma.StringNullableFilter<"product"> | string | null
   subImage3?: Prisma.StringNullableFilter<"product"> | string | null
   subImage4?: Prisma.StringNullableFilter<"product"> | string | null
+  videoUrl?: Prisma.StringNullableFilter<"product"> | string | null
   description?: Prisma.StringFilter<"product"> | string
   colorId?: Prisma.IntNullableFilter<"product"> | number | null
   productGroupId?: Prisma.StringNullableFilter<"product"> | string | null
@@ -1311,6 +1336,7 @@ export type productCreateWithoutMiddleCategoryInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   productGroupId?: string | null
   bulkDiscountQty?: number | null
@@ -1342,6 +1368,7 @@ export type productUncheckedCreateWithoutMiddleCategoryInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -1398,6 +1425,7 @@ export type productCreateWithoutSubCategoryInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   productGroupId?: string | null
   bulkDiscountQty?: number | null
@@ -1429,6 +1457,7 @@ export type productUncheckedCreateWithoutSubCategoryInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -1485,6 +1514,7 @@ export type productCreateWithoutBrandInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   productGroupId?: string | null
   bulkDiscountQty?: number | null
@@ -1516,6 +1546,7 @@ export type productUncheckedCreateWithoutBrandInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -1572,6 +1603,7 @@ export type productCreateWithoutColorInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   productGroupId?: string | null
   bulkDiscountQty?: number | null
@@ -1603,6 +1635,7 @@ export type productUncheckedCreateWithoutColorInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   productGroupId?: string | null
   bulkDiscountQty?: number | null
@@ -1659,6 +1692,7 @@ export type productCreateWithoutSizesInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   productGroupId?: string | null
   bulkDiscountQty?: number | null
@@ -1690,6 +1724,7 @@ export type productUncheckedCreateWithoutSizesInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -1736,6 +1771,7 @@ export type productUpdateWithoutSizesInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkDiscountQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1767,6 +1803,7 @@ export type productUncheckedUpdateWithoutSizesInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1797,6 +1834,7 @@ export type productCreateWithoutStockInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   productGroupId?: string | null
   bulkDiscountQty?: number | null
@@ -1828,6 +1866,7 @@ export type productUncheckedCreateWithoutStockInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -1874,6 +1913,7 @@ export type productUpdateWithoutStockInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkDiscountQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1905,6 +1945,7 @@ export type productUncheckedUpdateWithoutStockInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1935,6 +1976,7 @@ export type productCreateWithoutFavoriteInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   productGroupId?: string | null
   bulkDiscountQty?: number | null
@@ -1966,6 +2008,7 @@ export type productUncheckedCreateWithoutFavoriteInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -2012,6 +2055,7 @@ export type productUpdateWithoutFavoriteInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkDiscountQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2043,6 +2087,7 @@ export type productUncheckedUpdateWithoutFavoriteInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2073,6 +2118,7 @@ export type productCreateWithoutCartItemInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   productGroupId?: string | null
   bulkDiscountQty?: number | null
@@ -2104,6 +2150,7 @@ export type productUncheckedCreateWithoutCartItemInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -2150,6 +2197,7 @@ export type productUpdateWithoutCartItemInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkDiscountQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2181,6 +2229,7 @@ export type productUncheckedUpdateWithoutCartItemInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2211,6 +2260,7 @@ export type productCreateWithoutOrderItemInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   productGroupId?: string | null
   bulkDiscountQty?: number | null
@@ -2242,6 +2292,7 @@ export type productUncheckedCreateWithoutOrderItemInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -2288,6 +2339,7 @@ export type productUpdateWithoutOrderItemInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkDiscountQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2319,6 +2371,7 @@ export type productUncheckedUpdateWithoutOrderItemInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2349,6 +2402,7 @@ export type productCreateWithoutReviewInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   productGroupId?: string | null
   bulkDiscountQty?: number | null
@@ -2380,6 +2434,7 @@ export type productUncheckedCreateWithoutReviewInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -2426,6 +2481,7 @@ export type productUpdateWithoutReviewInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkDiscountQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2457,6 +2513,7 @@ export type productUncheckedUpdateWithoutReviewInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2488,6 +2545,7 @@ export type productCreateManyCategoryInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -2512,6 +2570,7 @@ export type productUpdateWithoutCategoryInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkDiscountQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2543,6 +2602,7 @@ export type productUncheckedUpdateWithoutCategoryInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2574,6 +2634,7 @@ export type productUncheckedUpdateManyWithoutCategoryInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2599,6 +2660,7 @@ export type productCreateManyMiddleCategoryInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -2623,6 +2685,7 @@ export type productUpdateWithoutMiddleCategoryInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkDiscountQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2654,6 +2717,7 @@ export type productUncheckedUpdateWithoutMiddleCategoryInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2685,6 +2749,7 @@ export type productUncheckedUpdateManyWithoutMiddleCategoryInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2710,6 +2775,7 @@ export type productCreateManySubCategoryInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -2734,6 +2800,7 @@ export type productUpdateWithoutSubCategoryInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkDiscountQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2765,6 +2832,7 @@ export type productUncheckedUpdateWithoutSubCategoryInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2796,6 +2864,7 @@ export type productUncheckedUpdateManyWithoutSubCategoryInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2821,6 +2890,7 @@ export type productCreateManyBrandInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   colorId?: number | null
   productGroupId?: string | null
@@ -2845,6 +2915,7 @@ export type productUpdateWithoutBrandInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkDiscountQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2876,6 +2947,7 @@ export type productUncheckedUpdateWithoutBrandInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2907,6 +2979,7 @@ export type productUncheckedUpdateManyWithoutBrandInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   colorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2932,6 +3005,7 @@ export type productCreateManyColorInput = {
   subImage2?: string | null
   subImage3?: string | null
   subImage4?: string | null
+  videoUrl?: string | null
   description: string
   productGroupId?: string | null
   bulkDiscountQty?: number | null
@@ -2956,6 +3030,7 @@ export type productUpdateWithoutColorInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkDiscountQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2987,6 +3062,7 @@ export type productUncheckedUpdateWithoutColorInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkDiscountQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3018,6 +3094,7 @@ export type productUncheckedUpdateManyWithoutColorInput = {
   subImage2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage3?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subImage4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   productGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkDiscountQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3119,6 +3196,7 @@ export type productSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   subImage2?: boolean
   subImage3?: boolean
   subImage4?: boolean
+  videoUrl?: boolean
   description?: boolean
   colorId?: boolean
   productGroupId?: boolean
@@ -3157,6 +3235,7 @@ export type productSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   subImage2?: boolean
   subImage3?: boolean
   subImage4?: boolean
+  videoUrl?: boolean
   description?: boolean
   colorId?: boolean
   productGroupId?: boolean
@@ -3188,6 +3267,7 @@ export type productSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   subImage2?: boolean
   subImage3?: boolean
   subImage4?: boolean
+  videoUrl?: boolean
   description?: boolean
   colorId?: boolean
   productGroupId?: boolean
@@ -3219,6 +3299,7 @@ export type productSelectScalar = {
   subImage2?: boolean
   subImage3?: boolean
   subImage4?: boolean
+  videoUrl?: boolean
   description?: boolean
   colorId?: boolean
   productGroupId?: boolean
@@ -3232,7 +3313,7 @@ export type productSelectScalar = {
   updatedAt?: boolean
 }
 
-export type productOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "price" | "oldPrice" | "discountPercentage" | "rating" | "reviewCount" | "mainImage" | "subImage" | "subImage2" | "subImage3" | "subImage4" | "description" | "colorId" | "productGroupId" | "bulkDiscountQty" | "bulkDiscountRate" | "brandId" | "categoryId" | "middleCategoryId" | "subCategoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+export type productOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "price" | "oldPrice" | "discountPercentage" | "rating" | "reviewCount" | "mainImage" | "subImage" | "subImage2" | "subImage3" | "subImage4" | "videoUrl" | "description" | "colorId" | "productGroupId" | "bulkDiscountQty" | "bulkDiscountRate" | "brandId" | "categoryId" | "middleCategoryId" | "subCategoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
 export type productInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   color?: boolean | Prisma.product$colorArgs<ExtArgs>
   brand?: boolean | Prisma.product$brandArgs<ExtArgs>
@@ -3290,6 +3371,7 @@ export type $productPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     subImage2: string | null
     subImage3: string | null
     subImage4: string | null
+    videoUrl: string | null
     description: string
     colorId: number | null
     productGroupId: string | null
@@ -3747,6 +3829,7 @@ export interface productFieldRefs {
   readonly subImage2: Prisma.FieldRef<"product", 'String'>
   readonly subImage3: Prisma.FieldRef<"product", 'String'>
   readonly subImage4: Prisma.FieldRef<"product", 'String'>
+  readonly videoUrl: Prisma.FieldRef<"product", 'String'>
   readonly description: Prisma.FieldRef<"product", 'String'>
   readonly colorId: Prisma.FieldRef<"product", 'Int'>
   readonly productGroupId: Prisma.FieldRef<"product", 'String'>
