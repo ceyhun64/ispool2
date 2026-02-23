@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { uploadToCloudinary } from "@/lib/server-upload";
 import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -30,7 +31,6 @@ export async function POST(request: NextRequest) {
     const subtitle = formData.get("subtitle") as string | null;
     const imageFile = formData.get("image") as File | null;
 
-    // Resim zorunlu kontrolü
     if (!imageFile) {
       return NextResponse.json(
         { message: "Resim zorunludur." },
@@ -38,36 +38,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Resim yükleme
-    const uploadFormData = new FormData();
-    uploadFormData.append("file", imageFile);
-    uploadFormData.append("folderName", "banners");
+    const imagePath = await uploadToCloudinary(imageFile, "banners");
 
-    const uploadRes = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`,
-      {
-        method: "POST",
-        body: uploadFormData,
-      },
-    );
-
-    if (!uploadRes.ok) {
-      throw new Error("Resim yüklenemedi");
-    }
-
-    const { path: imagePath } = await uploadRes.json();
-
-    // Eski banner'ları pasif yap
     await prisma.banner.updateMany({
       data: { isActive: false },
     });
 
-    // Yeni banner oluştur
     const banner = await prisma.banner.create({
       data: {
         title: title || null,
         subtitle: subtitle || null,
-        image: imagePath, // Schema'da String türünde
+        image: imagePath,
         isActive: true,
       },
     });
