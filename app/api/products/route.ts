@@ -1,9 +1,15 @@
 // app/api/products/route.ts
+// POST artık dosya almıyor — sadece Cloudinary URL'leri + metin verisi alıyor
+// GET değişmedi, aşağıya eklenmiştir
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
 // ======================================================
-// GET /api/products
+// GET /api/products  (değişmedi)
 // ======================================================
 export async function GET() {
   try {
@@ -35,7 +41,7 @@ export async function GET() {
       subImage2: p.subImage2 ?? undefined,
       subImage3: p.subImage3 ?? undefined,
       subImage4: p.subImage4 ?? undefined,
-      videoUrl: p.videoUrl ?? undefined, // ← YENİ
+      videoUrl: p.videoUrl ?? undefined,
       category: p.category.name,
       middleCategory: p.middleCategory?.name ?? undefined,
       subCategory: p.subCategory?.name ?? undefined,
@@ -67,46 +73,27 @@ export async function GET() {
 
 // ======================================================
 // POST /api/products
+// Artık dosya almıyor — client zaten Cloudinary'ye yükledi,
+// sadece URL'leri + metin verilerini alıyor.
 // ======================================================
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
 
-    const mainFile = formData.get("file") as File | null;
-    const subFile = formData.get("subImageFile") as File | null;
-    const subFile2 = formData.get("subImage2File") as File | null;
-    const subFile3 = formData.get("subImage3File") as File | null;
-    const subFile4 = formData.get("subImage4File") as File | null;
-    const videoFile = formData.get("videoFile") as File | null; // ← YENİ
+    // ── Cloudinary URL'leri (client tarafından yüklenmiş) ──
+    const mainImageUrl = formData.get("mainImageUrl") as string | null;
+    const subImageUrl1 = formData.get("subImageUrl1") as string | null;
+    const subImageUrl2 = formData.get("subImageUrl2") as string | null;
+    const subImageUrl3 = formData.get("subImageUrl3") as string | null;
+    const subImageUrl4 = formData.get("subImageUrl4") as string | null;
+    const videoUrl = formData.get("videoUrl") as string | null;
 
-    if (!mainFile) {
+    if (!mainImageUrl) {
       return NextResponse.json(
-        { success: false, error: "Ana görsel zorunludur." },
+        { success: false, error: "Ana görsel URL'si zorunludur." },
         { status: 400 },
       );
     }
-
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-
-    async function uploadFile(file: File, folder: string) {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("folderName", folder);
-      const res = await fetch(`${baseUrl}/api/upload`, {
-        method: "POST",
-        body: fd,
-      });
-      if (!res.ok) throw new Error("Dosya yüklenemedi");
-      const data = await res.json();
-      return data.path as string;
-    }
-
-    const mainImagePath = await uploadFile(mainFile, "products");
-    const subImagePath = subFile ? await uploadFile(subFile, "products") : null;
-    const subImage2Path = subFile2 ? await uploadFile(subFile2, "products") : null;
-    const subImage3Path = subFile3 ? await uploadFile(subFile3, "products") : null;
-    const subImage4Path = subFile4 ? await uploadFile(subFile4, "products") : null;
-    const videoPath = videoFile ? await uploadFile(videoFile, "products") : null; // ← YENİ
 
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
@@ -138,13 +125,19 @@ export async function POST(request: Request) {
     const bulkDiscountRateStr = formData.get("bulkDiscountRate") as string;
 
     const oldPrice = oldPriceStr ? parseFloat(oldPriceStr) : null;
-    const discountPercentage = discountPercentageStr ? parseFloat(discountPercentageStr) : null;
+    const discountPercentage = discountPercentageStr
+      ? parseFloat(discountPercentageStr)
+      : null;
     const rating = ratingStr ? parseFloat(ratingStr) : 0;
     const reviewCount = reviewCountStr ? parseInt(reviewCountStr) : 0;
     const brandId = brandIdStr ? parseInt(brandIdStr) : null;
     const colorId = colorIdStr ? parseInt(colorIdStr) : null;
-    const bulkDiscountQty = bulkDiscountQtyStr ? parseInt(bulkDiscountQtyStr) : null;
-    const bulkDiscountRate = bulkDiscountRateStr ? parseFloat(bulkDiscountRateStr) : null;
+    const bulkDiscountQty = bulkDiscountQtyStr
+      ? parseInt(bulkDiscountQtyStr)
+      : null;
+    const bulkDiscountRate = bulkDiscountRateStr
+      ? parseFloat(bulkDiscountRateStr)
+      : null;
 
     const categoryName = formData.get("category") as string;
     const middleCategoryName = formData.get("middleCategory") as string | null;
@@ -157,7 +150,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const category = await prisma.category.findFirst({ where: { name: categoryName } });
+    const category = await prisma.category.findFirst({
+      where: { name: categoryName },
+    });
     if (!category) {
       return NextResponse.json(
         { success: false, error: "Ana kategori bulunamadı" },
@@ -170,7 +165,11 @@ export async function POST(request: Request) {
       const mc = await prisma.middleCategory.findFirst({
         where: { name: middleCategoryName, categoryId: category.id },
       });
-      if (!mc) return NextResponse.json({ success: false, error: "Orta kategori bulunamadı" }, { status: 404 });
+      if (!mc)
+        return NextResponse.json(
+          { success: false, error: "Orta kategori bulunamadı" },
+          { status: 404 },
+        );
       middleCategoryId = mc.id;
     }
 
@@ -179,21 +178,37 @@ export async function POST(request: Request) {
       const sc = await prisma.subCategory.findFirst({
         where: { name: subCategoryName, middleCategoryId },
       });
-      if (!sc) return NextResponse.json({ success: false, error: "Alt kategori bulunamadı" }, { status: 404 });
+      if (!sc)
+        return NextResponse.json(
+          { success: false, error: "Alt kategori bulunamadı" },
+          { status: 404 },
+        );
       subCategoryId = sc.id;
     }
 
     let sizesInput: { sizeId: number }[] = [];
-    let stockInput: { sizeId: number | null; stock: number; priceModifier: number }[] = [];
+    let stockInput: {
+      sizeId: number | null;
+      stock: number;
+      priceModifier: number;
+    }[] = [];
 
     const sizesRaw = formData.get("sizes");
     const stockRaw = formData.get("stock");
 
     if (sizesRaw) {
-      try { sizesInput = JSON.parse(sizesRaw as string); } catch (e) { sizesInput = []; }
+      try {
+        sizesInput = JSON.parse(sizesRaw as string);
+      } catch {
+        sizesInput = [];
+      }
     }
     if (stockRaw) {
-      try { stockInput = JSON.parse(stockRaw as string); } catch (e) { stockInput = []; }
+      try {
+        stockInput = JSON.parse(stockRaw as string);
+      } catch {
+        stockInput = [];
+      }
     }
 
     const newProduct = await prisma.$transaction(async (tx) => {
@@ -206,32 +221,46 @@ export async function POST(request: Request) {
           rating,
           reviewCount,
           description,
-          mainImage: mainImagePath,
-          subImage: subImagePath,
-          subImage2: subImage2Path,
-          subImage3: subImage3Path,
-          subImage4: subImage4Path,
-          videoUrl: videoPath, // ← YENİ
+          mainImage: mainImageUrl,
+          subImage: subImageUrl1,
+          subImage2: subImageUrl2,
+          subImage3: subImageUrl3,
+          subImage4: subImageUrl4,
+          videoUrl: videoUrl,
           brandId,
           colorId,
-          productGroupId: productGroupId && productGroupId !== "" ? productGroupId : null,
+          productGroupId:
+            productGroupId && productGroupId !== "" ? productGroupId : null,
           categoryId: category.id,
           middleCategoryId,
           subCategoryId,
           bulkDiscountQty,
           bulkDiscountRate,
         },
-        include: { category: true, middleCategory: true, subCategory: true, color: true },
+        include: {
+          category: true,
+          middleCategory: true,
+          subCategory: true,
+          color: true,
+        },
       });
 
       if (sizesInput.length > 0) {
         await tx.productSize.createMany({
-          data: sizesInput.map((s) => ({ productId: product.id, sizeId: s.sizeId })),
+          data: sizesInput.map((s) => ({
+            productId: product.id,
+            sizeId: s.sizeId,
+          })),
         });
 
-        const stockToCreate = stockInput.length > 0
-          ? stockInput.filter((s) => s.sizeId !== null)
-          : sizesInput.map((s) => ({ sizeId: s.sizeId, stock: 10, priceModifier: 0 }));
+        const stockToCreate =
+          stockInput.length > 0
+            ? stockInput.filter((s) => s.sizeId !== null)
+            : sizesInput.map((s) => ({
+                sizeId: s.sizeId,
+                stock: 10,
+                priceModifier: 0,
+              }));
 
         if (stockToCreate.length > 0) {
           await tx.productStock.createMany({
@@ -266,7 +295,7 @@ export async function POST(request: Request) {
           title: newProduct.title,
           price: newProduct.price,
           mainImage: newProduct.mainImage,
-          videoUrl: newProduct.videoUrl ?? undefined, // ← YENİ
+          videoUrl: newProduct.videoUrl ?? undefined,
           category: newProduct.category.name,
         },
       },

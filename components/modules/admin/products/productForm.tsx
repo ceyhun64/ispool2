@@ -1,6 +1,7 @@
 // components/modules/admin/products/productForm.tsx
 "use client";
 
+import { uploadFileToCloudinary } from "@/lib/uploadToCloudinary";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -233,89 +234,136 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
       return;
     }
 
-    const dataForm = new FormData();
-    dataForm.append("title", productData.title);
-    dataForm.append("description", productData.description);
-    dataForm.append("price", String(productData.price));
-    dataForm.append("rating", String(productData.rating));
-    dataForm.append("reviewCount", String(productData.reviewCount));
-    dataForm.append("category", productData.category);
-
-    if (productData.oldPrice !== undefined && productData.oldPrice > 0)
-      dataForm.append("oldPrice", String(productData.oldPrice));
-    if (productData.discountPercentage !== undefined)
-      dataForm.append(
-        "discountPercentage",
-        String(productData.discountPercentage),
-      );
-    if (productData.middleCategory)
-      dataForm.append("middleCategory", productData.middleCategory);
-    if (productData.subCategory)
-      dataForm.append("subCategory", productData.subCategory);
-    if (productData.brandId !== undefined)
-      dataForm.append("brandId", String(productData.brandId));
-    if (productData.colorId !== undefined)
-      dataForm.append("colorId", String(productData.colorId));
-    if (
-      productData.productGroupId !== undefined &&
-      productData.productGroupId !== ""
-    )
-      dataForm.append("productGroupId", productData.productGroupId);
-    if (
-      productData.bulkDiscountQty !== undefined &&
-      productData.bulkDiscountQty > 0
-    )
-      dataForm.append("bulkDiscountQty", String(productData.bulkDiscountQty));
-    if (
-      productData.bulkDiscountRate !== undefined &&
-      productData.bulkDiscountRate > 0
-    )
-      dataForm.append("bulkDiscountRate", String(productData.bulkDiscountRate));
-
-    if (selectedSizeIds.length > 0) {
-      dataForm.append(
-        "sizes",
-        JSON.stringify(selectedSizeIds.map((id) => ({ sizeId: id }))),
-      );
-      dataForm.append(
-        "stock",
-        JSON.stringify(
-          selectedSizeIds.map((sizeId) => {
-            const existing = productData.stock.find((s) => s.sizeId === sizeId);
-            return {
-              sizeId,
-              stock: existing?.stock ?? 0,
-              priceModifier: existing?.priceModifier ?? 0,
-            };
-          }),
-        ),
-      );
-    } else {
-      dataForm.append("sizes", JSON.stringify([]));
-      const singleStock = productData.stock.find((s) => s.sizeId === null) || {
-        sizeId: null,
-        stock: 50,
-        priceModifier: 0,
-      };
-      dataForm.append("stock", JSON.stringify([singleStock]));
-    }
-
-    if (mainFile) dataForm.append("file", mainFile);
-    if (sub1) dataForm.append("subImageFile", sub1);
-    if (sub2) dataForm.append("subImage2File", sub2);
-    if (sub3) dataForm.append("subImage3File", sub3);
-    if (sub4) dataForm.append("subImage4File", sub4);
-    if (videoFile) dataForm.append("videoFile", videoFile); // ← YENİ
-    if (removeVideo) dataForm.append("removeVideo", "true"); // ← YENİ
-
-    const url = productId ? `/api/products/${productId}` : "/api/products";
-    const method = productId ? "PUT" : "POST";
-
     setLoading(true);
+
     try {
+      // ── 1. Dosyaları client'tan direkt Cloudinary'ye yükle ──────────────
+      const uploadPromises: Promise<string | null>[] = [
+        mainFile
+          ? uploadFileToCloudinary(mainFile, "products")
+          : Promise.resolve(mainUrl), // mevcut URL'yi koru
+        sub1
+          ? uploadFileToCloudinary(sub1, "products")
+          : Promise.resolve(subUrl1),
+        sub2
+          ? uploadFileToCloudinary(sub2, "products")
+          : Promise.resolve(subUrl2),
+        sub3
+          ? uploadFileToCloudinary(sub3, "products")
+          : Promise.resolve(subUrl3),
+        sub4
+          ? uploadFileToCloudinary(sub4, "products")
+          : Promise.resolve(subUrl4),
+        videoFile
+          ? uploadFileToCloudinary(videoFile, "products")
+          : Promise.resolve(removeVideo ? null : videoUrl),
+      ];
+
+      const [
+        uploadedMainUrl,
+        uploadedSub1Url,
+        uploadedSub2Url,
+        uploadedSub3Url,
+        uploadedSub4Url,
+        uploadedVideoUrl,
+      ] = await Promise.all(uploadPromises);
+
+      if (!uploadedMainUrl) {
+        toast.error("Ana görsel yüklenemedi");
+        return;
+      }
+
+      // ── 2. API'ye sadece URL'ler + metin verisi gönder (dosya YOK) ───────
+      const dataForm = new FormData();
+      dataForm.append("title", productData.title);
+      dataForm.append("description", productData.description);
+      dataForm.append("price", String(productData.price));
+      dataForm.append("rating", String(productData.rating));
+      dataForm.append("reviewCount", String(productData.reviewCount));
+      dataForm.append("category", productData.category);
+
+      // Cloudinary URL'lerini gönder
+      dataForm.append("mainImageUrl", uploadedMainUrl);
+      if (uploadedSub1Url) dataForm.append("subImageUrl1", uploadedSub1Url);
+      if (uploadedSub2Url) dataForm.append("subImageUrl2", uploadedSub2Url);
+      if (uploadedSub3Url) dataForm.append("subImageUrl3", uploadedSub3Url);
+      if (uploadedSub4Url) dataForm.append("subImageUrl4", uploadedSub4Url);
+      if (uploadedVideoUrl) dataForm.append("videoUrl", uploadedVideoUrl);
+      if (removeVideo) dataForm.append("removeVideo", "true");
+
+      if (productData.oldPrice !== undefined && productData.oldPrice > 0)
+        dataForm.append("oldPrice", String(productData.oldPrice));
+      if (productData.discountPercentage !== undefined)
+        dataForm.append(
+          "discountPercentage",
+          String(productData.discountPercentage),
+        );
+      if (productData.middleCategory)
+        dataForm.append("middleCategory", productData.middleCategory);
+      if (productData.subCategory)
+        dataForm.append("subCategory", productData.subCategory);
+      if (productData.brandId !== undefined)
+        dataForm.append("brandId", String(productData.brandId));
+      if (productData.colorId !== undefined)
+        dataForm.append("colorId", String(productData.colorId));
+      if (
+        productData.productGroupId !== undefined &&
+        productData.productGroupId !== ""
+      )
+        dataForm.append("productGroupId", productData.productGroupId);
+      if (
+        productData.bulkDiscountQty !== undefined &&
+        productData.bulkDiscountQty > 0
+      )
+        dataForm.append("bulkDiscountQty", String(productData.bulkDiscountQty));
+      if (
+        productData.bulkDiscountRate !== undefined &&
+        productData.bulkDiscountRate > 0
+      )
+        dataForm.append(
+          "bulkDiscountRate",
+          String(productData.bulkDiscountRate),
+        );
+
+      if (selectedSizeIds.length > 0) {
+        dataForm.append(
+          "sizes",
+          JSON.stringify(selectedSizeIds.map((id) => ({ sizeId: id }))),
+        );
+        dataForm.append(
+          "stock",
+          JSON.stringify(
+            selectedSizeIds.map((sizeId) => {
+              const existing = productData.stock.find(
+                (s) => s.sizeId === sizeId,
+              );
+              return {
+                sizeId,
+                stock: existing?.stock ?? 0,
+                priceModifier: existing?.priceModifier ?? 0,
+              };
+            }),
+          ),
+        );
+      } else {
+        dataForm.append("sizes", JSON.stringify([]));
+        const singleStock = productData.stock.find(
+          (s) => s.sizeId === null,
+        ) || {
+          sizeId: null,
+          stock: 50,
+          priceModifier: 0,
+        };
+        dataForm.append("stock", JSON.stringify([singleStock]));
+      }
+
+      const url = productId ? `/api/products/${productId}` : "/api/products";
+      const method = productId ? "PUT" : "POST";
+
       const res = await fetch(url, { method, body: dataForm });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "İşlem başarısız");
+
       toast.success(productId ? "Ürün güncellendi" : "Ürün eklendi");
       router.push("/admin/products");
       router.refresh();
