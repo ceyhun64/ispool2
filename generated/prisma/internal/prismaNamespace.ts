@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.4.0
- * Query Engine version: ab56fe763f921d033a6c195e7ddeb3e255bdbb57
+ * Prisma Client JS version: 7.4.1
+ * Query Engine version: 55ae170b1ced7fc6ed07a15f110549408c501bb3
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.4.0",
-  engine: "ab56fe763f921d033a6c195e7ddeb3e255bdbb57"
+  client: "7.4.1",
+  engine: "55ae170b1ced7fc6ed07a15f110549408c501bb3"
 }
 
 /**
@@ -2172,6 +2172,7 @@ export const ProductScalarFieldEnum = {
   subImage2: 'subImage2',
   subImage3: 'subImage3',
   subImage4: 'subImage4',
+  videoUrl: 'videoUrl',
   description: 'description',
   colorId: 'colorId',
   productGroupId: 'productGroupId',

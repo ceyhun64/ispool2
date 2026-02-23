@@ -1,9 +1,9 @@
-// components/modules/admin/products/productForm/imageUpload.tsx
+// components/modules/admin/products/productForm/imageUpload.tsx - UPDATED WITH VIDEO SUPPORT
 "use client";
 
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
-import { ImagePlus, X } from "lucide-react";
+import { ImagePlus, X, Video, Play } from "lucide-react";
 import Image from "next/image";
 
 interface ImageUploadSectionProps {
@@ -27,6 +27,12 @@ interface ImageUploadSectionProps {
   setSubUrl3: (url: string | null) => void;
   subUrl4: string | null;
   setSubUrl4: (url: string | null) => void;
+  // ← YENİ: Video props
+  videoFile: File | null;
+  setVideoFile: (file: File | null) => void;
+  videoUrl: string | null;
+  setVideoUrl: (url: string | null) => void;
+  onRemoveVideo?: () => void;
 }
 
 export default function ImageUploadSection({
@@ -50,6 +56,11 @@ export default function ImageUploadSection({
   setSubUrl3,
   subUrl4,
   setSubUrl4,
+  videoFile,
+  setVideoFile,
+  videoUrl,
+  setVideoUrl,
+  onRemoveVideo,
 }: ImageUploadSectionProps) {
   const handleFile = (
     e: ChangeEvent<HTMLInputElement>,
@@ -65,6 +76,12 @@ export default function ImageUploadSection({
   ) => {
     setter(null);
     urlSetter(null);
+  };
+
+  const removeVideo = () => {
+    setVideoFile(null);
+    setVideoUrl(null);
+    onRemoveVideo?.();
   };
 
   return (
@@ -145,7 +162,7 @@ export default function ImageUploadSection({
                   <ImagePreview
                     file={file}
                     url={url}
-                    label={`Görsel ${index + 1} ekle` }
+                    label={`Görsel ${index + 1} ekle`}
                     onRemove={() => removeImage(setter, urlSetter)}
                     isMain={false}
                   />
@@ -153,6 +170,38 @@ export default function ImageUploadSection({
               </div>
             ))}
           </div>
+        </div>
+
+        {/* ── YENİ: Video Yükleme ── */}
+        <div className="mt-6 pt-6 border-t border-slate-100">
+          <Label className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-1.5">
+            <Video size={14} className="text-blue-500" />
+            Tanıtım Videosu{" "}
+            <span className="text-slate-400 font-normal text-xs">
+              (opsiyonel)
+            </span>
+          </Label>
+          <input
+            type="file"
+            accept="video/mp4,video/webm,video/ogg,video/quicktime"
+            onChange={(e) => {
+              const file = e.target.files?.[0] || null;
+              setVideoFile(file);
+            }}
+            className="hidden"
+            id="video-upload"
+          />
+          <label htmlFor="video-upload" className="cursor-pointer block">
+            <VideoPreview
+              file={videoFile}
+              url={videoUrl}
+              onRemove={removeVideo}
+            />
+          </label>
+          <p className="text-xs text-slate-500 mt-2">
+            💡 MP4, WebM veya MOV formatında, maksimum 100MB video
+            yükleyebilirsiniz.
+          </p>
         </div>
 
         <p className="text-xs text-slate-500 mt-4">
@@ -164,6 +213,7 @@ export default function ImageUploadSection({
   );
 }
 
+// ─── Resim Önizleme ────────────────────────────────────────────────────────
 interface ImagePreviewProps {
   file: File | null;
   url: string | null;
@@ -185,7 +235,6 @@ const ImagePreview = ({
     if (file) {
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
-
       return () => {
         URL.revokeObjectURL(objectUrl);
       };
@@ -225,6 +274,74 @@ const ImagePreview = ({
           <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
             <ImagePlus size={isMain ? 48 : 32} className="mb-2" />
             <span className="text-xs font-medium">{label}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ─── Video Önizleme ────────────────────────────────────────────────────────
+interface VideoPreviewProps {
+  file: File | null;
+  url: string | null;
+  onRemove: () => void;
+}
+
+const VideoPreview = ({ file, url, onRemove }: VideoPreviewProps) => {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+      };
+    } else if (url) {
+      setPreviewUrl(url);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [file, url]);
+
+  return (
+    <div className="relative group">
+      <div className="relative w-full h-40 overflow-hidden border-2 border-slate-200 rounded-xl bg-slate-50 hover:border-slate-400 transition-all">
+        {previewUrl ? (
+          <>
+            <video
+              src={previewUrl}
+              className="w-full h-full object-cover"
+              muted
+              preload="metadata"
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+              <div className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow">
+                <Play size={18} className="text-slate-900 ml-0.5" />
+              </div>
+            </div>
+            <div className="absolute bottom-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur-sm max-w-[70%] truncate">
+              {file ? file.name : "Mevcut Video"}
+            </div>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                onRemove();
+              }}
+              className="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-lg z-10"
+            >
+              <X size={16} />
+            </button>
+          </>
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-2">
+            <Video size={32} />
+            <span className="text-xs font-medium">Tanıtım videosu ekle</span>
+            <span className="text-[10px] text-slate-400">
+              MP4, WebM, MOV • Max 100MB
+            </span>
           </div>
         )}
       </div>

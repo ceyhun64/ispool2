@@ -171,6 +171,7 @@ export const ProductScalarFieldEnum = {
   subImage2: 'subImage2',
   subImage3: 'subImage3',
   subImage4: 'subImage4',
+  videoUrl: 'videoUrl',
   description: 'description',
   colorId: 'colorId',
   productGroupId: 'productGroupId',

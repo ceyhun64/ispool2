@@ -62,26 +62,24 @@ model Brand {
 
 model Color {
   id        Int      @id @default(autoincrement())
-  name      String   @unique // Örn: "Siyah", "Lila"
-  hexCode   String? // Örn: "#000000" (Frontend'de renk kutucukları için)
+  name      String   @unique
+  hexCode   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  products product[] // Bu rengi kullanan ürünler
+  products product[]
 
   @@map("color")
 }
 
-// --- BEDEN TABLOSU (sizeType / type kaldırıldı) ---
 model Size {
   id        Int      @id @default(autoincrement())
-  value     String   @unique // Örn: "36", "XL", "Standart". Global olarak unique yapıldı.
+  value     String   @unique
   sortOrder Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // İlişkiler
   products  ProductSize[]
   CartItem  CartItem[]
   OrderItem OrderItem[]
@@ -102,14 +100,15 @@ model product {
   subImage2          String?
   subImage3          String?
   subImage4          String?
+  videoUrl           String? // ← YENİ: Ürün tanıtım videosu (Cloudinary URL)
   description        String  @db.Text
 
-  colorId          Int?
-  color            Color?  @relation(fields: [colorId], references: [id])
-  productGroupId   String?
-  
-  bulkDiscountQty  Int?    @default(0)
-  bulkDiscountRate Int?    @default(0)
+  colorId        Int?
+  color          Color?  @relation(fields: [colorId], references: [id])
+  productGroupId String?
+
+  bulkDiscountQty  Int? @default(0)
+  bulkDiscountRate Int? @default(0)
 
   brandId Int?
   brand   Brand? @relation(fields: [brandId], references: [id])
@@ -132,7 +131,6 @@ model product {
   stock     ProductStock[]
 }
 
-// --- ARA TABLO ---
 model ProductSize {
   id        Int     @id @default(autoincrement())
   productId Int
@@ -160,7 +158,6 @@ model ProductStock {
   @@map("product_stock")
 }
 
-// --- KULLANICI VE DİĞERLERİ (Değişmedi) ---
 model User {
   id                Int        @id @default(autoincrement())
   name              String
@@ -337,7 +334,7 @@ model Banner {
   id        Int      @id @default(autoincrement())
   title     String?
   subtitle  String?
-  image     String // Resim yolu eklendi
+  image     String
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -351,9 +348,9 @@ model HeroSlide {
   title        String?
   subtitle     String?
   description  String?  @db.Text
-  desktopImage String // Resim yolu
-  mobileImage  String? // Opsiyonel mobil resim
-  order        Int      @default(0) // Sıralama için
+  desktopImage String
+  mobileImage  String?
+  order        Int      @default(0)
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

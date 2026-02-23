@@ -22,16 +22,12 @@ import ProductDetailSkeleton from "./productDetailSkeleton";
 import { useFavorite } from "@/contexts/favoriteContext";
 import { addToGuestCart } from "@/utils/cart";
 import DesignPanel from "@/components/modules/products/productDetail/design/designPanel";
-import ProductCard from "../productCard";
 import ProductImageGallery from "./productImageGallery";
 import ProductInfo from "./productInfo";
 import ProductVariantSelector from "./productVariantSelector";
 import ProductActions from "./productActions";
 import ProductCarousel from "./productCarousel";
 
-// --------------------
-// İNTERFACES
-// --------------------
 interface Size {
   id: number;
   value: string;
@@ -57,6 +53,7 @@ interface ProductData {
   discountAmount: number;
   mainImage: string;
   images: string[];
+  videoUrl: string | null; // ← YENİ
   category: { id: number; name: string };
   middleCategory: { id: number; name: string } | null;
   subCategory: { id: number; name: string } | null;
@@ -148,7 +145,6 @@ export default function ProductDetailPage() {
   const [uploadedImagePreview, setUploadedImagePreview] = useState<
     string | null
   >(null);
-
   const [selectedSizeId, setSelectedSizeId] = useState<number | null>(null);
   const [selectedStock, setSelectedStock] = useState<StockEntry | null>(null);
 
@@ -158,14 +154,12 @@ export default function ProductDetailPage() {
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // ---------- Ürün yükleme ----------
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
       try {
         const res = await fetch(`/api/products/${productId}`);
         const data = await res.json();
-        console.log("productId", data);
         if (data.success) {
           setProduct(data.product);
           setSelectedSizeId(null);
@@ -183,28 +177,26 @@ export default function ProductDetailPage() {
     if (productId) fetchProduct();
   }, [productId]);
 
-  // ---------- Seçili stok satırını güncelle ----------
   useEffect(() => {
     if (!product) {
       setSelectedStock(null);
       return;
     }
-
     if (product.availableSizes.length > 0) {
       if (selectedSizeId) {
-        const entry =
-          product.stockMatrix.find((s) => s.sizeId === selectedSizeId) ?? null;
-        setSelectedStock(entry);
+        setSelectedStock(
+          product.stockMatrix.find((s) => s.sizeId === selectedSizeId) ?? null,
+        );
       } else {
         setSelectedStock(null);
       }
     } else {
-      const entry = product.stockMatrix.find((s) => s.sizeId === null) ?? null;
-      setSelectedStock(entry);
+      setSelectedStock(
+        product.stockMatrix.find((s) => s.sizeId === null) ?? null,
+      );
     }
   }, [selectedSizeId, product]);
 
-  // ---------- Login kontrolü ----------
   useEffect(() => {
     const checkLogin = async () => {
       try {
@@ -221,31 +213,21 @@ export default function ProductDetailPage() {
     checkLogin();
   }, []);
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // ─── TOPLU ALIM İNDİRİMİ HESAPLAMA ──────────────────────────────────────
-  // ─────────────────────────────────────────────────────────────────────────
   const calculateBulkDiscount = () => {
     if (!product) return { hasDiscount: false, discountRate: 0 };
-
     const { bulkDiscountQty, bulkDiscountRate } = product;
-
     if (
       !bulkDiscountQty ||
       !bulkDiscountRate ||
       bulkDiscountQty <= 0 ||
       bulkDiscountRate <= 0
-    ) {
+    )
       return { hasDiscount: false, discountRate: 0 };
-    }
-
-    if (quantity >= bulkDiscountQty) {
-      return { hasDiscount: true, discountRate: bulkDiscountRate };
-    }
-
-    return { hasDiscount: false, discountRate: 0 };
+    return quantity >= bulkDiscountQty
+      ? { hasDiscount: true, discountRate: bulkDiscountRate }
+      : { hasDiscount: false, discountRate: 0 };
   };
 
-  // ---------- Handlers ----------
   const handleSaveDesign = (designUrl: string) => {
     setCustomDesign(designUrl);
     setUploadedImage(null);
@@ -265,10 +247,8 @@ export default function ProductDetailPage() {
       toast.error("Lütfen geçerli bir resim dosyası seçin.");
       return;
     }
-
     setUploadedImage(file);
     setCustomDesign(null);
-
     const reader = new FileReader();
     reader.onload = (e) => {
       setUploadedImagePreview(e.target?.result as string);
@@ -283,33 +263,26 @@ export default function ProductDetailPage() {
       toast.error("Ürün bilgisi bulunamadı.");
       return;
     }
-
     if (product.availableSizes.length > 0 && !selectedSizeId) {
       toast.error("Lütfen bir beden seçin.");
       return;
     }
-
     if (selectedStock && selectedStock.stock <= 0) {
       toast.error("Seçilen beden stokta yok.");
       return;
     }
 
     const finalCustomImage = customDesign || uploadedImagePreview;
-
     const bulkDiscount = calculateBulkDiscount();
     let basePrice = product.price + (selectedStock?.priceModifier ?? 0);
-
-    if (bulkDiscount.hasDiscount) {
+    if (bulkDiscount.hasDiscount)
       basePrice = basePrice * (1 - bulkDiscount.discountRate / 100);
-    }
-
-    const finalPrice = basePrice;
 
     if (!isLoggedIn) {
       addToGuestCart(
         product.id,
         finalCustomImage ? `${product.title} (Özelleştirilmiş)` : product.title,
-        finalPrice,
+        basePrice,
         finalCustomImage || product.mainImage,
         product.category.name,
         quantity,
@@ -318,12 +291,11 @@ export default function ProductDetailPage() {
         product.bulkDiscountQty,
         product.bulkDiscountRate,
       );
-
-      const message = bulkDiscount.hasDiscount
-        ? `${quantity} adet ${finalCustomImage ? "özelleştirilmiş " : ""}ürün sepete eklendi! 🎉 %${bulkDiscount.discountRate} toplu alım indirimi uygulandı!`
-        : `${quantity} adet ${finalCustomImage ? "özelleştirilmiş " : ""}ürün sepete eklendi!`;
-
-      toast.success(message);
+      toast.success(
+        bulkDiscount.hasDiscount
+          ? `${quantity} adet ürün sepete eklendi! 🎉 %${bulkDiscount.discountRate} toplu alım indirimi uygulandı!`
+          : `${quantity} adet ürün sepete eklendi!`,
+      );
       window.dispatchEvent(new CustomEvent("cartUpdated"));
       return;
     }
@@ -333,11 +305,8 @@ export default function ProductDetailPage() {
       formData.append("productId", product.id.toString());
       formData.append("quantity", quantity.toString());
       if (selectedSizeId) formData.append("sizeId", selectedSizeId.toString());
-      if (customDesign) {
-        formData.append("customImage", customDesign);
-      } else if (uploadedImage) {
-        formData.append("customImageFile", uploadedImage);
-      }
+      if (customDesign) formData.append("customImage", customDesign);
+      else if (uploadedImage) formData.append("customImageFile", uploadedImage);
 
       const res = await fetch("/api/cart", {
         method: "POST",
@@ -345,19 +314,18 @@ export default function ProductDetailPage() {
         credentials: "include",
       });
       if (res.ok) {
-        const message = bulkDiscount.hasDiscount
-          ? `${quantity} adet ${finalCustomImage ? "özelleştirilmiş " : ""}ürün sepete eklendi! 🎉 %${bulkDiscount.discountRate} toplu alım indirimi uygulandı!`
-          : `${quantity} adet ${finalCustomImage ? "özelleştirilmiş " : ""}ürün sepete eklendi!`;
-
-        toast.success(message);
+        toast.success(
+          bulkDiscount.hasDiscount
+            ? `${quantity} adet ürün sepete eklendi! 🎉 %${bulkDiscount.discountRate} toplu alım indirimi uygulandı!`
+            : `${quantity} adet ürün sepete eklendi!`,
+        );
         window.dispatchEvent(new CustomEvent("cartUpdated"));
         cartDropdownRef.current?.open?.();
       } else {
         const error = await res.json();
         toast.error(error.error || "Sepete ekleme hatası.");
       }
-    } catch (error) {
-      console.error("Cart error:", error);
+    } catch {
       toast.error("Sepete ekleme hatası.");
     }
   };
@@ -376,7 +344,6 @@ export default function ProductDetailPage() {
     }
   };
 
-  // ---------- Render ----------
   if (loading) return <ProductDetailSkeleton />;
   if (!product)
     return (
@@ -387,16 +354,12 @@ export default function ProductDetailPage() {
 
   const finalCustomImage = customDesign || uploadedImagePreview;
   const bulkDiscount = calculateBulkDiscount();
-
   let currentPrice = product.price + (selectedStock?.priceModifier ?? 0);
-  if (bulkDiscount.hasDiscount) {
+  if (bulkDiscount.hasDiscount)
     currentPrice = currentPrice * (1 - bulkDiscount.discountRate / 100);
-  }
-
   const subtotal = currentPrice * quantity;
   const vatAmount = subtotal * 0.1;
   const totalWithVat = subtotal + vatAmount;
-
   const remainingForBulk = product.bulkDiscountQty
     ? Math.max(0, product.bulkDiscountQty - quantity)
     : 0;
@@ -422,10 +385,12 @@ export default function ProductDetailPage() {
 
       <div className="mx-auto px-6 pb-20 pt-4 md:pt-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* Galeri - Sticky positioned with proper z-index */}
+          {/* Galeri */}
           <div className="lg:col-span-6 lg:sticky lg:top-20 lg:self-start lg:z-40">
+            {/* ← YENİ: videoUrl prop eklendi */}
             <ProductImageGallery
               images={product.images}
+              videoUrl={product.videoUrl}
               activeIndex={activeIndex}
               onIndexChange={setActiveIndex}
               customDesign={customDesign}
@@ -471,7 +436,6 @@ export default function ProductDetailPage() {
               />
 
               <div className="space-y-6">
-                {/* Renk ve Beden Seçimi */}
                 <ProductVariantSelector
                   availableSizes={product.availableSizes}
                   stockMatrix={product.stockMatrix}
@@ -486,7 +450,6 @@ export default function ProductDetailPage() {
                   otherColors={product.otherColors}
                 />
 
-                {/* Özelleştirme bildirim */}
                 {finalCustomImage && (
                   <div className="bg-gradient-to-r from-orange-50 to-pink-50 border border-orange-200 p-4 rounded space-y-2">
                     <div className="flex items-center gap-2 text-xs font-bold text-orange-700 uppercase tracking-wider">
@@ -497,13 +460,11 @@ export default function ProductDetailPage() {
                       {customDesign
                         ? "tasarım paneliyle"
                         : "yüklediğiniz resimle"}{" "}
-                      özelleştirilmiştir. Sepete eklediğinizde bu özel tasarım
-                      kaydedilecektir.
+                      özelleştirilmiştir.
                     </p>
                   </div>
                 )}
 
-                {/* Toplu alım indirimi bildirimi */}
                 {product.bulkDiscountQty !== null &&
                   product.bulkDiscountRate !== null &&
                   product.bulkDiscountQty > 0 &&
@@ -533,7 +494,7 @@ export default function ProductDetailPage() {
                         >
                           {bulkDiscount.hasDiscount
                             ? `🎉 Toplu Alım İndirimi Uygulandı! %${bulkDiscount.discountRate}`
-                            : `Toplu Alım Fırsatı`}
+                            : "Toplu Alım Fırsatı"}
                         </span>
                       </div>
                       <p className="text-xs text-slate-600 leading-relaxed">
@@ -542,9 +503,7 @@ export default function ProductDetailPage() {
                             Bu üründen {product.bulkDiscountQty} adet ve üzeri
                             alımlarda{" "}
                             <strong>%{product.bulkDiscountRate}</strong> indirim
-                            kazanıyorsunuz! Sepetinizdeki{" "}
-                            <strong>{quantity} adet</strong> için indirim
-                            uygulandı.
+                            kazanıyorsunuz!
                           </>
                         ) : (
                           <>
@@ -569,7 +528,6 @@ export default function ProductDetailPage() {
                     </div>
                   )}
 
-                {/* Aksiyon Butonları */}
                 <ProductActions
                   quantity={quantity}
                   onQuantityChange={setQuantity}
@@ -587,13 +545,11 @@ export default function ProductDetailPage() {
                   sizeStockAvailable={!selectedStock || selectedStock.stock > 0}
                 />
 
-                {/* Fiyat Özeti */}
                 <div className="bg-slate-50 border border-slate-200 rounded p-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">
                       Ürün Fiyatı ({quantity} adet)
                     </span>
-                    
                     <span className="font-bold text-slate-900">
                       {subtotal.toLocaleString("tr-TR", {
                         minimumFractionDigits: 2,
@@ -605,8 +561,8 @@ export default function ProductDetailPage() {
                   {bulkDiscount.hasDiscount && (
                     <div className="flex justify-between text-sm bg-emerald-50 -mx-4 px-4 py-2">
                       <span className="text-emerald-700 font-semibold flex items-center gap-1">
-                        <Percent size={14} />
-                        Toplu Alım İndirimi (%{bulkDiscount.discountRate})
+                        <Percent size={14} /> Toplu Alım İndirimi (%
+                        {bulkDiscount.discountRate})
                       </span>
                       <span className="font-bold text-emerald-700">
                         -
@@ -648,7 +604,6 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* Özellikler */}
               <div className="flex">
                 <div className="space-y-4 pt-4 border-t border-slate-100">
                   <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
@@ -656,56 +611,51 @@ export default function ProductDetailPage() {
                     Özellikleri
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
-                      <div className="p-2 bg-blue-100 text-blue-600">
-                        <Award size={16} />
-                      </div>
-                      <div>
-                        <div className="text-xs font-bold text-slate-900">
-                          Garanti
+                    {[
+                      {
+                        icon: <Award size={16} />,
+                        color: "blue",
+                        label: "Garanti",
+                        value: product.specifications.warranty,
+                      },
+                      {
+                        icon: <BadgeCheck size={16} />,
+                        color: "emerald",
+                        label: "Menşei",
+                        value: product.specifications.origin,
+                      },
+                      {
+                        icon: <ShieldCheck size={16} />,
+                        color: "orange",
+                        label: "Sertifikalar",
+                        value: product.specifications.certifications.join(", "),
+                      },
+                      {
+                        icon: <HardHat size={16} />,
+                        color: "purple",
+                        label: "İSG Uyumu",
+                        value: "Onaylı",
+                      },
+                    ].map(({ icon, color, label, value }) => (
+                      <div
+                        key={label}
+                        className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3"
+                      >
+                        <div
+                          className={`p-2 bg-${color}-100 text-${color}-600`}
+                        >
+                          {icon}
                         </div>
-                        <div className="text-[10px] text-slate-500">
-                          {product.specifications.warranty}
+                        <div>
+                          <div className="text-xs font-bold text-slate-900">
+                            {label}
+                          </div>
+                          <div className="text-[10px] text-slate-500">
+                            {value}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
-                      <div className="p-2 bg-emerald-100 text-emerald-600">
-                        <BadgeCheck size={16} />
-                      </div>
-                      <div>
-                        <div className="text-xs font-bold text-slate-900">
-                          Menşei
-                        </div>
-                        <div className="text-[10px] text-slate-500">
-                          {product.specifications.origin}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
-                      <div className="p-2 bg-orange-100 text-orange-600">
-                        <ShieldCheck size={16} />
-                      </div>
-                      <div>
-                        <div className="text-xs font-bold text-slate-900">
-                          Sertifikalar
-                        </div>
-                        <div className="text-[10px] text-slate-500">
-                          {product.specifications.certifications.join(", ")}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-3 bg-slate-50/50 border border-slate-100 flex items-center gap-3">
-                      <div className="p-2 bg-purple-100 text-purple-600">
-                        <HardHat size={16} />
-                      </div>
-                      <div>
-                        <div className="text-xs font-bold text-slate-900">
-                          İSG Uyumu
-                        </div>
-                        <div className="text-[10px] text-slate-500">Onaylı</div>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                   <div
                     className="prose prose-slate max-w-none text-slate-600 text-[13px] leading-relaxed"
@@ -717,44 +667,42 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* İstatistikler */}
         <div className="grid grid-cols-3 gap-3 mt-8">
-          <div className="bg-white border border-slate-100 p-4 rounded text-center">
-            <div className="flex items-center justify-center text-orange-600 mb-2">
-              <Eye size={20} />
+          {[
+            {
+              icon: <Eye size={20} />,
+              color: "text-orange-600",
+              value: product.meta.views,
+              label: "Görüntülenme",
+            },
+            {
+              icon: <Heart size={20} />,
+              color: "text-pink-600",
+              value: product.meta.favorites,
+              label: "Favori",
+            },
+            {
+              icon: <ShoppingCart size={20} />,
+              color: "text-emerald-600",
+              value: product.meta.purchaseCount,
+              label: "Satıldı",
+            },
+          ].map(({ icon, color, value, label }) => (
+            <div
+              key={label}
+              className="bg-white border border-slate-100 p-4 rounded text-center"
+            >
+              <div className={`flex items-center justify-center ${color} mb-2`}>
+                {icon}
+              </div>
+              <div className="text-lg font-bold text-slate-900">{value}</div>
+              <div className="text-[7px] md:text-[10px] text-slate-500 uppercase tracking-wider">
+                {label}
+              </div>
             </div>
-            <div className="text-lg font-bold text-slate-900">
-              {product.meta.views}
-            </div>
-            <div className="text-[7px] md:text-[10px] text-slate-500 uppercase tracking-wider">
-              Görüntülenme
-            </div>
-          </div>
-          <div className="bg-white border border-slate-100 p-4 rounded text-center">
-            <div className="flex items-center justify-center text-pink-600 mb-2">
-              <Heart size={20} />
-            </div>
-            <div className="text-lg font-bold text-slate-900">
-              {product.meta.favorites}
-            </div>
-            <div className="text-[7px] md:text-[10px] text-slate-500 uppercase tracking-wider">
-              Favori
-            </div>
-          </div>
-          <div className="bg-white border border-slate-100 p-4 rounded text-center">
-            <div className="flex items-center justify-center text-emerald-600 mb-2">
-              <ShoppingCart size={20} />
-            </div>
-            <div className="text-lg font-bold text-slate-900">
-              {product.meta.purchaseCount}
-            </div>
-            <div className="text-[7px] md:text-[10px] text-slate-500 uppercase tracking-wider">
-              Satıldı
-            </div>
-          </div>
+          ))}
         </div>
 
-        {/* İlgili Ürünler - Carousel */}
         {product.relatedProducts.length > 0 && (
           <ProductCarousel
             products={product.relatedProducts}
@@ -763,7 +711,6 @@ export default function ProductDetailPage() {
           />
         )}
 
-        {/* Marka Ürünleri - Carousel */}
         {product.brand && product.brandProducts.length > 0 && (
           <ProductCarousel
             products={product.brandProducts}
@@ -772,7 +719,6 @@ export default function ProductDetailPage() {
           />
         )}
 
-        {/* Sekmeleri */}
         <div className="mt-12 pt-8 border-t border-slate-100">
           <ProductTabs
             productId={product.id}
