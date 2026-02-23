@@ -71,6 +71,9 @@ export default function ClientLayoutWrapper({
 
       {children}
 
+      {/* Mobil alt bar için sayfa sonu boşluğu */}
+      {shouldShowLayout && <div className="lg:hidden h-16" />}
+
       {shouldShowLayout && (
         <>
           <SocialSidebar />
