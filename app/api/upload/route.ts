@@ -1,4 +1,8 @@
-// /api/upload/route.ts
+// app/api/upload/route.ts
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const maxDuration = 60;
+
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import sharp from "sharp";
@@ -43,7 +47,6 @@ async function compressImage(input: Buffer): Promise<Buffer> {
 }
 
 async function compressVideo(input: Buffer): Promise<Buffer> {
-  // ← Dinamik import — Turbopack build hatası bu şekilde çözülüyor
   const ffmpeg = (await import("fluent-ffmpeg")).default;
   const ffmpegInstaller = (await import("@ffmpeg-installer/ffmpeg")).default;
   ffmpeg.setFfmpegPath(ffmpegInstaller.path);
@@ -81,6 +84,15 @@ async function compressVideo(input: Buffer): Promise<Buffer> {
 
 export async function POST(req: NextRequest) {
   try {
+    // Manuel olarak multipart/form-data parse et — Next.js body limit bypass
+    const contentType = req.headers.get("content-type") || "";
+    if (!contentType.includes("multipart/form-data")) {
+      return NextResponse.json(
+        { error: "Content-Type multipart/form-data olmalıdır." },
+        { status: 400 },
+      );
+    }
+
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
     const folderNameInput = formData.get("folderName") as string | null;
@@ -88,6 +100,15 @@ export async function POST(req: NextRequest) {
     if (!file) {
       return NextResponse.json(
         { error: "Dosya bulunamadı. Lütfen bir dosya yükleyin." },
+        { status: 400 },
+      );
+    }
+
+    // 150MB limit kontrolü
+    const MAX_SIZE = 150 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      return NextResponse.json(
+        { error: "Dosya boyutu 150MB'dan büyük olamaz." },
         { status: 400 },
       );
     }
