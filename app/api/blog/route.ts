@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { uploadToCloudinary } from "@/lib/server-upload";
 import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -14,7 +13,7 @@ export async function GET(request: NextRequest) {
     console.error(err);
     return NextResponse.json(
       { message: "Bloglar alınamadı." },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -35,12 +34,33 @@ export async function POST(request: NextRequest) {
     if (!title || !content || !category || !file) {
       return NextResponse.json(
         { message: "Tüm alanlar zorunludur." },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
-    const imagePath = await uploadToCloudinary(file, "blogs");
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
+    // Dosyayı upload et
+    const uploadForm = new FormData();
+    uploadForm.append("file", file);
+    uploadForm.append("folderName", "blogs");
+
+    const uploadRes = await fetch(`${baseUrl}/api/upload`, {
+      method: "POST",
+      body: uploadForm,
+    });
+
+    const uploadData = await uploadRes.json();
+    if (!uploadRes.ok || !uploadData.path) {
+      return NextResponse.json(
+        { message: "Resim yükleme başarısız." },
+        { status: 500 }
+      );
+    }
+
+    const imagePath = uploadData.path;
+
+    // Blog oluştur
     const blog = await prisma.blog.create({
       data: {
         title,
@@ -55,7 +75,7 @@ export async function POST(request: NextRequest) {
     console.error("Blog oluştururken hata:", err);
     return NextResponse.json(
       { message: "Blog oluşturulamadı." },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
