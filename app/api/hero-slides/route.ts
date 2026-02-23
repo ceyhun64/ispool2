@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { uploadToCloudinary } from "@/lib/server-upload";
 import type { NextRequest } from "next/server";
 
 export async function GET() {
@@ -37,6 +36,7 @@ export async function POST(request: NextRequest) {
     const desktopImage = formData.get("desktopImage") as File | null;
     const order = parseInt(formData.get("order") as string) || 0;
 
+    // Resim zorunlu kontrolü
     if (!desktopImage) {
       return NextResponse.json(
         { message: "Resim zorunludur." },
@@ -44,18 +44,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const imageUrl = await uploadToCloudinary(desktopImage, "hero_slides");
+    // Resim upload işlemi
+    const uploadFormData = new FormData();
+    uploadFormData.append("file", desktopImage);
+    uploadFormData.append("folderName", "hero_slides");
 
+    const uploadRes = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`,
+      {
+        method: "POST",
+        body: uploadFormData,
+      },
+    );
+
+    if (!uploadRes.ok) {
+      throw new Error("Resim yüklenemedi");
+    }
+
+    const { path: imageUrl } = await uploadRes.json();
+
+    // Hero slide oluştur
     const slide = await prisma.heroSlide.create({
       data: {
         tag: tag || null,
         title: title || null,
         subtitle: subtitle || null,
         description: description || null,
-        desktopImage: imageUrl,
-        mobileImage: null,
+        desktopImage: imageUrl, // Schema'da String türünde
+        mobileImage: null, // Schema'da String? türünde - opsiyonel
         order,
-        isActive: true,
+        isActive: true, // Default true zaten ama explicit belirtiyoruz
       },
     });
 
