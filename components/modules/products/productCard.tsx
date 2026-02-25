@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Heart } from "lucide-react";
+import { Heart, Play } from "lucide-react";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { useFavorite } from "@/contexts/favoriteContext";
@@ -87,10 +87,8 @@ export default function ProductCard({ product }: { product: ProductData }) {
 
           {/* Video Rozeti — sol üst köşe, sadece showVideo true ise */}
           {showVideoOnHover && (
-            <div className="absolute top-2 sm:top-3 left-2 sm:left-3 z-20 w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-sm">
-              <span className="text-white text-[10px] sm:text-[11px] ml-0.5">
-                ▶
-              </span>
+            <div className="absolute top-2 sm:top-3 left-2 sm:left-3 z-20 w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full backdrop-blur-sm border border-black/80">
+              <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-black ml-0.5" strokeWidth={1.5} fill="none" />
             </div>
           )}
 
