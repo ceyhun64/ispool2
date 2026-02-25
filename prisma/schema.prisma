@@ -102,6 +102,7 @@ model product {
   subImage4          String?
   videoUrl           String? // ← YENİ: Ürün tanıtım videosu (Cloudinary URL)
   description        String  @db.Text
+  showVideo          Boolean @default(false) // ← YENİ
 
   colorId        Int?
   color          Color?  @relation(fields: [colorId], references: [id])

@@ -216,7 +216,8 @@ export async function GET(
           discountAmount,
           mainImage: product.mainImage,
           images,
-          videoUrl: product.videoUrl ?? null, // ← YENİ
+          videoUrl: product.videoUrl ?? null,
+          showVideo: product.showVideo, // ← YENİ
           bulkDiscountQty: product.bulkDiscountQty,
           bulkDiscountRate: product.bulkDiscountRate,
           category: { id: product.category.id, name: product.category.name },
@@ -378,12 +379,15 @@ export async function PUT(
 
     const formData = await request.formData();
 
-    const mainFile = formData.get("file") as File | null;
-    const subFile = formData.get("subImageFile") as File | null;
-    const subFile2 = formData.get("subImage2File") as File | null;
-    const subFile3 = formData.get("subImage3File") as File | null;
-    const subFile4 = formData.get("subImage4File") as File | null;
-    const videoFile = formData.get("videoFile") as File | null; // ← YENİ
+    // Cloudinary URL'leri (client tarafından yüklenmiş)
+    const mainImageUrl = formData.get("mainImageUrl") as string | null;
+    const subImageUrl1 = formData.get("subImageUrl1") as string | null;
+    const subImageUrl2 = formData.get("subImageUrl2") as string | null;
+    const subImageUrl3 = formData.get("subImageUrl3") as string | null;
+    const subImageUrl4 = formData.get("subImageUrl4") as string | null;
+    const videoUrl = formData.get("videoUrl") as string | null;
+    const removeVideo = formData.get("removeVideo") === "true";
+    const showVideo = formData.get("showVideo") === "true"; // ← YENİ
 
     const title = formData.get("title")?.toString();
     const priceStr = formData.get("price") as string;
@@ -495,73 +499,25 @@ export async function PUT(
       );
     }
 
-    const deleteFile = async (filePath?: string | null) => {
-      if (!filePath) return;
-      try {
-        const fullPath = path.join(process.cwd(), "public", filePath);
-        await fs.unlink(fullPath);
-      } catch (error) {
-        console.log(`Dosya silinemedi: ${filePath}`, error);
-      }
-    };
+    // Görseller: yeni URL geldiyse kullan, gelmediyse mevcut URL'yi koru
+    const finalMainImage = mainImageUrl || existingProduct.mainImage;
+    const finalSubImage =
+      subImageUrl1 !== null ? subImageUrl1 : existingProduct.subImage;
+    const finalSubImage2 =
+      subImageUrl2 !== null ? subImageUrl2 : existingProduct.subImage2;
+    const finalSubImage3 =
+      subImageUrl3 !== null ? subImageUrl3 : existingProduct.subImage3;
+    const finalSubImage4 =
+      subImageUrl4 !== null ? subImageUrl4 : existingProduct.subImage4;
 
-    const uploadFile = async (
-      file: File | null,
-    ): Promise<string | undefined> => {
-      if (!file) return undefined;
-      const baseUrl =
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-      const uploadForm = new FormData();
-      uploadForm.append("file", file);
-      uploadForm.append("folderName", "products");
-      const res = await fetch(`${baseUrl}/api/upload`, {
-        method: "POST",
-        body: uploadForm,
-      });
-      if (!res.ok) throw new Error("Dosya yüklenemedi");
-      const data = await res.json();
-      return data.path;
-    };
-
-    let mainImagePath = existingProduct.mainImage;
-    if (mainFile) {
-      await deleteFile(existingProduct.mainImage);
-      mainImagePath = (await uploadFile(mainFile)) || existingProduct.mainImage;
-    }
-
-    let subImagePath = existingProduct.subImage;
-    if (subFile) {
-      await deleteFile(existingProduct.subImage);
-      subImagePath = (await uploadFile(subFile)) || existingProduct.subImage;
-    }
-
-    let subImage2Path = existingProduct.subImage2;
-    if (subFile2) {
-      await deleteFile(existingProduct.subImage2);
-      subImage2Path = (await uploadFile(subFile2)) || existingProduct.subImage2;
-    }
-
-    let subImage3Path = existingProduct.subImage3;
-    if (subFile3) {
-      await deleteFile(existingProduct.subImage3);
-      subImage3Path = (await uploadFile(subFile3)) || existingProduct.subImage3;
-    }
-
-    let subImage4Path = existingProduct.subImage4;
-    if (subFile4) {
-      await deleteFile(existingProduct.subImage4);
-      subImage4Path = (await uploadFile(subFile4)) || existingProduct.subImage4;
-    }
-
-    // ← YENİ: Video güncelleme
-    let videoPath = existingProduct.videoUrl;
-    if (videoFile) {
-      videoPath = (await uploadFile(videoFile)) || existingProduct.videoUrl;
-    }
-    // Video silme talebi
-    const removeVideo = formData.get("removeVideo") === "true";
+    // Video: removeVideo true ise null, yeni URL geldiyse yeni URL, değilse mevcut
+    let finalVideoUrl: string | null;
     if (removeVideo) {
-      videoPath = null;
+      finalVideoUrl = null;
+    } else if (videoUrl) {
+      finalVideoUrl = videoUrl;
+    } else {
+      finalVideoUrl = existingProduct.videoUrl;
     }
 
     let sizesInput: { sizeId: number }[] = [];
@@ -600,12 +556,13 @@ export async function PUT(
           description,
           rating,
           reviewCount,
-          mainImage: mainImagePath,
-          subImage: subImagePath,
-          subImage2: subImage2Path,
-          subImage3: subImage3Path,
-          subImage4: subImage4Path,
-          videoUrl: videoPath, // ← YENİ
+          mainImage: finalMainImage,
+          subImage: finalSubImage,
+          subImage2: finalSubImage2,
+          subImage3: finalSubImage3,
+          subImage4: finalSubImage4,
+          videoUrl: finalVideoUrl,
+          showVideo, // ← YENİ
           categoryId: mainCategory.id,
           middleCategoryId,
           subCategoryId,
@@ -675,7 +632,8 @@ export async function PUT(
           category: updatedProduct.category.name,
           middleCategory: updatedProduct.middleCategory?.name ?? null,
           subCategory: updatedProduct.subCategory?.name ?? null,
-          videoUrl: updatedProduct.videoUrl ?? null, // ← YENİ
+          videoUrl: updatedProduct.videoUrl ?? null,
+          showVideo: updatedProduct.showVideo, // ← YENİ
         },
       },
       { status: 200 },

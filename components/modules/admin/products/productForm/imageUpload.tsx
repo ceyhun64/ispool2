@@ -1,4 +1,4 @@
-// components/modules/admin/products/productForm/imageUpload.tsx - UPDATED WITH VIDEO SUPPORT
+// components/modules/admin/products/productForm/imageUpload.tsx
 "use client";
 
 import React, { ChangeEvent, useEffect, useState } from "react";
@@ -27,12 +27,14 @@ interface ImageUploadSectionProps {
   setSubUrl3: (url: string | null) => void;
   subUrl4: string | null;
   setSubUrl4: (url: string | null) => void;
-  // ← YENİ: Video props
   videoFile: File | null;
   setVideoFile: (file: File | null) => void;
   videoUrl: string | null;
   setVideoUrl: (url: string | null) => void;
   onRemoveVideo?: () => void;
+  // ← YENİ: showVideo props
+  showVideo: boolean;
+  setShowVideo: (val: boolean) => void;
 }
 
 export default function ImageUploadSection({
@@ -61,6 +63,8 @@ export default function ImageUploadSection({
   videoUrl,
   setVideoUrl,
   onRemoveVideo,
+  showVideo,
+  setShowVideo,
 }: ImageUploadSectionProps) {
   const handleFile = (
     e: ChangeEvent<HTMLInputElement>,
@@ -81,8 +85,11 @@ export default function ImageUploadSection({
   const removeVideo = () => {
     setVideoFile(null);
     setVideoUrl(null);
+    setShowVideo(false);
     onRemoveVideo?.();
   };
+
+  const hasVideo = !!(videoFile || videoUrl);
 
   return (
     <div className="space-y-6 w-full">
@@ -172,7 +179,7 @@ export default function ImageUploadSection({
           </div>
         </div>
 
-        {/* ── YENİ: Video Yükleme ── */}
+        {/* Video Yükleme */}
         <div className="mt-6 pt-6 border-t border-slate-100">
           <Label className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-1.5">
             <Video size={14} className="text-blue-500" />
@@ -198,6 +205,29 @@ export default function ImageUploadSection({
               onRemove={removeVideo}
             />
           </label>
+
+          {/* ← YENİ: showVideo checkbox — sadece video varsa göster */}
+          {hasVideo && (
+            <div className="mt-3 flex items-center gap-2.5 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+              <input
+                type="checkbox"
+                id="show-video"
+                checked={showVideo}
+                onChange={(e) => setShowVideo(e.target.checked)}
+                className="w-4 h-4 rounded border-slate-300 accent-slate-900 cursor-pointer flex-shrink-0"
+              />
+              <label
+                htmlFor="show-video"
+                className="text-sm font-medium text-slate-700 cursor-pointer select-none leading-tight"
+              >
+                Ürün kartında video göster{" "}
+                <span className="text-xs text-slate-500 font-normal">
+                  (hover'da video oynar, 2. görsel yerine)
+                </span>
+              </label>
+            </div>
+          )}
+
           <p className="text-xs text-slate-500 mt-2">
             💡 MP4, WebM veya MOV formatında, maksimum 100MB video
             yükleyebilirsiniz.

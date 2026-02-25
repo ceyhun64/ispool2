@@ -79,15 +79,16 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
   const [sub2, setSub2] = useState<File | null>(null);
   const [sub3, setSub3] = useState<File | null>(null);
   const [sub4, setSub4] = useState<File | null>(null);
-  const [videoFile, setVideoFile] = useState<File | null>(null); // ← YENİ
+  const [videoFile, setVideoFile] = useState<File | null>(null);
 
   const [mainUrl, setMainUrl] = useState<string | null>(null);
   const [subUrl1, setSubUrl1] = useState<string | null>(null);
   const [subUrl2, setSubUrl2] = useState<string | null>(null);
   const [subUrl3, setSubUrl3] = useState<string | null>(null);
   const [subUrl4, setSubUrl4] = useState<string | null>(null);
-  const [videoUrl, setVideoUrl] = useState<string | null>(null); // ← YENİ
-  const [removeVideo, setRemoveVideo] = useState(false); // ← YENİ
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [removeVideo, setRemoveVideo] = useState(false);
+  const [showVideo, setShowVideo] = useState(false); // ← YENİ
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -188,7 +189,8 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
             setSubUrl2(product.images?.[2] || null);
             setSubUrl3(product.images?.[3] || null);
             setSubUrl4(product.images?.[4] || null);
-            setVideoUrl(product.videoUrl || null); // ← YENİ
+            setVideoUrl(product.videoUrl || null);
+            setShowVideo(product.showVideo ?? false); // ← YENİ
           } else {
             toast.error("Ürün bilgileri yüklenemedi");
             router.push("/admin/products");
@@ -241,7 +243,7 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
       const uploadPromises: Promise<string | null>[] = [
         mainFile
           ? uploadFileToCloudinary(mainFile, "products")
-          : Promise.resolve(mainUrl), // mevcut URL'yi koru
+          : Promise.resolve(mainUrl),
         sub1
           ? uploadFileToCloudinary(sub1, "products")
           : Promise.resolve(subUrl1),
@@ -273,7 +275,7 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
         return;
       }
 
-      // ── 2. API'ye sadece URL'ler + metin verisi gönder (dosya YOK) ───────
+      // ── 2. API'ye sadece URL'ler + metin verisi gönder ───────────────────
       const dataForm = new FormData();
       dataForm.append("title", productData.title);
       dataForm.append("description", productData.description);
@@ -290,6 +292,9 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
       if (uploadedSub4Url) dataForm.append("subImageUrl4", uploadedSub4Url);
       if (uploadedVideoUrl) dataForm.append("videoUrl", uploadedVideoUrl);
       if (removeVideo) dataForm.append("removeVideo", "true");
+
+      // ← YENİ: showVideo alanını gönder
+      dataForm.append("showVideo", String(showVideo));
 
       if (productData.oldPrice !== undefined && productData.oldPrice > 0)
         dataForm.append("oldPrice", String(productData.oldPrice));
@@ -443,7 +448,6 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
                 setAvailableSubCategories={setAvailableSubCategories}
               />
 
-              {/* ← YENİ: videoFile/videoUrl props eklendi */}
               <ImageUploadSection
                 mainFile={mainFile}
                 setMainFile={setMainFile}
@@ -469,7 +473,12 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
                 setVideoFile={setVideoFile}
                 videoUrl={videoUrl}
                 setVideoUrl={setVideoUrl}
-                onRemoveVideo={() => setRemoveVideo(true)}
+                onRemoveVideo={() => {
+                  setRemoveVideo(true);
+                  setShowVideo(false);
+                }}
+                showVideo={showVideo}
+                setShowVideo={setShowVideo}
               />
             </div>
           </TabsContent>
