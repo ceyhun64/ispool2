@@ -16,6 +16,8 @@ interface ProductData {
   subImage2?: string;
   subImage3?: string;
   subImage4?: string;
+  videoUrl?: string;
+  showVideo: boolean;
   category: string;
   middleCategory?: string;
   subCategory?: string;
@@ -69,6 +71,8 @@ export async function GET(
         subImage2: product.subImage2 ?? undefined,
         subImage3: product.subImage3 ?? undefined,
         subImage4: product.subImage4 ?? undefined,
+        videoUrl: product.videoUrl ?? undefined,
+        showVideo: product.showVideo,
         category: product.category.name,
         middleCategory: product.middleCategory?.name ?? undefined,
         subCategory: product.subCategory?.name ?? undefined,

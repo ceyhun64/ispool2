@@ -93,7 +93,7 @@ function VideoPlayer({ videoUrl }: { videoUrl: string }) {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full bg-black flex items-center justify-center select-none"
+      className="relative w-full h-full bg-white flex items-center justify-center select-none"
       onMouseMove={resetHideTimer}
       onMouseLeave={() => isPlaying && setShowControls(false)}
     >
@@ -211,7 +211,7 @@ export default function ProductImageGallery({
             className={cn(
               "relative w-[72px] md:w-20 aspect-[3/4] rounded overflow-hidden transition-all duration-200 flex-shrink-0 bg-white",
               !isVideoActive && activeIndex === i
-                ? "ring-1 ring-orange-500 opacity-100"
+                ? "ring- ring-orange-500 opacity-100"
                 : "ring-1 ring-slate-200 opacity-55 hover:opacity-80 hover:ring-slate-300",
             )}
           >
@@ -236,7 +236,7 @@ export default function ProductImageGallery({
             onMouseEnter={() => setThumbHovered(true)}
             onMouseLeave={() => setThumbHovered(false)}
             className={cn(
-              "relative w-[72px] md:w-20 aspect-[3/4] rounded overflow-hidden transition-all duration-200 flex-shrink-0 bg-black",
+              "relative w-[72px] md:w-20 aspect-[3/4] rounded overflow-hidden transition-all duration-200 flex-shrink-0 bg-white",
               isVideoActive
                 ? "ring-2 ring-orange-500 opacity-100"
                 : "ring-1 ring-slate-200 opacity-55 hover:opacity-80 hover:ring-slate-300",

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Heart } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useFavorite } from "@/contexts/favoriteContext";
 import { motion } from "framer-motion";
 
@@ -18,12 +18,18 @@ interface ProductData {
   subImage?: string;
   brand?: string | null;
   hasDiscount?: boolean;
+  videoUrl?: string | null;
+  showVideo?: boolean;
 }
 
 export default function ProductCard({ product }: { product: ProductData }) {
   const [isHovered, setIsHovered] = useState(false);
   const { isFavorited, addFavorite, removeFavorite } = useFavorite();
   const favorited = isFavorited(product.id);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // showVideo true ve videoUrl varsa → hover'da video oynat
+  const showVideoOnHover = !!(product.showVideo && product.videoUrl);
 
   // 1. Kontrol: oldPrice var mı ve price'dan büyük mü?
   const hasRealDiscount = !!(
@@ -38,6 +44,18 @@ export default function ProductCard({ product }: { product: ProductData }) {
           ((product.oldPrice - product.price) / product.oldPrice) * 100,
         )
       : 0;
+
+  // Video hover kontrolü
+  useEffect(() => {
+    if (!videoRef.current || !showVideoOnHover) return;
+    if (isHovered) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().catch(() => {});
+    } else {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  }, [isHovered, showVideoOnHover]);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -67,9 +85,43 @@ export default function ProductCard({ product }: { product: ProductData }) {
             />
           </button>
 
+          {/* Video Rozeti — sol üst köşe, sadece showVideo true ise */}
+          {showVideoOnHover && (
+            <div className="absolute top-2 sm:top-3 left-2 sm:left-3 z-20 w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-sm">
+              <span className="text-white text-[10px] sm:text-[11px] ml-0.5">
+                ▶
+              </span>
+            </div>
+          )}
+
+          {/* Video Overlay — showVideo true ise hover'da göster */}
+          {showVideoOnHover && (
+            <div
+              className={`absolute inset-0 z-10 transition-opacity duration-500 ${
+                isHovered ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <video
+                ref={videoRef}
+                src={product.videoUrl!}
+                className="w-full h-full object-cover"
+                muted
+                loop
+                playsInline
+                preload="metadata"
+              />
+            </div>
+          )}
+
+          {/* Görsel Slider — showVideo false ise subImage ile hover animasyonu */}
           <motion.div
             className="flex h-full w-[200%]"
-            animate={{ x: isHovered && product.subImage ? "-50%" : "0%" }}
+            animate={{
+              x:
+                isHovered && !showVideoOnHover && product.subImage
+                  ? "-50%"
+                  : "0%",
+            }}
             transition={{ duration: 0.8, ease: [0.6, 0.01, -0.05, 0.95] }}
           >
             <div className="relative h-full w-1/2">

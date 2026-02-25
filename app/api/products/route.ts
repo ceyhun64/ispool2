@@ -1,7 +1,4 @@
 // app/api/products/route.ts
-// POST artık dosya almıyor — sadece Cloudinary URL'leri + metin verisi alıyor
-// GET değişmedi, aşağıya eklenmiştir
-
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -9,7 +6,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
 // ======================================================
-// GET /api/products  (değişmedi)
+// GET /api/products
 // ======================================================
 export async function GET() {
   try {
@@ -42,6 +39,7 @@ export async function GET() {
       subImage3: p.subImage3 ?? undefined,
       subImage4: p.subImage4 ?? undefined,
       videoUrl: p.videoUrl ?? undefined,
+      showVideo: p.showVideo,
       category: p.category.name,
       middleCategory: p.middleCategory?.name ?? undefined,
       subCategory: p.subCategory?.name ?? undefined,
@@ -73,20 +71,18 @@ export async function GET() {
 
 // ======================================================
 // POST /api/products
-// Artık dosya almıyor — client zaten Cloudinary'ye yükledi,
-// sadece URL'leri + metin verilerini alıyor.
 // ======================================================
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
 
-    // ── Cloudinary URL'leri (client tarafından yüklenmiş) ──
     const mainImageUrl = formData.get("mainImageUrl") as string | null;
     const subImageUrl1 = formData.get("subImageUrl1") as string | null;
     const subImageUrl2 = formData.get("subImageUrl2") as string | null;
     const subImageUrl3 = formData.get("subImageUrl3") as string | null;
     const subImageUrl4 = formData.get("subImageUrl4") as string | null;
     const videoUrl = formData.get("videoUrl") as string | null;
+    const showVideo = formData.get("showVideo") === "true"; // ← YENİ
 
     if (!mainImageUrl) {
       return NextResponse.json(
@@ -227,6 +223,7 @@ export async function POST(request: Request) {
           subImage3: subImageUrl3,
           subImage4: subImageUrl4,
           videoUrl: videoUrl,
+          showVideo, // ← YENİ
           brandId,
           colorId,
           productGroupId:
@@ -296,6 +293,7 @@ export async function POST(request: Request) {
           price: newProduct.price,
           mainImage: newProduct.mainImage,
           videoUrl: newProduct.videoUrl ?? undefined,
+          showVideo: newProduct.showVideo,
           category: newProduct.category.name,
         },
       },

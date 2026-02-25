@@ -119,6 +119,7 @@ export function CustomImageZoom({ src, alt }: Props) {
     [isTouchDevice],
   );
 
+  
   return (
     <>
       <div
