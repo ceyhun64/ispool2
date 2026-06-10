@@ -106,7 +106,11 @@ export default function VariantManagement() {
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/${activeTab}`);
+      const url =
+        activeTab === "size"
+          ? "/api/size?includeInactive=true"
+          : `/api/${activeTab}`;
+      const res = await fetch(url);
       const result: ApiResponse = await res.json();
 
       if (result.success) {
