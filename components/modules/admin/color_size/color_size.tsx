@@ -10,6 +10,8 @@ import {
   Palette,
   Maximize,
   Loader2,
+  Tag,
+  Upload,
 } from "lucide-react";
 import {
   ColorPicker,
@@ -23,12 +25,23 @@ import Color from "color";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
 
-type EntityType = "color" | "size";
+type EntityType = "color" | "size" | "brand";
 
 interface Color {
   id: number;
   name: string;
   hexCode: string;
+  createdAt: string;
+  updatedAt: string;
+  _count?: {
+    products: number;
+  };
+}
+
+interface Brand {
+  id: number;
+  name: string;
+  image: string | null;
   createdAt: string;
   updatedAt: string;
   _count?: {
@@ -56,6 +69,7 @@ interface FormData {
   value: string;
   sortOrder: number;
   isActive: boolean;
+  image: string;
 }
 
 interface ApiResponse {
@@ -72,9 +86,10 @@ interface ApiResponse {
 
 export default function VariantManagement() {
   const [activeTab, setActiveTab] = useState<EntityType>("color");
-  const [items, setItems] = useState<(Color | Size)[]>([]);
+  const [items, setItems] = useState<(Color | Size | Brand)[]>([]);
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const isMobile = useIsMobile();
 
@@ -84,6 +99,7 @@ export default function VariantManagement() {
     value: "",
     sortOrder: 0,
     isActive: true,
+    image: "",
   });
 
   // Verileri getir
@@ -119,7 +135,41 @@ export default function VariantManagement() {
       value: "",
       sortOrder: 0,
       isActive: true,
+      image: "",
     });
+  };
+
+  // Marka logosu yükleme
+  const handleImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const uploadData = new FormData();
+      uploadData.append("file", file);
+      uploadData.append("folderName", "brands");
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: uploadData,
+      });
+      const result = await res.json();
+
+      if (res.ok && result.path) {
+        setFormData((prev) => ({ ...prev, image: result.path }));
+        toast.success("Logo yüklendi");
+      } else {
+        toast.error(result.error || "Logo yüklenemedi");
+      }
+    } catch (error) {
+      toast.error("Logo yüklenirken bir hata oluştu");
+      console.error("[BRAND_IMAGE_UPLOAD_ERROR]", error);
+    } finally {
+      setUploading(false);
+    }
   };
 
   // Form gönderimi
@@ -134,11 +184,13 @@ export default function VariantManagement() {
     const payload =
       activeTab === "color"
         ? { name: formData.name, hexCode: formData.hexCode }
-        : {
-            value: formData.value,
-            sortOrder: formData.sortOrder,
-            isActive: formData.isActive,
-          };
+        : activeTab === "brand"
+          ? { name: formData.name, image: formData.image || null }
+          : {
+              value: formData.value,
+              sortOrder: formData.sortOrder,
+              isActive: formData.isActive,
+            };
 
     try {
       const res = await fetch(url, {
@@ -186,7 +238,7 @@ export default function VariantManagement() {
   };
 
   // Düzenleme modu
-  const handleEdit = (item: Color | Size) => {
+  const handleEdit = (item: Color | Size | Brand) => {
     setEditingId(item.id);
     if (activeTab === "color") {
       const colorItem = item as Color;
@@ -194,6 +246,13 @@ export default function VariantManagement() {
         ...formData,
         name: colorItem.name,
         hexCode: colorItem.hexCode,
+      });
+    } else if (activeTab === "brand") {
+      const brandItem = item as Brand;
+      setFormData({
+        ...formData,
+        name: brandItem.name,
+        image: brandItem.image || "",
       });
     } else {
       const sizeItem = item as Size;
@@ -213,9 +272,9 @@ export default function VariantManagement() {
   };
 
   // Kullanım sayısı hesapla
-  const getUsageCount = (item: Color | Size): number => {
-    if (activeTab === "color") {
-      return (item as Color)._count?.products || 0;
+  const getUsageCount = (item: Color | Size | Brand): number => {
+    if (activeTab === "color" || activeTab === "brand") {
+      return (item as Color | Brand)._count?.products || 0;
     } else {
       const sizeItem = item as Size;
       return (
@@ -246,16 +305,16 @@ export default function VariantManagement() {
       {/* Header */}
       <header className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900 mb-1">
-          Renk & Beden Yönetimi{" "}
+          Renk, Beden & Marka Yönetimi{" "}
         </h1>
         <p className="text-sm text-slate-600">
-          Renkleri ve bedenleri yönetmek için kullanılır.
+          Renkleri, bedenleri ve markaları yönetmek için kullanılır.
         </p>
       </header>
 
       {/* Tab Navigation */}
       <div className="bg-white border border-gray-200 rounded-lg p-1 mb-6">
-        <div className="grid grid-cols-2 gap-1">
+        <div className="grid grid-cols-3 gap-1">
           <button
             onClick={() => setActiveTab("color")}
             className={`flex items-center justify-center py-2 px-4 rounded-md transition-all text-sm font-medium ${
@@ -277,6 +336,17 @@ export default function VariantManagement() {
           >
             <Maximize className="w-4 h-4 mr-2" />
             Bedenler
+          </button>
+          <button
+            onClick={() => setActiveTab("brand")}
+            className={`flex items-center justify-center py-2 px-4 rounded-md transition-all text-sm font-medium ${
+              activeTab === "brand"
+                ? "bg-gray-900 text-white"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            }`}
+          >
+            <Tag className="w-4 h-4 mr-2" />
+            Markalar
           </button>
         </div>
       </div>
@@ -368,6 +438,75 @@ export default function VariantManagement() {
                       </div>
                     </div>
                   </ColorPicker>
+                </div>
+              </div>
+            </div>
+          ) : activeTab === "brand" ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Marka Adı
+                </label>
+                <input
+                  type="text"
+                  placeholder="Örn: Bmes, Pars, İş Pool"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-900 focus:border-transparent transition"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  required
+                />
+
+                <label className="block text-sm font-medium text-gray-700 mb-1.5 mt-4">
+                  Marka Logosu (opsiyonel)
+                </label>
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer transition-colors">
+                    {uploading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Upload className="w-4 h-4" />
+                    )}
+                    Logo Yükle
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                      disabled={uploading}
+                    />
+                  </label>
+                  {formData.image && (
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, image: "" })}
+                      className="text-sm text-gray-500 hover:text-red-600 transition-colors"
+                    >
+                      Logoyu Kaldır
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className="lg:col-span-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Önizleme
+                </label>
+                <div className="border border-gray-200 rounded-md p-4 bg-white flex items-center justify-center h-37">
+                  {formData.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={formData.image}
+                      alt={formData.name || "Marka logosu"}
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  ) : (
+                    <div className="text-center text-gray-400">
+                      <Tag className="w-8 h-8 mx-auto mb-2" />
+                      <p className="text-xs">Logo yok</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -480,10 +619,18 @@ export default function VariantManagement() {
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                  {activeTab === "color" ? "Renk" : "Beden"}
+                  {activeTab === "color"
+                    ? "Renk"
+                    : activeTab === "brand"
+                      ? "Marka"
+                      : "Beden"}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                  {activeTab === "color" ? "Görünüm" : "Sıra / Durum"}
+                  {activeTab === "color"
+                    ? "Görünüm"
+                    : activeTab === "brand"
+                      ? "Logo"
+                      : "Sıra / Durum"}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
                   Kullanım
@@ -507,11 +654,18 @@ export default function VariantManagement() {
                     <div className="text-gray-400">
                       {activeTab === "color" ? (
                         <Palette className="w-10 h-10 mx-auto mb-2" />
+                      ) : activeTab === "brand" ? (
+                        <Tag className="w-10 h-10 mx-auto mb-2" />
                       ) : (
                         <Maximize className="w-10 h-10 mx-auto mb-2" />
                       )}
                       <p className="text-gray-500 text-sm">
-                        Henüz {activeTab === "color" ? "renk" : "beden"}{" "}
+                        Henüz{" "}
+                        {activeTab === "color"
+                          ? "renk"
+                          : activeTab === "brand"
+                            ? "marka"
+                            : "beden"}{" "}
                         eklenmemiş
                       </p>
                     </div>
@@ -527,7 +681,9 @@ export default function VariantManagement() {
                       <span className="text-sm font-medium text-gray-900">
                         {activeTab === "color"
                           ? (item as Color).name
-                          : (item as Size).value}
+                          : activeTab === "brand"
+                            ? (item as Brand).name
+                            : (item as Size).value}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -543,6 +699,17 @@ export default function VariantManagement() {
                             {(item as Color).hexCode}
                           </span>
                         </div>
+                      ) : activeTab === "brand" ? (
+                        (item as Brand).image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={(item as Brand).image as string}
+                            alt={(item as Brand).name}
+                            className="w-10 h-10 object-contain rounded border border-gray-200 bg-white"
+                          />
+                        ) : (
+                          <span className="text-xs text-gray-400">Logo yok</span>
+                        )
                       ) : (
                         <div className="flex items-center gap-3">
                           <span className="text-xs text-gray-600">

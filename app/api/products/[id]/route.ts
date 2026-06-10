@@ -91,7 +91,16 @@ export async function GET(
           productGroupId: product.productGroupId,
           id: { not: product.id },
         },
-        include: { color: true, category: true, brand: true },
+        include: {
+          color: true,
+          category: true,
+          brand: true,
+          sizes: {
+            include: { size: true },
+            orderBy: { size: { sortOrder: "asc" } },
+          },
+          stock: { orderBy: { sizeId: "asc" } },
+        },
         orderBy: { createdAt: "desc" },
       });
       otherColors = groupProducts.map((p) => ({
@@ -107,6 +116,17 @@ export async function GET(
         discountPercentage: p.oldPrice
           ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100)
           : 0,
+        availableSizes: p.sizes.map((ps) => ({
+          id: ps.size.id,
+          value: ps.size.value,
+          sortOrder: ps.size.sortOrder,
+        })),
+        stockMatrix: p.stock.map((s) => ({
+          id: s.id,
+          sizeId: s.sizeId,
+          stock: s.stock,
+          priceModifier: s.priceModifier || 0,
+        })),
       }));
     }
 

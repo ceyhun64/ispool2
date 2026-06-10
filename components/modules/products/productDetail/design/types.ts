@@ -18,6 +18,10 @@ export interface LogoLayer {
   locked: boolean;
   name: string;
   backgroundRemoved?: boolean;
+  tintColor: string | null;
+  originalImage: string | null;
+  colorMap: Record<string, string> | null;
+  palette: string[] | null;
 }
 
 export interface DesignPanelProps {

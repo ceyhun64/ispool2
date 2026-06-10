@@ -47,4 +47,8 @@ export const DEFAULT_LAYER_VALUES = {
   flipV: false,
   visible: true,
   locked: false,
+  tintColor: null,
+  originalImage: null,
+  colorMap: null,
+  palette: null,
 };

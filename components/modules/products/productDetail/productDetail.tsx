@@ -42,6 +42,16 @@ interface StockEntry {
   priceModifier: number;
 }
 
+interface CartCombo {
+  productId: number;
+  title: string;
+  price: number;
+  mainImage: string;
+  sizeId: number | null;
+  sizeValue: string | null;
+  customImage: string | null;
+}
+
 interface ProductData {
   id: number;
   title: string;
@@ -69,6 +79,8 @@ interface ProductData {
     color: { id: number; name: string; hexCode: string } | null;
     hasDiscount: boolean;
     discountPercentage: number;
+    availableSizes: Size[];
+    stockMatrix: StockEntry[];
   }>;
   rating: number;
   reviewCount: number;
@@ -145,8 +157,8 @@ export default function ProductDetailPage() {
   const [uploadedImagePreview, setUploadedImagePreview] = useState<
     string | null
   >(null);
-  const [selectedSizeId, setSelectedSizeId] = useState<number | null>(null);
-  const [selectedStock, setSelectedStock] = useState<StockEntry | null>(null);
+  const [selectedSizeIds, setSelectedSizeIds] = useState<number[]>([]);
+  const [selectedColorIds, setSelectedColorIds] = useState<number[]>([]);
 
   const { isFavorited, addFavorite, removeFavorite } = useFavorite();
   const cartDropdownRef = useRef<{ open: () => void; refreshCart: () => void }>(
@@ -162,8 +174,8 @@ export default function ProductDetailPage() {
         const data = await res.json();
         if (data.success) {
           setProduct(data.product);
-          setSelectedSizeId(null);
-          setSelectedStock(null);
+          setSelectedSizeIds([]);
+          setSelectedColorIds([]);
         } else {
           setProduct(null);
         }
@@ -176,26 +188,6 @@ export default function ProductDetailPage() {
     };
     if (productId) fetchProduct();
   }, [productId]);
-
-  useEffect(() => {
-    if (!product) {
-      setSelectedStock(null);
-      return;
-    }
-    if (product.availableSizes.length > 0) {
-      if (selectedSizeId) {
-        setSelectedStock(
-          product.stockMatrix.find((s) => s.sizeId === selectedSizeId) ?? null,
-        );
-      } else {
-        setSelectedStock(null);
-      }
-    } else {
-      setSelectedStock(
-        product.stockMatrix.find((s) => s.sizeId === null) ?? null,
-      );
-    }
-  }, [selectedSizeId, product]);
 
   useEffect(() => {
     const checkLogin = async () => {
@@ -226,6 +218,87 @@ export default function ProductDetailPage() {
     return quantity >= bulkDiscountQty
       ? { hasDiscount: true, discountRate: bulkDiscountRate }
       : { hasDiscount: false, discountRate: 0 };
+  };
+
+  const toggleSize = (sizeId: number) => {
+    setSelectedSizeIds((prev) =>
+      prev.includes(sizeId)
+        ? prev.filter((id) => id !== sizeId)
+        : [...prev, sizeId],
+    );
+  };
+
+  const toggleColor = (colorId: number) => {
+    setSelectedColorIds((prev) =>
+      prev.includes(colorId)
+        ? prev.filter((id) => id !== colorId)
+        : [...prev, colorId],
+    );
+  };
+
+  // Seçili renk(ler) ve beden(ler)den sepete eklenecek kombinasyonları oluşturur
+  const buildCartCombos = (): CartCombo[] => {
+    if (!product) return [];
+
+    const finalCustomImage = customDesign || uploadedImagePreview;
+    const combos: CartCombo[] = [];
+
+    const colorEntries = [
+      {
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        mainImage: product.mainImage,
+        availableSizes: product.availableSizes,
+        stockMatrix: product.stockMatrix,
+      },
+      ...product.otherColors
+        .filter((c) => selectedColorIds.includes(c.id))
+        .map((c) => ({
+          id: c.id,
+          title: c.title,
+          price: c.price,
+          mainImage: c.mainImage,
+          availableSizes: c.availableSizes,
+          stockMatrix: c.stockMatrix,
+        })),
+    ];
+
+    for (const entry of colorEntries) {
+      if (entry.availableSizes.length > 0) {
+        for (const sizeId of selectedSizeIds) {
+          if (!entry.availableSizes.some((s) => s.id === sizeId)) continue;
+          const stockEntry = entry.stockMatrix.find(
+            (s) => s.sizeId === sizeId,
+          );
+          if (!stockEntry || stockEntry.stock <= 0) continue;
+          const sizeInfo = entry.availableSizes.find((s) => s.id === sizeId);
+          combos.push({
+            productId: entry.id,
+            title: entry.title,
+            price: entry.price + (stockEntry.priceModifier || 0),
+            mainImage: entry.mainImage,
+            sizeId,
+            sizeValue: sizeInfo?.value ?? null,
+            customImage: entry.id === product.id ? finalCustomImage : null,
+          });
+        }
+      } else {
+        const stockEntry = entry.stockMatrix.find((s) => s.sizeId === null);
+        if (stockEntry && stockEntry.stock <= 0) continue;
+        combos.push({
+          productId: entry.id,
+          title: entry.title,
+          price: entry.price + (stockEntry?.priceModifier || 0),
+          mainImage: entry.mainImage,
+          sizeId: null,
+          sizeValue: null,
+          customImage: entry.id === product.id ? finalCustomImage : null,
+        });
+      }
+    }
+
+    return combos;
   };
 
   const handleSaveDesign = (designUrl: string) => {
@@ -263,68 +336,75 @@ export default function ProductDetailPage() {
       toast.error("Ürün bilgisi bulunamadı.");
       return;
     }
-    if (product.availableSizes.length > 0 && !selectedSizeId) {
-      toast.error("Lütfen bir beden seçin.");
-      return;
-    }
-    if (selectedStock && selectedStock.stock <= 0) {
-      toast.error("Seçilen beden stokta yok.");
+    if (product.availableSizes.length > 0 && selectedSizeIds.length === 0) {
+      toast.error("Lütfen en az bir beden seçin.");
       return;
     }
 
-    const finalCustomImage = customDesign || uploadedImagePreview;
+    const combos = buildCartCombos();
+    if (combos.length === 0) {
+      toast.error("Seçili ürün(ler) stokta yok.");
+      return;
+    }
+
     const bulkDiscount = calculateBulkDiscount();
-    let basePrice = product.price + (selectedStock?.priceModifier ?? 0);
-    if (bulkDiscount.hasDiscount)
-      basePrice = basePrice * (1 - bulkDiscount.discountRate / 100);
+    const successMessage = bulkDiscount.hasDiscount
+      ? `${combos.length} varyant sepete eklendi! 🎉 %${bulkDiscount.discountRate} toplu alım indirimi uygulandı!`
+      : `${combos.length} varyant sepete eklendi!`;
 
     if (!isLoggedIn) {
-      addToGuestCart(
-        product.id,
-        finalCustomImage ? `${product.title} (Özelleştirilmiş)` : product.title,
-        basePrice,
-        finalCustomImage || product.mainImage,
-        product.category.name,
-        quantity,
-        selectedSizeId,
-        finalCustomImage,
-        product.bulkDiscountQty,
-        product.bulkDiscountRate,
-      );
-      toast.success(
-        bulkDiscount.hasDiscount
-          ? `${quantity} adet ürün sepete eklendi! 🎉 %${bulkDiscount.discountRate} toplu alım indirimi uygulandı!`
-          : `${quantity} adet ürün sepete eklendi!`,
-      );
+      combos.forEach((combo) => {
+        let price = combo.price;
+        if (bulkDiscount.hasDiscount)
+          price = price * (1 - bulkDiscount.discountRate / 100);
+        addToGuestCart(
+          combo.productId,
+          combo.customImage
+            ? `${combo.title} (Özelleştirilmiş)`
+            : combo.title,
+          price,
+          combo.customImage || combo.mainImage,
+          product.category.name,
+          quantity,
+          combo.sizeId,
+          combo.customImage,
+          product.bulkDiscountQty,
+          product.bulkDiscountRate,
+          combo.sizeValue,
+        );
+      });
+      toast.success(successMessage);
       window.dispatchEvent(new CustomEvent("cartUpdated"));
       return;
     }
 
     try {
-      const formData = new FormData();
-      formData.append("productId", product.id.toString());
-      formData.append("quantity", quantity.toString());
-      if (selectedSizeId) formData.append("sizeId", selectedSizeId.toString());
-      if (customDesign) formData.append("customImage", customDesign);
-      else if (uploadedImage) formData.append("customImageFile", uploadedImage);
+      let hasError = false;
+      for (const combo of combos) {
+        const formData = new FormData();
+        formData.append("productId", combo.productId.toString());
+        formData.append("quantity", quantity.toString());
+        if (combo.sizeId) formData.append("sizeId", combo.sizeId.toString());
+        if (combo.customImage) {
+          if (customDesign) formData.append("customImage", customDesign);
+          else if (uploadedImage)
+            formData.append("customImageFile", uploadedImage);
+        }
 
-      const res = await fetch("/api/cart", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
-      if (res.ok) {
-        toast.success(
-          bulkDiscount.hasDiscount
-            ? `${quantity} adet ürün sepete eklendi! 🎉 %${bulkDiscount.discountRate} toplu alım indirimi uygulandı!`
-            : `${quantity} adet ürün sepete eklendi!`,
-        );
-        window.dispatchEvent(new CustomEvent("cartUpdated"));
-        cartDropdownRef.current?.open?.();
-      } else {
-        const error = await res.json();
-        toast.error(error.error || "Sepete ekleme hatası.");
+        const res = await fetch("/api/cart", {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
+        if (!res.ok) {
+          hasError = true;
+          const error = await res.json();
+          toast.error(error.error || `${combo.title} sepete eklenemedi.`);
+        }
       }
+      if (!hasError) toast.success(successMessage);
+      window.dispatchEvent(new CustomEvent("cartUpdated"));
+      cartDropdownRef.current?.open?.();
     } catch {
       toast.error("Sepete ekleme hatası.");
     }
@@ -354,15 +434,34 @@ export default function ProductDetailPage() {
 
   const finalCustomImage = customDesign || uploadedImagePreview;
   const bulkDiscount = calculateBulkDiscount();
-  let currentPrice = product.price + (selectedStock?.priceModifier ?? 0);
+
+  // Görüntü amaçlı: ilk seçili bedenin (veya bedensiz ürünün) stok kaydı
+  const primaryStockEntry =
+    selectedSizeIds.length > 0
+      ? (product.stockMatrix.find((s) => s.sizeId === selectedSizeIds[0]) ??
+        null)
+      : product.availableSizes.length === 0
+        ? (product.stockMatrix.find((s) => s.sizeId === null) ?? null)
+        : null;
+
+  let currentPrice = product.price + (primaryStockEntry?.priceModifier ?? 0);
   if (bulkDiscount.hasDiscount)
     currentPrice = currentPrice * (1 - bulkDiscount.discountRate / 100);
-  const subtotal = currentPrice * quantity;
-  const vatAmount = subtotal * 0.1;
-  const totalWithVat = subtotal + vatAmount;
+
+  const cartCombos = buildCartCombos();
+  const combosBaseTotal =
+    cartCombos.reduce((sum, c) => sum + c.price, 0) * quantity;
+  let combosTotal = combosBaseTotal;
+  if (bulkDiscount.hasDiscount)
+    combosTotal = combosBaseTotal * (1 - bulkDiscount.discountRate / 100);
+  const vatAmount = combosTotal * 0.1;
+  const totalWithVat = combosTotal + vatAmount;
   const remainingForBulk = product.bulkDiscountQty
     ? Math.max(0, product.bulkDiscountQty - quantity)
     : 0;
+  const hasValidSelection =
+    product.availableSizes.length === 0 || selectedSizeIds.length > 0;
+  const sizeStockAvailable = hasValidSelection && cartCombos.length > 0;
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans selection:bg-orange-100 selection:text-orange-900">
@@ -432,22 +531,23 @@ export default function ProductDetailPage() {
                 lowStock={product.stock.lowStock}
                 stockQuantity={product.stock.quantity}
                 hasCustomImage={!!finalCustomImage}
-                selectedStock={selectedStock}
+                selectedStock={primaryStockEntry}
               />
 
               <div className="space-y-6">
                 <ProductVariantSelector
                   availableSizes={product.availableSizes}
                   stockMatrix={product.stockMatrix}
-                  selectedSizeId={selectedSizeId}
-                  selectedStock={selectedStock}
-                  onSizeChange={setSelectedSizeId}
+                  selectedSizeIds={selectedSizeIds}
+                  onSizeToggle={toggleSize}
                   productGroupId={product.productGroupId}
                   currentProductId={product.id}
                   currentColor={product.color}
                   currentMainImage={product.mainImage}
                   currentTitle={product.title}
                   otherColors={product.otherColors}
+                  selectedColorIds={selectedColorIds}
+                  onColorToggle={toggleColor}
                 />
 
                 {finalCustomImage && (
@@ -542,16 +642,18 @@ export default function ProductDetailPage() {
                   isFavorited={isFavorited(product.id)}
                   hasUploadedImage={!!uploadedImagePreview}
                   inStock={product.stock.inStock}
-                  sizeStockAvailable={!selectedStock || selectedStock.stock > 0}
+                  sizeStockAvailable={sizeStockAvailable}
                 />
 
                 <div className="bg-slate-50 border border-slate-200 rounded p-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">
-                      Ürün Fiyatı ({quantity} adet)
+                      {cartCombos.length > 1
+                        ? `Ürün Fiyatı (${cartCombos.length} varyant × ${quantity} adet)`
+                        : `Ürün Fiyatı (${quantity} adet)`}
                     </span>
                     <span className="font-bold text-slate-900">
-                      {subtotal.toLocaleString("tr-TR", {
+                      {combosBaseTotal.toLocaleString("tr-TR", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}{" "}
@@ -567,9 +669,7 @@ export default function ProductDetailPage() {
                       <span className="font-bold text-emerald-700">
                         -
                         {(
-                          (product.price +
-                            (selectedStock?.priceModifier ?? 0)) *
-                          quantity *
+                          combosBaseTotal *
                           (bulkDiscount.discountRate / 100)
                         ).toLocaleString("tr-TR", {
                           minimumFractionDigits: 2,

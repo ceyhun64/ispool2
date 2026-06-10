@@ -7,6 +7,7 @@
     "build": "prisma migrate reset --force && prisma db push --force-reset && prisma generate && npm run seed && next build",
     "start": "next start",
     "seed": "npx tsx prisma/seed.ts",
+    "sync-catalog": "npx tsx prisma/syncCatalog.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

@@ -8,6 +8,7 @@ export interface GuestCartItem {
   image: string;
   quantity: number;
   sizeId?: number | null;
+  sizeValue?: string | null;
   customImage?: string | null;
   bulkDiscountQty?: number | null;
   bulkDiscountRate?: number | null;
@@ -59,6 +60,7 @@ export function addToGuestCart(
   customImage?: string | null,
   bulkDiscountQty?: number | null,
   bulkDiscountRate?: number | null,
+  sizeValue?: string | null,
 ): void {
   const cart = getCart();
 
@@ -83,6 +85,7 @@ export function addToGuestCart(
       quantity,
       category: category ?? "",
       sizeId: sizeId ?? null,
+      sizeValue: sizeValue ?? null,
       customImage: customImage ?? null,
       bulkDiscountQty: bulkDiscountQty ?? null,
       bulkDiscountRate: bulkDiscountRate ?? null,
