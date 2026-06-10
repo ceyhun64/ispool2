@@ -27,13 +27,27 @@ const SIZE_CATEGORIES = {
     label: "Pantolon",
     filter: (value: string) => {
       const num = parseInt(value);
-      return !isNaN(num) && num >= 36 && num <= 64 && num % 2 === 0;
+      return !isNaN(num) && num >= 36 && num <= 72 && num % 2 === 0;
     },
   },
   TSHIRT: {
     label: "T-Shirt",
     filter: (value: string) => {
-      const sizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"];
+      const sizes = [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL",
+        "XXL",
+        "3XL",
+        "4XL",
+        "5XL",
+        "6XL",
+        "7XL",
+        "8XL",
+      ];
       return sizes.includes(value.toUpperCase());
     },
   },

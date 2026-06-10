@@ -11,6 +11,8 @@ import {
   Blend,
   RotateCcw,
   Layers,
+  PaintBucket,
+  ArrowRight,
 } from "lucide-react";
 import { LogoLayer, cn } from "./types";
 import { QUICK_POSITIONS, BLEND_MODES } from "./constants";
@@ -20,6 +22,8 @@ interface PropertiesPanelProps {
   onLayerUpdate: (updates: Partial<LogoLayer>) => void;
   onResetLayer: () => void;
   onRemoveBackground: (id: string) => void;
+  onColorMapChange: (originalColor: string, newColor: string | null) => void;
+  onResetColors: () => void;
 }
 
 export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
@@ -27,6 +31,8 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   onLayerUpdate,
   onResetLayer,
   onRemoveBackground,
+  onColorMapChange,
+  onResetColors,
 }) => {
   if (!activeLayer) {
     return (
@@ -356,6 +362,86 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             />
           </div>
         </section>
+
+        {/* Logo Color / Tint Section */}
+        <section className="space-y-2 lg:space-y-3">
+          <div className="text-[9px] lg:text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+            <PaintBucket size={11} /> Logo Rengi
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={activeLayer.tintColor || "#ff0000"}
+              onChange={(e) => onLayerUpdate({ tintColor: e.target.value })}
+              className="w-10 h-8 rounded border border-slate-600 bg-slate-700 cursor-pointer"
+            />
+            <span className="text-[9px] lg:text-[10px] text-slate-400 flex-1">
+              {activeLayer.tintColor
+                ? "Logo seçilen renkle boyanıyor"
+                : "Orijinal renkler kullanılıyor"}
+            </span>
+            {activeLayer.tintColor && (
+              <button
+                onClick={() => onLayerUpdate({ tintColor: null })}
+                className="text-[9px] lg:text-[10px] font-bold text-orange-400 hover:text-orange-300 underline"
+              >
+                Sıfırla
+              </button>
+            )}
+          </div>
+        </section>
+
+        {/* Color Palette Section - per-color recolor for multi-color logos */}
+        {activeLayer.palette && activeLayer.palette.length > 0 && (
+          <section className="space-y-2 lg:space-y-3">
+            <div className="text-[9px] lg:text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+              <Palette size={11} /> Renk Paleti
+            </div>
+            <p className="text-[9px] lg:text-[10px] text-slate-500">
+              Logodaki renkleri tek tek değiştirin
+            </p>
+            <div className="space-y-2">
+              {activeLayer.palette.map((originalColor) => {
+                const mappedColor = activeLayer.colorMap?.[originalColor];
+                return (
+                  <div key={originalColor} className="flex items-center gap-2">
+                    <div
+                      className="w-7 h-7 rounded border border-slate-600 shrink-0"
+                      style={{ backgroundColor: originalColor }}
+                      title={`Orijinal renk: ${originalColor}`}
+                    />
+                    <ArrowRight size={12} className="text-slate-500 shrink-0" />
+                    <input
+                      type="color"
+                      value={mappedColor || originalColor}
+                      onChange={(e) =>
+                        onColorMapChange(originalColor, e.target.value)
+                      }
+                      className="w-10 h-8 rounded border border-slate-600 bg-slate-700 cursor-pointer"
+                    />
+                    {mappedColor && (
+                      <button
+                        onClick={() => onColorMapChange(originalColor, null)}
+                        className="text-[9px] lg:text-[10px] font-bold text-orange-400 hover:text-orange-300 underline"
+                      >
+                        Sıfırla
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            {activeLayer.colorMap &&
+              Object.keys(activeLayer.colorMap).length > 0 && (
+                <button
+                  onClick={onResetColors}
+                  className="w-full py-1.5 lg:py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-[9px] lg:text-[10px] transition-all"
+                >
+                  Tüm Renkleri Sıfırla
+                </button>
+              )}
+          </section>
+        )}
 
         {/* Blend Mode Section */}
         <section className="space-y-2 lg:space-y-3">

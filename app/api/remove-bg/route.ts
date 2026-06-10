@@ -59,10 +59,14 @@ export async function POST(req: Request) {
       let errorMessage = "Arka plan kaldırma işlemi başarısız oldu";
       try {
         const errorJson = JSON.parse(errorText);
-        errorMessage =
-          errorJson.errors?.[0]?.title ||
-          errorJson.error?.message ||
-          errorMessage;
+        const apiError = errorJson.errors?.[0];
+        if (apiError?.code === "invalid_file_type") {
+          errorMessage =
+            "Seçilen dosya geçerli bir resim dosyası değil (jpg, png veya webp olmalı). Lütfen başka bir görsel seçin.";
+        } else {
+          errorMessage =
+            apiError?.title || errorJson.error?.message || errorMessage;
+        }
       } catch (e) {
         errorMessage = errorText || errorMessage;
       }

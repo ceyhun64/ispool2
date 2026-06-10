@@ -136,7 +136,9 @@ const CartDropdown = forwardRef(
           productId: item.productId,
           quantity: item.quantity,
           sizeId: item.sizeId ?? null,
-          size: null,
+          size: item.sizeValue
+            ? { id: item.sizeId ?? 0, value: item.sizeValue }
+            : null,
           customImage: item.customImage ?? null,
           product: {
             id: item.productId,

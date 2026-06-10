@@ -117,11 +117,28 @@ export const Canvas: React.FC<CanvasProps> = ({
                     mixBlendMode: layer.blendMode as any,
                   }}
                 >
-                  <img
-                    src={layer.image}
-                    alt={layer.name}
-                    className="w-full h-full object-contain pointer-events-none drop-shadow-lg"
-                  />
+                  {layer.tintColor ? (
+                    <div
+                      className="w-full h-full pointer-events-none drop-shadow-lg"
+                      style={{
+                        backgroundColor: layer.tintColor,
+                        WebkitMaskImage: `url(${layer.image})`,
+                        maskImage: `url(${layer.image})`,
+                        WebkitMaskSize: "contain",
+                        maskSize: "contain",
+                        WebkitMaskRepeat: "no-repeat",
+                        maskRepeat: "no-repeat",
+                        WebkitMaskPosition: "center",
+                        maskPosition: "center",
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src={layer.image}
+                      alt={layer.name}
+                      className="w-full h-full object-contain pointer-events-none drop-shadow-lg"
+                    />
+                  )}
 
                   {activeLayerId === layer.id && !layer.locked && (
                     <>

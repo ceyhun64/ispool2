@@ -10,6 +10,7 @@ import { Canvas } from "./canvas";
 import { PropertiesPanel } from "./propertiesPanel";
 import { toast } from "sonner";
 import { toPng } from "html-to-image";
+import { extractPalette, applyColorMap } from "./colorUtils";
 
 export default function DesignPanel({
   productImage,
@@ -81,7 +82,7 @@ export default function DesignPanel({
   };
 
   // Layer Operations
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -96,11 +97,22 @@ export default function DesignPanel({
     }
 
     const url = URL.createObjectURL(file);
+
+    let palette: string[] = [];
+    try {
+      palette = await extractPalette(url);
+    } catch (err) {
+      console.error("Palette extraction error:", err);
+    }
+
     const newLayer: LogoLayer = {
+      ...DEFAULT_LAYER_VALUES,
       id: `layer-${Date.now()}`,
       image: url,
+      originalImage: url,
+      colorMap: null,
+      palette,
       name: `Logo ${layers.length + 1}`,
-      ...DEFAULT_LAYER_VALUES,
     };
     const newLayers = [...layers, newLayer];
     setLayers(newLayers);
@@ -171,9 +183,51 @@ export default function DesignPanel({
         blur: 0,
         flipH: false,
         flipV: false,
+        tintColor: null,
+        colorMap: null,
+        image: activeLayer.originalImage || activeLayer.image,
       });
       toast.success("Katman sıfırlandı!");
     }
+  };
+
+  const handleColorMapChange = async (
+    originalColor: string,
+    newColor: string | null,
+  ) => {
+    if (!activeLayer || !activeLayer.originalImage) return;
+
+    const newColorMap = { ...(activeLayer.colorMap || {}) };
+    if (newColor) {
+      newColorMap[originalColor] = newColor;
+    } else {
+      delete newColorMap[originalColor];
+    }
+
+    const hasMappings = Object.keys(newColorMap).length > 0;
+
+    try {
+      const newImage = hasMappings
+        ? await applyColorMap(activeLayer.originalImage, newColorMap)
+        : activeLayer.originalImage;
+
+      updateLayer(activeLayer.id, {
+        colorMap: hasMappings ? newColorMap : null,
+        image: newImage,
+        tintColor: null,
+      });
+    } catch (err) {
+      console.error("Color remap error:", err);
+      toast.error("Renk değiştirilemedi.");
+    }
+  };
+
+  const handleResetColors = () => {
+    if (!activeLayer || !activeLayer.originalImage) return;
+    updateLayer(activeLayer.id, {
+      colorMap: null,
+      image: activeLayer.originalImage,
+    });
   };
 
   const removeBackground = async (layerId: string) => {
@@ -201,15 +255,25 @@ export default function DesignPanel({
         body: JSON.stringify({ imageBase64 }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        throw new Error("API isteği başarısız oldu");
+        throw new Error(data?.error || "API isteği başarısız oldu");
       }
 
-      const data = await res.json();
+      let palette: string[] = [];
+      try {
+        palette = await extractPalette(data.image);
+      } catch (err) {
+        console.error("Palette extraction error:", err);
+      }
 
       updateLayer(layerId, {
         image: data.image,
+        originalImage: data.image,
         backgroundRemoved: true,
+        colorMap: null,
+        palette,
       });
 
       toast.dismiss();
@@ -217,7 +281,11 @@ export default function DesignPanel({
     } catch (err) {
       console.error("Background removal error:", err);
       toast.dismiss();
-      toast.error("Arka plan kaldırılamadı. Lütfen tekrar deneyin.");
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : "Arka plan kaldırılamadı. Lütfen tekrar deneyin.",
+      );
     }
   };
 
@@ -402,6 +470,8 @@ export default function DesignPanel({
                 }
                 onResetLayer={resetLayer}
                 onRemoveBackground={removeBackground}
+                onColorMapChange={handleColorMapChange}
+                onResetColors={handleResetColors}
               />
             </div>
           )}
@@ -417,6 +487,8 @@ export default function DesignPanel({
               }
               onResetLayer={resetLayer}
               onRemoveBackground={removeBackground}
+              onColorMapChange={handleColorMapChange}
+              onResetColors={handleResetColors}
             />
           ) : (
             <LayersPanel

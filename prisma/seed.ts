@@ -68,6 +68,9 @@ const BRANDS = [
   "GVS",
   "POLYBOOT",
   "THERMOFORM",
+  "Bmes",
+  "Pars",
+  "İş Pool",
 ];
 
 const COLORS = [
@@ -129,6 +132,16 @@ const ALL_SIZES: { value: string; sortOrder: number }[] = [
   { value: "10", sortOrder: 34 },
   { value: "11", sortOrder: 35 },
   { value: "Standart", sortOrder: 36 },
+  // BÜYÜK BEDENLER (T-SHIRT / GİYİM)
+  { value: "5XL", sortOrder: 37 },
+  { value: "6XL", sortOrder: 38 },
+  { value: "7XL", sortOrder: 39 },
+  { value: "8XL", sortOrder: 40 },
+  // BÜYÜK BEDENLER (PANTOLON)
+  { value: "66", sortOrder: 41 },
+  { value: "68", sortOrder: 42 },
+  { value: "70", sortOrder: 43 },
+  { value: "72", sortOrder: 44 },
 ];
 
 // --------------------
