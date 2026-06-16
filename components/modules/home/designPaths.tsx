@@ -3,36 +3,56 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowRight, Cpu, ScanEye, Layers } from "lucide-react";
+import {
+  ArrowRight,
+  ScanEye,
+  Upload,
+  Layers,
+  Wand2,
+  Palette,
+  Download,
+  Move,
+  CheckCircle2,
+} from "lucide-react";
 
-interface CategoryData {
-  id: number;
-  name: string;
-  subTitle: string;
-  image: string;
-  href: string;
-  description: string;
-}
-
-const initialCategories: CategoryData[] = [
+const FEATURES = [
   {
-    id: 1,
-    name: "KENDİN TASARLA",
-    subTitle: "Sınırları siz çizin, biz dikelim.",
-    description:
-      "Kumaş türünden cep detayına, renk kombinasyonlarından fonksiyonel eklentilere kadar her şeyi markanıza özel dijital ortamda yapılandırın.",
-    image: "/categories/3.png",
-    href: "/products",
+    icon: Upload,
+    title: "Logo Yükleme",
+    desc: "PNG, JPG veya SVG formatında logonuzu saniyeler içinde yükleyin",
   },
   {
-    id: 2,
-    name: "DİJİTAL ÖNİZLEME",
-    subTitle: "Gerçekliği siparişten önce görün.",
-    description:
-      "Logonuzu yükleyin, yerleşimini seçin ve ürünün üzerinde nasıl duracağını 3D simülasyon teknolojimizle anında yüksek çözünürlükte inceleyin.",
-    image: "/categories/4.png",
-    href: "/products",
+    icon: Wand2,
+    title: "Arka Plan Kaldırma",
+    desc: "Yapay zeka destekli araçla logonuzun arka planını tek tıkla temizleyin",
   },
+  {
+    icon: Palette,
+    title: "Renk Paleti Düzenleme",
+    desc: "Çok renkli logolarda her rengi bağımsız olarak değiştirin",
+  },
+  {
+    icon: Move,
+    title: "Sürükle & Konumlandır",
+    desc: "Logonuzu ürün üzerinde istediğiniz noktaya serbestçe taşıyın ve boyutlandırın",
+  },
+  {
+    icon: Layers,
+    title: "Çok Katman Desteği",
+    desc: "Aynı tasarıma birden fazla logo veya grafik katmanı ekleyin",
+  },
+  {
+    icon: Download,
+    title: "Yüksek Çözünürlük Çıktı",
+    desc: "Tasarımınızı 2× piksel oranında baskıya hazır PNG olarak dışa aktarın",
+  },
+];
+
+const STEPS = [
+  { num: "01", label: "Logo Yükle" },
+  { num: "02", label: "Konumlandır" },
+  { num: "03", label: "Özelleştir" },
+  { num: "04", label: "Kaydet" },
 ];
 
 export default function CategoriesSection() {
@@ -44,14 +64,12 @@ export default function CategoriesSection() {
   }, []);
 
   return (
-    // Arka planı biraz daha belirginleştirdik veya metinleri koyulaştırdık
     <section className="bg-slate-100 py-12 md:py-24 relative overflow-hidden">
       <div className="max-w-[1600px] mx-auto px-4 md:px-12 relative z-10">
-        {/* Başlık Alanı */}
+        {/* Başlık */}
         <div className="mb-10 md:mb-16 flex flex-col lg:flex-row lg:items-end justify-between gap-6 md:gap-10">
           <div className="space-y-3 md:space-y-4">
             <div className="flex items-center gap-3">
-              {/* KONTRAST DÜZELTMESİ: orange-600 -> orange-700 (Okunabilirlik için) */}
               <span className="h-[2px] w-8 md:w-12 bg-orange-700" />
               <span className="text-orange-700 font-black tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-[11px] uppercase">
                 İnovasyon Merkezi v2.0
@@ -64,9 +82,7 @@ export default function CategoriesSection() {
               </span>
             </h2>
           </div>
-
           <div className="max-w-md border-l-2 md:border-l border-orange-700/30 pl-4 md:pl-8 py-1">
-            {/* KONTRAST DÜZELTMESİ: text-slate-600 -> text-slate-800 */}
             <p className="text-slate-800 text-sm md:text-base font-semibold leading-relaxed italic">
               "Hayal ettiğiniz profesyonel görünümü, gelişmiş tasarım
               araçlarımızla sadece birkaç tıklamayla gerçeğe dönüştürün."
@@ -74,96 +90,129 @@ export default function CategoriesSection() {
           </div>
         </div>
 
-        {/* Grid Alanı */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 ">
-          {loading
-            ? Array.from({ length: 2 }).map((_, i) => (
-                <Skeleton
-                  key={i}
-                  className="aspect-[16/9] w-full rounded-xl bg-slate-200"
-                />
-              ))
-            : initialCategories.map((category) => (
-                <ModernCategoryCard key={category.id} category={category} />
-              ))}
-        </div>
+        {/* Ana Kart */}
+        {loading ? (
+          <Skeleton className="w-full h-125 rounded-xl bg-slate-200" />
+        ) : (
+          <div className="relative overflow-hidden rounded-xl bg-slate-950 border border-white/10 shadow-2xl">
+            {/* Tarayıcı çizgisi */}
+            <div className="absolute top-0 left-0 w-full h-0.5 bg-orange-500/80 shadow-[0_0_15px_rgba(234,88,12,0.9)] z-30" />
+            {/* Köşe detayları */}
+            <div className="absolute top-4 left-4 w-5 h-5 border-t-2 border-l-2 border-orange-500 z-30" />
+            <div className="absolute bottom-4 right-4 w-5 h-5 border-b-2 border-r-2 border-orange-500 z-30" />
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 min-h-120 md:min-h-140">
+              {/* Sol: İçerik */}
+              <div className="flex flex-col justify-between p-8 sm:p-10 md:p-14 z-20 relative">
+                {/* Üst bilgi */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="p-3 md:p-4 bg-white/10 backdrop-blur-md rounded-sm border border-white/20">
+                    <ScanEye className="w-5 h-5 md:w-6 md:h-6 text-orange-500" />
+                  </div>
+                  <div className="flex flex-col items-end opacity-60">
+                    <span className="text-white font-mono text-[8px] md:text-[10px] tracking-widest uppercase">
+                      System.Process // 01
+                    </span>
+                    <Layers size={12} className="text-orange-500 mt-1" />
+                  </div>
+                </div>
+
+                {/* Başlık grubu */}
+                <div className="space-y-3 mb-8">
+                  <p className="text-orange-400 text-[11px] md:text-xs font-black tracking-[0.15em] uppercase">
+                    Gerçekliği siparişten önce görün.
+                  </p>
+                  <h3 className="text-3xl sm:text-4xl md:text-5xl text-white font-black tracking-tighter uppercase leading-none drop-shadow-lg">
+                    DİJİTAL<br />ÖNİZLEME
+                  </h3>
+                  <p className="text-slate-300 text-sm md:text-base max-w-md leading-relaxed font-medium">
+                    Logonuzu yükleyin, yerleşimini seçin ve ürünün üzerinde
+                    nasıl duracağını gelişmiş tasarım araçlarımızla anında
+                    inceleyin. Siparişten önce tam kontrol sizde.
+                  </p>
+                </div>
+
+                {/* Adımlar */}
+                <div className="flex flex-wrap items-center gap-2 mb-8">
+                  {STEPS.map((step, i) => (
+                    <React.Fragment key={step.num}>
+                      <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded px-3 py-1.5 border border-white/10">
+                        <span className="text-orange-400 font-mono text-[10px] font-black">
+                          {step.num}
+                        </span>
+                        <span className="text-white text-[10px] md:text-xs font-bold uppercase tracking-wide">
+                          {step.label}
+                        </span>
+                      </div>
+                      {i < STEPS.length - 1 && (
+                        <ArrowRight size={12} className="text-orange-500/60" />
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+
+                {/* CTA */}
+                <Link
+                  href="/products"
+                  className="self-start flex items-center gap-3 px-6 py-3 bg-orange-600 hover:bg-orange-500 text-white rounded transition-all duration-300 text-[11px] md:text-xs font-black tracking-[0.2em] uppercase group"
+                >
+                  TASARIMA BAŞLA
+                  <ArrowRight
+                    size={14}
+                    className="transition-transform duration-300 group-hover:translate-x-1"
+                  />
+                </Link>
+              </div>
+
+              {/* Sağ: Görsel + Özellik Listesi */}
+              <div className="flex flex-col">
+                {/* Görsel — mobilde arka plan, masaüstünde sıralı üst blok */}
+                <div className="relative min-h-60 lg:flex-1">
+                  <Image
+                    src="/categories/1.jpg"
+                    alt="Dijital Önizleme"
+                    fill
+                    className="object-cover lg:object-contain object-center opacity-60 transition-opacity duration-700"
+                  />
+                  {/* Sadece mobilede sol kenar geçiş gradyanı */}
+                  <div className="absolute inset-0 bg-linear-to-r from-slate-950 via-slate-950/10 to-transparent lg:hidden" />
+                </div>
+
+                {/* Özellikler paneli — her zaman görselin altında */}
+                <div className="flex items-end">
+                  <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-px bg-white/5 border-t border-white/10">
+                    {FEATURES.map((f) => {
+                      const Icon = f.icon;
+                      return (
+                        <div
+                          key={f.title}
+                          className="flex items-start gap-3 bg-slate-950/80 backdrop-blur-sm px-5 py-3.5 hover:bg-white/5 transition-colors"
+                        >
+                          <div className="shrink-0 mt-0.5 p-1.5 rounded bg-orange-500/10 border border-orange-500/20">
+                            <Icon size={13} className="text-orange-400" />
+                          </div>
+                          <div>
+                            <p className="text-white text-[11px] md:text-xs font-bold uppercase tracking-wide leading-tight">
+                              {f.title}
+                            </p>
+                            <p className="text-slate-400 text-[10px] md:text-[11px] leading-relaxed mt-0.5">
+                              {f.desc}
+                            </p>
+                          </div>
+                          <CheckCircle2
+                            size={12}
+                            className="shrink-0 ml-auto mt-0.5 text-orange-500/60"
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
-  );
-}
-
-function ModernCategoryCard({ category }: { category: CategoryData }) {
-  return (
-    <Link
-      href={category.href}
-      className="group relative block overflow-hidden bg-slate-950 aspect-[11/12] sm:aspect-[11/9] rounded-xl border border-white/10 shadow-2xl"
-    >
-      {/* Görsel Katmanı */}
-      <div className="relative w-full h-full rounded-xl">
-        <Image
-          src={category.image}
-          alt={category.name}
-          fill
-          className="object-cover rounded-xl transition-transform duration-1000 ease-out lg:group-hover:scale-105 opacity-70 lg:opacity-60 lg:group-hover:opacity-80 grayscale-[0.2] lg:group-hover:grayscale-0"
-        />
-        {/* Mobilde gradyan daha koyu ve sabit, desktopta hover ile değişebilir */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent z-10" />
-      </div>
-
-      {/* İçerik Katmanı */}
-      <div className="absolute inset-0 p-6 sm:p-10 md:p-12 flex flex-col justify-between z-20">
-        <div className="flex justify-between items-start">
-          {/* İkon: Mobilde sabit durur, desktopta hover animasyonu yapar */}
-          <div className="p-3 md:p-4 lg:-translate-y-2 lg:group-hover:translate-y-0 transition-transform duration-500 bg-white/10 backdrop-blur-md rounded-sm border border-white/20">
-            {category.id === 1 ? (
-              <Cpu className="w-5 h-5 md:w-6 md:h-6 text-orange-500" />
-            ) : (
-              <ScanEye className="w-5 h-5 md:w-6 md:h-6 text-orange-500" />
-            )}
-          </div>
-
-          <div className="flex flex-col items-end opacity-80 lg:opacity-60 lg:group-hover:opacity-100 transition-opacity">
-            <span className="text-white font-mono text-[8px] md:text-[10px] tracking-widest uppercase">
-              System.Process // {category.id}
-            </span>
-            <Layers size={12} className="text-orange-500 mt-1" />
-          </div>
-        </div>
-
-        <div className="space-y-3 md:space-y-4">
-          <div className="space-y-1">
-            <h3 className="text-2xl sm:text-3xl text-white font-black tracking-tighter uppercase leading-none drop-shadow-lg">
-              {category.name}
-            </h3>
-            <p className="text-orange-400 text-[11px] md:text-xs font-black tracking-[0.15em] uppercase">
-              {category.subTitle}
-            </p>
-          </div>
-
-          {/* AÇIKLAMA: Mobilde her zaman görünür (opacity-100), desktopta hover ile gelir (lg:opacity-0) */}
-          <p
-            className="text-slate-100 text-xs md:text-sm max-w-[280px] sm:max-w-sm leading-relaxed tracking-tight 
-            opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-700 delay-100 font-medium"
-          >
-            {category.description}
-          </p>
-
-          <div className="flex items-center gap-4 md:gap-6 pt-2 md:pt-4">
-            <div className="flex items-center gap-2 md:gap-3 text-[10px] md:text-[11px] font-black text-white uppercase tracking-[0.2em] md:tracking-[0.3em] lg:group-hover:text-orange-400 transition-colors duration-300">
-              TASARIMA BAŞLA
-              <ArrowRight className="w-3 h-3 md:w-4 md:h-4 transition-transform duration-500 lg:group-hover:translate-x-2" />
-            </div>
-            <div className="flex-1 h-[1px] bg-white/30 lg:group-hover:bg-orange-500/50 transition-colors duration-500" />
-          </div>
-        </div>
-      </div>
-
-      {/* Tarayıcı Çizgisi Animasyonu: Mobilde devre dışı bırakmak daha iyi olabilir veya her zaman çalışabilir */}
-      <div className="absolute top-0 left-0 w-full h-[2px] bg-orange-500/80 -translate-y-full lg:group-hover:animate-scan pointer-events-none z-30 shadow-[0_0_15px_rgba(234,88,12,0.9)]" />
-
-      {/* Köşe Detayları: Mobilde her zaman görünür, desktopta hover ile gelir */}
-      <div className="absolute top-3 left-3 md:top-4 md:left-4 w-4 h-4 border-t-2 border-l-2 border-orange-500 lg:border-orange-500/0 lg:group-hover:border-orange-500 transition-all duration-500 z-30" />
-      <div className="absolute bottom-3 right-3 md:bottom-4 md:right-4 w-4 h-4 border-b-2 border-r-2 border-orange-500 lg:border-orange-500/0 lg:group-hover:border-orange-500 transition-all duration-500 z-30" />
-    </Link>
   );
 }
