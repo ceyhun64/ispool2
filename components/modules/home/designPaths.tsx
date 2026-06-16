@@ -168,6 +168,8 @@ export default function CategoriesSection() {
               <div className="flex flex-col">
                 {/* Görsel — mobilde arka plan, masaüstünde sıralı üst blok */}
                 <div className="relative min-h-60 lg:flex-1">
+                                  {/* Görsel — mobilde arka plan, masaüstünde sıralı üst blok */}
+
                   <Image
                     src="/categories/1.jpg"
                     alt="Dijital Önizleme"
