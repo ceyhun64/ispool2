@@ -26,7 +26,7 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
   onLayerMove,
 }) => {
   return (
-    <div className="w-full lg:w-[280px] bg-slate-800 border-r border-slate-700 flex flex-col max-h-[40vh] lg:max-h-none">
+    <div className="w-full lg:w-[280px] bg-slate-800 border-r border-slate-700 flex flex-col max-h-[40vh] lg:max-h-none lg:h-full">
       {/* Upload Area */}
       <div className="p-3 lg:p-4 border-b border-slate-700">
         <label className="group relative flex flex-col items-center justify-center w-full h-20 lg:h-24 border-2 border-dashed border-slate-600 rounded hover:border-orange-500 hover:bg-slate-700/50 transition-all cursor-pointer">

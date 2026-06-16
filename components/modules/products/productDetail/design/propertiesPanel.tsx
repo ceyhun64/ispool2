@@ -36,7 +36,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 }) => {
   if (!activeLayer) {
     return (
-      <div className="w-full lg:w-[340px] bg-slate-800 border-l border-slate-700 overflow-y-auto max-h-[40vh] lg:max-h-none">
+      <div className="w-full lg:w-[340px] bg-slate-800 border-l border-slate-700 overflow-y-auto max-h-[40vh] lg:max-h-none lg:h-full">
         <div className="h-full flex items-center justify-center p-6 lg:p-8 text-center">
           <div className="space-y-2 lg:space-y-3">
             <div className="w-12 h-12 lg:w-16 lg:h-16 bg-slate-700 rounded-full flex items-center justify-center mx-auto">
@@ -55,7 +55,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   }
 
   return (
-    <div className="w-full lg:w-[340px] bg-slate-800 border-l border-slate-700 overflow-y-auto max-h-[40vh] lg:max-h-none">
+    <div className="w-full lg:w-[340px] bg-slate-800 border-l border-slate-700 overflow-y-auto max-h-[40vh] lg:max-h-none lg:h-full">
       <div className="p-3 lg:p-4 space-y-4 lg:space-y-6">
         {/* Transform Section */}
         <section className="space-y-2 lg:space-y-3">
