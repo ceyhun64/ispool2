@@ -145,7 +145,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
     // Admin'e mail
     const adminMessage = `Kullanıcı ${userEmail}, #${order.id} numaralı siparişi iptal etti.`;
     await sendMail(
-      ["ceyhunturkmen4@gmail.com"],
+      ["info@ispool.com.tr"],
       `Sipariş #${order.id} Kullanıcı Tarafından İptal Edildi`,
       adminMessage,
     );

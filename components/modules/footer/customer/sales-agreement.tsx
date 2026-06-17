@@ -50,7 +50,7 @@ const SalesAgreement = () => {
                 Üsküdar/ İstanbul
               </li>
               <li>
-                <strong>E-Posta:</strong> bilgi@ispool.com.tr
+                <strong>E-Posta:</strong> info@ispool.com.tr
               </li>
               <li>
                 <strong>Telefon:</strong> 0216 472 73 00

@@ -309,8 +309,8 @@ const IsmontPrivacyPolicy = () => {
           </div>
           <div className="text-blue-900 font-semibold uppercase">
             Mail:{" "}
-            <a href="mailto:bilgi@ispool.com.tr" className="hover:underline">
-              bilgi@ispool.com.tr
+            <a href="mailto:info@ispool.com.tr" className="hover:underline">
+              info@ispool.com.tr
             </a>
           </div>
         </div>

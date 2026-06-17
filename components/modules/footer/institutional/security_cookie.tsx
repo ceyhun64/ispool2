@@ -122,7 +122,7 @@ export default function CookiePolicy() {
               <Mail className="w-4 h-4 text-orange-600" />
               <p className="text-[10px] font-black tracking-[0.2em] uppercase">
                 Sorularınız için:{" "}
-                <span className="text-orange-500">privacy@markaniz.com</span>
+                <span className="text-orange-500">info@ispool.com.tr</span>
               </p>
             </div>
 

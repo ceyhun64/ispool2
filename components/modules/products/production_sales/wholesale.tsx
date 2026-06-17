@@ -38,7 +38,7 @@ const ToptanSatisPremium = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          recipients: ["ispoolofficial@gmail.com"],
+          recipients: ["info@ispool.com.tr"],
           subject: `Toplu Satış Talep: ${formData.company}`,
           message: `Ad: ${formData.name}\nŞirket: ${formData.company}\nE-posta: ${formData.email}\nTel: ${formData.phone}\n\nDetay:\n${formData.details}`,
         }),
@@ -343,7 +343,7 @@ const ToptanSatisPremium = () => {
                   E-Posta
                 </span>
                 <p className="text-lg sm:text-xl font-black text-slate-950 break-words uppercase">
-                  ispoolofficial@gmail.com
+                  info@ispool.com.tr
                 </p>
               </div>
               <button

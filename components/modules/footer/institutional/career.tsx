@@ -47,7 +47,7 @@ export default function KariyerPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          recipients: ["ispoolofficial@gmail.com"], // Buraya başvuruların düşeceği maili yazın
+          recipients: ["info@ispool.com.tr"], // Buraya başvuruların düşeceği maili yazın
           subject: `Yeni İş Başvurusu: ${formData.position} - ${formData.name}`,
           message: emailContent,
         }),

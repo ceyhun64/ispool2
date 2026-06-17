@@ -169,7 +169,7 @@ const ReturnAndExchange = () => {
                 <p className="text-sm text-gray-600">
                   Eğer taahhüt edilen iade koşulları yerine getirilmediği
                   taktirde iade talebiniz reddedilir. Ret nedeni belirtilmemişse{" "}
-                  <strong>bilgi@ispool.com.tr</strong> adresinden bize
+                  <strong>info@ispool.com.tr</strong> adresinden bize
                   ulaşabilirsiniz.
                 </p>
               </div>
