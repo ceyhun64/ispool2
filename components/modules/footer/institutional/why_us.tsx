@@ -55,7 +55,7 @@ export default function WhyChooseUsPage() {
       {/* 1. Hero Bölümü: Industrial Safety Focus */}
       <section className="relative max-w-7xl mx-auto px-6 pt-32 pb-20 md:pt-44 md:pb-28">
         {/* Teknik Çizim Arka Plan Deseni (Grid) */}
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/graphy-light.png')] opacity-40 -z-10" />
+        <div className="absolute inset-0 opacity-25 -z-10 [background-image:radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:20px_20px]" />
 
         <motion.div
           initial={{ opacity: 0, x: -20 }}

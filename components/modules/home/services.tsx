@@ -72,8 +72,6 @@ const CardItem = ({ icon: Icon, title, desc, index }: any) => (
 export default function ShopServices() {
   return (
     <section className="py-24 bg-slate-100 relative overflow-hidden">
-      {/* Premium Arka Plan Dokusu */}
-      <div className="absolute inset-0 opacity-[0.015] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
 
       <div className="max-w-[1400px] mx-auto px-6 relative z-10">
         {/* Header Alanı */}

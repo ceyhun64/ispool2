@@ -17,7 +17,7 @@ interface Blog {
 
 const BlogCardSkeleton = memo(() => (
   <div className="space-y-8 grayscale opacity-50">
-    <div className="aspect-[4/5] w-full bg-slate-200 animate-pulse" />
+    <div className="aspect-4/5 w-full bg-slate-200 animate-pulse" />
     <div className="space-y-4">
       <div className="h-2 w-20 bg-slate-200 animate-pulse" />
       <div className="h-8 w-full bg-slate-200 animate-pulse" />
@@ -46,7 +46,7 @@ export default function BlogPage() {
                   excerpt:
                     "Zorlu saha koşullarında nefes alabilirlik ve dayanıklılığı birleştiren yeni nesil kumaş teknolojileri.",
                   image:
-                    "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=1200",
+                    "/products/1.jpg",
                   createdAt: new Date().toISOString(),
                 },
                 {
@@ -56,7 +56,7 @@ export default function BlogPage() {
                   excerpt:
                     "Koruyucu ekipmanların çalışan motivasyonu ve marka prestiji üzerindeki görünmez etkisi.",
                   image:
-                    "https://images.unsplash.com/photo-1581094288338-2314dddb7ecc?q=80&w=1200",
+                    "/products/2.jpg",
                   createdAt: new Date().toISOString(),
                 },
                 {
@@ -66,7 +66,7 @@ export default function BlogPage() {
                   excerpt:
                     "Yeni Avrupa standartlarına uyum sürecinde şirketlerin dikkat etmesi gereken kritik detaylar.",
                   image:
-                    "https://images.unsplash.com/photo-1542744094-24638eff58bb?q=80&w=1200",
+                    "/products/3.jpg",
                   createdAt: new Date().toISOString(),
                 },
               ];
@@ -91,7 +91,7 @@ export default function BlogPage() {
             className="flex justify-center gap-8 mb-8 text-slate-300"
           >
             <ShieldCheck strokeWidth={1} size={32} />
-            <div className="w-[1px] h-8 bg-slate-200 self-center" />
+            <div className="w-px h-8 bg-slate-200 self-center" />
             <Briefcase strokeWidth={1} size={32} />
           </motion.div>
 
@@ -144,11 +144,11 @@ export default function BlogPage() {
                     className="block"
                   >
                     {/* Image: Narrower and Taller for a 'Fashion' Feel */}
-                    <div className="relative aspect-[5/3] overflow-hidden bg-slate-900 border border-slate-100">
+                    <div className="relative aspect-5/3 overflow-hidden bg-slate-900 border border-slate-100">
                       <img
                         src={blog.image}
                         alt={blog.title}
-                        className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110 opacity-90 group-hover:opacity-100 grayscale-[30%] group-hover:grayscale-0"
+                        className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110 opacity-90 group-hover:opacity-100 grayscale-30 group-hover:grayscale-0"
                       />
                       <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1">
                         <span className="text-[10px] tracking-widest font-black uppercase italic">
