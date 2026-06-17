@@ -164,7 +164,7 @@ const FAQ = () => {
             Eğer taahhüt edilen iade koşulları yerine getirilmediği taktirde
             iade talebiniz reddedilir. Eğer tarafınıza herhangi bir ret nedeni
             belirtilmemişse ya da belirtilen iade koşullarına aykırı bir durum
-            olduğunu düşünürseniz <strong>bilgi@ispool.com.tr</strong>{" "}
+            olduğunu düşünürseniz <strong>info@ispool.com.tr</strong>{" "}
             adresinden bize ulaşabilirsiniz.
           </p>
         </FAQItem>

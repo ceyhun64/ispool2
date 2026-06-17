@@ -30,7 +30,7 @@ export default function Contact() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          recipients: ["ispoolofficial@gmail.com"],
+          recipients: ["info@ispool.com.tr"],
           subject: `Yeni İletişim Formu: ${formData.name}`,
           message: `Gönderen: ${formData.name}\nE-Posta: ${formData.email}\n\nMesaj:\n${formData.message}`,
         }),
@@ -105,8 +105,8 @@ export default function Contact() {
               <ContactItem
                 icon={<Mail size={18} />}
                 title="Dijital Yazışma"
-                content="ispoolofficial@gmail.com"
-                href="mailto:ispoolofficial@gmail.com"
+                content="info@ispool.com.tr"
+                href="mailto:info@ispool.com.tr"
               />
             </div>
             <div className="pt-12 border-t border-slate-100 flex items-center gap-4 text-slate-400 text-[10px] tracking-widest uppercase font-bold">

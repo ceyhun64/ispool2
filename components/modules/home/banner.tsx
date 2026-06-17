@@ -75,7 +75,7 @@ export default function Banner() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          recipients: ["ispoolofficial@gmail.com"],
+          recipients: ["info@ispool.com.tr"],
           subject: `Kurumsal Teklif Talebi: ${formData.company}`,
           message: `Ad Soyad: ${formData.name}\nŞirket: ${formData.company}\nE-posta: ${formData.email}\nTelefon: ${formData.phone}\n\nDetaylar:\n${formData.details}`,
         }),

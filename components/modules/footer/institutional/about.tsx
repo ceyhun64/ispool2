@@ -269,7 +269,7 @@ export default function AboutPage() {
               </p>
             </a>
             <a
-              href="mailto:ispoolofficial@gmail.com"
+              href="mailto:info@ispool.com.tr"
               className="group p-8 md:p-12 bg-white border border-slate-200 hover:bg-slate-900 transition-all duration-500"
             >
               <Mail className="text-orange-600 mb-6 group-hover:scale-110 transition-transform" />
@@ -277,7 +277,7 @@ export default function AboutPage() {
                 E-Posta
               </h5>
               <p className="text-lg md:text-xl font-black group-hover:text-white transition-colors break-all">
-                ispoolofficial@gmail.com
+                info@ispool.com.tr
               </p>
             </a>
             <div className="group p-8 md:p-12 bg-white border border-slate-200 hover:bg-slate-900 transition-all duration-500">

@@ -39,7 +39,7 @@ const OzelUretimPremium = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          recipients: ["ispoolofficial@gmail.com"],
+          recipients: ["info@ispool.com.tr"],
           subject: `ÖZEL PROJE TALEBİ: ${formData.company}`,
           message: `
             PROJE DETAYLARI

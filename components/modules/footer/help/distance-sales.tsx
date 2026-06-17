@@ -32,7 +32,7 @@ const DistanceSalesAgreement = () => {
                 <strong>TEL:</strong> 0216 472 73 00 (Pbx)
               </p>
               <p>
-                <strong>E-POSTA:</strong> bilgi@ispool.com.tr
+                <strong>E-POSTA:</strong> info@ispool.com.tr
               </p>
               <p>
                 <strong>MERSİS NO:</strong> 0482039841800018

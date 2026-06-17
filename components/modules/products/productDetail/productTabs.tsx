@@ -69,7 +69,7 @@ export default function ProductTabs({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          recipients: ["ispoolofficial@gmail.com"], // Mailin gideceği adres
+          recipients: ["info@ispool.com.tr"], // Mailin gideceği adres
           subject: `Yeni Ürün Önerisi: ${productTitle}`,
           message: suggestion,
         }),

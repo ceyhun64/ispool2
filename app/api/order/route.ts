@@ -387,7 +387,7 @@ Saygılarımızla,
 
       // Admin bilgilendirme maili
       await sendMail(
-        ["ispoolofficial@gmail.com"],
+        ["info@ispool.com.tr"],
         `🔔 Yeni Sipariş Kaydı - Acil İşlem Gerekiyor: #${order.id}`,
         `
 Sayın Yönetici,
@@ -567,7 +567,7 @@ Saygılarımızla,
 `;
 
     await sendMail(
-      ["ispoolofficial@gmail.com"],
+      ["info@ispool.com.tr"],
       `✅ Sipariş Durumu Değişikliği: #${updatedOrder.id}`,
       adminMessage,
     );
