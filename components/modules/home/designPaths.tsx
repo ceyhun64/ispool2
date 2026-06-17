@@ -154,7 +154,7 @@ export default function CategoriesSection() {
                 {/* CTA */}
                 <Link
                   href="/products"
-                  className="self-start flex items-center gap-3 px-6 py-3 bg-orange-600 hover:bg-orange-500 text-white rounded transition-all duration-300 text-[11px] md:text-xs font-black tracking-[0.2em] uppercase group"
+                  className="self-start flex items-center gap-3 px-6 py-3 bg-orange-700 hover:bg-orange-600 text-white rounded transition-all duration-300 text-[11px] md:text-xs font-black tracking-[0.2em] uppercase group"
                 >
                   TASARIMA BAŞLA
                   <ArrowRight

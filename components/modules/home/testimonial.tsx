@@ -129,7 +129,7 @@ const Testimonials: React.FC = () => {
               >
                 <div>
                   <div className="flex justify-between items-start mb-6">
-                    <div className="flex gap-0.5" aria-label={`${t.rating} yıldız üzerinden 5`}>
+                    <div role="img" className="flex gap-0.5" aria-label={`${t.rating} yıldız üzerinden 5`}>
                       {Array.from({ length: 5 }).map((_, starIdx) => (
                         <Star
                           key={starIdx}

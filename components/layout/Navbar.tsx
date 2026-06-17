@@ -471,8 +471,8 @@ export default function Navbar() {
             aria-current={pathname === "/" ? "page" : undefined}
             className={`flex flex-col items-center justify-center gap-1 transition-colors ${
               pathname === "/"
-                ? "text-orange-600"
-                : "text-slate-500 hover:text-orange-600 active:text-orange-600"
+                ? "text-orange-700"
+                : "text-slate-500 hover:text-orange-700 active:text-orange-700"
             }`}
           >
             <svg
@@ -490,7 +490,7 @@ export default function Navbar() {
               <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
               <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
-            <span className="text-[9px] font-black uppercase tracking-wider">
+            <span className="text-[10px] font-black uppercase tracking-wider">
               Ana Sayfa
             </span>
           </NextLink>
@@ -502,8 +502,8 @@ export default function Navbar() {
             aria-current={pathname === "/favorites" ? "page" : undefined}
             className={`flex flex-col items-center justify-center gap-1 transition-colors relative ${
               pathname === "/favorites"
-                ? "text-orange-600"
-                : "text-slate-500 hover:text-orange-600 active:text-orange-600"
+                ? "text-orange-700"
+                : "text-slate-500 hover:text-orange-700 active:text-orange-700"
             }`}
           >
             <div className="relative">
@@ -524,7 +524,7 @@ export default function Navbar() {
                 </span>
               )}
             </div>
-            <span className="text-[9px] font-black uppercase tracking-wider">
+            <span className="text-[10px] font-black uppercase tracking-wider">
               Favoriler
             </span>
           </NextLink>
@@ -542,7 +542,7 @@ export default function Navbar() {
             className="flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-orange-600 active:text-orange-600 transition-colors"
           >
             <User size={20} strokeWidth={2.5} aria-hidden="true" />
-            <span className="text-[9px] font-black uppercase tracking-wider">
+            <span className="text-[10px] font-black uppercase tracking-wider">
               Hesabım
             </span>
           </button>
