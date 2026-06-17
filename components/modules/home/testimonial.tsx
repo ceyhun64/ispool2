@@ -1,6 +1,6 @@
 "use client";
-import React from "react";
-import { Star, ShieldCheck, Zap, Activity } from "lucide-react";
+import React, { useState } from "react";
+import { Star, ShieldCheck, Zap, Activity, Pause, Play } from "lucide-react";
 
 interface Testimonial {
   name: string;
@@ -51,15 +51,20 @@ const workwearTestimonials: Testimonial[] = [
 ];
 
 const Testimonials: React.FC = () => {
-  return (
-    <div className="py-20 md:py-24 bg-slate-100 relative overflow-hidden font-sans">
-      <div className="absolute top-0 left-0 w-full h-[1px] bg-slate-200" />
+  const [paused, setPaused] = useState(false);
 
-      <div className="max-w-[1400px] mx-auto px-6 mb-16 relative z-10">
+  return (
+    <section
+      aria-label="Müşteri yorumları"
+      className="py-20 md:py-24 bg-slate-100 relative overflow-hidden font-sans"
+    >
+      <div className="absolute top-0 left-0 w-full h-px bg-slate-200" aria-hidden="true" />
+
+      <div className="max-w-350 mx-auto px-6 mb-16 relative z-10">
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-[1.5px] bg-orange-700" />
+              <div className="w-6 h-[1.5px] bg-orange-700" aria-hidden="true" />
               <span className="text-[10px] font-bold tracking-[0.3em] text-orange-900 uppercase">
                 Saha Referansları
               </span>
@@ -70,88 +75,117 @@ const Testimonials: React.FC = () => {
             </h2>
           </div>
 
-          <div className="flex items-center gap-8 border-l border-slate-300 pl-8 hidden md:flex">
-            <div>
-              <p className="text-xl font-bold text-slate-900">500+</p>
-              <p className="text-[9px] font-bold text-slate-800 uppercase tracking-widest">
-                Kurumsal Müşteri
-              </p>
+          <div className="flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-8 border-l border-slate-300 pl-8">
+              <div>
+                <p className="text-xl font-bold text-slate-900">500+</p>
+                <p className="text-[9px] font-bold text-slate-800 uppercase tracking-widest">
+                  Kurumsal Müşteri
+                </p>
+              </div>
+              <div>
+                <p className="text-xl font-bold text-slate-900">10k+</p>
+                <p className="text-[9px] font-bold text-slate-800 uppercase tracking-widest">
+                  Teslimat
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-xl font-bold text-slate-900">10k+</p>
-              <p className="text-[9px] font-bold text-slate-800 uppercase tracking-widest">
-                Teslimat
-              </p>
-            </div>
+
+            {/* Animasyonu durdurma/başlatma butonu */}
+            <button
+              onClick={() => setPaused((p) => !p)}
+              aria-label={paused ? "Yorumları kaydırmayı başlat" : "Yorumları kaydırmayı durdur"}
+              className="p-2 bg-white border border-slate-200 rounded text-slate-600 hover:text-orange-600 hover:border-orange-600 transition-all"
+            >
+              {paused ? (
+                <Play size={16} aria-hidden="true" />
+              ) : (
+                <Pause size={16} aria-hidden="true" />
+              )}
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="relative flex overflow-hidden group py-6 ">
-        <div className="flex animate-marquee gap-6 whitespace-nowrap">
-          {[...Array(4)].map((_, i) => (
-            <React.Fragment key={i}>
-              {workwearTestimonials.map((t, idx) => (
-                <div
-                  key={idx}
-                  className="w-[300px] md:w-[380px] flex-shrink-0 bg-white p-8 shadow-sm border border-slate-200 flex flex-col justify-between transition-all duration-500 hover:shadow-xl hover:border-orange-500/20 group/card"
-                >
-                  <div>
-                    <div className="flex justify-between items-start mb-6">
-                      <div className="flex gap-0.5">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            size={10}
-                            className="fill-orange-600 text-orange-600"
-                          />
-                        ))}
-                      </div>
-                      <span className="text-[8px] font-bold text-slate-600 border border-slate-200 px-1.5 py-0.5 tracking-wider uppercase">
-                        {t.tag}
-                      </span>
+      {/* Karusel bölgesi */}
+      <div
+        className="relative flex overflow-hidden py-6"
+        aria-live="off"
+        aria-label="Müşteri yorumları karusel"
+      >
+        <ul
+          className="flex gap-6 whitespace-nowrap"
+          style={{
+            animation: `marquee 50s linear infinite`,
+            animationPlayState: paused ? "paused" : "running",
+          }}
+          aria-label="Müşteri yorumları listesi"
+        >
+          {[...Array(4)].map((_, i) =>
+            workwearTestimonials.map((t, idx) => (
+              <li
+                key={`${i}-${idx}`}
+                className="w-75 md:w-95 shrink-0 bg-white p-8 shadow-sm border border-slate-200 flex flex-col justify-between transition-all duration-500 hover:shadow-xl hover:border-orange-500/20"
+              >
+                <div>
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="flex gap-0.5" aria-label={`${t.rating} yıldız üzerinden 5`}>
+                      {Array.from({ length: 5 }).map((_, starIdx) => (
+                        <Star
+                          key={starIdx}
+                          size={10}
+                          className="fill-orange-600 text-orange-600"
+                          aria-hidden="true"
+                        />
+                      ))}
                     </div>
-
-                    <p className="text-slate-700 text-[13px] md:text-[14px] leading-relaxed font-medium whitespace-normal italic">
-                      "{t.message}"
-                    </p>
+                    <span className="text-[8px] font-bold text-slate-600 border border-slate-200 px-1.5 py-0.5 tracking-wider uppercase">
+                      {t.tag}
+                    </span>
                   </div>
 
-                  <div className="mt-8 flex items-center gap-4 pt-6 border-t border-slate-100">
-                    <div className="w-10 h-10 bg-slate-900 text-white flex items-center justify-center text-[14px] font-bold">
-                      {t.avatarLetter}
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[12px] font-bold text-slate-900 tracking-tight uppercase">
-                        {t.name}
-                      </span>
-                      <span className="text-[10px] text-orange-900 font-bold mt-0.5">
-                        {t.company}
-                      </span>
-                    </div>
-                  </div>
+                  <blockquote className="text-slate-700 text-[13px] md:text-[14px] leading-relaxed font-medium whitespace-normal italic">
+                    &ldquo;{t.message}&rdquo;
+                  </blockquote>
                 </div>
-              ))}
-            </React.Fragment>
-          ))}
-        </div>
+
+                <footer className="mt-8 flex items-center gap-4 pt-6 border-t border-slate-100">
+                  <div
+                    className="w-10 h-10 bg-slate-900 text-white flex items-center justify-center text-[14px] font-bold"
+                    aria-hidden="true"
+                  >
+                    {t.avatarLetter}
+                  </div>
+                  <div className="flex flex-col">
+                    <cite className="not-italic text-[12px] font-bold text-slate-900 tracking-tight uppercase">
+                      {t.name}
+                    </cite>
+                    <span className="text-[10px] text-orange-900 font-bold mt-0.5">
+                      {t.company}
+                    </span>
+                  </div>
+                </footer>
+              </li>
+            )),
+          )}
+        </ul>
       </div>
 
       <div className="mt-12 flex flex-wrap justify-center items-center gap-8 px-6">
         <div className="flex items-center gap-2">
-          <ShieldCheck size={14} className="text-slate-900" />
+          <ShieldCheck size={14} className="text-slate-900" aria-hidden="true" />
           <span className="text-[10px] font-bold tracking-widest text-slate-900 uppercase">
             CE Sertifikalı
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <Zap size={14} className="text-slate-900" />
+          <Zap size={14} className="text-slate-900" aria-hidden="true" />
           <span className="text-[10px] font-bold tracking-widest text-slate-900 uppercase">
             Antistatik
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <Activity size={14} className="text-slate-900" />
+          <Activity size={14} className="text-slate-900" aria-hidden="true" />
           <span className="text-[10px] font-bold tracking-widest text-slate-900 uppercase">
             ISO 9001
           </span>
@@ -160,21 +194,16 @@ const Testimonials: React.FC = () => {
 
       <style jsx>{`
         @keyframes marquee {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
-        .animate-marquee {
-          animation: marquee 50s linear infinite;
-        }
-        .group:hover .animate-marquee {
-          animation-play-state: paused;
+        @media (prefers-reduced-motion: reduce) {
+          ul[style] {
+            animation: none !important;
+          }
         }
       `}</style>
-    </div>
+    </section>
   );
 };
 

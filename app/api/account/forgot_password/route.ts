@@ -1,8 +1,23 @@
-// app/api/forgotPassword/route.ts
+// app/api/account/forgot_password/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { sendMail } from "@/lib/mailer";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
+  // Rate limiting: 5 dakikada 3 istek
+  const ip = getClientIp(req);
+  const rl = rateLimit(`forgot:${ip}`, 3, 5 * 60 * 1000);
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: "Çok fazla istek. Lütfen birkaç dakika bekleyin." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(Math.ceil((rl.resetAt - Date.now()) / 1000)) },
+      },
+    );
+  }
+
   try {
     const { email } = await req.json();
 
@@ -10,10 +25,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "E-posta gerekli" }, { status: 400 });
     }
 
-    // Kullanıcı var mı kontrol et
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await prisma.user.findUnique({ where: { email } });
 
     // Güvenlik için kullanıcı olmasa bile aynı mesaj dön
     if (!user) {
@@ -23,41 +35,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 🔹 Reset token oluştur
     const resetToken = Math.random().toString(36).substring(2, 15);
-    const resetTokenExpires = new Date(Date.now() + 1000 * 60 * 30); // 30 dakika geçerli
+    const resetTokenExpires = new Date(Date.now() + 1000 * 60 * 30);
 
-    // 🔹 Tokeni DB’ye kaydet
     await prisma.user.update({
       where: { email },
-      data: {
-        resetToken: resetToken || null, // tip güvenliği
-        resetTokenExpires: resetTokenExpires || null,
-      },
+      data: { resetToken, resetTokenExpires },
     });
 
-    // 🔹 Mail içeriğini hazırla
     const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/reset-password?token=${resetToken}`;
-    const subject = "Şifre Sıfırlama Talebi";
-    const message = `
-Merhaba ${user.name || ""},
 
-Şifrenizi sıfırlamak için aşağıdaki bağlantıya tıklayın:
-${resetLink}
-
-Bu bağlantı 30 dakika boyunca geçerlidir.
-Eğer bu işlemi siz başlatmadıysanız, lütfen bu e-postayı dikkate almayın.
-`;
-
-    // 🔹 /api/send-mail endpoint’ini çağır
-    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/send-mail`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        recipients: [email],
-        subject,
-        message,
-      }),
+    await sendMail({
+      to: email,
+      subject: "Şifre Sıfırlama Talebi",
+      message: `Merhaba ${user.name || ""},\n\nŞifrenizi sıfırlamak için aşağıdaki bağlantıya tıklayın:\n${resetLink}\n\nBu bağlantı 30 dakika boyunca geçerlidir.\nEğer bu işlemi siz başlatmadıysanız, lütfen bu e-postayı dikkate almayın.`,
     });
 
     return NextResponse.json(
@@ -67,7 +58,7 @@ Eğer bu işlemi siz başlatmadıysanız, lütfen bu e-postayı dikkate almayın
   } catch (err: any) {
     console.error("Forgot password hatası:", err);
     return NextResponse.json(
-      { error: err.message || "Sunucu hatası, tekrar deneyin." },
+      { error: "Sunucu hatası, tekrar deneyin." },
       { status: 500 },
     );
   }

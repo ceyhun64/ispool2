@@ -1,7 +1,8 @@
 // /app/api/auth/register/route.ts
 import { prisma } from "@/lib/db";
 import bcrypt from "bcrypt";
-import { NextRequest, NextResponse } from "next/server"; // NextRequest ve NextResponse kullanılması önerilir
+import { NextRequest, NextResponse } from "next/server";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 interface RegisterRequestBody {
   name: string;
@@ -10,15 +11,31 @@ interface RegisterRequestBody {
   password: string;
 }
 
-// Next.js 13/14 App Router'da önerilen yaklaşım
 export async function POST(req: NextRequest) {
+  // Rate limiting: 15 dakikada 5 kayıt denemesi
+  const ip = getClientIp(req);
+  const rl = rateLimit(`register:${ip}`, 5, 15 * 60 * 1000);
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: "Çok fazla kayıt denemesi. Lütfen daha sonra tekrar deneyin." },
+      { status: 429 },
+    );
+  }
+
   try {
     const { name, surname, email, password } =
       (await req.json()) as RegisterRequestBody;
 
-    // Alan doğrulamasını eklemek iyi bir uygulamadır
     if (!name || !surname || !email || !password) {
       return NextResponse.json({ error: "Eksik bilgi" }, { status: 400 });
+    }
+
+    // Şifre güç kontrolü: min 8 karakter
+    if (password.length < 8) {
+      return NextResponse.json(
+        { error: "Şifre en az 8 karakter olmalıdır" },
+        { status: 400 },
+      );
     }
 
     // Kullanıcı zaten kayıtlı mı kontrol et

@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import fs from "fs/promises";
 import path from "path";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 // --- GET /api/products/:id ---
 export async function GET(
@@ -228,7 +229,7 @@ export async function GET(
         product: {
           id: product.id,
           title: product.title,
-          description: product.description,
+          description: sanitizeHtml(product.description ?? ""),
           price: product.price,
           oldPrice: product.oldPrice,
           discountPercentage: product.discountPercentage || discountPercentage,

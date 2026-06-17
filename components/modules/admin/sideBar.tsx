@@ -126,7 +126,7 @@ export default function AdminSidebar({
         {!collapsed ? (
           <div className="flex items-center gap-3">
             <Image
-              src="/logo/logois2.png"
+              src="/logo/logoyeni.png"
               alt="Logo"
               width={32}
               height={32}
@@ -141,7 +141,7 @@ export default function AdminSidebar({
           </div>
         ) : (
           <div className="flex justify-center">
-            <Image src="/logo/logois2.png" alt="Logo" width={32} height={32} />
+            <Image src="/logo/logoyeni.png" alt="Logo" width={32} height={32} />
           </div>
         )}
       </div>
@@ -227,7 +227,7 @@ export default function AdminSidebar({
       {/* Mobile Top Bar */}
       <div className="md:hidden fixed top-0 left-0 w-full bg-white border-b border-slate-200 px-4 py-3 z-40 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <Image src="/logo/logois2.png" alt="Logo" width={28} height={28} />
+          <Image src="/logo/logoyeni.png" alt="Logo" width={28} height={28} />
           <span className="text-base font-semibold text-slate-900">İŞPOOL</span>
         </div>
         <Button
