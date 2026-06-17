@@ -105,7 +105,7 @@ export default function AdminLogin() {
             >
               <div className="relative w-32 h-16">
                 <Image
-                  src="/logo/logois2.png"
+                  src="/logo/logoyeni.png"
                   alt="İşPool Logo"
                   fill
                   priority

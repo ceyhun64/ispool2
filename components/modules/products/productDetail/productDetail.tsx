@@ -427,8 +427,32 @@ export default function ProductDetailPage() {
   if (loading) return <ProductDetailSkeleton />;
   if (!product)
     return (
-      <div className="h-screen flex items-center justify-center">
-        Ürün bulunamadı.
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6 px-6 text-center">
+        <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
+          <ShoppingCart size={28} className="text-slate-400" aria-hidden="true" />
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-xl font-black text-slate-900 uppercase tracking-tight">
+            Ürün Bulunamadı
+          </h1>
+          <p className="text-sm text-slate-500 max-w-xs">
+            Aradığınız ürün mevcut değil veya kaldırılmış olabilir.
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <a
+            href="/products"
+            className="px-6 py-3 bg-orange-600 text-white text-sm font-bold uppercase tracking-wider hover:bg-orange-700 transition-colors"
+          >
+            Tüm Ürünlere Dön
+          </a>
+          <a
+            href="/"
+            className="px-6 py-3 border border-slate-300 text-slate-700 text-sm font-bold uppercase tracking-wider hover:border-slate-500 transition-colors"
+          >
+            Ana Sayfa
+          </a>
+        </div>
       </div>
     );
 
@@ -551,7 +575,7 @@ export default function ProductDetailPage() {
                 />
 
                 {finalCustomImage && (
-                  <div className="bg-gradient-to-r from-orange-50 to-pink-50 border border-orange-200 p-4 rounded space-y-2">
+                  <div className="bg-linear-to-r from-orange-50 to-pink-50 border border-orange-200 p-4 rounded space-y-2">
                     <div className="flex items-center gap-2 text-xs font-bold text-orange-700 uppercase tracking-wider">
                       <Sparkles size={14} /> Özelleştirilmiş Ürün
                     </div>
@@ -572,8 +596,8 @@ export default function ProductDetailPage() {
                     <div
                       className={`border p-4 rounded space-y-2 ${
                         bulkDiscount.hasDiscount
-                          ? "bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200"
-                          : "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200"
+                          ? "bg-linear-to-r from-emerald-50 to-teal-50 border-emerald-200"
+                          : "bg-linear-to-r from-blue-50 to-indigo-50 border-blue-200"
                       }`}
                     >
                       <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider">

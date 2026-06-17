@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma migrate reset --force && prisma db push --force-reset && prisma generate && npm run seed && next build",
+    "build": "prisma generate && next build",
+    "build:fresh": "prisma migrate reset --force && prisma db push --force-reset && prisma generate && npm run seed && next build",
     "start": "next start",
     "seed": "npx tsx prisma/seed.ts",
     "sync-catalog": "npx tsx prisma/syncCatalog.ts",

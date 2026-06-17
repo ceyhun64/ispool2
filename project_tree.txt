@@ -589,7 +589,7 @@
 │   │   └── logo_band_colored@3x.webp
 │   ├── logo
 │   │   ├── 1.png
-│   │   └── logois2.png
+│   │   └── logoyeni.png
 │   ├── megaMenu
 │   │   └── megaMenu.webp
 │   ├── og-image.png

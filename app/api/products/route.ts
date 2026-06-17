@@ -8,21 +8,31 @@ import { prisma } from "@/lib/db";
 // ======================================================
 // GET /api/products
 // ======================================================
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") ?? "24", 10)));
+  const skip = (page - 1) * limit;
+
   try {
-    const products = await prisma.product.findMany({
-      include: {
-        category: true,
-        middleCategory: true,
-        subCategory: true,
-        color: true,
-        sizes: {
-          include: { size: true },
-          orderBy: { size: { sortOrder: "asc" } },
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        include: {
+          category: true,
+          middleCategory: true,
+          subCategory: true,
+          color: true,
+          sizes: {
+            include: { size: true },
+            orderBy: { size: { sortOrder: "asc" } },
+          },
         },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+      }),
+      prisma.product.count(),
+    ]);
 
     const productsData = products.map((p) => ({
       id: p.id,
@@ -59,7 +69,20 @@ export async function GET() {
       bulkDiscountRate: p.bulkDiscountRate ?? undefined,
     }));
 
-    return NextResponse.json({ products: productsData }, { status: 200 });
+    return NextResponse.json(
+      {
+        products: productsData,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+          hasNext: page * limit < total,
+          hasPrev: page > 1,
+        },
+      },
+      { status: 200 },
+    );
   } catch (error: any) {
     console.error("Products fetch error:", error);
     return NextResponse.json(
@@ -73,6 +96,17 @@ export async function GET() {
 // POST /api/products
 // ======================================================
 export async function POST(request: Request) {
+  // Sadece ADMIN rolü ürün oluşturabilir
+  const { getServerSession } = await import("next-auth");
+  const { authOptions } = await import("@/lib/auth");
+  const session = await getServerSession(authOptions);
+  if (!session || session.user?.role !== "ADMIN") {
+    return NextResponse.json(
+      { success: false, error: "Yetkisiz erişim" },
+      { status: 401 },
+    );
+  }
+
   try {
     const formData = await request.formData();
 

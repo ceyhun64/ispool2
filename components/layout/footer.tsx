@@ -27,7 +27,7 @@ export default function Footer() {
     setOpenSection(openSection === key ? null : key);
   };
 
-  const whatsappNumber = "+90 546 225 56 59";
+  const whatsappNumber = "+90 546 225 56 59"; // Tek yetkili iletişim numarası
   const whatsappLink = `https://wa.me/${whatsappNumber.replace(/[^\d]/g, "")}`;
 
   const socialLinks = [
@@ -39,7 +39,7 @@ export default function Footer() {
     },
     {
       icon: Facebook,
-      href: "#",
+      href: "https://www.facebook.com/ispool",
       label: "Facebook",
       aria: "Facebook sayfamızı ziyaret edin",
     },
@@ -66,9 +66,9 @@ export default function Footer() {
         { label: "Kalite Politikamız", href: "/institutional/quality" },
         { label: "İşPool Blog", href: "/institutional/blog" },
         { label: "İş Ortaklarımız", href: "/institutional/partners" },
+        { label: "Kariyer", href: "/institutional/career" },
       ],
     },
-    // ... diğer gruplar aynı kalıyor ...
     musteriIliskileri: {
       title: "Müşteri İlişkileri",
       links: [
@@ -156,11 +156,11 @@ export default function Footer() {
           <div className="xl:col-span-3 space-y-8">
             <Link
               href="/"
-              className="inline-block brightness-0 invert"
+              className="inline-block"
               aria-label="İşPool Ana Sayfa"
             >
               <Image
-                src="/logo/logois2.png"
+                src="/logo/logofooter.png"
                 alt="İşPool Logo"
                 width={140}
                 height={40}
@@ -169,20 +169,22 @@ export default function Footer() {
             </Link>
 
             <div className="space-y-4">
-              <h4 className="text-white text-[11px] font-black tracking-widest uppercase">
+              <label
+                htmlFor="newsletter-email"
+                className="text-white text-[11px] font-black tracking-widest uppercase block"
+              >
                 Bültene Katılın
-              </h4>
+              </label>
               <form
                 onSubmit={handleSubscribe}
                 className="relative group max-w-sm"
               >
                 <input
+                  id="newsletter-email"
                   type="email"
                   placeholder="E-posta adresiniz"
-                  aria-label="E-posta bültenine kayıt olun"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  // p-4 pr-14 yaparak input yüksekliğini ve sağdaki buton boşluğunu artırdık
                   className="w-full rounded-sm bg-slate-900 border border-slate-800 p-4 pr-14 text-[13px] text-white focus:outline-none focus:border-orange-600 transition-all"
                 />
                 <button
@@ -204,7 +206,7 @@ export default function Footer() {
                   key={i}
                   href={social.href}
                   aria-label={social.aria}
-                  className="p-2.5 bg-white/5 text-slate-400 hover:bg-orange-600 hover:text-white transition-all rounded-sm flex items-center justify-center min-w-[44px] min-h-[44px]"
+                  className="p-2.5 bg-white/5 text-slate-400 hover:bg-orange-600 hover:text-white transition-all rounded-sm flex items-center justify-center min-w-11 min-h-11"
                 >
                   <social.icon size={20} aria-hidden="true" />
                 </a>
@@ -221,7 +223,7 @@ export default function Footer() {
                   aria-expanded={openSection === key}
                   aria-controls={`section-${key}`}
                   // min-h-[48px] ile mobil menü başlıkları kolay tıklanır hale getirildi
-                  className="w-full py-4 md:py-0 md:mb-6 flex items-center justify-between text-left focus:outline-none min-h-[48px] md:min-h-0"
+                  className="w-full py-4 md:py-0 md:mb-6 flex items-center justify-between text-left focus:outline-none min-h-12 md:min-h-0"
                 >
                   <h4 className="text-white text-[15px] font-bold uppercase tracking-tight">
                     {group.title}
@@ -261,8 +263,8 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Alt Bar: Copyright ve Ödeme */}
-      <div className="bg-white py-6 border-t border-slate-200">
+      {/* Alt Bar: Copyright ve Ödeme — mobilde pb-20 ile sabit bottom nav'ın altından kaçar */}
+      <div className="bg-white pt-6 pb-20 lg:pb-6 border-t border-slate-200">
         <div className="container mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 text-center md:text-left leading-relaxed">
             © {currentYear} İŞPOOL ENDÜSTRİYEL GÜVENLİK SİSTEMLERİ.{" "}

@@ -3,9 +3,9 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import SocialSidebar from "@/components/layout/socialSidebar";
-import Navbar from "@/components/layout/navbar";
+import Navbar from "@/components/layout/Navbar";
 import Topbar from "@/components/layout/topbar";
-import Footer from "@/components/layout/footer";
+import Footer from "@/components/layout/Footer";
 import AdminSidebar from "@/components/modules/admin/sideBar";
 
 export default function ClientLayoutWrapper({
