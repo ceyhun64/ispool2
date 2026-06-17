@@ -45,7 +45,7 @@ const nextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.iyzipay.com https://js.iyzipay.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com data:",
-              "img-src 'self' data: blob: https://res.cloudinary.com https://www.instagram.com https://images.unsplash.com https://www.transparenttextures.com",
+              "img-src 'self' data: blob: https://res.cloudinary.com https://www.instagram.com",
               "connect-src 'self' https://res.cloudinary.com https://sandbox-api.iyzipay.com https://api.iyzipay.com",
               "frame-src 'none'",
               "object-src 'none'",

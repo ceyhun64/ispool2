@@ -68,7 +68,7 @@ const BannerPreviewCard = ({
         className="object-cover brightness-50"
       />
     ) : (
-      <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]" />
+      <div className="absolute inset-0 opacity-20 [background-image:repeating-linear-gradient(45deg,#475569_0,#475569_1px,transparent_0,transparent_50%)] [background-size:6px_6px]" />
     )}
     <div className="relative h-full flex flex-col items-center justify-center text-center p-6">
       <span className="text-[8px] tracking-widest text-slate-400 uppercase mb-3 block">

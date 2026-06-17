@@ -174,6 +174,7 @@ export default function CategoriesSection() {
                     src="/categories/1.jpg"
                     alt="Dijital Önizleme"
                     fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
                     className="object-cover lg:object-contain object-center opacity-60 transition-opacity duration-700"
                   />
                   {/* Sadece mobilede sol kenar geçiş gradyanı */}

@@ -130,8 +130,6 @@ export default function Products() {
         {/* Kurumsal Alt Banner - Toptan Satış */}
         <footer className="relative bg-slate-950 overflow-hidden group border border-white/5 ">
           {/* Arka Plan Görseli */}
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80')] opacity-10 grayscale group-hover:scale-105 transition-transform duration-[3s]" />
-
           {/* Katman Efekti */}
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent z-0" />
 
