@@ -53,9 +53,9 @@ export default function CookieConsent() {
                 <div className="space-y-4">
                   {/* Başlık ve Metin */}
                   <div className="space-y-2">
-                    <h4 className="text-[12px] font-bold tracking-widest text-slate-900 uppercase">
+                    <p className="text-[12px] font-bold tracking-widest text-slate-900 uppercase">
                       Veri Güvenliği ve Çerezler
-                    </h4>
+                    </p>
                     <p className="text-[13px] text-slate-600 leading-relaxed font-normal">
                       Size daha güvenli ve özelleştirilmiş bir alışveriş
                       deneyimi sunmak için yasal düzenlemelere uygun çerezler
