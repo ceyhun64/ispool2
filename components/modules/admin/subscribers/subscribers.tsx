@@ -34,8 +34,9 @@ export default function Subscribers() {
   async function fetchUsers() {
     try {
       const res = await fetch("/api/subscribe");
+      if (!res.ok) throw new Error("API error");
       const data = await res.json();
-      setUsers(data);
+      setUsers(Array.isArray(data) ? data : data.subscribers || []);
     } catch (err) {
       toast.error("Aboneler yüklenirken bir hata oluştu.");
     } finally {

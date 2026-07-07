@@ -73,7 +73,6 @@ export default function Products(): React.ReactElement {
     try {
       const res = await fetch("/api/products");
       const data = await res.json();
-      console.log("products:", data);
       if (res.ok) setProducts(data.products || []);
       else toast.error(data.error || "Ürünler yüklenemedi");
     } catch (err) {
@@ -179,9 +178,7 @@ export default function Products(): React.ReactElement {
     );
   };
 
-  // DÜZELTME: Edit handler - productId'yi doğru şekilde geç
   const handleEditClick = (product: Product) => {
-    console.log("Editing product:", product.id); // Debug
     router.push(`/admin/products/edit/${product.id}`);
   };
 
@@ -372,7 +369,7 @@ export default function Products(): React.ReactElement {
                 setProductToDelete(p);
                 setDeleteDialogOpen(true);
               }}
-              onUpdateClick={handleEditClick} // DÜZELTME: Doğru handler kullan
+              onUpdateClick={handleEditClick}
               onSelectAll={(e) =>
                 setSelectedIds(
                   e.target.checked ? paginatedProducts.map((p) => p.id) : [],

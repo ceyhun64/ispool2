@@ -4,12 +4,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import type { NextRequest } from "next/server";
 
-// GET: Tüm kullanıcıları döndür (opsiyonel admin kontrolü)
+// GET: Tüm kullanıcıları döndür (sadece ADMIN)
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session) {
+    if (!session || session.user?.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

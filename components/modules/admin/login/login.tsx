@@ -23,15 +23,22 @@ export default function AdminLogin() {
 
   useEffect(() => {
     setMounted(true);
-    const logoutExistingSession = async () => {
+    const checkSession = async () => {
       try {
-        await signOut({ redirect: false });
-      } catch (error) {
-        console.error("Çıkış yapılırken hata oluştu:", error);
+        const res = await fetch("/api/auth/session");
+        const data = await res.json();
+        if (data?.user?.role === "ADMIN") {
+          router.replace("/admin/dashboard");
+        } else if (data?.user) {
+          // Admin olmayan kullanıcı admin login sayfasına geldiyse çıkış yaptır
+          await signOut({ redirect: false });
+        }
+      } catch {
+        // Session kontrolü başarısız — sayfada kal
       }
     };
-    logoutExistingSession();
-  }, []);
+    checkSession();
+  }, [router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
