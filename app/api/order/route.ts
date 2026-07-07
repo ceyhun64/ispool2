@@ -170,11 +170,6 @@ export async function POST(req: NextRequest) {
     const host = req.headers.get("host") || "localhost:3000";
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `${protocol}://${host}`;
 
-    console.log("🔄 Payment API çağrılıyor:", `${baseUrl}/api/payment`);
-    console.log("💳 Taksit sayısı:", installment);
-    console.log("🎟️ Kupon kodu:", couponCode || "YOK");
-    console.log("💰 İndirim tutarı:", discountAmount);
-
     const paymentRes = await fetch(`${baseUrl}/api/payment`, {
       method: "POST",
       headers: {
@@ -196,7 +191,6 @@ export async function POST(req: NextRequest) {
     }
 
     const paymentResult = await paymentRes.json();
-    console.log("💳 Payment API response:", paymentResult);
 
     if (!paymentResult || paymentResult.status !== "success") {
       console.error("❌ İyzipay ödeme hatası:", paymentResult);
@@ -213,8 +207,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log("✅ Ödeme başarılı! Sipariş oluşturuluyor...");
-
     // Kupon kullanımını güncelle (eğer kupon varsa)
     if (couponCode && discountAmount > 0) {
       try {
@@ -226,7 +218,6 @@ export async function POST(req: NextRequest) {
             },
           },
         });
-        console.log(`✅ Kupon kullanım sayısı güncellendi: ${couponCode}`);
       } catch (couponError) {
         console.error("⚠️ Kupon güncelleme hatası:", couponError);
         // Kupon güncellenemese bile sipariş devam etsin
@@ -296,8 +287,6 @@ export async function POST(req: NextRequest) {
       include: { items: true, addresses: true },
     });
 
-    console.log("✅ Sipariş oluşturuldu:", order.id);
-
     // Format helper - kuruştan TL'ye çevirme
     const formatPrice = (priceInCents: number) =>
       (priceInCents / 100).toLocaleString("tr-TR", {
@@ -322,7 +311,7 @@ export async function POST(req: NextRequest) {
           `
 Sayın ${firstName || ""} ${lastName || ""},
 
-**BALKOLÜX** üzerinden vermiş olduğunuz **#${
+**İŞPOOL** üzerinden vermiş olduğunuz **#${
             order.id
           }** numaralı siparişiniz başarıyla oluşturulmuş ve ödemesi onaylanmıştır.
 
@@ -382,7 +371,7 @@ Siparişinizin tüm aşamaları hakkında e-posta ile bilgilendirileceksiniz.
 Bizi tercih ettiğiniz için teşekkür eder, iyi günler dileriz.
 
 Saygılarımızla, 
-**BALKOLÜX Ekibi**
+**İŞPOOL Ekibi**
 `,
         );
       }
@@ -477,6 +466,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
 // PATCH: Sipariş durumunu güncelle
 export async function PATCH(req: NextRequest): Promise<NextResponse> {
+  const session = await getServerSession(authOptions);
+  if (!session || session.user?.role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     const body: UpdateOrderBody = await req.json();
     const { orderId, status } = body;
@@ -552,7 +545,7 @@ ${specificNote ? `\n${specificNote}` : ""}
 Güncel sipariş bilgilerinizi web sitemizdeki hesabınız üzerinden de takip edebilirsiniz.
 
 Saygılarımızla,
-**BALKOLÜX Ekibi**
+**İŞPOOL Ekibi**
 `;
 
       await sendMail(

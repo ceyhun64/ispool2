@@ -56,7 +56,7 @@ export async function DELETE(
   const { id } = await context.params; // 👈 await ile çöz
 
   const session = await getServerSession(authOptions);
-  if (!session)
+  if (!session || session.user?.role !== "ADMIN")
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
   const blogId = Number(id);
@@ -88,7 +88,7 @@ export async function PUT(
   const { id } = await context.params;
 
   const session = await getServerSession(authOptions);
-  if (!session)
+  if (!session || session.user?.role !== "ADMIN")
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
   const blogId = Number(id);
