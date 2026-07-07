@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export async function DELETE(
   _req: NextRequest,
-  context: { params: Promise<{ id: string }> } // 👈 params artık Promise
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params; // 👈 await ile çöz
+  const session = await getServerSession(authOptions);
+  if (!session || session.user?.role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const { id } = await context.params;
   const userId = Number(id);
 
   if (isNaN(userId)) {

@@ -213,7 +213,7 @@ export default function Orders() {
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden md:block bg-orange-500 rounded-sm overflow-hidden border border-slate-200">
+      <div className="hidden md:block bg-white rounded-sm overflow-hidden border border-slate-200">
         <table className="w-full bg-white border-separate border-spacing-0">
           <thead className="bg-slate-50">
             <tr>
