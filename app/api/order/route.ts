@@ -1,6 +1,8 @@
 // app/api/order/route.ts - Schema'ya Uygun Düzenlenmiş Versiyon
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 interface BasketItem {
   id: number;
@@ -442,6 +444,10 @@ Lütfen siparişin detaylarını kontrol ederek üretim ve gönderim sürecini b
 
 // GET: Tüm siparişleri getirme
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  const session = await getServerSession(authOptions);
+  if (!session || session.user?.role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     const orders = await prisma.order.findMany({
       include: {

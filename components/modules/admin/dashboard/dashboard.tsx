@@ -82,7 +82,7 @@ export default function AdminDashboard() {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const [productRes, orderRes, userRes, blogRes, subsRes, couponRes] =
+      const [productRes, orderRes, userRes, blogRes, subsRes, couponRes, colorRes, sizeRes] =
         await Promise.all([
           fetch("/api/products"),
           fetch("/api/order"),
@@ -90,6 +90,8 @@ export default function AdminDashboard() {
           fetch("/api/blog"),
           fetch("/api/subscribe"),
           fetch("/api/coupon"),
+          fetch("/api/color"),
+          fetch("/api/size"),
         ]);
 
       const products = productRes.ok
@@ -104,6 +106,11 @@ export default function AdminDashboard() {
       const coupons = couponRes.ok
         ? await couponRes.json().catch(() => ({}))
         : {};
+      const colors = colorRes.ok ? await colorRes.json().catch(() => ({})) : {};
+      const sizes = sizeRes.ok ? await sizeRes.json().catch(() => ({})) : {};
+
+      const colorCount = colors.data?.length || 0;
+      const sizeCount = sizes.data?.length || 0;
 
       setKpiData([
         {
@@ -117,8 +124,8 @@ export default function AdminDashboard() {
         {
           id: "color_size",
           title: "Renkler & Bedenler",
-          stat: orders.orders?.length || 0,
-          description: "Renkler & Bedenler",
+          stat: colorCount + sizeCount,
+          description: `${colorCount} Renk · ${sizeCount} Beden`,
           icon: <Palette className="w-5 h-5" />,
           href: "/admin/color_size",
         },
@@ -159,9 +166,7 @@ export default function AdminDashboard() {
         {
           id: "coupons",
           title: "Kuponlar",
-          stat:
-            coupons.coupons?.length ||
-            (Array.isArray(coupons) ? coupons.length : 0),
+          stat: coupons.count || coupons.data?.length || 0,
           description: "Aktif Kupon",
           icon: <Ticket className="w-5 h-5" />,
           href: "/admin/coupon",

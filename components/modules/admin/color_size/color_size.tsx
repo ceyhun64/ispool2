@@ -27,7 +27,7 @@ import { toast } from "sonner";
 
 type EntityType = "color" | "size" | "brand";
 
-interface Color {
+interface ColorItem {
   id: number;
   name: string;
   hexCode: string;
@@ -86,7 +86,7 @@ interface ApiResponse {
 
 export default function VariantManagement() {
   const [activeTab, setActiveTab] = useState<EntityType>("color");
-  const [items, setItems] = useState<(Color | Size | Brand)[]>([]);
+  const [items, setItems] = useState<(ColorItem | Size | Brand)[]>([]);
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -242,10 +242,10 @@ export default function VariantManagement() {
   };
 
   // Düzenleme modu
-  const handleEdit = (item: Color | Size | Brand) => {
+  const handleEdit = (item: ColorItem | Size | Brand) => {
     setEditingId(item.id);
     if (activeTab === "color") {
-      const colorItem = item as Color;
+      const colorItem = item as ColorItem;
       setFormData({
         ...formData,
         name: colorItem.name,
@@ -276,9 +276,9 @@ export default function VariantManagement() {
   };
 
   // Kullanım sayısı hesapla
-  const getUsageCount = (item: Color | Size | Brand): number => {
+  const getUsageCount = (item: ColorItem | Size | Brand): number => {
     if (activeTab === "color" || activeTab === "brand") {
-      return (item as Color | Brand)._count?.products || 0;
+      return (item as ColorItem | Brand)._count?.products || 0;
     } else {
       const sizeItem = item as Size;
       return (
@@ -684,7 +684,7 @@ export default function VariantManagement() {
                     <td className="px-4 py-3">
                       <span className="text-sm font-medium text-gray-900">
                         {activeTab === "color"
-                          ? (item as Color).name
+                          ? (item as ColorItem).name
                           : activeTab === "brand"
                             ? (item as Brand).name
                             : (item as Size).value}
@@ -696,11 +696,11 @@ export default function VariantManagement() {
                           <div
                             className="w-8 h-8 rounded-md border border-gray-200"
                             style={{
-                              backgroundColor: (item as Color).hexCode,
+                              backgroundColor: (item as ColorItem).hexCode,
                             }}
                           />
                           <span className="text-xs text-gray-600 font-mono">
-                            {(item as Color).hexCode}
+                            {(item as ColorItem).hexCode}
                           </span>
                         </div>
                       ) : activeTab === "brand" ? (

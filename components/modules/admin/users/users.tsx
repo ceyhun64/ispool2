@@ -94,25 +94,35 @@ export default function UsersManagement() {
       if (res.ok) {
         setUsers((prev) => prev.filter((u) => u.id !== id));
         toast.success("Kullanıcı silindi.");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        toast.error(data?.error || "Silme işlemi başarısız.");
       }
     } catch (error) {
-      toast.error("Silme işlemi başarısız.");
+      toast.error("Bağlantı hatası oluştu.");
     }
   };
 
   const handleBatchDelete = async () => {
     setIsBatchDeleting(true);
     try {
-      await Promise.all(
-        selectedIds.map((id) =>
-          fetch(`/api/user/all/${id}`, { method: "DELETE" }),
-        ),
+      const results = await Promise.allSettled(
+        selectedIds.map(async (id) => {
+          const res = await fetch(`/api/user/all/${id}`, { method: "DELETE" });
+          if (!res.ok) throw new Error(`${id}`);
+          return id;
+        }),
       );
-      setUsers((prev) => prev.filter((u) => !selectedIds.includes(u.id)));
-      setSelectedIds([]);
-      toast.success(`${selectedIds.length} kullanıcı silindi.`);
+      const deletedIds = results
+        .filter((r): r is PromiseFulfilledResult<number> => r.status === "fulfilled")
+        .map((r) => r.value);
+      const failedCount = results.filter((r) => r.status === "rejected").length;
+      setUsers((prev) => prev.filter((u) => !deletedIds.includes(u.id)));
+      setSelectedIds((prev) => prev.filter((id) => !deletedIds.includes(id)));
+      if (deletedIds.length > 0) toast.success(`${deletedIds.length} kullanıcı silindi.`);
+      if (failedCount > 0) toast.error(`${failedCount} kullanıcı silinemedi.`);
     } catch (error) {
-      toast.error("Bazı kullanıcılar silinemedi.");
+      toast.error("Toplu silme sırasında bir hata oluştu.");
     } finally {
       setIsBatchDeleting(false);
     }

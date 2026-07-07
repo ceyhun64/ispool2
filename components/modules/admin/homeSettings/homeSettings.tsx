@@ -302,7 +302,7 @@ export default function HomePageManagement() {
       const endpoint =
         itemToDelete.type === "banner"
           ? `/api/banner/${itemToDelete.id}`
-          : `/api/admin/hero-slides/${itemToDelete.id}`;
+          : `/api/hero-slides/${itemToDelete.id}`;
 
       const res = await fetch(endpoint, { method: "DELETE" });
 
@@ -315,6 +315,9 @@ export default function HomePageManagement() {
         toast.success("Başarıyla silindi.");
         setDeleteDialogOpen(false);
         setItemToDelete(null);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        toast.error(data?.message || "Silme işlemi başarısız.");
       }
     } catch (err) {
       toast.error("Silme hatası.");

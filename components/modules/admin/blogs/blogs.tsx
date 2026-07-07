@@ -61,32 +61,42 @@ export default function Blogs() {
 
   const handleDelete = async () => {
     if (!blogToDelete) return;
-    const res = await fetch(`/api/blog/${blogToDelete.id}`, {
-      method: "DELETE",
-    });
-    if (res.ok) {
-      setBlogs((prev) => prev.filter((b) => b.id !== blogToDelete.id));
-      toast.success("Blog silindi.");
-      setDeleteDialogOpen(false);
-      setBlogToDelete(null);
+    try {
+      const res = await fetch(`/api/blog/${blogToDelete.id}`, { method: "DELETE" });
+      if (res.ok) {
+        setBlogs((prev) => prev.filter((b) => b.id !== blogToDelete.id));
+        toast.success("Blog silindi.");
+        setDeleteDialogOpen(false);
+        setBlogToDelete(null);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        toast.error(data?.message || "Blog silinemedi.");
+      }
+    } catch {
+      toast.error("Bağlantı hatası oluştu.");
     }
   };
 
   const handleBulkDelete = async () => {
-    toast.promise(
-      Promise.all(
-        selectedIds.map((id) => fetch(`/api/blog/${id}`, { method: "DELETE" })),
-      ),
-      {
-        loading: "Siliniyor...",
-        success: () => {
-          setBlogs((prev) => prev.filter((b) => !selectedIds.includes(b.id)));
-          setSelectedIds([]);
-          return "Seçili bloglar silindi.";
-        },
-        error: "Bazı bloglar silinemedi.",
-      },
-    );
+    try {
+      const results = await Promise.allSettled(
+        selectedIds.map(async (id) => {
+          const res = await fetch(`/api/blog/${id}`, { method: "DELETE" });
+          if (!res.ok) throw new Error(`${id}`);
+          return id;
+        }),
+      );
+      const deletedIds = results
+        .filter((r): r is PromiseFulfilledResult<number> => r.status === "fulfilled")
+        .map((r) => r.value);
+      const failedCount = results.filter((r) => r.status === "rejected").length;
+      setBlogs((prev) => prev.filter((b) => !deletedIds.includes(b.id)));
+      setSelectedIds((prev) => prev.filter((id) => !deletedIds.includes(id)));
+      if (deletedIds.length > 0) toast.success(`${deletedIds.length} blog silindi.`);
+      if (failedCount > 0) toast.error(`${failedCount} blog silinemedi.`);
+    } catch {
+      toast.error("Toplu silme sırasında bir hata oluştu.");
+    }
   };
 
   const filteredBlogs = blogs

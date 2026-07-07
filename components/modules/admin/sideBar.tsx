@@ -24,6 +24,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Image from "next/image";
+import { signOut } from "next-auth/react";
 
 interface MenuItem {
   id: string;
@@ -108,8 +109,7 @@ export default function AdminSidebar({
 
   const handleLogout = async () => {
     try {
-      const res = await fetch("/api/auth/logout", { method: "POST" });
-      if (!res.ok) throw new Error();
+      await signOut({ redirect: false });
       toast.success("Çıkış yapıldı");
       router.push("/admin");
     } catch (error) {
