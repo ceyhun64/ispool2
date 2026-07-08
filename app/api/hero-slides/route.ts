@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { internalHeaders } from "@/lib/internalAuth";
 import type { NextRequest } from "next/server";
 
 export async function GET() {
@@ -53,6 +54,7 @@ export async function POST(request: NextRequest) {
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`,
       {
         method: "POST",
+        headers: internalHeaders(),
         body: uploadFormData,
       },
     );

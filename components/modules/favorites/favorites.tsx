@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import ProductCard from "./productCard";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,8 +9,55 @@ import { Button } from "@/components/ui/button";
 import { useFavorite } from "@/contexts/favoriteContext";
 import { motion, AnimatePresence } from "framer-motion";
 
+interface FavoriteProduct {
+  id: number;
+  title: string;
+  price: number;
+  oldPrice?: number;
+  discountPercentage?: number;
+  mainImage: string;
+  subImage?: string;
+  category: string;
+}
+
 export default function Favorites() {
   const { favorites, removeFavorite, loading } = useFavorite();
+  const [products, setProducts] = useState<Record<number, FavoriteProduct>>({});
+
+  // Kart başına ayrı istek yerine tüm favori ürünler tek seferde toplu çekilir.
+  useEffect(() => {
+    const ids = favorites.filter((id) => id != null);
+    if (ids.length === 0) {
+      setProducts({});
+      return;
+    }
+
+    let cancelled = false;
+    fetch(`/api/products?ids=${ids.join(",")}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (cancelled || !data?.products) return;
+        const map: Record<number, FavoriteProduct> = {};
+        for (const p of data.products) {
+          map[p.id] = {
+            id: p.id,
+            title: p.title,
+            price: p.price,
+            oldPrice: p.oldPrice,
+            discountPercentage: p.discountPercentage,
+            mainImage: p.mainImage,
+            subImage: p.subImage,
+            category: p.category,
+          };
+        }
+        setProducts(map);
+      })
+      .catch((err) => console.error("Favori ürünler alınamadı:", err));
+
+    return () => {
+      cancelled = true;
+    };
+  }, [favorites]);
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 selection:bg-amber-600 selection:text-white">
@@ -107,7 +154,11 @@ export default function Favorites() {
                     transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                     className="group"
                   >
-                    <ProductCard id={productId} onRemove={removeFavorite} />
+                    <ProductCard
+                      id={productId}
+                      product={products[productId]}
+                      onRemove={removeFavorite}
+                    />
                   </motion.div>
                 ))}
             </AnimatePresence>

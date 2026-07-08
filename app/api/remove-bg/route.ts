@@ -1,7 +1,25 @@
 // app/api/remove-bg/route.ts
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Ücretli bir 3. parti API'yi tüketiyor; kota istismarını önlemek için sınırla
+  const ip = getClientIp(req);
+  const rl = rateLimit(`remove-bg:${ip}`, 10, 10 * 60 * 1000);
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: "Çok fazla istek. Lütfen birkaç dakika bekleyin." },
+      { status: 429 },
+    );
+  }
+
   try {
     const { imageBase64 } = await req.json();
 
@@ -25,22 +43,15 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log("API Key mevcut:", apiKey.substring(0, 10) + "...");
-    console.log("Base64 uzunluğu:", imageBase64.length);
-
     // Base64'ü binary'ye çevir
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
     const binaryData = Buffer.from(base64Data, "base64");
-
-    console.log("Binary data boyutu:", binaryData.length);
 
     // FormData oluştur
     const formData = new FormData();
     const blob = new Blob([binaryData], { type: "image/png" });
     formData.append("image_file", blob, "image.png");
     formData.append("size", "auto");
-
-    console.log("Remove.bg API'sine istek gönderiliyor...");
 
     const response = await fetch("https://api.remove.bg/v1.0/removebg", {
       method: "POST",
@@ -49,8 +60,6 @@ export async function POST(req: Request) {
       },
       body: formData,
     });
-
-    console.log("Remove.bg API Response Status:", response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -81,8 +90,6 @@ export async function POST(req: Request) {
     const buffer = await response.arrayBuffer();
     const base64Result = Buffer.from(buffer).toString("base64");
 
-    console.log("Arka plan başarıyla kaldırıldı!");
-
     return NextResponse.json({
       image: `data:image/png;base64,${base64Result}`,
     });
@@ -90,7 +97,7 @@ export async function POST(req: Request) {
     console.error("Background removal error:", error);
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Sunucu hatası oluştu",
+        error: "Sunucu hatası oluştu",
       },
       { status: 500 },
     );

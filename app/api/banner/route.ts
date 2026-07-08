@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { internalHeaders } from "@/lib/internalAuth";
 import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session || !session.user?.id) {
+  if (!session || session.user?.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -47,6 +48,7 @@ export async function POST(request: NextRequest) {
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`,
       {
         method: "POST",
+        headers: internalHeaders(),
         body: uploadFormData,
       },
     );

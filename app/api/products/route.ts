@@ -14,9 +14,22 @@ export async function GET(request: Request) {
   const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") ?? "24", 10)));
   const skip = (page - 1) * limit;
 
+  // ?ids=1,2,3 verilirse (ör. favoriler sayfası) sayfalama yapılmadan sadece
+  // belirtilen ürünler tek istekte döndürülür — kart başına ayrı fetch yerine.
+  const idsParam = searchParams.get("ids");
+  const idFilter = idsParam
+    ? idsParam
+        .split(",")
+        .map((v) => Number(v.trim()))
+        .filter((n) => Number.isInteger(n) && n > 0)
+    : null;
+
   try {
+    const where = idFilter && idFilter.length > 0 ? { id: { in: idFilter } } : {};
+
     const [products, total] = await Promise.all([
       prisma.product.findMany({
+        where,
         include: {
           category: true,
           middleCategory: true,
@@ -28,10 +41,9 @@ export async function GET(request: Request) {
           },
         },
         orderBy: { createdAt: "desc" },
-        skip,
-        take: limit,
+        ...(idFilter ? {} : { skip, take: limit }),
       }),
-      prisma.product.count(),
+      prisma.product.count({ where }),
     ]);
 
     const productsData = products.map((p) => ({
@@ -86,7 +98,7 @@ export async function GET(request: Request) {
   } catch (error: any) {
     console.error("Products fetch error:", error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: "Ürünler alınamadı" },
       { status: 500 },
     );
   }
@@ -336,7 +348,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error("Product create error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Ürün oluşturulamadı" },
+      { success: false, error: "Ürün oluşturulamadı" },
       { status: 500 },
     );
   }

@@ -1,5 +1,6 @@
 // app/api/account/forgot_password/route.ts
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { prisma } from "@/lib/db";
 import { sendMail } from "@/lib/mailer";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const resetToken = Math.random().toString(36).substring(2, 15);
+    const resetToken = crypto.randomBytes(32).toString("hex");
     const resetTokenExpires = new Date(Date.now() + 1000 * 60 * 30);
 
     await prisma.user.update({

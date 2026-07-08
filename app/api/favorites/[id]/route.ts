@@ -33,8 +33,9 @@ export async function DELETE(
 
     return NextResponse.json({ deletedCount: deleted.count });
   } catch (error: any) {
+    console.error("Favorite DELETE error:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to delete favorite" },
+      { error: "Failed to delete favorite" },
       { status: 500 }
     );
   }

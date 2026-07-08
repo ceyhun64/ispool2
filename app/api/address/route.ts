@@ -28,14 +28,16 @@ export async function GET() {
   }
 }
 
-// 📦 POST: Yeni adres ekleme (login veya guest kullanıcı)
+// 📦 POST: Yeni adres ekleme (giriş yapmış kullanıcı)
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     const body = await request.json();
 
-    // 🧩 Login değilse frontend'den gelen userId'yi kullan
-    const userId = session?.user?.id ?? body.userId;
+    // Misafir checkout akışı adres kaydından önce hesap oluşturup giriş
+    // yaptırır (bkz. checkout.tsx handleSaveAddress); bu yüzden body.userId'ye
+    // güvenmek yerine her zaman oturumdaki kullanıcı kullanılır.
+    const userId = session?.user?.id;
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

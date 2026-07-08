@@ -18,6 +18,7 @@ import {
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { mergeGuestDataIntoAccount } from "@/utils/mergeGuestData";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -41,6 +42,8 @@ export default function LoginForm() {
         toast.error("Kimlik bilgileri doğrulanamadı.");
         return;
       }
+
+      await mergeGuestDataIntoAccount();
 
       toast.success("Oturum başarıyla açıldı.");
       router.push("/");

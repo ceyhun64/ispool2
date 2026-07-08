@@ -40,7 +40,7 @@ export async function GET(
   } catch (error: any) {
     console.error("Orta kategori çekilirken hata:", error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: "Orta kategori alınamadı" },
       { status: 500 }
     );
   }

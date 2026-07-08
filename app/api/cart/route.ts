@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { internalHeaders } from "@/lib/internalAuth";
+
+const MAX_QUANTITY = 999;
 
 // ---------------------------------------------------------------------------
 // Upload helper
@@ -15,6 +18,7 @@ async function uploadToCloudinary(file: File, folder: string) {
 
   const res = await fetch(`${baseUrl}/api/upload`, {
     method: "POST",
+    headers: internalHeaders(),
     body: fd,
   });
   if (!res.ok) throw new Error("Cloudinary yükleme hatası");
@@ -67,7 +71,7 @@ export async function POST(req: Request) {
     if (!productId || isNaN(productId)) {
       return NextResponse.json({ error: "Geçersiz ürün ID" }, { status: 400 });
     }
-    if (quantity < 1) {
+    if (quantity < 1 || quantity > MAX_QUANTITY) {
       return NextResponse.json({ error: "Geçersiz miktar" }, { status: 400 });
     }
 
@@ -157,7 +161,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("Cart POST error:", error);
     return NextResponse.json(
-      { error: error.message || "İşlem başarısız" },
+      { error: "İşlem başarısız" },
       { status: 500 },
     );
   }

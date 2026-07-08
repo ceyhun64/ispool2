@@ -7,7 +7,6 @@ import { authOptions } from "@/lib/auth"; // Yolu projenizin yapısına göre ay
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
 
-  console.log("session", session);
   if (!session) {
     return NextResponse.json({ user: null }, { status: 200 });
   }

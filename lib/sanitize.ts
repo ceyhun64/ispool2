@@ -36,6 +36,28 @@ const DANGEROUS_PATTERNS = [
   /<input[\s\S]*?>/gi,
 ];
 
+function sanitizeAttributes(tag: string, attrString: string): string {
+  const allowed = new Set<string>([
+    ...(ALLOWED_ATTRS[tag] ?? []),
+    ...(ALLOWED_ATTRS["*"] ?? []),
+  ]);
+  if (allowed.size === 0 || !attrString) return "";
+
+  const attrPattern = /([a-zA-Z-]+)\s*=\s*("([^"]*)"|'([^']*)'|([^\s>]+))/g;
+  let out = "";
+  let match: RegExpExecArray | null;
+  while ((match = attrPattern.exec(attrString))) {
+    const name = match[1].toLowerCase();
+    const value = match[3] ?? match[4] ?? match[5] ?? "";
+    if (!allowed.has(name)) continue;
+    if ((name === "href" || name === "src") && /^\s*(javascript|vbscript|data):/i.test(value)) {
+      continue;
+    }
+    out += ` ${name}="${value.replace(/"/g, "&quot;")}"`;
+  }
+  return out;
+}
+
 export function sanitizeHtml(dirty: string): string {
   if (!dirty) return "";
 
@@ -46,14 +68,20 @@ export function sanitizeHtml(dirty: string): string {
     clean = clean.replace(pattern, "");
   }
 
-  // İzin verilmeyen tag'leri kaldır (içeriklerini koruyarak)
-  clean = clean.replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)[^>]*>/g, (match, tag) => {
-    const lowerTag = tag.toLowerCase();
-    if (!ALLOWED_TAGS.has(lowerTag)) {
-      return ""; // izin verilmeyen tag'i tamamen sil
-    }
-    return match;
-  });
+  // İzin verilmeyen tag'leri sil, izin verilenlerin ise yalnızca izin
+  // verilen özniteliklerini (ALLOWED_ATTRS) koru.
+  clean = clean.replace(
+    /<(\/)?([a-zA-Z][a-zA-Z0-9]*)([^>]*)>/g,
+    (_match, closingSlash: string | undefined, tag: string, attrs: string) => {
+      const lowerTag = tag.toLowerCase();
+      if (!ALLOWED_TAGS.has(lowerTag)) return "";
+      if (closingSlash) return `</${lowerTag}>`;
+
+      const selfClosing = /\/\s*$/.test(attrs);
+      const cleanAttrs = sanitizeAttributes(lowerTag, attrs);
+      return `<${lowerTag}${cleanAttrs}${selfClosing ? " /" : ""}>`;
+    },
+  );
 
   return clean;
 }

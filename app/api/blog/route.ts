@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { internalHeaders } from "@/lib/internalAuth";
 import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -47,6 +48,7 @@ export async function POST(request: NextRequest) {
 
     const uploadRes = await fetch(`${baseUrl}/api/upload`, {
       method: "POST",
+      headers: internalHeaders(),
       body: uploadForm,
     });
 

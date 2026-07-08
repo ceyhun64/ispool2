@@ -85,7 +85,7 @@ export async function GET(
   } catch (error: any) {
     console.error("Kategoriye göre ürünler çekilemedi:", error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: "Ürünler alınamadı" },
       { status: 500 },
     );
   }

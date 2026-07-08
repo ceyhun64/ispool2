@@ -100,7 +100,6 @@ export default function MidCatProducts({
         const url = `/api/products/category/${id}/${midId}`;
         const res = await fetch(url);
         const data = await res.json();
-        console.log(data);
         if (data.products) setProducts(data.products);
       } catch (error) {
         console.error(error);

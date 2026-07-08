@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import DefaultPagination from "@/components/layout/pagination";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -52,6 +53,7 @@ export default function UsersManagement() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isBatchDeleting, setIsBatchDeleting] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -89,6 +91,8 @@ export default function UsersManagement() {
   );
 
   const handleDelete = async (id: number) => {
+    if (deletingId !== null) return;
+    setDeletingId(id);
     try {
       const res = await fetch(`/api/user/all/${id}`, { method: "DELETE" });
       if (res.ok) {
@@ -100,6 +104,8 @@ export default function UsersManagement() {
       }
     } catch (error) {
       toast.error("Bağlantı hatası oluştu.");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -327,12 +333,19 @@ export default function UsersManagement() {
                         </DialogDescription>
                       </DialogHeader>
                       <DialogFooter>
-                        <Button variant="outline">İptal</Button>
+                        <DialogClose asChild>
+                          <Button variant="outline">İptal</Button>
+                        </DialogClose>
                         <Button
                           variant="destructive"
+                          disabled={deletingId === user.id}
                           onClick={() => handleDelete(user.id)}
                         >
-                          Evet, Sil
+                          {deletingId === user.id ? (
+                            <Spinner className="w-4 h-4" />
+                          ) : (
+                            "Evet, Sil"
+                          )}
                         </Button>
                       </DialogFooter>
                     </DialogContent>

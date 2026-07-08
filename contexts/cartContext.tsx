@@ -4,6 +4,7 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useMemo,
   ReactNode,
 } from "react";
 import { toast } from "sonner";
@@ -37,7 +38,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchCart = async () => {
+  const fetchCart = React.useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/cart", { credentials: "include" });
@@ -48,29 +49,34 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const addToCart = async (productId: number, quantity = 1) => {
-    try {
-      const res = await fetch("/api/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, quantity }),
-        credentials: "include",
-      });
+  const addToCart = React.useCallback(
+    async (productId: number, quantity = 1) => {
+      try {
+        const fd = new FormData();
+        fd.append("productId", String(productId));
+        fd.append("quantity", String(quantity));
+        const res = await fetch("/api/cart", {
+          method: "POST",
+          body: fd,
+          credentials: "include",
+        });
 
-      if (res.ok) {
-        toast.success("Ürün sepete eklendi!");
-        fetchCart(); // 🔄 Anında güncelle
-      } else {
-        toast.error("Sepete eklenemedi");
+        if (res.ok) {
+          toast.success("Ürün sepete eklendi!");
+          fetchCart(); // 🔄 Anında güncelle
+        } else {
+          toast.error("Sepete eklenemedi");
+        }
+      } catch {
+        toast.error("Bağlantı hatası");
       }
-    } catch {
-      toast.error("Bağlantı hatası");
-    }
-  };
+    },
+    [fetchCart],
+  );
 
-  const removeFromCart = async (id: number) => {
+  const removeFromCart = React.useCallback(async (id: number) => {
     try {
       const res = await fetch(`/api/cart/${id}`, {
         method: "DELETE",
@@ -82,18 +88,19 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     } catch {
       toast.error("Ürün silinemedi");
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, [fetchCart]);
+
+  const value = useMemo(
+    () => ({ cartItems, fetchCart, addToCart, removeFromCart, loading }),
+    [cartItems, fetchCart, addToCart, removeFromCart, loading],
+  );
 
   return (
-    <CartContext.Provider
-      value={{ cartItems, fetchCart, addToCart, removeFromCart, loading }}
-    >
-      {children}
-    </CartContext.Provider>
+    <CartContext.Provider value={value}>{children}</CartContext.Provider>
   );
 };
 

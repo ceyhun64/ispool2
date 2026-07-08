@@ -1,6 +1,8 @@
 // app/api/cloudinary-signature/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -9,6 +11,13 @@ cloudinary.config({
 });
 
 export async function POST(req: NextRequest) {
+  // Yalnızca admin panelinden (ürün/marka görselleri) doğrudan Cloudinary'ye
+  // yükleme yapmak için kullanılır.
+  const session = await getServerSession(authOptions);
+  if (!session || session.user?.role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { folder, resource_type } = await req.json();
 
@@ -38,6 +47,7 @@ export async function POST(req: NextRequest) {
       format: params.format,
     });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error("Cloudinary imza hatası:", err);
+    return NextResponse.json({ error: "İmza oluşturulamadı" }, { status: 500 });
   }
 }

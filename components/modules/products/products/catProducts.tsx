@@ -98,7 +98,6 @@ export default function CatProducts({
         const url = `/api/products/category/${id}`;
         const res = await fetch(url);
         const data = await res.json();
-        console.log(data);
         if (data.products) setProducts(data.products);
       } catch (error) {
         console.error(error);

@@ -113,7 +113,6 @@ const Filter: React.FC<FilterProps> = ({
         // Renkleri çek
         const colorsRes = await fetch("/api/color");
         const colorsData = await colorsRes.json();
-        console.log("Renkler:", colorsData);
 
         // API yanıtı: { success: true, data: Array, count: number }
         if (colorsData.success && Array.isArray(colorsData.data)) {
@@ -123,7 +122,6 @@ const Filter: React.FC<FilterProps> = ({
         // Bedenleri çek
         const sizesRes = await fetch("/api/size");
         const sizesData = await sizesRes.json();
-        console.log("Bedenler:", sizesData);
 
         // API yanıtı: { success: true, data: Array, stats: {...} }
         if (sizesData.success && Array.isArray(sizesData.data)) {

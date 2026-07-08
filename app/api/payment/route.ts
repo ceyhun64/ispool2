@@ -1,91 +1,21 @@
 // app/api/payment/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
-
-const INSTALLMENT_RATES: { [key: number]: number } = {
-  1: 0,
-  2: 3.5,
-  3: 5.2,
-  6: 9.8,
-  9: 13.5,
-  12: 17.0,
-};
-
-// --- YARDIMCI FONKSİYONLAR ---
-
-function generateIyzicoSignature(
-  randomKey: string,
-  uri: string,
-  requestBody: string,
-  secretKey: string
-): string {
-  const dataToSign = randomKey + uri + requestBody;
-  return crypto
-    .createHmac("sha256", secretKey)
-    .update(dataToSign)
-    .digest("hex");
-}
-
-function createAuthorizationHeader(
-  apiKey: string,
-  secretKey: string,
-  uri: string,
-  requestBody: string
-) {
-  const randomKey = crypto.randomBytes(16).toString("hex");
-  const signature = generateIyzicoSignature(
-    randomKey,
-    uri,
-    requestBody,
-    secretKey
-  );
-  const authString = `apiKey:${apiKey}&randomKey:${randomKey}&signature:${signature}`;
-  const authorization = `IYZWSv2 ${Buffer.from(authString).toString("base64")}`;
-  return { authorization, randomKey };
-}
-
-function formatDateForIyzipay(date: string | Date): string {
-  const d = new Date(date);
-  return d.toISOString().replace(/T/, " ").replace(/\..+/, "");
-}
-
-function calculatePricing(
-  basketItems: any[],
-  installment: number = 1,
-  discountAmount: number = 0
-) {
-  const subtotal = basketItems.reduce(
-    (sum, item) =>
-      sum +
-      (typeof item.price === "string" ? parseFloat(item.price) : item.price),
-    0
-  );
-  const serviceFee = subtotal * 0.1;
-  const baseTotal = subtotal + serviceFee;
-
-  // İndirim sonrası tutar (negatif olamaz)
-  const totalAfterDiscount = Math.max(0, baseTotal - discountAmount);
-
-  // Taksit farkı indirimli tutar üzerinden hesaplanır
-  const installmentRate = INSTALLMENT_RATES[installment] || 0;
-  const installmentFee = totalAfterDiscount * (installmentRate / 100);
-  const finalTotal = totalAfterDiscount + installmentFee;
-
-  return {
-    subtotal,
-    serviceFee,
-    baseTotal,
-    discountAmount,
-    totalAfterDiscount,
-    installmentFee,
-    installmentRate,
-    total: finalTotal,
-  };
-}
+import { isInternalRequest } from "@/lib/internalAuth";
+import { calculatePricing, formatDateForIyzipay, iyzicoRequest } from "@/lib/iyzico";
 
 // --- ANA ROUTE ---
 
 export async function POST(req: NextRequest) {
+  // Bu uç yalnızca sunucu içi (order route) çağrılarını kabul eder; tutarlar
+  // ve sepet içeriği order route tarafından veritabanından doğrulanıp
+  // hesaplandıktan sonra buraya iletilir. Doğrudan dış erişim kapalıdır.
+  if (!isInternalRequest(req)) {
+    return NextResponse.json(
+      { status: "error", error: "Unauthorized" },
+      { status: 401 },
+    );
+  }
+
   try {
     const body = await req.json();
     const {
@@ -101,15 +31,10 @@ export async function POST(req: NextRequest) {
       couponCode = null,
     } = body;
 
-    const apiKey = process.env.IYZICO_API_KEY;
-    const secretKey = process.env.IYZICO_SECRET_KEY;
-    const baseUrl =
-      process.env.IYZICO_BASE_URL || "https://sandbox-api.iyzipay.com";
-
-    if (!apiKey || !secretKey) {
+    if (!process.env.IYZICO_API_KEY || !process.env.IYZICO_SECRET_KEY) {
       return NextResponse.json(
         { status: "error", error: "API Keys missing" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -164,7 +89,7 @@ export async function POST(req: NextRequest) {
     // Yuvarlamalardan dolayı paidPrice toplamı finalTotal'den farklı çıkabilir.
     const currentItemsTotal = formattedBasketItems.reduce(
       (sum, item) => sum + parseFloat(item.paidPrice),
-      0
+      0,
     );
     const diff = parseFloat((pricing.total - currentItemsTotal).toFixed(2));
 
@@ -205,31 +130,12 @@ export async function POST(req: NextRequest) {
       basketItems: formattedBasketItems,
     };
 
-    const requestBody = JSON.stringify(paymentRequest);
-    const uri = "/payment/auth";
-    const { authorization, randomKey } = createAuthorizationHeader(
-      apiKey,
-      secretKey,
-      uri,
-      requestBody
-    );
-
-    const response = await fetch(`${baseUrl}${uri}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: authorization,
-        "x-iyzi-rnd": randomKey,
-      },
-      body: requestBody,
-    });
-
-    const result = await response.json();
+    const result = await iyzicoRequest("/payment/auth", paymentRequest);
 
     if (result.status === "success") {
       return NextResponse.json({
         status: "success",
-        pricing: pricing, // Frontend'de göstermek istersen
+        pricing, // Frontend'de göstermek istersen
         ...result,
       });
     } else {
@@ -239,14 +145,14 @@ export async function POST(req: NextRequest) {
           error: result.errorMessage,
           errorCode: result.errorCode,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
   } catch (error: any) {
     console.error("Payment Error:", error);
     return NextResponse.json(
-      { status: "error", error: error.message },
-      { status: 500 }
+      { status: "error", error: "Ödeme işlemi sırasında bir hata oluştu" },
+      { status: 500 },
     );
   }
 }

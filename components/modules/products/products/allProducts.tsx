@@ -78,7 +78,6 @@ export default function AllProducts({
         const url = "/api/products";
         const res = await fetch(url);
         const data = await res.json();
-        console.log(data);
         if (data.products) setProducts(data.products);
       } catch (error) {
         console.error(error);

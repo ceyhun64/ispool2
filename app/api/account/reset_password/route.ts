@@ -1,8 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import bcrypt from "bcrypt";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
+  // Rate limiting: token tahmin/deneme saldırılarına karşı 10 dakikada 10 istek
+  const ip = getClientIp(req);
+  const rl = rateLimit(`reset:${ip}`, 10, 10 * 60 * 1000);
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: "Çok fazla istek. Lütfen birkaç dakika bekleyin." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(Math.ceil((rl.resetAt - Date.now()) / 1000)) },
+      },
+    );
+  }
+
   try {
     const { token, password } = await req.json();
 
