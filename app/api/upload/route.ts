@@ -1,6 +1,11 @@
 // /api/upload/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { isInternalRequest } from "@/lib/internalAuth";
+
+const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -18,6 +23,15 @@ const VIDEO_TYPES = [
 ];
 
 export async function POST(req: NextRequest) {
+  // Doğrudan tarayıcıdan gelen isteklerde oturum, diğer route handler'ların
+  // (banner/blog/hero-slides/cart) sunucu içi çağrılarında internal secret
+  // aranır — her iki durumda da çağıran taraf zaten kendi yetki kontrolünü
+  // yapmış olmalıdır.
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id && !isInternalRequest(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
@@ -26,6 +40,13 @@ export async function POST(req: NextRequest) {
     if (!file) {
       return NextResponse.json(
         { error: "Dosya bulunamadı. Lütfen bir dosya yükleyin." },
+        { status: 400 },
+      );
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: "Dosya boyutu 25MB'dan büyük olamaz." },
         { status: 400 },
       );
     }
@@ -65,7 +86,7 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error("Dosya yükleme hatası:", err);
     return NextResponse.json(
-      { error: err.message || "Yükleme başarısız" },
+      { error: "Yükleme başarısız" },
       { status: 500 },
     );
   }

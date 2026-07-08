@@ -44,7 +44,7 @@ export async function GET(
   } catch (error: any) {
     console.error("Alt kategori çekilirken hata:", error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: "Alt kategori alınamadı" },
       { status: 500 },
     );
   }

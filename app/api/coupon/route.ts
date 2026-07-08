@@ -36,13 +36,53 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { code, type, value, minAmount, usageLimit, expiryDate } = body;
 
+    if (!code || typeof code !== "string") {
+      return NextResponse.json({ error: "Kupon kodu gerekli" }, { status: 400 });
+    }
+    if (type !== "PERCENTAGE" && type !== "FIXED") {
+      return NextResponse.json(
+        { error: "Geçersiz kupon tipi" },
+        { status: 400 },
+      );
+    }
+
+    const parsedValue = parseFloat(value);
+    if (!Number.isFinite(parsedValue) || parsedValue <= 0) {
+      return NextResponse.json(
+        { error: "Geçersiz indirim değeri" },
+        { status: 400 },
+      );
+    }
+
+    const parsedMinAmount =
+      minAmount !== undefined && minAmount !== null && minAmount !== ""
+        ? parseFloat(minAmount)
+        : null;
+    if (parsedMinAmount !== null && !Number.isFinite(parsedMinAmount)) {
+      return NextResponse.json(
+        { error: "Geçersiz minimum tutar" },
+        { status: 400 },
+      );
+    }
+
+    const parsedUsageLimit =
+      usageLimit !== undefined && usageLimit !== null && usageLimit !== ""
+        ? parseInt(usageLimit)
+        : null;
+    if (parsedUsageLimit !== null && !Number.isInteger(parsedUsageLimit)) {
+      return NextResponse.json(
+        { error: "Geçersiz kullanım limiti" },
+        { status: 400 },
+      );
+    }
+
     const newCoupon = await prisma.coupon.create({
       data: {
         code: code.toUpperCase(),
         type,
-        value: parseFloat(value),
-        minAmount: minAmount ? parseFloat(minAmount) : null,
-        usageLimit: usageLimit ? parseInt(usageLimit) : null,
+        value: parsedValue,
+        minAmount: parsedMinAmount,
+        usageLimit: parsedUsageLimit,
         expiryDate: expiryDate ? new Date(expiryDate) : null,
       },
     });
@@ -71,6 +111,10 @@ export async function DELETE(req: Request) {
 
   try {
     const { id } = await req.json();
+
+    if (!id || typeof id !== "string") {
+      return NextResponse.json({ error: "Geçersiz kupon id" }, { status: 400 });
+    }
 
     await prisma.coupon.delete({ where: { id } });
 

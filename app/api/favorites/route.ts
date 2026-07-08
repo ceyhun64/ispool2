@@ -15,8 +15,9 @@ export async function GET() {
 
     return NextResponse.json(favorites);
   } catch (error: any) {
+    console.error("Favorites GET error:", error);
     return NextResponse.json(
-      { error: error.message || "Something went wrong" },
+      { error: "Favoriler alınamadı" },
       { status: 500 }
     );
   }
@@ -46,8 +47,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json(favorite);
   } catch (error: any) {
+    console.error("Favorites POST error:", error);
     return NextResponse.json(
-      { error: error.message || "Already exists or invalid product" },
+      { error: "Already exists or invalid product" },
       { status: 400 }
     );
   }

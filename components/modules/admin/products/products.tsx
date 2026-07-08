@@ -61,6 +61,7 @@ export default function Products(): React.ReactElement {
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // JSON verilerini type-cast et
@@ -154,8 +155,10 @@ export default function Products(): React.ReactElement {
   }, [filteredProducts, currentPage]);
 
   const handleDelete = async () => {
+    if (isDeleting) return;
     const idsToDelete = productToDelete ? [productToDelete.id] : selectedIds;
 
+    setIsDeleting(true);
     toast.promise(
       Promise.all(
         idsToDelete.map((id) =>
@@ -171,9 +174,13 @@ export default function Products(): React.ReactElement {
           setSelectedIds([]);
           setDeleteDialogOpen(false);
           setProductToDelete(null);
+          setIsDeleting(false);
           return "Ürün(ler) silindi.";
         },
-        error: "Silme işlemi başarısız.",
+        error: () => {
+          setIsDeleting(false);
+          return "Silme işlemi başarısız.";
+        },
       },
     );
   };
@@ -440,7 +447,12 @@ export default function Products(): React.ReactElement {
             >
               İptal
             </Button>
-            <Button className="rounded-full" variant="destructive" onClick={handleDelete}>
+            <Button
+              className="rounded-full"
+              variant="destructive"
+              disabled={isDeleting}
+              onClick={handleDelete}
+            >
               Evet, Sil
             </Button>
           </DialogFooter>

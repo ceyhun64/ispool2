@@ -4,6 +4,19 @@ import { prisma } from "@/lib/db";
 import fs from "fs/promises";
 import path from "path";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
+async function requireAdmin() {
+  const session = await getServerSession(authOptions);
+  if (!session || session.user?.role !== "ADMIN") {
+    return NextResponse.json(
+      { success: false, error: "Yetkisiz erişim" },
+      { status: 401 },
+    );
+  }
+  return null;
+}
 
 // --- GET /api/products/:id ---
 export async function GET(
@@ -306,6 +319,9 @@ export async function DELETE(
   request: NextRequest,
   context: { params: Promise<{ id: string }> },
 ) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   const params = await context.params;
   const { id } = params;
 
@@ -375,7 +391,7 @@ export async function DELETE(
         { status: 409 },
       );
     return NextResponse.json(
-      { success: false, error: error.message || "Ürün silinemedi" },
+      { success: false, error: "Ürün silinemedi" },
       { status: 500 },
     );
   }
@@ -386,6 +402,9 @@ export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> },
 ) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   const params = await context.params;
   const { id } = params;
 
@@ -672,7 +691,7 @@ export async function PUT(
         { status: 404 },
       );
     return NextResponse.json(
-      { success: false, error: error.message || "Ürün güncellenemedi" },
+      { success: false, error: "Ürün güncellenemedi" },
       { status: 500 },
     );
   }

@@ -128,9 +128,6 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
         const colorsData = await colorsRes.json();
         const sizesData = await sizesRes.json();
 
-        console.log("Renkler:", colorsData);
-        console.log("Bedenler:", sizesData);
-
         // API yanıtı: { success: true, data: Array, count: number }
         if (colorsData.success && Array.isArray(colorsData.data)) {
           setColors(colorsData.data);

@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
+const MAX_QUANTITY = 999;
+
 interface PatchRequestBody {
   quantity?: number;
   customImage?: string;
@@ -82,9 +84,12 @@ export async function PATCH(
     }
 
     // ─── Miktar validasyon ─────────────────────────────────────────────────
-    if (body.quantity !== undefined && body.quantity < 1) {
+    if (
+      body.quantity !== undefined &&
+      (body.quantity < 1 || body.quantity > MAX_QUANTITY)
+    ) {
       return NextResponse.json(
-        { error: "Miktar 1'den düşük olamaz" },
+        { error: "Geçersiz miktar" },
         { status: 400 },
       );
     }

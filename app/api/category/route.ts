@@ -67,7 +67,7 @@ export async function GET() {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Veriler yüklenemedi",
+        error: "Veriler yüklenemedi",
       },
       { status: 500 },
     );

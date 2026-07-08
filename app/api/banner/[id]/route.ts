@@ -8,7 +8,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }, // ✅ Promise eklendi
 ) {
   const session = await getServerSession(authOptions);
-  if (!session || !session.user?.id) {
+  if (!session || session.user?.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

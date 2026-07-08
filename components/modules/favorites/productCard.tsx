@@ -20,19 +20,30 @@ interface ProductData {
 
 interface ProductCardProps {
   id: number;
+  product?: ProductData;
   onRemove?: (productId: number) => void;
 }
 
-export default function ProductCard({ id, onRemove }: ProductCardProps) {
-  const [product, setProduct] = useState<ProductData | null>(null);
+export default function ProductCard({
+  id,
+  product: productProp,
+  onRemove,
+}: ProductCardProps) {
+  const [product, setProduct] = useState<ProductData | null>(productProp ?? null);
   const [isHovered, setIsHovered] = useState(false);
 
   // Favori context kullanımı
   const { isFavorited, addFavorite, removeFavorite } = useFavorite();
   const favorited = isFavorited(id);
 
-  // Veriyi API'den çekme (İşlev korundu)
+  // Üst bileşen ürünü toplu olarak zaten getirdiyse (favoriler sayfası)
+  // kart başına ayrı bir istek atılmaz; yalnızca hazır veri yoksa çekilir.
   useEffect(() => {
+    if (productProp) {
+      setProduct(productProp);
+      return;
+    }
+
     const fetchProduct = async () => {
       try {
         const res = await fetch(`/api/products/${id}`);
@@ -44,7 +55,7 @@ export default function ProductCard({ id, onRemove }: ProductCardProps) {
       }
     };
     fetchProduct();
-  }, [id]);
+  }, [id, productProp]);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -60,9 +71,15 @@ export default function ProductCard({ id, onRemove }: ProductCardProps) {
 
   if (!product) return null;
 
-  // Tasarımdaki fiyat ve indirim hesaplamaları
-  const discount = product.discountPercentage || 30;
-  const oldPrice = product.oldPrice || Math.round(product.price * 1.43);
+  // Sadece gerçek bir eski fiyat varsa indirim gösterilir (uydurma değer yok)
+  const hasRealDiscount = !!(product.oldPrice && product.oldPrice > product.price);
+  const discount = hasRealDiscount
+    ? (product.discountPercentage ??
+        Math.round(
+          ((product.oldPrice! - product.price) / product.oldPrice!) * 100,
+        ))
+    : 0;
+  const oldPrice = product.oldPrice ?? null;
 
   return (
     <div
@@ -127,7 +144,7 @@ export default function ProductCard({ id, onRemove }: ProductCardProps) {
             <span className="text-[10px] uppercase tracking-widest text-slate-500">
               {product.category}
             </span>
-            {discount > 0 && (
+            {hasRealDiscount && discount > 0 && (
               <span className="bg-amber-200 text-amber-900 px-1.5 py-0.5 text-[9px] font-bold uppercase">
                 %{discount} İndirim
               </span>
@@ -142,7 +159,7 @@ export default function ProductCard({ id, onRemove }: ProductCardProps) {
             <span className="text-sm font-bold text-slate-900">
               {product.price.toLocaleString("tr-TR")} TL
             </span>
-            {oldPrice > product.price && (
+            {hasRealDiscount && oldPrice !== null && (
               <span className="text-xs text-slate-400 line-through">
                 {oldPrice.toLocaleString("tr-TR")} TL
               </span>

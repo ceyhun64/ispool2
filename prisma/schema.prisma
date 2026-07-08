@@ -130,6 +130,12 @@ model product {
   Review    Review[]
   sizes     ProductSize[]
   stock     ProductStock[]
+
+  @@index([categoryId])
+  @@index([middleCategoryId])
+  @@index([subCategoryId])
+  @@index([brandId])
+  @@index([colorId])
 }
 
 model ProductSize {
@@ -175,6 +181,7 @@ model User {
   favorites         Favorite[]
   orders            Order[]
   Review            Review[]
+  CartItem          CartItem[]
 
   @@map("user")
 }
@@ -217,6 +224,7 @@ model Favorite {
 model CartItem {
   id          Int      @id @default(autoincrement())
   userId      Int?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   productId   Int
   quantity    Int      @default(1)
   customImage String?
@@ -226,6 +234,7 @@ model CartItem {
   updatedAt   DateTime @updatedAt
   product     product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
+  @@index([userId], map: "CartItem_userId_fkey")
   @@index([productId], map: "CartItem_productId_fkey")
   @@index([sizeId], map: "CartItem_sizeId_fkey")
   @@map("cartitem")

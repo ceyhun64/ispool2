@@ -31,7 +31,7 @@ export async function GET(
   } catch (error: any) {
     console.error("Kategori çekilirken hata:", error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: "Kategori alınamadı" },
       { status: 500 }
     );
   }

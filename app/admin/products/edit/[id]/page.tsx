@@ -22,8 +22,6 @@ export default async function AdminEditProductPage({ params }: PageProps) {
   const resolvedParams = await params;
   const productId = parseInt(resolvedParams.id);
 
-  console.log("app/admin/products/edit/[id]/page.tsx productId", productId);
-
   return (
     <div>
       <ProductForm productId={productId} />

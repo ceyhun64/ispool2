@@ -8,7 +8,8 @@ import StepAddress from "@/components/modules/checkout/stepAddress";
 import StepPaymentCard from "@/components/modules/checkout/stepPayment";
 import BasketSummaryCard from "@/components/modules/checkout/cartSummary";
 import { AddressFormData } from "@/components/modules/profile/addressForm";
-import { getCart, clearGuestCart, GuestCartItem } from "@/utils/cart";
+import { getCart } from "@/utils/cart";
+import { mergeGuestDataIntoAccount } from "@/utils/mergeGuestData";
 import { Spinner } from "@/components/ui/spinner";
 import Link from "next/link";
 import { ShieldCheck, Lock, HelpCircle, ArrowRight } from "lucide-react";
@@ -179,8 +180,28 @@ export default function PaymentPage() {
           setCartItems([]);
         }
       } else {
-        const guestCart = localStorage.getItem("cart");
-        setCartItems(guestCart ? JSON.parse(guestCart) : []);
+        const guestCart = getCart();
+        setCartItems(
+          guestCart.map((item, index) => ({
+            id: -(index + 1), // Misafir kalemleri için sunucu id'si yok
+            product: {
+              id: item.productId,
+              title: item.title,
+              price: item.price,
+              mainImage: item.image,
+              oldPrice: undefined,
+              category: item.category,
+              bulkDiscountQty: item.bulkDiscountQty ?? null,
+              bulkDiscountRate: item.bulkDiscountRate ?? null,
+            },
+            quantity: item.quantity,
+            size:
+              item.sizeId && item.sizeValue
+                ? { id: item.sizeId, value: item.sizeValue }
+                : undefined,
+            customImage: item.customImage || null,
+          })),
+        );
       }
     } catch (err) {
       setError("Veriler yüklenirken bir hata oluştu.");
@@ -276,7 +297,7 @@ export default function PaymentPage() {
         const guestEmail =
           newAddressForm.email || `guest_${Date.now()}@example.com`;
         const password = Math.random().toString(36).slice(-8);
-        const registerRes = await fetch("/api/account/auth/register", {
+        const registerRes = await fetch("/api/account/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -319,19 +340,8 @@ export default function PaymentPage() {
       );
       setSelectedAddress(addressData.address.id);
 
-      const guestCart: GuestCartItem[] = getCart();
-      if (guestCart.length > 0) {
-        for (const item of guestCart) {
-          await fetch("/api/cart", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              productId: item.productId,
-              quantity: item.quantity || 1,
-            }),
-          });
-        }
-        clearGuestCart();
+      if (getCart().length > 0) {
+        await mergeGuestDataIntoAccount();
         await fetchData();
       }
       setIsAddingNewAddress(false);
@@ -462,7 +472,6 @@ export default function PaymentPage() {
             fetch(`/api/cart/${item.id}`, { method: "DELETE" }),
           ),
         );
-        localStorage.removeItem("cart");
         router.push("/checkout/success");
       } else {
         throw new Error(data.error || "Ödeme başarısız");

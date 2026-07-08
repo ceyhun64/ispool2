@@ -174,7 +174,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         error: "Sunucu hatası oluştu",
-        details: error instanceof Error ? error.message : "Bilinmeyen hata",
       },
       { status: 500 }
     );

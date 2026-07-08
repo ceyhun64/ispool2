@@ -4,6 +4,8 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useMemo,
+  useCallback,
   ReactNode,
 } from "react";
 
@@ -49,58 +51,78 @@ export const FavoriteProvider = ({ children }: { children: ReactNode }) => {
     fetchUserAndFavorites();
   }, []);
 
-  const addFavorite = async (productId: number) => {
-    if (!user) {
-      if (!favorites.includes(productId)) {
-        const newFavs = [...favorites, productId];
+  const addFavorite = useCallback(
+    async (productId: number) => {
+      if (!user) {
+        if (!favorites.includes(productId)) {
+          const newFavs = [...favorites, productId];
+          setFavorites(newFavs);
+          try {
+            localStorage.setItem("favorites", JSON.stringify(newFavs));
+          } catch (err) {
+            console.error("Favoriler kaydedilemedi:", err);
+          }
+        }
+        return;
+      }
+
+      try {
+        if (!favorites.includes(productId)) {
+          await fetch("/api/favorites", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ productId }),
+            credentials: "include",
+          });
+          setFavorites([...favorites, productId]);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    [user, favorites],
+  );
+
+  const removeFavorite = useCallback(
+    async (productId: number) => {
+      if (!user) {
+        const newFavs = favorites.filter((id) => id !== productId);
         setFavorites(newFavs);
-        localStorage.setItem("favorites", JSON.stringify(newFavs));
+        try {
+          localStorage.setItem("favorites", JSON.stringify(newFavs));
+        } catch (err) {
+          console.error("Favoriler kaydedilemedi:", err);
+        }
+        return;
       }
-      return;
-    }
 
-    try {
-      if (!favorites.includes(productId)) {
-        await fetch("/api/favorites", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ productId }),
-          credentials: "include",
-        });
-        setFavorites([...favorites, productId]);
+      try {
+        if (favorites.includes(productId)) {
+          await fetch(`/api/favorites/${productId}`, {
+            method: "DELETE",
+            credentials: "include",
+          });
+          setFavorites(favorites.filter((id) => id !== productId));
+        }
+      } catch (err) {
+        console.error(err);
       }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    },
+    [user, favorites],
+  );
 
-  const removeFavorite = async (productId: number) => {
-    if (!user) {
-      const newFavs = favorites.filter((id) => id !== productId);
-      setFavorites(newFavs);
-      localStorage.setItem("favorites", JSON.stringify(newFavs));
-      return;
-    }
+  const isFavorited = useCallback(
+    (productId: number) => favorites.includes(productId),
+    [favorites],
+  );
 
-    try {
-      if (favorites.includes(productId)) {
-        await fetch(`/api/favorites/${productId}`, {
-          method: "DELETE",
-          credentials: "include",
-        });
-        setFavorites(favorites.filter((id) => id !== productId));
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const isFavorited = (productId: number) => favorites.includes(productId);
+  const value = useMemo(
+    () => ({ favorites, addFavorite, removeFavorite, isFavorited, loading }),
+    [favorites, addFavorite, removeFavorite, isFavorited, loading],
+  );
 
   return (
-    <FavoriteContext.Provider
-      value={{ favorites, addFavorite, removeFavorite, isFavorited, loading }}
-    >
+    <FavoriteContext.Provider value={value}>
       {children}
     </FavoriteContext.Provider>
   );

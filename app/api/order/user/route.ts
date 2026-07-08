@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { internalHeaders } from "@/lib/internalAuth";
 
 interface CancelOrderBody {
   orderId: number;
@@ -17,7 +18,7 @@ const sendMail = async (
   try {
     await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/send-mail`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: internalHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify({ recipients, subject, message }),
     });
   } catch (err) {
@@ -62,7 +63,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   } catch (error: any) {
     console.error("User Orders GET Error:", error);
     return NextResponse.json(
-      { status: "failure", error: error.message },
+      { status: "failure", error: "Siparişler alınamadı" },
       { status: 500 },
     );
   }
@@ -161,7 +162,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
   } catch (error: any) {
     console.error("User Orders PATCH Error:", error);
     return NextResponse.json(
-      { status: "failure", error: error.message },
+      { status: "failure", error: "Sipariş güncellenemedi" },
       { status: 500 },
     );
   }

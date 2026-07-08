@@ -284,12 +284,14 @@ export default function ProductForm({ productId }: ProductFormPageProps) {
       dataForm.append("reviewCount", String(productData.reviewCount));
       dataForm.append("category", productData.category);
 
-      // Cloudinary URL'lerini gönder
+      // Cloudinary URL'lerini gönder — kaldırılan bir alt görsel için de alan
+      // her zaman gönderilir (boş string), böylece sunucu "değişmedi" (alan
+      // hiç gelmedi) ile "kaldırıldı" (boş değer geldi) durumunu ayırt edebilir.
       dataForm.append("mainImageUrl", uploadedMainUrl);
-      if (uploadedSub1Url) dataForm.append("subImageUrl1", uploadedSub1Url);
-      if (uploadedSub2Url) dataForm.append("subImageUrl2", uploadedSub2Url);
-      if (uploadedSub3Url) dataForm.append("subImageUrl3", uploadedSub3Url);
-      if (uploadedSub4Url) dataForm.append("subImageUrl4", uploadedSub4Url);
+      dataForm.append("subImageUrl1", uploadedSub1Url ?? "");
+      dataForm.append("subImageUrl2", uploadedSub2Url ?? "");
+      dataForm.append("subImageUrl3", uploadedSub3Url ?? "");
+      dataForm.append("subImageUrl4", uploadedSub4Url ?? "");
       if (uploadedVideoUrl) dataForm.append("videoUrl", uploadedVideoUrl);
       if (removeVideo) dataForm.append("removeVideo", "true");
 
