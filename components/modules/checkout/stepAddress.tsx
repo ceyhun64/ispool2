@@ -269,22 +269,9 @@ export default function StepAddress({
                   formData={newAddressForm}
                   setFormData={setNewAddressForm}
                   onSave={onSaveAddress}
+                  isSaving={isSavingAddress}
                 />
               </div>
-              <Button
-                onClick={onSaveAddress}
-                disabled={isSavingAddress}
-                className="w-full h-14 bg-slate-950 rounded-2xl text-sm font-bold shadow-xl shadow-slate-200"
-              >
-                {isSavingAddress ? (
-                  <Spinner />
-                ) : (
-                  <span className="flex items-center gap-2">
-                    Adresi Kaydet ve Devam Et{" "}
-                    <CheckCircle2 className="w-4 h-4" />
-                  </span>
-                )}
-              </Button>
             </div>
           )}
         </CardContent>

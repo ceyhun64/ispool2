@@ -24,6 +24,16 @@ import {
 import Color from "color";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 type EntityType = "color" | "size" | "brand";
 
@@ -90,6 +100,9 @@ export default function VariantManagement() {
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<ColorItem | Size | Brand | null>(null);
 
   const isMobile = useIsMobile();
 
@@ -143,12 +156,20 @@ export default function VariantManagement() {
     });
   };
 
+  const MAX_LOGO_SIZE = 25 * 1024 * 1024; // 25MB — sunucudaki /api/upload sınırıyla aynı
+
   // Marka logosu yükleme
   const handleImageUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > MAX_LOGO_SIZE) {
+      toast.error("Dosya boyutu 25MB'dan büyük olamaz.");
+      e.target.value = "";
+      return;
+    }
 
     setUploading(true);
     try {
@@ -179,6 +200,8 @@ export default function VariantManagement() {
   // Form gönderimi
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
 
     const method = editingId ? "PATCH" : "POST";
     const url = editingId
@@ -218,15 +241,20 @@ export default function VariantManagement() {
     } catch (error) {
       toast.error("Sunucu hatası oluştu");
       console.error("[SUBMIT_ERROR]", error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
   // Silme işlemi
-  const handleDelete = async (id: number) => {
-    if (!confirm("Bu kaydı silmek istediğinizden emin misiniz?")) return;
+  const handleDelete = async () => {
+    if (!itemToDelete || deletingId !== null) return;
+    setDeletingId(itemToDelete.id);
 
     try {
-      const res = await fetch(`/api/${activeTab}/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/${activeTab}/${itemToDelete.id}`, {
+        method: "DELETE",
+      });
       const result: ApiResponse = await res.json();
 
       if (result.success) {
@@ -238,6 +266,9 @@ export default function VariantManagement() {
     } catch (error) {
       toast.error("Silme sırasında bir hata oluştu");
       console.error("[DELETE_ERROR]", error);
+    } finally {
+      setDeletingId(null);
+      setItemToDelete(null);
     }
   };
 
@@ -549,7 +580,7 @@ export default function VariantManagement() {
     [&::-webkit-inner-spin-button]:opacity-100
     [&::-webkit-outer-spin-button]:cursor-pointer
     [&::-webkit-inner-spin-button]:cursor-pointer"
-                  value={formData.sortOrder === 0 ? "" : formData.sortOrder}
+                  value={formData.sortOrder}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
@@ -588,9 +619,12 @@ export default function VariantManagement() {
           <div className="flex items-center gap-2 pt-2">
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 transition-colors"
+              disabled={submitting}
+              className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {editingId ? (
+              {submitting ? (
+                <Loader2 className="w-3.5 h-3.5 inline mr-1.5 animate-spin" />
+              ) : editingId ? (
                 <>
                   <Save className="w-3.5 h-3.5 inline mr-1.5" />
                   Güncelle
@@ -746,7 +780,7 @@ export default function VariantManagement() {
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(item.id)}
+                          onClick={() => setItemToDelete(item)}
                           className="p-1.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-600"
                           title="Sil"
                           disabled={getUsageCount(item) > 0}
@@ -762,6 +796,42 @@ export default function VariantManagement() {
           </table>
         </div>
       </div>
+
+      <Dialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Kaydı Sil</DialogTitle>
+            <DialogDescription>
+              <strong>
+                {itemToDelete
+                  ? activeTab === "color"
+                    ? (itemToDelete as ColorItem).name
+                    : activeTab === "brand"
+                      ? (itemToDelete as Brand).name
+                      : (itemToDelete as Size).value
+                  : ""}
+              </strong>{" "}
+              kalıcı olarak silinecektir.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">İptal</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              disabled={deletingId !== null}
+              onClick={handleDelete}
+            >
+              {deletingId !== null ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                "Evet, Sil"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

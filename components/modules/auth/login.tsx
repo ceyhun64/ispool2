@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, FormEvent } from "react";
+import React, { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,13 +19,25 @@ import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { mergeGuestDataIntoAccount } from "@/utils/mergeGuestData";
+import { useFavorite } from "@/contexts/favoriteContext";
 
 export default function LoginForm() {
   const router = useRouter();
+  const { refreshSession } = useFavorite();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Zaten oturumu açık bir kullanıcı bu sayfayı görmemeli
+  useEffect(() => {
+    fetch("/api/account/check")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.user) router.push("/");
+      })
+      .catch(() => {});
+  }, [router]);
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,7 +55,13 @@ export default function LoginForm() {
         return;
       }
 
-      await mergeGuestDataIntoAccount();
+      const mergeResult = await mergeGuestDataIntoAccount();
+      if (mergeResult.cartFailedCount > 0 || mergeResult.favoritesFailedCount > 0) {
+        toast.warning(
+          "Bazı sepet/favori öğeleriniz hesabınıza taşınamadı, lütfen kontrol edin.",
+        );
+      }
+      await refreshSession();
 
       toast.success("Oturum başarıyla açıldı.");
       router.push("/");
@@ -167,6 +185,7 @@ export default function LoginForm() {
                 </Label>
                 <Input
                   type="email"
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -190,6 +209,7 @@ export default function LoginForm() {
                 <div className="relative">
                   <Input
                     type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required

@@ -45,7 +45,7 @@ const initialCategories: CategoryData[] = [
     href: "/products/category/4",
   },
   {
-    id: 2,
+    id: 6,
     name: "İş Güvenlik Ekipmanları",
     desc: "Yüksekte çalışma ve emniyet setleri",
     image: "/categories/50.jpg",

@@ -6,7 +6,7 @@ import { ArrowLeft, Search } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[100dvh] bg-white text-[#0a0a0a] px-6 overflow-hidden">
+    <div className="not-found-page flex flex-col items-center justify-center min-h-[100dvh] bg-white text-[#0a0a0a] px-6 overflow-hidden">
       {/* Arka Plan Büyük Rakam Vurgusu */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03]">
         <h2 className="text-[30vw] font-black tracking-tighter leading-none select-none">

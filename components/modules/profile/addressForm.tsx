@@ -35,6 +35,7 @@ export interface AddressFormProps {
   formData: AddressFormData;
   setFormData: React.Dispatch<React.SetStateAction<AddressFormData>>;
   onSave: () => void;
+  isSaving?: boolean;
 }
 
 // Endüstriyel Modern Stil Tanımlaması
@@ -45,6 +46,7 @@ export default function AdresForm({
   formData,
   setFormData,
   onSave,
+  isSaving = false,
 }: AddressFormProps) {
   const [cities, setCities] = useState<{ id: string; name: string }[]>([]);
   const [districts, setDistricts] = useState<{ id: string; name: string }[]>(
@@ -122,6 +124,7 @@ export default function AdresForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSaving) return;
     if (validateForm()) {
       onSave();
     }
@@ -356,9 +359,10 @@ export default function AdresForm({
       <div className="pt-8 border-t border-slate-100">
         <Button
           type="submit"
-          className="w-full rounded-sm md:w-auto bg-slate-900 hover:bg-orange-600 text-white  px-12 py-7 text-[11px] font-black tracking-[0.2em] uppercase transition-all duration-300 shadow-xl shadow-slate-200 active:scale-95"
+          disabled={isSaving}
+          className="w-full rounded-sm md:w-auto bg-slate-900 hover:bg-orange-600 text-white  px-12 py-7 text-[11px] font-black tracking-[0.2em] uppercase transition-all duration-300 shadow-xl shadow-slate-200 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          ADRESİ SİSTEME KAYDET
+          {isSaving ? "KAYDEDİLİYOR..." : "ADRESİ SİSTEME KAYDET"}
         </Button>
       </div>
     </form>

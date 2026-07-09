@@ -30,6 +30,8 @@ export default function ClientLayoutWrapper({
     "/checkout",
     "/auth/reset-password",
     "/auth/forgot-password",
+    "/auth/login",
+    "/auth/register",
   ];
 
   const hideForPath = hiddenPaths.some((path) => pathname.startsWith(path));

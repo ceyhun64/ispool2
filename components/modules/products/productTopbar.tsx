@@ -104,14 +104,14 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
     setIsOpen(false);
   };
 
-  // İndirimdekiler butonu handler - Sayfayı yeniden yükle
+  // İndirimdekiler butonu handler
   const handleDiscounts = () => {
-    window.location.href = "/products?discount=true";
+    router.push("/products?discount=true");
   };
 
-  // Tüm Ürünler butonu handler - Sayfayı yeniden yükle
+  // Tüm Ürünler butonu handler
   const handleAllProducts = () => {
-    window.location.href = "/products";
+    router.push("/products");
   };
 
   // En Çok İndirimli butonu handler

@@ -15,6 +15,7 @@ interface FavoriteContextType {
   removeFavorite: (productId: number) => void;
   isFavorited: (productId: number) => boolean;
   loading: boolean;
+  refreshSession: () => Promise<void>;
 }
 
 const FavoriteContext = createContext<FavoriteContextType | undefined>(undefined);
@@ -24,32 +25,37 @@ export const FavoriteProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
 
-  useEffect(() => {
-    const fetchUserAndFavorites = async () => {
-      try {
-        const res = await fetch("/api/account/check");
-        const data = await res.json();
-        setUser(data.user || null);
+  // Oturum durumu yalnızca mount anında değil, client-side login/logout
+  // sonrası da bu fonksiyon yeniden çağrılarak tazelenebilir — aksi halde
+  // context router.push sonrası remount olmadığı için "misafir modunda"
+  // takılı kalır ve favori ekle/çıkar sunucuya değil localStorage'a yazılır.
+  const fetchUserAndFavorites = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/account/check");
+      const data = await res.json();
+      setUser(data.user || null);
 
-        if (data.user) {
-          const favRes = await fetch("/api/favorites", { credentials: "include" });
-          if (favRes.ok) {
-            const favData = await favRes.json();
-            setFavorites(favData.map((f: { productId: number }) => f.productId));
-          }
-        } else {
-          const localFavs: number[] = JSON.parse(localStorage.getItem("favorites") || "[]");
-          setFavorites(localFavs);
+      if (data.user) {
+        const favRes = await fetch("/api/favorites", { credentials: "include" });
+        if (favRes.ok) {
+          const favData = await favRes.json();
+          setFavorites(favData.map((f: { productId: number }) => f.productId));
         }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+      } else {
+        const localFavs: number[] = JSON.parse(localStorage.getItem("favorites") || "[]");
+        setFavorites(localFavs);
       }
-    };
-
-    fetchUserAndFavorites();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchUserAndFavorites();
+  }, [fetchUserAndFavorites]);
 
   const addFavorite = useCallback(
     async (productId: number) => {
@@ -117,8 +123,15 @@ export const FavoriteProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const value = useMemo(
-    () => ({ favorites, addFavorite, removeFavorite, isFavorited, loading }),
-    [favorites, addFavorite, removeFavorite, isFavorited, loading],
+    () => ({
+      favorites,
+      addFavorite,
+      removeFavorite,
+      isFavorited,
+      loading,
+      refreshSession: fetchUserAndFavorites,
+    }),
+    [favorites, addFavorite, removeFavorite, isFavorited, loading, fetchUserAndFavorites],
   );
 
   return (

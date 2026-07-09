@@ -24,6 +24,7 @@ function ResetPasswordForm() {
   const token = searchParams?.get("token") ?? "";
 
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,6 +32,14 @@ function ResetPasswordForm() {
     e.preventDefault();
     if (!token) {
       toast.error("Geçersiz veya eksik doğrulama kodu.");
+      return;
+    }
+    if (password.length < 8) {
+      toast.error("Şifre en az 8 karakter olmalıdır.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Şifreler eşleşmiyor!");
       return;
     }
 
@@ -107,9 +116,11 @@ function ResetPasswordForm() {
             <div className="relative">
               <Input
                 type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                minLength={8}
                 placeholder="••••••••"
                 className="h-12 rounded-sm bg-white border-slate-200 px-4 pr-12 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
               />
@@ -121,6 +132,22 @@ function ResetPasswordForm() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold ml-1">
+              Yeni Şifre Tekrar
+            </Label>
+            <Input
+              type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={8}
+              placeholder="••••••••"
+              className="h-12 rounded-sm bg-white border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
+            />
           </div>
 
           <Button

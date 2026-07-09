@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -13,7 +13,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { getCart, GuestCartItem } from "@/utils/cart";
 import {
   ShoppingCart,
   Edit3,
@@ -70,23 +69,20 @@ interface CouponData {
 }
 
 interface BasketSummaryCardProps {
+  items: BasketItem[];
   selectedCargoFee: number;
   selectedInstallment?: number;
   appliedCoupon?: CouponData | null;
   onCouponApply?: (coupon: CouponData | null) => void;
-  subTotal: number;
 }
 
 export default function BasketSummaryCard({
+  items,
   selectedCargoFee = 0,
   selectedInstallment = 1,
   appliedCoupon,
   onCouponApply,
-  subTotal: externalSubTotal,
 }: BasketSummaryCardProps) {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
-  const [guestItems, setGuestItems] = useState<GuestCartItem[]>([]);
-  const [basketItems, setBasketItems] = useState<BasketItem[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Coupon states
@@ -94,78 +90,10 @@ export default function BasketSummaryCard({
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const res = await fetch("/api/account/check");
-        const data = await res.json();
-        setIsLoggedIn(!!data.user);
-      } catch {
-        setIsLoggedIn(false);
-      }
-    };
-    checkLoginStatus();
-  }, []);
-
-  useEffect(() => {
-    if (isLoggedIn === null) return;
-    const fetchCart = async () => {
-      if (isLoggedIn) {
-        try {
-          const res = await fetch("/api/cart");
-          if (res.ok) {
-            const data = await res.json();
-            setBasketItems(
-              data.map((item: any) => ({
-                id: item.id,
-                product: {
-                  id: item.product.id,
-                  title: item.product.title,
-                  price: item.product.price,
-                  mainImage: item.product.mainImage,
-                  bulkDiscountQty: item.product.bulkDiscountQty ?? null,
-                  bulkDiscountRate: item.product.bulkDiscountRate ?? null,
-                },
-                quantity: item.quantity,
-                size: item.size
-                  ? {
-                      id: item.size.id,
-                      value: item.size.value,
-                    }
-                  : undefined,
-                customImage: item.customImage || null,
-              })),
-            );
-            setGuestItems([]);
-          }
-        } catch (err) {
-          console.error(err);
-        }
-      } else {
-        setGuestItems(getCart());
-        setBasketItems([]);
-      }
-    };
-    fetchCart();
-    window.addEventListener("cartUpdated", fetchCart);
-    return () => window.removeEventListener("cartUpdated", fetchCart);
-  }, [isLoggedIn]);
-
-  const itemsToRender = isLoggedIn
-    ? basketItems
-    : guestItems.map((item, i) => ({
-        id: i,
-        product: {
-          id: item.productId,
-          title: item.title,
-          price: item.price,
-          mainImage: item.image,
-          bulkDiscountQty: item.bulkDiscountQty ?? null,
-          bulkDiscountRate: item.bulkDiscountRate ?? null,
-        },
-        quantity: item.quantity,
-        size: undefined,
-      }));
+  // Sepet verisi artık checkout.tsx'ten prop olarak geliyor — bu bileşen
+  // kendi ayrı /api/cart isteğini atmıyor, böylece iki bağımsız fetch'in
+  // yarışıp farklı toplamlar göstermesi engellenmiş oluyor.
+  const itemsToRender = items;
 
   // Toplu alım indirimini hesapla
   const calculatedSubTotal = itemsToRender.reduce((acc, item) => {
@@ -262,15 +190,6 @@ export default function BasketSummaryCard({
     setCouponCode("");
     setCouponError(null);
   };
-
-  if (isLoggedIn === null)
-    return (
-      <Card className="border-none shadow-sm bg-slate-50/50">
-        <CardContent className="py-20 flex flex-col items-center gap-3">
-          <div className="h-5 w-5 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" />
-        </CardContent>
-      </Card>
-    );
 
   if (itemsToRender.length === 0)
     return (

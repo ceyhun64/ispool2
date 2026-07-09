@@ -102,6 +102,7 @@ export default function ForgotPasswordPage() {
                     </Label>
                     <Input
                       type="email"
+                      autoComplete="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required

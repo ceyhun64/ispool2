@@ -375,6 +375,7 @@ export default function ProductDetailPage() {
       });
       toast.success(successMessage);
       window.dispatchEvent(new CustomEvent("cartUpdated"));
+      cartDropdownRef.current?.open?.();
       return;
     }
 

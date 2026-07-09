@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,8 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function Orders() {
   const isMobile = useIsMobile();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [orders, setOrders] = useState<FormattedOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -34,6 +37,7 @@ export default function Orders() {
     null,
   );
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [orderToUpdate, setOrderToUpdate] = useState<{
     id: number;
     currentStatus: FormattedOrder["status"];
@@ -112,6 +116,18 @@ export default function Orders() {
     fetchOrders();
   }, []);
 
+  // Dashboard'daki "Detay" linki ?orderId= ile buraya yönlendiriyor — sipariş
+  // listesi yüklendiğinde ilgili siparişi otomatik açıp query'yi temizler.
+  useEffect(() => {
+    const orderIdParam = searchParams.get("orderId");
+    if (!orderIdParam || orders.length === 0) return;
+    const found = orders.find((o) => o.id === Number(orderIdParam));
+    if (found) {
+      setSelectedOrder(found);
+      router.replace("/admin/orders");
+    }
+  }, [orders, searchParams, router]);
+
   const triggerStatusUpdate = (
     orderId: number,
     currentStatus: FormattedOrder["status"],
@@ -121,37 +137,42 @@ export default function Orders() {
   };
 
   const confirmUpdateStatus = async () => {
-    if (!orderToUpdate) return;
+    if (!orderToUpdate || isUpdatingStatus) return;
     const nextStatus = getNextStatus(orderToUpdate.currentStatus);
     if (!nextStatus) return;
 
-    toast.promise(
-      (async () => {
-        const res = await fetch("/api/order", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            orderId: orderToUpdate.id,
-            status: nextStatus,
-          }),
-        });
+    const updatedOrderId = orderToUpdate.id;
+    setIsUpdatingStatus(true);
+    try {
+      const res = await fetch("/api/order", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: updatedOrderId,
+          status: nextStatus,
+        }),
+      });
 
-        const data = await res.json();
-        if (data.status !== "success")
-          throw new Error(data.message || "Hata oluştu");
+      const data = await res.json();
+      if (data.status !== "success")
+        throw new Error(data.message || "Hata oluştu");
 
-        await fetchOrders();
-        return data;
-      })(),
-      {
-        loading: "Güncelleniyor...",
-        success: "Sipariş durumu güncellendi.",
-        error: "Güncelleme başarısız.",
-      },
-    );
-
-    setIsUpdateDialogOpen(false);
-    setOrderToUpdate(null);
+      toast.success("Sipariş durumu güncellendi.");
+      await fetchOrders();
+      // Detay dialogu bu sipariş için açıksa, yeniden fetch edilen listeden
+      // stale kalmaması için durumunu burada da güncelle.
+      setSelectedOrder((prev) =>
+        prev && prev.id === updatedOrderId
+          ? { ...prev, status: nextStatus }
+          : prev,
+      );
+    } catch (error) {
+      toast.error("Güncelleme başarısız.");
+    } finally {
+      setIsUpdatingStatus(false);
+      setIsUpdateDialogOpen(false);
+      setOrderToUpdate(null);
+    }
   };
 
   const filteredOrders = useMemo(
@@ -411,12 +432,18 @@ export default function Orders() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>İptal</AlertDialogCancel>
+            <AlertDialogCancel disabled={isUpdatingStatus}>
+              İptal
+            </AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmUpdateStatus}
+              onClick={(e) => {
+                e.preventDefault();
+                confirmUpdateStatus();
+              }}
+              disabled={isUpdatingStatus}
               className="bg-slate-900 hover:bg-slate-800"
             >
-              Evet, Güncelle
+              {isUpdatingStatus ? <Spinner className="w-4 h-4" /> : "Evet, Güncelle"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

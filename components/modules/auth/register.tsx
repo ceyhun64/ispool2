@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, FormEvent } from "react";
+import React, { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,16 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  // Zaten oturumu açık bir kullanıcı bu sayfayı görmemeli
+  useEffect(() => {
+    fetch("/api/account/check")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.user) router.push("/");
+      })
+      .catch(() => {});
+  }, [router]);
 
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -162,6 +172,7 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
+                    autoComplete="given-name"
                     placeholder="Ahmet"
                     className="h-11 rounded-sm bg-white border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
                   />
@@ -174,6 +185,7 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
                     value={surname}
                     onChange={(e) => setSurname(e.target.value)}
                     required
+                    autoComplete="family-name"
                     placeholder="Yılmaz"
                     className="h-11 rounded-sm bg-white border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
                   />
@@ -186,6 +198,7 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
                 </Label>
                 <Input
                   type="email"
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -201,9 +214,11 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
                 <div className="relative">
                   <Input
                     type={showPassword ? "text" : "password"}
+                    autoComplete="new-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    minLength={8}
                     placeholder="••••••••"
                     className="h-11 rounded-sm bg-white border-slate-200 px-4 pr-12 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
                   />
@@ -223,9 +238,11 @@ export default function RegisterForm({ onLoginClick }: RegisterFormProps) {
                 </Label>
                 <Input
                   type="password"
+                  autoComplete="new-password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
+                  minLength={8}
                   placeholder="••••••••"
                   className="h-11 rounded-sm placeholder:text-slate-300 bg-white border-slate-200 px-4 text-sm focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none"
                 />
