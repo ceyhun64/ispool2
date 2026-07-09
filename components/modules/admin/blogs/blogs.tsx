@@ -17,6 +17,7 @@ import DefaultPagination from "@/components/layout/pagination";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -26,6 +27,7 @@ import {
 import { toast } from "sonner";
 import { Search, Trash2, BookOpen } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 
 interface Blog {
   id: number;
@@ -43,6 +45,9 @@ export default function Blogs() {
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState<Blog | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const isMobile = useIsMobile();
 
   const fetchBlogs = async () => {
@@ -60,7 +65,8 @@ export default function Blogs() {
   }, []);
 
   const handleDelete = async () => {
-    if (!blogToDelete) return;
+    if (!blogToDelete || isDeleting) return;
+    setIsDeleting(true);
     try {
       const res = await fetch(`/api/blog/${blogToDelete.id}`, { method: "DELETE" });
       if (res.ok) {
@@ -74,10 +80,13 @@ export default function Blogs() {
       }
     } catch {
       toast.error("Bağlantı hatası oluştu.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   const handleBulkDelete = async () => {
+    setIsBulkDeleting(true);
     try {
       const results = await Promise.allSettled(
         selectedIds.map(async (id) => {
@@ -96,6 +105,9 @@ export default function Blogs() {
       if (failedCount > 0) toast.error(`${failedCount} blog silinemedi.`);
     } catch {
       toast.error("Toplu silme sırasında bir hata oluştu.");
+    } finally {
+      setIsBulkDeleting(false);
+      setBulkDeleteDialogOpen(false);
     }
   };
 
@@ -133,7 +145,7 @@ export default function Blogs() {
             {selectedIds.length > 0 && (
               <Button
                 variant="destructive"
-                onClick={handleBulkDelete}
+                onClick={() => setBulkDeleteDialogOpen(true)}
                 className="gap-2"
               >
                 <Trash2 className="w-4 h-4" />
@@ -385,14 +397,36 @@ export default function Blogs() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-            >
-              İptal
+            <DialogClose asChild>
+              <Button variant="outline">İptal</Button>
+            </DialogClose>
+            <Button variant="destructive" disabled={isDeleting} onClick={handleDelete}>
+              {isDeleting ? <Spinner className="w-4 h-4" /> : "Evet, Sil"}
             </Button>
-            <Button variant="destructive" onClick={handleDelete}>
-              Evet, Sil
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Delete Dialog */}
+      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Blogları Sil</DialogTitle>
+            <DialogDescription>
+              <strong>{selectedIds.length} blog</strong> kalıcı olarak
+              silinecektir. Bu işlem geri alınamaz.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">İptal</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              disabled={isBulkDeleting}
+              onClick={handleBulkDelete}
+            >
+              {isBulkDeleting ? <Spinner className="w-4 h-4" /> : "Evet, Sil"}
             </Button>
           </DialogFooter>
         </DialogContent>

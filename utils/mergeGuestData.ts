@@ -5,52 +5,91 @@
 import { getCart, clearGuestCart } from "./cart";
 
 const FAVORITES_KEY = "favorites";
+const REQUEST_TIMEOUT_MS = 8000;
 
-async function mergeGuestCart(): Promise<void> {
+export interface MergeGuestDataResult {
+  cartFailedCount: number;
+  favoritesFailedCount: number;
+}
+
+// Ağ isteği askıda kalırsa (ör. sunucu yanıt vermiyorsa) çağıran tarafın
+// (ör. login butonunun spinner'ı) sonsuza kadar beklememesi için timeout.
+function fetchWithTimeout(
+  input: RequestInfo,
+  init?: RequestInit,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  return fetch(input, { ...init, signal: controller.signal }).finally(() =>
+    clearTimeout(timeoutId),
+  );
+}
+
+async function mergeGuestCart(): Promise<number> {
   const guestCart = getCart();
-  if (guestCart.length === 0) return;
+  if (guestCart.length === 0) return 0;
 
-  await Promise.all(
+  const results = await Promise.allSettled(
     guestCart.map((item) => {
       const fd = new FormData();
       fd.append("productId", String(item.productId));
       fd.append("quantity", String(item.quantity || 1));
       if (item.sizeId) fd.append("sizeId", String(item.sizeId));
       if (item.customImage) fd.append("customImage", item.customImage);
-      return fetch("/api/cart", { method: "POST", body: fd }).catch(() => null);
+      return fetchWithTimeout("/api/cart", { method: "POST", body: fd });
     }),
   );
 
+  const failedCount = results.filter(
+    (r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value.ok),
+  ).length;
+
+  // Kısmi başarısızlık olsa bile misafir sepeti temizlenir — aksi halde
+  // başarıyla taşınan kalemler bir sonraki girişte tekrar taşınmaya
+  // çalışılır ve yinelenir. Başarısız kalan kalem sayısı çağırana raporlanır.
   clearGuestCart();
+  return failedCount;
 }
 
-async function mergeGuestFavorites(): Promise<void> {
+async function mergeGuestFavorites(): Promise<number> {
   let localFavs: number[] = [];
   try {
     localFavs = JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
   } catch {
     localFavs = [];
   }
-  if (localFavs.length === 0) return;
+  if (localFavs.length === 0) return 0;
 
-  await Promise.all(
+  const results = await Promise.allSettled(
     localFavs.map((productId) =>
-      fetch("/api/favorites", {
+      fetchWithTimeout("/api/favorites", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId }),
-      }).catch(() => null),
+      }),
     ),
   );
+
+  const failedCount = results.filter(
+    (r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value.ok),
+  ).length;
 
   try {
     localStorage.removeItem(FAVORITES_KEY);
   } catch {
     // erişilemiyorsa (örn. gizli sekme) sessizce geç
   }
+
+  return failedCount;
 }
 
-export async function mergeGuestDataIntoAccount(): Promise<void> {
-  if (typeof window === "undefined") return;
-  await Promise.all([mergeGuestCart(), mergeGuestFavorites()]);
+export async function mergeGuestDataIntoAccount(): Promise<MergeGuestDataResult> {
+  if (typeof window === "undefined") {
+    return { cartFailedCount: 0, favoritesFailedCount: 0 };
+  }
+  const [cartFailedCount, favoritesFailedCount] = await Promise.all([
+    mergeGuestCart(),
+    mergeGuestFavorites(),
+  ]);
+  return { cartFailedCount, favoritesFailedCount };
 }

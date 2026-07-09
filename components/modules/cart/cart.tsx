@@ -132,7 +132,12 @@ export default function Cart() {
         body: JSON.stringify({ quantity: newQuantity }),
         credentials: "include",
       });
-      if (res.ok) fetchCart();
+      if (res.ok) {
+        await fetchCart();
+        window.dispatchEvent(new Event("cartUpdated"));
+      } else {
+        toast.error("Miktar güncellenemedi");
+      }
     } catch {
       toast.error("Hata oluştu");
     }
@@ -155,7 +160,12 @@ export default function Cart() {
       method: "DELETE",
       credentials: "include",
     });
-    if (res.ok) setCartItems((prev) => prev.filter((c) => c.id !== cartItemId));
+    if (res.ok) {
+      setCartItems((prev) => prev.filter((c) => c.id !== cartItemId));
+      window.dispatchEvent(new Event("cartUpdated"));
+    } else {
+      toast.error("Ürün silinemedi");
+    }
   };
 
   // ─── Totals with Bulk Discount ───────────────────────────────────────────

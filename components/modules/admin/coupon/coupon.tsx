@@ -17,6 +17,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface Coupon {
   id: number;
@@ -43,6 +52,8 @@ export default function CouponAdmin() {
     usageLimit: "",
     expiryDate: "",
   });
+  const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const isMobile = useIsMobile();
 
@@ -96,13 +107,14 @@ export default function CouponAdmin() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Bu kuponu silmek istediğinizden emin misiniz?")) return;
+  const handleDelete = async () => {
+    if (!couponToDelete || deletingId !== null) return;
+    setDeletingId(couponToDelete.id);
     try {
       const res = await fetch("/api/coupon", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id: couponToDelete.id }),
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error || "Silinemedi");
@@ -110,6 +122,9 @@ export default function CouponAdmin() {
       fetchCoupons();
     } catch (err: any) {
       toast.error(err.message);
+    } finally {
+      setDeletingId(null);
+      setCouponToDelete(null);
     }
   };
 
@@ -337,7 +352,9 @@ export default function CouponAdmin() {
                     </span>
                     <button
                       type="button"
-                      className="text-xs text-slate-300 hover:text-white"
+                      onClick={() => formData.code && handleCopy(formData.code)}
+                      disabled={!formData.code}
+                      className="text-xs text-slate-300 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       Kopyala
                     </button>
@@ -503,7 +520,7 @@ export default function CouponAdmin() {
                           {/* İşlem */}
                           <td className="py-3 text-right">
                             <button
-                              onClick={() => handleDelete(coupon.id)}
+                              onClick={() => setCouponToDelete(coupon)}
                               className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                               title="Sil"
                             >
@@ -520,6 +537,37 @@ export default function CouponAdmin() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog
+        open={!!couponToDelete}
+        onOpenChange={(open) => !open && setCouponToDelete(null)}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Kuponu Sil</DialogTitle>
+            <DialogDescription>
+              <strong className="font-mono">{couponToDelete?.code}</strong>{" "}
+              kalıcı olarak silinecektir.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">İptal</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              disabled={deletingId !== null}
+              onClick={handleDelete}
+            >
+              {deletingId !== null ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                "Evet, Sil"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

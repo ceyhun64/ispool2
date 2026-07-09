@@ -180,6 +180,21 @@ const TRACKING_STEPS = [
   },
 ];
 
+// Para birimi formatlaması — admin panelindeki currency->sembol eşlemesiyle
+// tutarlı olması için burada da aynı yaklaşım kullanılır (TRY dışı bir
+// sipariş için sabit "₺" yazmak yanlış olurdu).
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  TRY: "₺",
+  USD: "$",
+  EUR: "€",
+};
+function getCurrencySymbol(currency?: string): string {
+  return CURRENCY_SYMBOLS[currency || "TRY"] || "₺";
+}
+function formatMoney(amount: number, currency?: string): string {
+  return `${amount.toLocaleString("tr-TR")} ${getCurrencySymbol(currency)}`;
+}
+
 // ==== Alt Bileşenler ====
 
 function TrackingTimeline({ status }: { status: string }) {
@@ -244,7 +259,13 @@ function TrackingTimeline({ status }: { status: string }) {
   );
 }
 
-function OrderItemRow({ item }: { item: OrderItem }) {
+function OrderItemRow({
+  item,
+  currency,
+}: {
+  item: OrderItem;
+  currency?: string;
+}) {
   return (
     <div className="flex gap-4 items-start py-4 border-b border-slate-50 last:border-0 group/row">
       {/* Ürün görseli */}
@@ -302,10 +323,10 @@ function OrderItemRow({ item }: { item: OrderItem }) {
         {/* Fiyat satırı */}
         <div className="flex items-center justify-between pt-1">
           <span className="text-[10px] font-bold text-slate-400 bg-slate-50 border border-slate-100 px-2 py-0.5">
-            Birim: {item.unitPrice?.toLocaleString("tr-TR")} ₺
+            Birim: {formatMoney(item.unitPrice ?? 0, currency)}
           </span>
           <span className="text-[13px] font-black text-orange-600 tracking-tight">
-            {(item.unitPrice! * item.quantity).toLocaleString("tr-TR")} ₺
+            {formatMoney((item.unitPrice ?? 0) * item.quantity, currency)}
           </span>
         </div>
       </div>
@@ -396,7 +417,7 @@ function PaymentSummaryTable({
             Ara Toplam
           </span>
           <span className="font-bold text-slate-700">
-            {subtotal.toLocaleString("tr-TR")} ₺
+            {formatMoney(subtotal, order.currency)}
           </span>
         </div>
 
@@ -412,7 +433,7 @@ function PaymentSummaryTable({
               )}
             </span>
             <span className="font-bold text-green-600">
-              -{order.discountAmount.toLocaleString("tr-TR")} ₺
+              -{formatMoney(order.discountAmount, order.currency)}
             </span>
           </div>
         ) : null}
@@ -422,7 +443,7 @@ function PaymentSummaryTable({
             KDV / Vergi
           </span>
           <span className="font-bold text-slate-700">
-            {tax.toLocaleString("tr-TR")} ₺
+            {formatMoney(tax, order.currency)}
           </span>
         </div>
 
@@ -458,7 +479,9 @@ function PaymentSummaryTable({
             <span className="text-2xl font-black text-orange-600 tracking-tighter">
               {order.paidPrice.toLocaleString("tr-TR")}
             </span>
-            <span className="text-sm font-black text-orange-500 ml-1">₺</span>
+            <span className="text-sm font-black text-orange-500 ml-1">
+              {getCurrencySymbol(order.currency)}
+            </span>
           </div>
         </div>
 
@@ -468,7 +491,7 @@ function PaymentSummaryTable({
             {(order.paidPrice / order.installment).toLocaleString("tr-TR", {
               maximumFractionDigits: 2,
             })}{" "}
-            ₺
+            {getCurrencySymbol(order.currency)}
           </p>
         )}
       </div>
@@ -724,7 +747,11 @@ export default function Orders() {
                             {order.items
                               .slice(0, isExpanded ? order.items.length : 2)
                               .map((item) => (
-                                <OrderItemRow key={item.id} item={item} />
+                                <OrderItemRow
+                                  key={item.id}
+                                  item={item}
+                                  currency={order.currency}
+                                />
                               ))}
                           </div>
 
@@ -799,7 +826,7 @@ export default function Orders() {
                                         {order.discountAmount.toLocaleString(
                                           "tr-TR",
                                         )}{" "}
-                                        ₺
+                                        {getCurrencySymbol(order.currency)}
                                       </span>
                                     )}
                                 </div>
@@ -809,7 +836,7 @@ export default function Orders() {
                                   {order.paidPrice.toLocaleString("tr-TR")}
                                 </span>
                                 <span className="text-base font-black text-orange-500">
-                                  ₺
+                                  {getCurrencySymbol(order.currency)}
                                 </span>
                               </div>
                               {order.installment && order.installment > 1 && (
@@ -964,7 +991,7 @@ export default function Orders() {
                                                   {item.unitPrice?.toLocaleString(
                                                     "tr-TR",
                                                   )}{" "}
-                                                  ₺ × {item.quantity}
+                                                  {getCurrencySymbol(order.currency)} × {item.quantity}
                                                 </p>
                                                 <p className="text-[13px] font-black text-orange-600">
                                                   {(
@@ -973,7 +1000,7 @@ export default function Orders() {
                                                   ).toLocaleString(
                                                     "tr-TR",
                                                   )}{" "}
-                                                  ₺
+                                                  {getCurrencySymbol(order.currency)}
                                                 </p>
                                               </div>
                                             </div>

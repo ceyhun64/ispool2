@@ -23,22 +23,29 @@ interface FavoriteProduct {
 export default function Favorites() {
   const { favorites, removeFavorite, loading } = useFavorite();
   const [products, setProducts] = useState<Record<number, FavoriteProduct>>({});
+  const [productsLoading, setProductsLoading] = useState(true);
 
-  // Kart başına ayrı istek yerine tüm favori ürünler tek seferde toplu çekilir.
+  // Kart başına ayrı istek yerine tüm favori ürünler tek seferde toplu
+  // çekilir. Kartlar, bu toplu istek tamamlanmadan (productsLoading true
+  // iken) hiç render edilmez — aksi halde her kart, henüz gelmemiş "product"
+  // prop'unu boş sanıp kendi tekil isteğini atar ve toplu isteğin amacı
+  // (N+1'i önlemek) boşa çıkar.
   useEffect(() => {
     const ids = favorites.filter((id) => id != null);
     if (ids.length === 0) {
       setProducts({});
+      setProductsLoading(false);
       return;
     }
 
     let cancelled = false;
+    setProductsLoading(true);
     fetch(`/api/products?ids=${ids.join(",")}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (cancelled || !data?.products) return;
+        if (cancelled) return;
         const map: Record<number, FavoriteProduct> = {};
-        for (const p of data.products) {
+        for (const p of data?.products ?? []) {
           map[p.id] = {
             id: p.id,
             title: p.title,
@@ -52,18 +59,23 @@ export default function Favorites() {
         }
         setProducts(map);
       })
-      .catch((err) => console.error("Favori ürünler alınamadı:", err));
+      .catch((err) => console.error("Favori ürünler alınamadı:", err))
+      .finally(() => {
+        if (!cancelled) setProductsLoading(false);
+      });
 
     return () => {
       cancelled = true;
     };
   }, [favorites]);
 
+  const isLoading = loading || productsLoading;
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 selection:bg-amber-600 selection:text-white">
       <div className="max-w-[1400px] mx-auto px-6 py-16 md:py-24">
         {/* ÜST BİLGİ: Minimalist ve Prestijli */}
-        {!loading && (
+        {!isLoading && (
           <header className="mb-16 flex flex-col md:flex-row justify-between items-end gap-6 border-b border-slate-200 pb-10">
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-amber-600">
@@ -90,7 +102,7 @@ export default function Favorites() {
           </header>
         )}
 
-        {loading ? (
+        {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="space-y-6">
@@ -143,7 +155,7 @@ export default function Favorites() {
           >
             <AnimatePresence mode="popLayout">
               {favorites
-                .filter((id) => id != null)
+                .filter((id) => id != null && products[id])
                 .map((productId) => (
                   <motion.div
                     key={productId}

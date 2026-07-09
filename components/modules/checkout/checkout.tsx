@@ -10,6 +10,8 @@ import BasketSummaryCard from "@/components/modules/checkout/cartSummary";
 import { AddressFormData } from "@/components/modules/profile/addressForm";
 import { getCart } from "@/utils/cart";
 import { mergeGuestDataIntoAccount } from "@/utils/mergeGuestData";
+import { useFavorite } from "@/contexts/favoriteContext";
+import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 import Link from "next/link";
 import { ShieldCheck, Lock, HelpCircle, ArrowRight } from "lucide-react";
@@ -91,6 +93,7 @@ interface CouponData {
 
 export default function PaymentPage() {
   const router = useRouter();
+  const { refreshSession } = useFavorite();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [processingPayment, setProcessingPayment] = useState(false);
@@ -316,6 +319,7 @@ export default function PaymentPage() {
           password,
           redirect: false,
         });
+        await refreshSession();
       }
 
       const addressRes = await fetch("/api/address", {
@@ -324,6 +328,9 @@ export default function PaymentPage() {
         body: JSON.stringify({ ...newAddressForm, userId, country: "Türkiye" }),
       });
       const addressData = await addressRes.json();
+      if (!addressRes.ok || !addressData?.address) {
+        throw new Error(addressData?.error || "Adres kaydedilemedi");
+      }
       setUser((prev) =>
         prev
           ? {
@@ -341,7 +348,12 @@ export default function PaymentPage() {
       setSelectedAddress(addressData.address.id);
 
       if (getCart().length > 0) {
-        await mergeGuestDataIntoAccount();
+        const mergeResult = await mergeGuestDataIntoAccount();
+        if (mergeResult.cartFailedCount > 0) {
+          toast.warning(
+            "Bazı sepet öğeleriniz taşınamadı, lütfen sepetinizi kontrol edin.",
+          );
+        }
         await fetchData();
       }
       setIsAddingNewAddress(false);
@@ -358,7 +370,9 @@ export default function PaymentPage() {
       let currentUser = user;
       const userId = Number(currentUser?.user?.id);
       const shippingAddr =
-        currentUser?.user.addresses?.[0] || (newAddressForm as Address);
+        currentUser?.user.addresses?.find((a) => a.id === selectedAddress) ||
+        currentUser?.user.addresses?.[0] ||
+        (newAddressForm as Address);
 
       // Taksit oranını bul
       const selectedRate = installmentRates.find(
@@ -573,11 +587,11 @@ export default function PaymentPage() {
 
             <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
               <BasketSummaryCard
+                items={cartItems}
                 selectedCargoFee={selectedCargoFee}
                 selectedInstallment={selectedInstallment}
                 appliedCoupon={appliedCoupon}
                 onCouponApply={setAppliedCoupon}
-                subTotal={subTotal}
               />
             </div>
 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
@@ -18,11 +18,7 @@ import {
   Palette,
   Ruler,
 } from "lucide-react";
-
-// Veri kaynakları
-import categoriesDataRaw from "@/data/categories.json";
-import middleCategoriesDataRaw from "@/data/middleCategories.json";
-import subCategoriesDataRaw from "@/data/subCategories.json";
+import { buildFilterNavUrl } from "./filterUrlParams";
 
 // --- TİP TANIMLAMALARI ---
 interface DbSubCategory {
@@ -115,18 +111,22 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
   >([]);
   const [colors, setColors] = useState<DbColor[]>([]);
   const [sizes, setSizes] = useState<DbSize[]>([]);
+  const [allCategories, setAllCategories] = useState<DbCategory[]>([]);
+  const [dbBrands, setDbBrands] = useState<DbBrand[]>([]);
 
-  // API'den Dinamik Veri Çekme (Renk ve Beden)
+  // API'den Dinamik Veri Çekme (Renk, Beden, Kategori, Marka — gerçek DB id'leriyle)
   useEffect(() => {
     async function fetchFilters() {
       try {
-        const [colorsRes, sizesRes] = await Promise.all([
+        const [colorsRes, sizesRes, catRes] = await Promise.all([
           fetch("/api/color"),
           fetch("/api/size"),
+          fetch("/api/category"),
         ]);
 
         const colorsData = await colorsRes.json();
         const sizesData = await sizesRes.json();
+        const catData = await catRes.json();
 
         // API yanıtı: { success: true, data: Array, count: number }
         if (colorsData.success && Array.isArray(colorsData.data)) {
@@ -141,68 +141,21 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
             ),
           );
         }
+
+        if (catData.success) {
+          if (Array.isArray(catData.categories)) {
+            setAllCategories(catData.categories);
+          }
+          if (Array.isArray(catData.brands)) {
+            setDbBrands(catData.brands);
+          }
+        }
       } catch (error) {
         console.error("Filtre verileri yüklenemedi:", error);
       }
     }
     fetchFilters();
   }, []);
-
-  // Kategori Hiyerarşisi Oluşturma (Memoized)
-  const allCategories = useMemo(() => {
-    const categoriesData = categoriesDataRaw as { name: string }[];
-    const middleCategoriesData = middleCategoriesDataRaw as {
-      name: string;
-      categoryName: string;
-    }[];
-    const subCategoriesData = subCategoriesDataRaw as {
-      name: string;
-      middleCategoryName: string;
-    }[];
-
-    const categoryMap = new Map<string, DbCategory>();
-
-    categoriesData.forEach((cat, index) => {
-      categoryMap.set(cat.name, {
-        id: index + 1,
-        name: cat.name,
-        middleCategories: [],
-      });
-    });
-
-    middleCategoriesData.forEach((mid, index) => {
-      const parent = categoryMap.get(mid.categoryName);
-      if (parent) {
-        parent.middleCategories.push({
-          id: index + 1,
-          name: mid.name,
-          subCategories: [],
-        });
-      }
-    });
-
-    subCategoriesData.forEach((sub, index) => {
-      categoryMap.forEach((category) => {
-        const middle = category.middleCategories.find(
-          (m) => m.name === sub.middleCategoryName,
-        );
-        if (middle)
-          middle.subCategories.push({ id: index + 1, name: sub.name });
-      });
-    });
-
-    return Array.from(categoryMap.values()).sort((a, b) => a.id - b.id);
-  }, []);
-
-  const dbBrands: DbBrand[] = useMemo(
-    () =>
-      Array.from({ length: 11 }, (_, i) => ({
-        id: i + 1,
-        name: `Marka ${i + 1}`,
-        image: `/brands/${i + 1}.png`,
-      })),
-    [],
-  );
 
   const SectionTitle = ({
     children,
@@ -300,7 +253,15 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
         <div className="space-y-2">
           <button
             onClick={() => {
-              router.push("/products");
+              router.push(
+                buildFilterNavUrl("/products", {
+                  brandFilter,
+                  colorFilter,
+                  sizeFilter,
+                  minPrice,
+                  maxPrice,
+                }),
+              );
               setSubCategoryFilter("all");
             }}
             className={cn(
@@ -328,7 +289,15 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
                 <div className="flex items-center">
                   <button
                     onClick={() => {
-                      router.push(`/products/category/${cat.id}`);
+                      router.push(
+                        buildFilterNavUrl(`/products/category/${cat.id}`, {
+                          brandFilter,
+                          colorFilter,
+                          sizeFilter,
+                          minPrice,
+                          maxPrice,
+                        }),
+                      );
                       setSubCategoryFilter("all");
                     }}
                     className={cn(
@@ -373,7 +342,16 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
                           <button
                             onClick={() =>
                               router.push(
-                                `/products/category/${cat.id}/${mid.id}`,
+                                buildFilterNavUrl(
+                                  `/products/category/${cat.id}/${mid.id}`,
+                                  {
+                                    brandFilter,
+                                    colorFilter,
+                                    sizeFilter,
+                                    minPrice,
+                                    maxPrice,
+                                  },
+                                ),
                               )
                             }
                             className="flex-1 text-left py-2 px-3 text-[10px] font-black uppercase text-orange-600"
@@ -409,7 +387,16 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
                                 key={sub.id}
                                 onClick={() =>
                                   router.push(
-                                    `/products/category/${cat.id}/${mid.id}/${sub.id}`,
+                                    buildFilterNavUrl(
+                                      `/products/category/${cat.id}/${mid.id}/${sub.id}`,
+                                      {
+                                        brandFilter,
+                                        colorFilter,
+                                        sizeFilter,
+                                        minPrice,
+                                        maxPrice,
+                                      },
+                                    ),
                                   )
                                 }
                                 className="w-full text-left py-2 px-3 text-[11px] font-semibold text-slate-600 hover:text-orange-600 flex items-center gap-2"

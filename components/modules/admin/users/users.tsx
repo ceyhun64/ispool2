@@ -54,6 +54,7 @@ export default function UsersManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isBatchDeleting, setIsBatchDeleting] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [batchDeleteDialogOpen, setBatchDeleteDialogOpen] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -131,6 +132,7 @@ export default function UsersManagement() {
       toast.error("Toplu silme sırasında bir hata oluştu.");
     } finally {
       setIsBatchDeleting(false);
+      setBatchDeleteDialogOpen(false);
     }
   };
 
@@ -159,7 +161,7 @@ export default function UsersManagement() {
           {selectedIds.length > 0 && (
             <Button
               variant="destructive"
-              onClick={handleBatchDelete}
+              onClick={() => setBatchDeleteDialogOpen(true)}
               disabled={isBatchDeleting}
               className="gap-2"
             >
@@ -182,7 +184,10 @@ export default function UsersManagement() {
             placeholder="İsim veya e-posta ara..."
             className="pl-10 bg-white border-slate-200 rounded-xl"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
           />
         </div>
       </header>
@@ -196,6 +201,10 @@ export default function UsersManagement() {
                 <input
                   type="checkbox"
                   className="w-4 h-4 rounded border-slate-300"
+                  checked={
+                    paginatedUsers.length > 0 &&
+                    paginatedUsers.every((u) => selectedIds.includes(u.id))
+                  }
                   onChange={(e) =>
                     setSelectedIds(
                       e.target.checked ? paginatedUsers.map((u) => u.id) : [],
@@ -456,12 +465,19 @@ export default function UsersManagement() {
                       </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                      <Button variant="outline">İptal</Button>
+                      <DialogClose asChild>
+                        <Button variant="outline">İptal</Button>
+                      </DialogClose>
                       <Button
                         variant="destructive"
+                        disabled={deletingId === user.id}
                         onClick={() => handleDelete(user.id)}
                       >
-                        Evet, Sil
+                        {deletingId === user.id ? (
+                          <Spinner className="w-4 h-4" />
+                        ) : (
+                          "Evet, Sil"
+                        )}
                       </Button>
                     </DialogFooter>
                   </DialogContent>
@@ -502,6 +518,34 @@ export default function UsersManagement() {
           </p>
         </div>
       )}
+
+      <Dialog open={batchDeleteDialogOpen} onOpenChange={setBatchDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Kullanıcıları Sil</DialogTitle>
+            <DialogDescription>
+              <strong>{selectedIds.length} kullanıcı</strong> kalıcı olarak
+              silinecektir. Bu işlem geri alınamaz.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">İptal</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              disabled={isBatchDeleting}
+              onClick={handleBatchDelete}
+            >
+              {isBatchDeleting ? (
+                <Spinner className="w-4 h-4" />
+              ) : (
+                "Evet, Sil"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

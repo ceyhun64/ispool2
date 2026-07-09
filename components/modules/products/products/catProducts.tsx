@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import MobileFilter from "../mobileFilter";
 import { useSearchParams } from "next/navigation";
+import { readFiltersFromSearchParams } from "../filterUrlParams";
 
 interface CatProductsProps {
   id: number;
@@ -40,14 +41,26 @@ export default function CatProducts({
     | "dateOld"
     | "discountHigh"
     | null;
+  // Kategori navigasyonundan taşınan filtreler URL'den okunur — böylece
+  // kategori değiştirildiğinde marka/renk/beden/fiyat filtreleri kaybolmaz.
+  const initialFilters = useMemo(
+    () => readFiltersFromSearchParams(searchParams),
+    [],
+  );
 
   const [currentCategory, setCurrentCategory] = useState<any>(null);
   const [subCategoryFilter, setSubCategoryFilter] = useState<string>("all");
-  const [brandFilter, setBrandFilter] = useState<string>("all");
-  const [colorFilter, setColorFilter] = useState<string>("all");
-  const [sizeFilter, setSizeFilter] = useState<string>("all");
-  const [maxPrice, setMaxPrice] = useState<number>(300000);
-  const [minPrice, setMinPrice] = useState<number>(0);
+  const [brandFilter, setBrandFilter] = useState<string>(
+    initialFilters.brandFilter,
+  );
+  const [colorFilter, setColorFilter] = useState<string>(
+    initialFilters.colorFilter,
+  );
+  const [sizeFilter, setSizeFilter] = useState<string>(
+    initialFilters.sizeFilter,
+  );
+  const [maxPrice, setMaxPrice] = useState<number>(initialFilters.maxPrice);
+  const [minPrice, setMinPrice] = useState<number>(initialFilters.minPrice);
   const [sort, setSort] = useState<
     | "az"
     | "za"
@@ -64,7 +77,10 @@ export default function CatProducts({
   const [isFilterOpen, setIsFilterOpen] = useState(true);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [isBestSellers, setIsBestSellers] = useState(false);
-  const [isDiscountMode] = useState(showDiscountOnly);
+  // Prop'tan doğrudan türetilir — router.push ile ?discount= parametresi
+  // değiştiğinde (aynı bileşen instance'ı korunduğu için) state'in stale
+  // kalmaması sağlanır.
+  const isDiscountMode = showDiscountOnly;
 
   // URL'den gelen sort parametresini uygula
   useEffect(() => {

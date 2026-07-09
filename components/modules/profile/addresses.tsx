@@ -18,6 +18,17 @@ import {
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import AdresForm from "./addressForm";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 // ==== Tip Tanımları ====
 interface Address {
@@ -59,6 +70,9 @@ export default function Adreslerim() {
   const [duzenlenenAdres, setDuzenlenenAdres] = useState<Address | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isSavingAddress, setIsSavingAddress] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState<Address | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const initialFormData: AddressFormData = {
     title: "",
@@ -103,18 +117,26 @@ export default function Adreslerim() {
     fetchAddresses();
   }, [router]);
 
-  const handleSil = async (id: number) => {
+  const handleSil = async () => {
+    if (!addressToDelete || isDeleting) return;
+    setIsDeleting(true);
     try {
-      const res = await fetch(`/api/address/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/address/${addressToDelete.id}`, {
+        method: "DELETE",
+      });
       if (!res.ok) throw new Error("Silinemedi");
-      setAdresler((prev) => prev.filter((a) => a.id !== id));
+      setAdresler((prev) => prev.filter((a) => a.id !== addressToDelete.id));
       toast.success("Adres kaydı sistemden silindi.");
     } catch (error) {
       toast.error("Silme işlemi başarısız.");
+    } finally {
+      setIsDeleting(false);
+      setAddressToDelete(null);
     }
   };
 
   const handleEkleKaydet = async () => {
+    if (isSavingAddress) return;
     if (
       !ekleFormData.firstName ||
       !ekleFormData.address ||
@@ -123,6 +145,7 @@ export default function Adreslerim() {
       toast.error("Lütfen zorunlu sevkiyat alanlarını doldurun.");
       return;
     }
+    setIsSavingAddress(true);
     try {
       const res = await fetch("/api/address", {
         method: "POST",
@@ -137,6 +160,8 @@ export default function Adreslerim() {
       setEkleFormData(initialFormData);
     } catch (error) {
       toast.error("Kaydedilemedi.");
+    } finally {
+      setIsSavingAddress(false);
     }
   };
 
@@ -149,7 +174,8 @@ export default function Adreslerim() {
   };
 
   const handleDuzenleKaydet = async () => {
-    if (!duzenlenenAdres) return;
+    if (!duzenlenenAdres || isSavingAddress) return;
+    setIsSavingAddress(true);
     try {
       const res = await fetch(`/api/address/${duzenlenenAdres.id}`, {
         method: "PATCH",
@@ -165,6 +191,8 @@ export default function Adreslerim() {
       setDuzenleForm(false);
     } catch (error) {
       toast.error("Güncellenemedi.");
+    } finally {
+      setIsSavingAddress(false);
     }
   };
 
@@ -255,6 +283,7 @@ export default function Adreslerim() {
                     onSave={
                       duzenleForm ? handleDuzenleKaydet : handleEkleKaydet
                     }
+                    isSaving={isSavingAddress}
                   />
                 </div>
               </motion.div>
@@ -294,7 +323,7 @@ export default function Adreslerim() {
                               <Edit3 size={18} />
                             </button>
                             <button
-                              onClick={() => handleSil(a.id)}
+                              onClick={() => setAddressToDelete(a)}
                               className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50  transition-all"
                               title="Sil"
                             >
@@ -354,6 +383,29 @@ export default function Adreslerim() {
           </AnimatePresence>
         </div>
       </main>
+
+      <Dialog
+        open={!!addressToDelete}
+        onOpenChange={(open) => !open && setAddressToDelete(null)}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Adresi Sil</DialogTitle>
+            <DialogDescription>
+              <strong>{addressToDelete?.title}</strong> adresi kalıcı olarak
+              silinecektir. Bu işlem geri alınamaz.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">İptal</Button>
+            </DialogClose>
+            <Button variant="destructive" disabled={isDeleting} onClick={handleSil}>
+              {isDeleting ? <Spinner className="w-4 h-4" /> : "Evet, Sil"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

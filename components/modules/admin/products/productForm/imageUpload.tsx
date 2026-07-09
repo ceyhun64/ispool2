@@ -5,6 +5,10 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { ImagePlus, X, Video, Play } from "lucide-react";
 import Image from "next/image";
+import { toast } from "sonner";
+
+const MAX_IMAGE_SIZE = 25 * 1024 * 1024; // 25MB — sunucudaki /api/upload sınırıyla aynı
+const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB — arayüzde belirtilen sınırla aynı
 
 interface ImageUploadSectionProps {
   mainFile: File | null;
@@ -71,6 +75,11 @@ export default function ImageUploadSection({
     setFile: (file: File | null) => void,
   ) => {
     const file = e.target.files?.[0] || null;
+    if (file && file.size > MAX_IMAGE_SIZE) {
+      toast.error("Dosya boyutu 25MB'dan büyük olamaz.");
+      e.target.value = "";
+      return;
+    }
     setFile(file);
   };
 
@@ -193,6 +202,11 @@ export default function ImageUploadSection({
             accept="video/mp4,video/webm,video/ogg,video/quicktime"
             onChange={(e) => {
               const file = e.target.files?.[0] || null;
+              if (file && file.size > MAX_VIDEO_SIZE) {
+                toast.error("Video boyutu 100MB'dan büyük olamaz.");
+                e.target.value = "";
+                return;
+              }
               setVideoFile(file);
             }}
             className="hidden"

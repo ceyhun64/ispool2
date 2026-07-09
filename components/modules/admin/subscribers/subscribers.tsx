@@ -10,6 +10,15 @@ import { toast } from "sonner";
 import { Mail, Trash2, Search, Loader2, Send } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface Subscriber {
   id: number;
@@ -26,6 +35,10 @@ export default function Subscribers() {
   const [mailSubject, setMailSubject] = useState<string>("");
   const [mailMessage, setMailMessage] = useState<string>("");
   const [sending, setSending] = useState(false);
+  const [subscriberToDelete, setSubscriberToDelete] = useState<Subscriber | null>(null);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [sendMailDialogOpen, setSendMailDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -54,8 +67,10 @@ export default function Subscribers() {
     currentPage * itemsPerPage,
   );
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Bu aboneyi silmek istediğinize emin misiniz?")) return;
+  const handleDelete = async () => {
+    if (!subscriberToDelete || isDeleting) return;
+    const id = subscriberToDelete.id;
+    setIsDeleting(true);
     try {
       const res = await fetch(`/api/subscribe/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error();
@@ -64,16 +79,15 @@ export default function Subscribers() {
       toast.success("Abone silindi.");
     } catch (err) {
       toast.error("Silme işlemi başarısız.");
+    } finally {
+      setIsDeleting(false);
+      setSubscriberToDelete(null);
     }
   };
 
   const handleDeleteSelected = async () => {
-    if (
-      !confirm(
-        `${selectedIds.length} aboneyi silmek istediğinize emin misiniz?`,
-      )
-    )
-      return;
+    if (isDeleting) return;
+    setIsDeleting(true);
     try {
       await Promise.all(
         selectedIds.map((id) =>
@@ -85,6 +99,9 @@ export default function Subscribers() {
       toast.success("Seçilen aboneler silindi.");
     } catch (err) {
       toast.error("Toplu silme başarısız.");
+    } finally {
+      setIsDeleting(false);
+      setBulkDeleteDialogOpen(false);
     }
   };
 
@@ -93,6 +110,7 @@ export default function Subscribers() {
       toast.warning("Lütfen tüm alanları doldurun.");
       return;
     }
+    setSendMailDialogOpen(false);
     setSending(true);
     const recipients =
       selectedIds.length > 0
@@ -181,7 +199,13 @@ export default function Subscribers() {
               </div>
 
               <Button
-                onClick={handleSendMail}
+                onClick={() => {
+                  if (!mailSubject || !mailMessage) {
+                    toast.warning("Lütfen tüm alanları doldurun.");
+                    return;
+                  }
+                  setSendMailDialogOpen(true);
+                }}
                 disabled={sending}
                 className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-xl"
               >
@@ -206,7 +230,10 @@ export default function Subscribers() {
               <Input
                 placeholder="Abone ara..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="pl-10 bg-white border-slate-200 rounded-xl"
               />
             </div>
@@ -215,7 +242,7 @@ export default function Subscribers() {
               <Button
                 variant="destructive"
                 size="sm"
-                onClick={handleDeleteSelected}
+                onClick={() => setBulkDeleteDialogOpen(true)}
                 className="ml-3 gap-2"
               >
                 <Trash2 className="w-4 h-4" />
@@ -263,7 +290,7 @@ export default function Subscribers() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleDelete(user.id)}
+                          onClick={() => setSubscriberToDelete(user)}
                           className="text-slate-400 hover:text-red-500 flex-shrink-0"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -294,6 +321,86 @@ export default function Subscribers() {
           )}
         </div>
       </div>
+
+      {/* Tekil silme onayı */}
+      <Dialog
+        open={!!subscriberToDelete}
+        onOpenChange={(open) => !open && setSubscriberToDelete(null)}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Aboneyi Sil</DialogTitle>
+            <DialogDescription>
+              <strong>{subscriberToDelete?.email}</strong> kalıcı olarak
+              silinecektir.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">İptal</Button>
+            </DialogClose>
+            <Button variant="destructive" disabled={isDeleting} onClick={handleDelete}>
+              {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Evet, Sil"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Toplu silme onayı */}
+      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Aboneleri Sil</DialogTitle>
+            <DialogDescription>
+              <strong>{selectedIds.length} abone</strong> kalıcı olarak
+              silinecektir. Bu işlem geri alınamaz.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">İptal</Button>
+            </DialogClose>
+            <Button variant="destructive" disabled={isDeleting} onClick={handleDeleteSelected}>
+              {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Evet, Sil"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Toplu mail gönderim onayı */}
+      <Dialog open={sendMailDialogOpen} onOpenChange={setSendMailDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>E-Bülten Gönder</DialogTitle>
+            <DialogDescription>
+              {selectedIds.length > 0 ? (
+                <>
+                  <strong>{selectedIds.length} seçili aboneye</strong> bu
+                  e-posta gönderilecek.
+                </>
+              ) : (
+                <>
+                  Hiçbir abone seçili değil — bu e-posta{" "}
+                  <strong>{users.length} abonenin tamamına</strong>{" "}
+                  gönderilecek. Emin misiniz?
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">İptal</Button>
+            </DialogClose>
+            <Button
+              className="bg-slate-900 hover:bg-slate-800"
+              disabled={sending}
+              onClick={handleSendMail}
+            >
+              {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Gönder"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -15,6 +15,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -117,11 +118,14 @@ export default function HomePageManagement() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{
     type: "banner" | "hero";
     id: number;
   } | null>(null);
   const isMobile = useIsMobile();
+
+  const MAX_IMAGE_SIZE = 25 * 1024 * 1024; // 25MB — sunucudaki /api/upload sınırıyla aynı
 
   // Banner states
   const [newTitle, setNewTitle] = useState("");
@@ -172,6 +176,11 @@ export default function HomePageManagement() {
   const handleBannerImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > MAX_IMAGE_SIZE) {
+        toast.error("Dosya boyutu 25MB'dan büyük olamaz.");
+        e.target.value = "";
+        return;
+      }
       setBannerImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -190,6 +199,11 @@ export default function HomePageManagement() {
   const handleHeroImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > MAX_IMAGE_SIZE) {
+        toast.error("Dosya boyutu 25MB'dan büyük olamaz.");
+        e.target.value = "";
+        return;
+      }
       setHeroImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -223,22 +237,34 @@ export default function HomePageManagement() {
       });
 
       const data = await res.json();
-      if (res.ok) {
-        // Mevcut tüm bannerları sil
-        await Promise.all(
-          banners.map((b) =>
-            fetch(`/api/banner/${b.id}`, { method: "DELETE" }),
-          ),
-        );
-
-        setBanners([data.banner]);
-        setNewTitle("");
-        setNewSubtitle("");
-        setBannerImage(null);
-        setBannerImagePreview("");
-        toast.success("Banner eklendi, eski bannerlar silindi.");
-      } else {
+      if (!res.ok) {
         toast.error(data.message || "Ekleme başarısız.");
+        return;
+      }
+
+      // Yeni banner başarıyla oluşturuldu — bundan sonraki eski banner
+      // temizliği başarısız olsa bile kullanıcıya bu adım ayrı raporlanır,
+      // aksi halde "Ekleme başarısız" gibi yanlış bir mesaj gösterilirdi.
+      const oldBanners = banners;
+      setBanners([data.banner]);
+      setNewTitle("");
+      setNewSubtitle("");
+      setBannerImage(null);
+      setBannerImagePreview("");
+      toast.success("Banner eklendi.");
+
+      const cleanupResults = await Promise.allSettled(
+        oldBanners.map((b) =>
+          fetch(`/api/banner/${b.id}`, { method: "DELETE" }),
+        ),
+      );
+      const cleanupFailedCount = cleanupResults.filter(
+        (r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value.ok),
+      ).length;
+      if (cleanupFailedCount > 0) {
+        toast.warning(
+          `${cleanupFailedCount} eski banner silinemedi, elle kaldırmanız gerekebilir.`,
+        );
       }
     } catch (err) {
       toast.error("Ekleme başarısız.");
@@ -296,7 +322,8 @@ export default function HomePageManagement() {
 
   // Delete handler
   const handleDelete = async () => {
-    if (!itemToDelete) return;
+    if (!itemToDelete || isDeleting) return;
+    setIsDeleting(true);
 
     try {
       const endpoint =
@@ -313,14 +340,16 @@ export default function HomePageManagement() {
           setHeroSlides((prev) => prev.filter((s) => s.id !== itemToDelete.id));
         }
         toast.success("Başarıyla silindi.");
-        setDeleteDialogOpen(false);
-        setItemToDelete(null);
       } else {
         const data = await res.json().catch(() => ({}));
         toast.error(data?.message || "Silme işlemi başarısız.");
       }
     } catch (err) {
       toast.error("Silme hatası.");
+    } finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+      setItemToDelete(null);
     }
   };
 
@@ -633,7 +662,7 @@ export default function HomePageManagement() {
                       <input
                         type="number"
                         min="0"
-                        value={heroForm.order === 0 ? "" : heroForm.order}
+                        value={heroForm.order}
                         placeholder="0"
                         onChange={(e) =>
                           setHeroForm({
@@ -723,14 +752,11 @@ export default function HomePageManagement() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-            >
-              İptal
-            </Button>
-            <Button variant="destructive" onClick={handleDelete}>
-              Evet, Sil
+            <DialogClose asChild>
+              <Button variant="outline">İptal</Button>
+            </DialogClose>
+            <Button variant="destructive" disabled={isDeleting} onClick={handleDelete}>
+              {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Evet, Sil"}
             </Button>
           </DialogFooter>
         </DialogContent>

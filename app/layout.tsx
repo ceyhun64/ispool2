@@ -3,7 +3,6 @@ import { Geist, Inter } from "next/font/google";
 import "./globals.css";
 import ClientLayoutWrapper from "@/components/layout/ClientLayoutWrapper";
 import ScrollToTopButton from "@/components/layout/scrollToTop";
-import { CartProvider } from "@/contexts/cartContext";
 import { FavoriteProvider } from "@/contexts/favoriteContext";
 import { Toaster } from "sonner";
 import CookieConsent from "@/components/layout/cookieConsent";
@@ -163,42 +162,40 @@ export default function RootLayout({
         >
           Ana içeriğe geç
         </a>
-        <CartProvider>
-          <FavoriteProvider>
-            <ClientLayoutWrapper>
-              <main
-                id="main-content"
-                className="min-h-screen font-sans selection:bg-orange-600 selection:text-white relative"
-              >
-                {children}
-                <CookieConsent />
-              </main>
-            </ClientLayoutWrapper>
-            <ScrollToTopButton />
-            <Toaster
-              richColors={false}
-              closeButton={true}
-              position="bottom-right"
-              toastOptions={{
-                style: {
-                  borderRadius: "2px",
-                  padding: "20px",
-                  background: "#020617",
-                  color: "#f8fafc",
-                  border: "1px solid rgba(255,255,255,0.05)",
-                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
-                  fontFamily: "var(--font-inter), sans-serif",
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  minWidth: "350px",
-                  borderLeft: "5px solid #ea580c",
-                },
-              }}
-            />
-          </FavoriteProvider>
-        </CartProvider>
+        <FavoriteProvider>
+          <ClientLayoutWrapper>
+            <main
+              id="main-content"
+              className="min-h-screen font-sans selection:bg-orange-600 selection:text-white relative"
+            >
+              {children}
+              <CookieConsent />
+            </main>
+          </ClientLayoutWrapper>
+          <ScrollToTopButton />
+          <Toaster
+            richColors={false}
+            closeButton={true}
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                borderRadius: "2px",
+                padding: "20px",
+                background: "#020617",
+                color: "#f8fafc",
+                border: "1px solid rgba(255,255,255,0.05)",
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+                fontFamily: "var(--font-inter), sans-serif",
+                fontSize: "12px",
+                fontWeight: "700",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                minWidth: "350px",
+                borderLeft: "5px solid #ea580c",
+              },
+            }}
+          />
+        </FavoriteProvider>
       </body>
     </html>
   );

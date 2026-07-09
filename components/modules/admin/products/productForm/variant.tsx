@@ -287,11 +287,7 @@ export default function VariantsSection({
                         <input
                           type="number"
                           min={0}
-                          value={
-                            stockData?.stock === 0
-                              ? ""
-                              : (stockData?.stock ?? "")
-                          }
+                          value={stockData?.stock ?? ""}
                           onChange={(e) =>
                             updateStock(sizeId, "stock", Number(e.target.value))
                           }
@@ -313,11 +309,7 @@ export default function VariantsSection({
                         <input
                           type="number"
                           step="0.01"
-                          value={
-                            stockData?.priceModifier === 0
-                              ? ""
-                              : (stockData?.priceModifier ?? "")
-                          }
+                          value={stockData?.priceModifier ?? ""}
                           onChange={(e) =>
                             updateStock(
                               sizeId,

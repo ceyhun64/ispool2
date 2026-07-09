@@ -24,24 +24,19 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import categoriesDataRaw from "@/data/categories.json";
+// Orta kategori ikonları DB'de saklanmıyor; yalnızca ikon görselini isim
+// eşleşmesiyle zenginleştirmek için statik veri kullanılıyor. Kategori/alt
+// kategori id'leri ve hiyerarşisi artık gerçek DB verisinden (/api/category)
+// geliyor.
 import middleCategoriesDataRaw from "@/data/middleCategories.json";
-import subCategoriesDataRaw from "@/data/subCategories.json";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 // ─── Tip Tanımlamaları ───────────────────────────────────────────────────────
-interface CategoryInput {
-  name: string;
-}
 interface MiddleCategoryInput {
   name: string;
   categoryName: string;
   icon?: string;
-}
-interface SubCategoryInput {
-  name: string;
-  middleCategoryName: string;
 }
 
 interface DbSubCategory {
@@ -58,6 +53,11 @@ interface DbCategory {
   id: number;
   name: string;
   middleCategories: DbMiddleCategory[];
+}
+interface DbBrand {
+  id: number;
+  name: string;
+  image: string | null;
 }
 
 export default function CategoryBar({
@@ -82,48 +82,40 @@ export default function CategoryBar({
   }, [pathname, setIsMobileMenuOpen]);
 
   // ─── Veri İşleme ──────────────────────────────────────────────────────────
-  const categoriesData = categoriesDataRaw as CategoryInput[];
-  const middleCategoriesData = middleCategoriesDataRaw as MiddleCategoryInput[];
-  const subCategoriesData = subCategoriesDataRaw as SubCategoryInput[];
-
-  const brands = Array.from({ length: 11 }, (_, i) => ({
-    id: i + 1,
-    image: `/brands/${i + 1}.png`,
-    name: `Brand ${i + 1}`,
-  }));
-
-  const categories = useMemo(() => {
-    const categoryMap = new Map<string, DbCategory>();
-    categoriesData.forEach((cat, index) => {
-      categoryMap.set(cat.name, {
-        id: index + 1,
-        name: cat.name,
-        middleCategories: [],
-      });
+  // İkonlar sadece statik JSON'da var; isimle eşleştirilip DB verisine iliştirilir.
+  const middleCategoryIcons = useMemo(() => {
+    const map = new Map<string, string | undefined>();
+    (middleCategoriesDataRaw as MiddleCategoryInput[]).forEach((mid) => {
+      map.set(mid.name, mid.icon);
     });
-    middleCategoriesData.forEach((mid, index) => {
-      const parentCategory = categoryMap.get(mid.categoryName);
-      if (parentCategory) {
-        parentCategory.middleCategories.push({
-          id: index + 1,
-          name: mid.name,
-          icon: mid.icon,
-          subCategories: [],
-        });
-      }
-    });
-    subCategoriesData.forEach((sub, index) => {
-      categoryMap.forEach((category) => {
-        const middleCategory = category.middleCategories.find(
-          (m) => m.name === sub.middleCategoryName,
-        );
-        if (middleCategory) {
-          middleCategory.subCategories.push({ id: index + 1, name: sub.name });
+    return map;
+  }, []);
+
+  const [categories, setCategories] = useState<DbCategory[]>([]);
+  const [brands, setBrands] = useState<DbBrand[]>([]);
+
+  useEffect(() => {
+    fetch("/api/category")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.success) return;
+        if (Array.isArray(data.categories)) {
+          setCategories(
+            data.categories.map((cat: DbCategory) => ({
+              ...cat,
+              middleCategories: cat.middleCategories.map((mid) => ({
+                ...mid,
+                icon: middleCategoryIcons.get(mid.name),
+              })),
+            })),
+          );
         }
-      });
-    });
-    return Array.from(categoryMap.values()).sort((a, b) => a.id - b.id);
-  }, [categoriesData, middleCategoriesData, subCategoriesData]);
+        if (Array.isArray(data.brands)) {
+          setBrands(data.brands);
+        }
+      })
+      .catch((err) => console.error("Kategori/marka verileri alınamadı:", err));
+  }, [middleCategoryIcons]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -563,14 +555,20 @@ export default function CategoryBar({
                       key={brand.id}
                       className="flex items-center justify-center p-6 bg-slate-50 rounded-lg hover:bg-slate-100 transition-all hover:shadow-md group cursor-default"
                     >
-                      <div className="relative w-full h-16">
-                        <Image
-                          src={brand.image}
-                          alt={brand.name}
-                          fill
-                          className="object-contain"
-                        />
-                      </div>
+                      {brand.image ? (
+                        <div className="relative w-full h-16">
+                          <Image
+                            src={brand.image}
+                            alt={brand.name}
+                            fill
+                            className="object-contain"
+                          />
+                        </div>
+                      ) : (
+                        <span className="text-xs font-bold uppercase text-slate-400">
+                          {brand.name}
+                        </span>
+                      )}
                     </div>
                   ))}
                 </div>
