@@ -6,8 +6,14 @@ export default withAuth(
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
 
-    // Admin sayfalarına sadece ADMIN rolü erişebilir
-    if (pathname.startsWith("/admin") && token?.role !== "ADMIN") {
+    // /admin kendi özel giriş ekranını barındırır (AdminLogin), bu yüzden
+    // oturumsuz ziyaretçiler için yönlendirme yapılmaz — sadece alt admin
+    // sayfaları (ör. /admin/dashboard) ADMIN rolü ister.
+    if (
+      pathname.startsWith("/admin") &&
+      pathname !== "/admin" &&
+      token?.role !== "ADMIN"
+    ) {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);
@@ -43,8 +49,9 @@ export default withAuth(
         }
 
         // Admin sayfaları: oturum zorunlu (rol kontrolü middleware fonksiyonunda)
+        // /admin kendi giriş ekranını gösterdiği için burada her zaman izinli.
         if (pathname.startsWith("/admin")) {
-          return !!token; // tokensiz kullanıcı → next-auth login sayfasına yönlendirir
+          return pathname === "/admin" || !!token;
         }
 
         // Korumalı sayfalar için token gerekli
