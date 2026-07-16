@@ -40,6 +40,9 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
     maxAge: 24 * 60 * 60, // 24 saat
   },
+  pages: {
+    signIn: "/auth/login",
+  },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user }) {
