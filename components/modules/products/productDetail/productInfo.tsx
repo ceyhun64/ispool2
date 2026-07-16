@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { Star, CheckCircle, X, ArrowLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { withKdv } from "@/lib/pricing";
 
 interface StockEntry {
   id: number;
@@ -207,7 +208,7 @@ export default function ProductInfo({
         {selectedStock && selectedStock.priceModifier !== 0 && (
           <span className="text-xs text-slate-500 mt-2">
             Seçilen beden: {selectedStock.priceModifier > 0 ? "+" : ""}
-            {selectedStock.priceModifier} TL
+            {withKdv(selectedStock.priceModifier).toLocaleString("tr-TR")} TL
           </span>
         )}
       </div>

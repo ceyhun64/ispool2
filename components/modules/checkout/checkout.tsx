@@ -8,6 +8,10 @@ import StepAddress from "@/components/modules/checkout/stepAddress";
 import StepPaymentCard from "@/components/modules/checkout/stepPayment";
 import BasketSummaryCard from "@/components/modules/checkout/cartSummary";
 import { AddressFormData } from "@/components/modules/profile/addressForm";
+import {
+  BillingFormData,
+  initialBillingForm,
+} from "@/components/modules/checkout/billingForm";
 import { getCart } from "@/utils/cart";
 import { mergeGuestDataIntoAccount } from "@/utils/mergeGuestData";
 import { useFavorite } from "@/contexts/favoriteContext";
@@ -15,11 +19,7 @@ import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 import Link from "next/link";
 import { ShieldCheck, Lock, HelpCircle, ArrowRight } from "lucide-react";
-
-const cargoOptions = [
-  { id: "standart", name: "Standart Kargo", fee: 0.0 },
-  { id: "express", name: "Hızlı Kargo", fee: 0.0 },
-];
+import { withKdv, getShippingFee } from "@/lib/pricing";
 
 const installmentRates = [
   { count: 1, rate: 0 },
@@ -101,9 +101,6 @@ export default function PaymentPage() {
   const [user, setUser] = useState<UserUser | null>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [step, setStep] = useState(1);
-  const [selectedCargo, setSelectedCargo] = useState<string>(
-    cargoOptions[0].id,
-  );
   const [selectedInstallment, setSelectedInstallment] = useState<number>(1);
   const [cardNumber, setCardNumber] = useState("");
   const [expireMonth, setExpireMonth] = useState("");
@@ -132,6 +129,9 @@ export default function PaymentPage() {
   const [newAddressForm, setNewAddressForm] = useState(initialAddressForm);
   const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
   const [isSavingAddress, setIsSavingAddress] = useState(false);
+  const [billingForm, setBillingForm] = useState<BillingFormData>(
+    initialBillingForm,
+  );
 
   const fetchData = async () => {
     setLoading(true);
@@ -239,14 +239,16 @@ export default function PaymentPage() {
     [cartItems],
   );
 
+  // Kargo ücreti KDV dahil sepet tutarına göre belirlenir (3000 TL ve üzeri ücretsiz)
   const selectedCargoFee = useMemo(
-    () => cargoOptions.find((c) => c.id === selectedCargo)?.fee || 0,
-    [selectedCargo],
+    () => getShippingFee(withKdv(subTotal)),
+    [subTotal],
   );
 
-  // Kupon indirimi uygulanmadan önceki toplam (KDV dahil)
+  // Kupon indirimi uygulanmadan önceki toplam (KDV dahil) — kargo ücreti
+  // KDV'ye tabi değildir, doğrudan KDV dahil ara toplama eklenir.
   const baseTotalBeforeDiscount = useMemo(
-    () => (subTotal + selectedCargoFee) * 1.1,
+    () => withKdv(subTotal) + selectedCargoFee,
     [subTotal, selectedCargoFee],
   );
 
@@ -435,16 +437,30 @@ export default function PaymentPage() {
           tcno: shippingAddr.tcno || "11111111111",
           district: shippingAddr.district,
         },
-        billingAddress: {
-          contactName: `${shippingAddr.firstName} ${shippingAddr.lastName}`,
-          city: shippingAddr.city,
-          country: "Türkiye",
-          address: shippingAddr.address,
-          zipCode: shippingAddr.zip || "",
-          phone: shippingAddr.phone,
-          tcno: shippingAddr.tcno || "11111111111",
-          district: shippingAddr.district,
-        },
+        billingAddress: billingForm.differentBilling
+          ? {
+              contactName: billingForm.fullName,
+              firstName: billingForm.fullName,
+              lastName: "",
+              city: billingForm.city,
+              country: "Türkiye",
+              address: billingForm.address,
+              zipCode: shippingAddr.zip || "",
+              phone: shippingAddr.phone,
+              tcno: billingForm.identityNumber,
+              district: billingForm.district,
+              billingType: billingForm.billingType,
+            }
+          : {
+              contactName: `${shippingAddr.firstName} ${shippingAddr.lastName}`,
+              city: shippingAddr.city,
+              country: "Türkiye",
+              address: shippingAddr.address,
+              zipCode: shippingAddr.zip || "",
+              phone: shippingAddr.phone,
+              tcno: shippingAddr.tcno || "11111111111",
+              district: shippingAddr.district,
+            },
         totalPrice: totalWithoutCoupon, // Kupon yok + taksit var
         paidPrice: finalTotalWithInstallment, // Kupon var + taksit var (gerçek ödenen)
         baseTotalPrice: baseTotalBeforeDiscount, // Kupon yok + taksit yok (ara toplam)
@@ -537,6 +553,8 @@ export default function PaymentPage() {
                     isAddingNewAddress={isAddingNewAddress}
                     setIsAddingNewAddress={setIsAddingNewAddress}
                     isSavingAddress={isSavingAddress}
+                    billingForm={billingForm}
+                    setBillingForm={setBillingForm}
                   />
                 </div>
               ) : (

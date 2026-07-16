@@ -29,6 +29,7 @@ interface Address {
   phone: string;
   country: string;
   tcno?: string;
+  billingType?: "bireysel" | "kurumsal";
 }
 
 interface CreateOrderBody {
@@ -409,8 +410,10 @@ export async function POST(req: NextRequest) {
                 },
                 {
                   type: "billing",
-                  firstName: body.buyer?.buyerName ?? "",
-                  lastName: body.buyer?.buyerSurname ?? "",
+                  firstName:
+                    billingAddress.firstName ?? body.buyer?.buyerName ?? "",
+                  lastName:
+                    billingAddress.lastName ?? body.buyer?.buyerSurname ?? "",
                   address: billingAddress.address ?? "",
                   district: billingAddress.district ?? "",
                   city: billingAddress.city ?? "",
@@ -418,6 +421,11 @@ export async function POST(req: NextRequest) {
                   phone: body.buyer?.phone ?? "",
                   country: billingAddress.country ?? "Türkiye",
                   tcno: billingAddress.tcno ?? body.buyer?.tcno ?? "",
+                  billingType:
+                    billingAddress.billingType === "kurumsal" ||
+                    billingAddress.billingType === "bireysel"
+                      ? billingAddress.billingType
+                      : null,
                 },
               ],
             },

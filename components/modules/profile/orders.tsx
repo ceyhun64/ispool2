@@ -70,6 +70,7 @@ interface Address {
   zip?: string;
   country: string;
   tcno?: string;
+  billingType?: "bireysel" | "kurumsal" | null;
 }
 
 interface Size {
@@ -364,6 +365,11 @@ function AddressCard({
         <p className="font-black text-slate-900 uppercase text-[13px]">
           {address.firstName} {address.lastName}
         </p>
+        {address.billingType && (
+          <p className="text-[10px] font-black uppercase tracking-widest text-orange-500">
+            {address.billingType === "kurumsal" ? "Kurumsal Fatura" : "Bireysel Fatura"}
+          </p>
+        )}
         <p className="text-slate-500 font-medium leading-relaxed">
           {address.address}
           {address.neighborhood && `, ${address.neighborhood}`}
@@ -385,7 +391,7 @@ function AddressCard({
         {address.tcno && (
           <p className="text-slate-400 font-medium flex items-center gap-1.5">
             <Barcode size={11} className="text-slate-300" />
-            TC: {address.tcno}
+            {address.billingType === "kurumsal" ? "Vergi No" : "TC"}: {address.tcno}
           </p>
         )}
       </div>

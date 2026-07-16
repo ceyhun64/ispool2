@@ -4,6 +4,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ShieldCheck, Truck, Lock, Tag } from "lucide-react";
 import Link from "next/link";
+import { FREE_SHIPPING_THRESHOLD, getShippingFee } from "@/lib/pricing";
 
 interface CartSummaryProps {
   subtotal: number;
@@ -14,10 +15,9 @@ export default function CartSummary({
   subtotal,
   totalBulkDiscount = 0,
 }: CartSummaryProps) {
-  // Hesaplamalar
-  const taxRate = 0.1; // %10 KDV
-  const taxAmount = subtotal * taxRate;
-  const total = subtotal + taxAmount;
+  // subtotal KDV dahil olarak gelir (bkz. cart.tsx) — burada ayrıca KDV eklenmez
+  const shippingFee = getShippingFee(subtotal);
+  const total = subtotal + shippingFee;
 
   // Para birimi formatlayıcı
   const formatCurrency = (value: number) => {
@@ -59,25 +59,27 @@ export default function CartSummary({
             </div>
           )}
 
-          {/* KDV Tutarı */}
-          <div className="flex justify-between items-center text-[13px]">
-            <span className="text-slate-500 font-medium">
-              Vergi / KDV (%10)
-            </span>
-            <span className="text-slate-900 font-bold font-mono">
-              {formatCurrency(taxAmount)}
-            </span>
-          </div>
-
           {/* Teslimat */}
           <div className="flex justify-between items-center text-[13px]">
             <span className="text-slate-500 font-medium">
               Lojistik / Teslimat
             </span>
-            <span className="text-slate-400 text-[10px] tracking-widest uppercase font-bold">
-              Hesaplanıyor
-            </span>
+            {shippingFee === 0 ? (
+              <span className="text-emerald-600 text-[10px] tracking-widest uppercase font-bold">
+                Ücretsiz
+              </span>
+            ) : (
+              <span className="text-slate-900 font-bold font-mono">
+                {formatCurrency(shippingFee)}
+              </span>
+            )}
           </div>
+          {shippingFee > 0 && (
+            <p className="text-[10px] text-slate-400 font-medium -mt-3">
+              {formatCurrency(FREE_SHIPPING_THRESHOLD)} ve üzeri alışverişlerde
+              kargo ücretsiz.
+            </p>
+          )}
 
           {/* Genel Toplam */}
           <div className="pt-8 mt-4 border-t border-slate-200 flex justify-between items-start">

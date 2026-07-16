@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { useFavorite } from "@/contexts/favoriteContext";
 import { motion } from "framer-motion";
+import { withKdv } from "@/lib/pricing";
 
 interface ProductData {
   id: number;
@@ -169,12 +170,12 @@ export default function ProductCard({ product }: { product: ProductData }) {
 
           <div className="flex items-baseline gap-2 pt-0.5">
             <span className="text-sm sm:text-base font-bold text-slate-900">
-              {product.price.toLocaleString("tr-TR")} TL
+              {withKdv(product.price).toLocaleString("tr-TR")} TL
             </span>
             {/* null kontrolü yapılmış eski fiyat gösterimi */}
             {hasRealDiscount && product.oldPrice !== null && (
               <span className="text-xs text-slate-500 line-through">
-                {product.oldPrice.toLocaleString("tr-TR")} TL
+                {withKdv(product.oldPrice).toLocaleString("tr-TR")} TL
               </span>
             )}
           </div>

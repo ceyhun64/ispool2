@@ -16,6 +16,7 @@ import {
   removeFromGuestCart,
   GuestCartItem,
 } from "@/utils/cart";
+import { withKdv } from "@/lib/pricing";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -170,7 +171,7 @@ export default function Cart() {
 
   // ─── Totals with Bulk Discount ───────────────────────────────────────────
   const subtotal = cartItems.reduce((acc, item) => {
-    let itemTotal = item.product.price * item.quantity;
+    let itemTotal = withKdv(item.product.price) * item.quantity;
 
     // Toplu alım indirimi kontrolü
     if (
@@ -191,7 +192,7 @@ export default function Cart() {
       item.product.bulkDiscountRate &&
       item.quantity >= item.product.bulkDiscountQty
     ) {
-      const itemTotal = item.product.price * item.quantity;
+      const itemTotal = withKdv(item.product.price) * item.quantity;
       const discountAmount = (itemTotal * item.product.bulkDiscountRate) / 100;
       return acc + discountAmount;
     }
