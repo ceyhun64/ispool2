@@ -1,702 +1,521 @@
-# 🦺 İşPool — Occupational Safety & Workwear E-Commerce Platform
+# İşPool — Occupational Safety & Workwear E-Commerce Platform
 
-<div align="center">
+## Overview
 
-![Next.js](https://img.shields.io/badge/Next.js-16.1.1-black?style=for-the-badge&logo=next.js)
-![React](https://img.shields.io/badge/React-19.2.3-61DAFB?style=for-the-badge&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)
-![Prisma](https://img.shields.io/badge/Prisma-7.4.0-2D3748?style=for-the-badge&logo=prisma)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?style=for-the-badge&logo=tailwind-css)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+İşPool is a Next.js (App Router) e-commerce application for occupational health & safety (OHS) equipment, technical workwear, and PPE. It includes a customer-facing storefront (catalog, cart, checkout, iyzico payments, order tracking, reviews, favorites, blog) and an admin panel (`/admin`) for managing products, categories, orders, users, coupons, banners/hero slides, blog posts, and newsletter subscribers.
 
-**A full-stack e-commerce platform for occupational health & safety equipment, technical workwear, and personal protective equipment (PPE)**
-
-[Features](#-features) • [Tech Stack](#️-technology-stack) • [Installation](#-installation) • [API](#-api-endpoints) • [Database](#️-database-schema) • [Deployment](#-deployment)
-
-</div>
+This README documents only what is verifiable in the source code as of this audit. Anything that could not be confirmed is called out explicitly rather than assumed.
 
 ---
 
-## 📋 About the Project
+## Features
 
-İşPool is a comprehensive digital commerce platform built for the occupational health and safety (OHS) industry. From high-visibility safety vests and flame-resistant coveralls to respiratory protection and ergonomic footwear, İşPool provides a categorized, searchable product catalog aligned with industrial standards.
+Verified from `app/`, `components/`, `lib/`, and `prisma/schema.prisma`:
 
-The platform serves three distinct user groups: **customers** browsing and purchasing PPE, **administrators** managing the product catalog and operations, and **enterprise clients** seeking wholesale or custom-manufactured workwear. It is deployed on a VPS behind an Nginx reverse proxy using Docker.
+### Customer-facing
 
----
+- Product catalog with a three-level category hierarchy (`Category → MiddleCategory → SubCategory`), brand, color, and size filtering
+- Product detail pages with stock per color/size variant (`ProductStock`, `ProductSize`)
+- Product search (`app/api/search/route.ts`)
+- Shopping cart, persisted server-side per logged-in user via `CartItem` (see `app/api/cart`)
+- Favorites/wishlist (`app/api/favorites`, `Favorite` model)
+- Product reviews and ratings (`Review` model, `app/api/review`)
+- Multi-step checkout with iyzico payment integration, including installment pricing (`lib/iyzico.ts`)
+- Coupon/discount code validation at checkout (`Coupon` model, `app/api/coupon/validate`)
+- Order history and cargo tracking via Horoz Kargo (`lib/cargo-utils.ts`, `types/horoz-cargo.ts`, `app/api/cargo-tracking`)
+- User addresses (`Address` model, `app/api/address`)
+- Blog / content pages (`Blog` model, `app/api/blog`)
+- Newsletter subscription (`Subscribe` model, `app/api/subscribe`)
+- Dedicated wholesale (`/products/wholesale`) and special/custom production (`/products/special_production`) pages
+- Background-removal tool for product images, calling the third-party **remove.bg** API (`app/api/remove-bg/route.ts`) — this is a hosted API call, not a local/ffmpeg-based process
+- Account registration, login, and forgot/reset password flows (NextAuth Credentials provider)
 
-## ✨ Features
+### Admin panel (`/admin`, role-gated)
 
-### 🛍️ Customer Features
+- Dashboard (`app/admin/dashboard`)
+- Product CRUD with color/size/stock variants (`app/admin/products`)
+- Category/middle-category/sub-category, color, and size management (`app/admin/color_size`, `app/api/category`, `app/api/color`, `app/api/size`)
+- Order management (`app/admin/orders`, `app/api/order`)
+- User management, including admin listing/deletion of users (`app/admin/users`, `app/api/user/all`)
+- Coupon management (`app/admin/coupon`)
+- Blog management (`app/admin/blogs`)
+- Banner and hero-slide management (`app/admin/home_settings`, `Banner`/`HeroSlide` models)
+- Newsletter subscriber list (`app/admin/subscribers`)
 
-- **PPE & OHS Equipment Catalog** — Advanced filtering by industry, category, color, size, and brand
-- **Product Detail Pages** — Specifications, stock status, variants, and price comparison
-- **Custom Design Tool** — Canvas-based product customization with layers, text, and image overlays
-- **Shopping Cart & Wishlist** — Persistent, session-aware cart and favorites
-- **Secure Checkout** — Multi-step checkout with address management and iyzico payment integration
-- **Installment Payment Options** — Credit card installments via iyzico (Axess, Bonus, Maximum, World, Paraf, BankKart)
-- **Order Tracking** — Real-time cargo tracking (Horoz Kargo integration)
-- **User Profile** — Order history, saved addresses, and account management
-- **Blog & Content Pages** — Industry news, safety guides, and SEO-optimized articles
-- **Newsletter Subscription** — Campaign and update notifications
-- **Cookie Consent** — KVKK/GDPR compliant cookie management
-- **Mobile-Responsive UI** — Fully responsive design with smooth animations
+### Not confirmed as an active feature
 
-### 🔧 Admin Features
-
-- **Admin Dashboard** — Sales analytics, order volume, and revenue charts
-- **Product Management** — Create, edit, and delete products with variant support (color, size, stock)
-- **Category Management** — Three-level category hierarchy (Category → Middle → Sub)
-- **Order Management** — View, filter, and update order statuses
-- **User Management** — Role-based user administration
-- **Coupon & Discount Management** — Create and manage dynamic discount codes
-- **Blog Management** — Publish, edit, and manage SEO-optimized blog posts
-- **Banner & Hero Slider Management** — Visual content management for homepage
-- **Subscriber Management** — Newsletter subscriber list
-
-### 🏭 Enterprise Features
-
-- **Wholesale Page** — Dedicated B2B catalog and inquiry flow
-- **Special Production** — Custom OEM workwear request and design workflow
-- **Background Removal Tool** — AI-powered product image background remover
-- **Cloudinary Integration** — Optimized image upload, transformation, and CDN delivery
-
-### ⚙️ Technical Features
-
-- **Next.js App Router with SSR/SSG** — Optimized page loading and SEO
-- **NextAuth.js Authentication** — Secure session management with JWT
-- **Prisma ORM + PostgreSQL** — Type-safe relational database access
-- **Zod Validation** — Schema-based input validation on all API routes
-- **Nodemailer** — Transactional email notifications
-- **React Hook Form** — Performant, accessible form management
-- **Framer Motion** — Fluid UI animations and page transitions
+- **`@ffmpeg-installer/ffmpeg`** and **`fluent-ffmpeg`** are listed as dependencies in `package.json`, but no import of either package was found anywhere in `app/`, `components/`, `lib/`, `hooks/`, `utils/`, or `prisma/`. Video handling that *is* wired up (the `product.videoUrl` field and product video uploads) goes through Cloudinary's own video upload/transformation (`lib/uploadToCloudinary.ts`, `app/api/cloudinary-signature`), not ffmpeg. Treat ffmpeg as an unused/leftover dependency unless further code is found that invokes it.
+- **`@prisma/extension-accelerate`** is a dependency, but `lib/db.ts` does not call `.$extends(withAccelerate())` or otherwise apply it. The Prisma Client is used with `@prisma/adapter-pg` only (see Database section below).
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Frontend
 
-| Technology | Version | Description |
-|-----------|---------|-------------|
-| Next.js | 16.1.1 | SSR & SSG, SEO optimization, App Router |
-| React | 19.2.3 | Component-based UI architecture |
-| TypeScript | 5 | Type-safe development |
-| Tailwind CSS | 4 | Utility-first styling |
-| Radix UI | 1.4.3 | Accessible, unstyled UI primitives |
-| Framer Motion | 12.26.2 | Animations and transitions |
-| Recharts | 2.15.4 | Admin analytics charts |
-| Embla Carousel | 8.6.0 | Touch-friendly product carousels |
-| React Hook Form | 7.71.1 | Form state management |
-| Zod | 4.3.5 | Schema validation |
-| React RnD | 10.5.2 | Draggable design canvas elements |
-| Lucide React | 0.562.0 | Icon library |
-| Sonner | 2.0.7 | Toast notifications |
-| date-fns | 4.1.0 | Date formatting utilities |
+| Technology | Version (package.json) | Notes |
+|---|---|---|
+| Next.js | 16.1.1 | App Router |
+| React | 19.2.3 | |
+| TypeScript | ^5 | strict mode enabled |
+| Tailwind CSS | ^4 | via `@tailwindcss/postcss` |
+| Radix UI (`radix-ui` + individual `@radix-ui/react-*` packages) | 1.4.3 | primitives behind `components/ui` |
+| shadcn-style component setup | — | configured via `components.json` (style: "new-york") |
+| React Hook Form | ^7.71.1 | with `@hookform/resolvers` |
+| Zod | ^4.3.5 | schema validation |
+| Framer Motion / `motion` | ^12.26.2 | |
+| Recharts | ^2.15.4 | admin dashboard charts |
+| Embla Carousel | ^8.6.0 | |
+| react-rnd | ^10.5.2 | drag/resize (design tool) |
+| html-to-image / html2canvas | ^1.11.13 / ^1.4.1 | client-side image export |
+| Sonner | ^2.0.7 | toasts |
+| date-fns | ^4.1.0 | |
 
-### Backend & Database
+### Backend & Data
 
-| Technology | Version | Description |
-|-----------|---------|-------------|
-| Node.js | — | Server-side runtime |
-| Prisma | 7.4.0 | ORM & database migrations |
-| PostgreSQL | 8.16.3 | Relational database |
-| NextAuth.js | 4.24.13 | Authentication & session management |
-| bcrypt | 6.0.0 | Password hashing |
-| Nodemailer | 7.0.12 | Email delivery |
-| Cloudinary | 2.8.0 | Image upload, optimization & CDN |
-| iyzipay | — | Payment gateway (iyzico) |
+| Technology | Version | Notes |
+|---|---|---|
+| Prisma ORM | ^7.4.1 (`prisma` CLI), `@prisma/client` ^7.4.1 | schema in `prisma/schema.prisma`, client generated to `generated/prisma` |
+| `@prisma/adapter-pg` | ^7.3.0 | driver adapter used to connect Prisma Client to Postgres via `pg` |
+| `pg` | ^8.16.3 | Node Postgres driver used by the adapter |
+| `@prisma/extension-accelerate` | ^3.0.1 | dependency present, **not applied** in `lib/db.ts` (see Database section) |
+| PostgreSQL | — | `datasource db { provider = "postgresql" }` |
+| NextAuth.js | ^4.24.13 | Credentials provider, JWT sessions |
+| bcrypt | ^6.0.0 | password hashing |
+| Nodemailer | ^7.0.12 | transactional email (`lib/mailer.ts`) |
+| Cloudinary | ^2.8.0 | image/video upload & CDN |
+| iyzipay ecosystem | custom `lib/iyzico.ts` | no `iyzipay` npm SDK dependency was found in `package.json`; the integration is a hand-written signed HTTPS client |
 
-### Infrastructure & DevOps
+### Tooling
 
-| Technology | Description |
-|-----------|-------------|
-| Docker | Containerization |
-| Nginx | Reverse proxy (production) |
-| VPS | Production hosting |
-| Cloudinary | CDN & image management |
-
----
-
-## 🏗️ Architecture Overview
-
-```
-Browser / Client
-       │
-       ▼
-  Nginx (Reverse Proxy)
-       │
-       ▼
-  Next.js App (Docker)
-  ┌────────────────────────────────────┐
-  │  App Router (SSR / SSG / API)      │
-  │  ├── /app/page.tsx  (Homepage)     │
-  │  ├── /app/products/ (Catalog)      │
-  │  ├── /app/admin/    (Admin Panel)  │
-  │  └── /app/api/      (API Routes)   │
-  │                                    │
-  │  Contexts: Cart, Favorites         │
-  │  Hooks: useMobile, session         │
-  └────────────────────────────────────┘
-       │                    │
-       ▼                    ▼
-  PostgreSQL           Cloudinary
-  (via Prisma)         (Images / CDN)
-                            │
-                       iyzico (Payments)
-                       Nodemailer (Email)
-                       Horoz Kargo (Cargo)
-```
+| Technology | Notes |
+|---|---|
+| ESLint | Next.js config |
+| PostCSS | Tailwind v4 pipeline |
+| tsx | runs `prisma/seed.ts` and `prisma/syncCatalog.ts` |
 
 ---
 
-## 📁 Project Structure
+## Architecture
+
+- **Framework**: Next.js App Router. Routes live under `app/`, with API route handlers under `app/api/**/route.ts`.
+- **Auth/route protection**: `proxy.ts` at the project root implements `withAuth` (NextAuth middleware). In Next.js 16 this file replaces the older `middleware.ts` convention. It matches `/admin/:path*`, `/profile/:path*`, `/checkout/:path*`, `/favorites/:path*`, and `/api/admin/:path*`, redirecting unauthenticated users to `/auth/login` and requiring the `ADMIN` role for admin sub-pages (the `/admin` root itself renders its own login screen).
+- **Database access**: a single Prisma Client instance (`lib/db.ts`) is instantiated with the `@prisma/adapter-pg` driver adapter over a `pg` connection pool, using `DATABASE_URL`. No Prisma Accelerate/edge client wrapping was found in the code.
+- **State**: client-side global state is limited to `contexts/favoriteContext.tsx` (`FavoriteProvider`, tracks favorite product IDs and syncs with the session). No cart context/provider exists in `contexts/` — cart state is read and mutated through `app/api/cart` route handlers and consumed directly by cart-related components (`components/modules/cart/*`, `components/modules/navbar/cartDropdown.tsx`).
+- **Server-to-server calls**: `lib/internalAuth.ts` defines a shared-secret header (`x-internal-secret`, derived from `NEXTAUTH_SECRET`) so one route handler can call another (e.g. order creation calling payment/mail) without relying on browser cookies.
+- **Rate limiting**: `lib/rate-limit.ts` is an in-memory, per-process token-bucket-style limiter (a plain `Map`). It is applied to at least the `remove-bg` endpoint. Being in-memory, it resets on every server restart/redeploy and is not shared across multiple server instances.
+- **Payments**: `lib/iyzico.ts` builds iyzico's `IYZWSv2` HMAC-signed authorization header by hand and calls the iyzico REST API directly with `fetch` (base URL from `IYZICO_BASE_URL`, defaulting to the sandbox endpoint).
+- **Images/video**: uploads go through `app/api/cloudinary-signature` (server generates a signed upload) and `lib/uploadToCloudinary.ts` (client uploads directly to Cloudinary, bypassing the Next.js server body-size limit). Product records can store a `videoUrl` and a `showVideo` flag.
+
+```
+Browser
+   │
+   ▼
+proxy.ts (NextAuth middleware — route/role gating)
+   │
+   ▼
+Next.js App Router
+ ├── app/*                 (SSR/SSG pages)
+ ├── app/admin/*            (role-gated admin UI)
+ └── app/api/**/route.ts    (API route handlers)
+        │
+        ├── Prisma Client (@prisma/adapter-pg) ──► PostgreSQL
+        ├── Cloudinary (signed direct upload)   ──► image/video CDN
+        ├── iyzico REST API (HMAC-signed)        ──► payments
+        ├── Horoz Kargo API                       ──► cargo tracking
+        ├── remove.bg REST API                    ──► background removal
+        └── Nodemailer (SMTP)                     ──► transactional email
+```
+
+---
+
+## Folder Structure
 
 ```
 İşPool/
-├── app/                              # Next.js App Router
-│   ├── admin/                        # Admin panel pages
-│   │   ├── dashboard/                # Analytics dashboard
-│   │   ├── products/                 # Product CRUD (new, edit/[id])
-│   │   ├── orders/                   # Order management
-│   │   ├── users/                    # User management
-│   │   ├── blogs/                    # Blog management
-│   │   ├── color_size/               # Color & size management
-│   │   ├── coupon/                   # Coupon management
-│   │   ├── home_settings/            # Banner & hero slider settings
-│   │   └── subscribers/              # Newsletter subscribers
-│   ├── api/                          # API route handlers
-│   │   ├── auth/                     # NextAuth & logout
-│   │   ├── account/                  # Register, forgot/reset password
-│   │   ├── products/                 # Product CRUD & category filtering
-│   │   ├── category/                 # 3-level category API
-│   │   ├── cart/                     # Cart management
-│   │   ├── order/                    # Order creation & user orders
-│   │   ├── favorites/                # Wishlist
-│   │   ├── payment/                  # iyzico payment gateway
-│   │   ├── coupon/                   # Coupon validation
-│   │   ├── review/                   # Product reviews
-│   │   ├── blog/                     # Blog CRUD
-│   │   ├── banner/                   # Banner management
-│   │   ├── hero-slides/              # Hero slider management
-│   │   ├── color/ & size/            # Color & size management
-│   │   ├── address/                  # User address management
-│   │   ├── cargo-tracking/           # Horoz Kargo tracking
-│   │   ├── cloudinary-signature/     # Signed uploads
-│   │   ├── remove-bg/                # Background removal
-│   │   ├── send-mail/                # Transactional email
-│   │   ├── subscribe/                # Newsletter subscriptions
-│   │   ├── upload/                   # File upload handler
-│   │   ├── user/                     # User profile & admin user list
-│   │   └── location/                 # Districts & neighborhoods API
-│   ├── auth/                         # Login, register, forgot/reset password
-│   ├── cart/                         # Shopping cart page
-│   ├── checkout/                     # Multi-step checkout (success, unsuccess)
-│   ├── products/                     # Product listing & detail pages
-│   │   ├── [id]/                     # Product detail
-│   │   ├── category/[id]/[midId]/[subId]/ # Category-filtered listing
-│   │   ├── special_production/       # Custom manufacturing page
-│   │   └── wholesale/                # B2B wholesale page
-│   ├── profile/                      # User profile, orders, addresses, tracking
-│   ├── favorites/                    # Wishlist page
-│   ├── institutional/                # About, blog, career, partners, why us
-│   ├── help/                         # FAQ, KVKK, contact, returns, printing
-│   └── customer/                     # Legal pages (terms, privacy, returns)
-│
+├── app/
+│   ├── admin/            # Role-gated admin panel (dashboard, products, orders, users,
+│   │                      #  blogs, color_size, coupon, home_settings, subscribers)
+│   ├── api/               # Route handlers — see API section below
+│   ├── auth/              # login, register, forgot-password, reset-password
+│   ├── cart/, checkout/   # Cart page; multi-step checkout (success/unsuccess)
+│   ├── products/          # Listing, [id] detail, category/, special_production/, wholesale/
+│   ├── profile/           # Orders, addresses, cargo_tracking
+│   ├── favorites/
+│   ├── institutional/     # about, blog, career, cookie_policy, partners, quality, why_us
+│   ├── help/               # bank-info, contact, distance-sales, faq, kvkk, printing, returns-help
+│   └── customer/           # bank-details, privacy, returns, sales-agreement, terms
 ├── components/
-│   ├── layout/                       # Navbar, footer, topbar, pagination
-│   ├── modules/
-│   │   ├── admin/                    # Admin panel UI modules
-│   │   ├── auth/                     # Auth forms
-│   │   ├── cart/                     # Cart items and summary
-│   │   ├── checkout/                 # Payment stepper, address & payment steps
-│   │   ├── home/                     # Hero slider, banners, categories, bestsellers
-│   │   ├── navbar/                   # Cart dropdown, category bar, mega menu
-│   │   ├── products/                 # Product cards, filters, design tool
-│   │   │   └── productDetail/design/ # Canvas-based design tool (layers, toolbar)
-│   │   ├── favorites/                # Wishlist product cards
-│   │   ├── profile/                  # Orders, addresses, cargo tracking
-│   │   └── footer/                   # Help, institutional, legal pages
-│   └── ui/                           # Radix-based UI primitives (50+ components)
-│
+│   ├── layout/             # navbar, footer, topbar, pagination
+│   ├── modules/             # admin, auth, cart, checkout, home, navbar, products
+│   │   │                     #  (incl. products/productDetail/design — the canvas design tool),
+│   │   │                     #  favorites, profile, footer
+│   └── ui/                  # Radix/shadcn-style primitives (53 files)
 ├── contexts/
-│   ├── cartContext.tsx                # Global cart state
-│   └── favoriteContext.tsx            # Global favorites state
-│
+│   └── favoriteContext.tsx  # FavoriteProvider — the only React context in the app
 ├── lib/
-│   ├── auth.ts                        # NextAuth configuration
-│   ├── db.ts                          # Prisma client instance
-│   ├── session.ts                     # Session helpers
-│   ├── cargo-utils.ts                 # Cargo tracking utilities
-│   ├── uploadToCloudinary.ts          # Cloudinary upload helper
-│   └── utils.ts                       # General utility functions
-│
+│   ├── auth.ts               # NextAuth authOptions (Credentials provider, JWT)
+│   ├── db.ts                 # Prisma Client instance (adapter-pg)
+│   ├── session.ts
+│   ├── cargo-utils.ts         # Horoz Kargo helpers
+│   ├── iyzico.ts               # iyzico signed-request client + pricing
+│   ├── pricing.ts               # shipping fee calculation
+│   ├── mailer.ts                 # Nodemailer transport
+│   ├── internalAuth.ts            # server-to-server shared-secret header
+│   ├── rate-limit.ts               # in-memory rate limiter
+│   ├── sanitize.ts
+│   ├── uploadToCloudinary.ts        # signed direct-to-Cloudinary upload
+│   └── utils.ts
 ├── prisma/
-│   ├── schema.prisma                  # Database schema
-│   ├── seed.ts                        # Database seed data
-│   └── migrations/                    # Migration history
-│
-├── types/                             # TypeScript type definitions
-│   ├── product.ts
-│   ├── order.ts
-│   ├── horoz-cargo.ts
-│   └── *.d.ts                         # Module augmentations
-│
+│   ├── schema.prisma        # database schema (see Database section)
+│   ├── seed.ts               # database seed script
+│   ├── syncCatalog.ts         # idempotent size/brand sync script (see Available Scripts)
+│   └── migrations/
+├── data/                     # JSON fixtures consumed by prisma/seed.ts
+│   ├── products.json, categories.json, middleCategories.json, subCategories.json
+├── types/                    # product.ts, order.ts, horoz-cargo.ts, module augmentations
 ├── hooks/
-│   └── use-mobile.ts                  # Mobile breakpoint hook
-│
+│   └── use-mobile.ts
 ├── utils/
-│   └── cart.ts                        # Cart calculation utilities
-│
-└── public/                            # Static assets
-    ├── about/, banner/, brands/       # Marketing images
-    ├── cards/                         # Payment card logos (SVG)
-    ├── categories/, categoryIcons/    # Category visuals
-    ├── heroes/                        # Hero slider images (AVIF)
-    ├── iyzico/                        # Payment branding
-    ├── products/, special_production/ # Product images
-    └── city.json                      # Turkish city/district data
+│   ├── cart.ts
+│   └── mergeGuestData.ts
+├── generated/prisma/          # Prisma Client output (generator output = "../generated/prisma")
+├── proxy.ts                    # Next.js 16 middleware/proxy — auth route gating
+└── public/                      # about/, banner/, brands/, cards/, categories/, categoryIcons/,
+                                   #  heroes/, iyzico/, logo/, megaMenu/, products/, socialMedia/,
+                                   #  special_production/, wholesale/, why_us/, city.json, og-image.png
 ```
 
 ---
 
-## 🗄️ Database Schema
-
-### Core Models
-
-```
-User                → User accounts (name, email, hashed password, role)
-Product             → Product catalog (title, price, description, images)
-Category            → Top-level categories
-MiddleCategory      → Mid-level categories (linked to Category)
-SubCategory         → Sub-level categories (linked to MiddleCategory)
-Brand               → Product brands
-Color               → Color variants
-Size                → Size variants
-ProductStock        → Stock per product-color-size combination
-ProductSize         → Size assignments per product
-
-Order               → Customer orders (status, total, cargo info)
-OrderItem           → Line items within an order
-OrderAddress        → Snapshot of delivery address at time of order
-
-CartItem            → Items in user's active cart
-Favorite            → User wishlist items
-Review              → Product reviews (rating, comment)
-
-Blog                → Blog posts (title, content, slug, SEO fields)
-Coupon              → Discount codes (type, amount, usage limits)
-Banner              → Homepage banners (image, link, position)
-HeroSlide           → Hero slider slides (image, title, CTA)
-Subscribe           → Newsletter subscribers
-Address             → Saved user delivery addresses
-```
-
-### Key Relationships
-
-- Products belong to a SubCategory → MiddleCategory → Category chain
-- ProductStock links Product + Color + Size for per-variant inventory
-- Orders snapshot the delivery address independently of the user's saved addresses
-- Reviews are linked to both a Product and the reviewing User
-- Coupons track individual usage per User to enforce per-user limits
-
----
-
-## 🚀 Installation
+## Installation
 
 ### Prerequisites
 
-- Node.js **18+**
-- PostgreSQL **13+**
-- npm or yarn
-- Cloudinary account *(for image uploads)*
-- iyzico account *(for payment processing)*
+- Node.js and npm
+- A PostgreSQL database (local or hosted)
+- Accounts/API keys for the third-party services used by the app (Cloudinary, iyzico, remove.bg, Horoz Kargo, an SMTP mail account) if you need those features to work
 
----
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/your-username/ispool.git
-cd ispool
-```
-
----
-
-### 2. Install Dependencies
+### 1. Install dependencies
 
 ```bash
 npm install
 ```
 
----
+`postinstall` automatically runs `prisma generate`.
 
-### 3. Configure Environment Variables
+### 2. Configure environment variables
 
-Create a `.env.local` file in the project root:
+Create a `.env` and/or `.env.local` file (both exist in this project; `.env.local` takes precedence in Next.js) with the variables listed in **Environment Variables** below. No `.env.example` file exists in the repository — variable names below were read directly from the existing `.env`/`.env.local` files present in the project (values are not reproduced here).
 
-```env
-# Database
-DATABASE_URL="postgresql://username:password@localhost:5432/ispool"
-POSTGRES_URL="postgresql://username:password@localhost:5432/ispool"
-
-# NextAuth
-NEXTAUTH_SECRET="your-nextauth-secret-min-32-chars"
-NEXTAUTH_URL="http://localhost:3000"
-
-# Cloudinary
-CLOUDINARY_CLOUD_NAME="your-cloud-name"
-CLOUDINARY_API_KEY="your-api-key"
-CLOUDINARY_API_SECRET="your-api-secret"
-
-# Email (Gmail SMTP)
-EMAIL_USER="your-email@gmail.com"
-EMAIL_PASS="your-gmail-app-password"
-
-# iyzico Payment Gateway
-IYZICO_API_KEY="your-iyzico-api-key"
-IYZICO_SECRET_KEY="your-iyzico-secret-key"
-IYZICO_BASE_URL="https://sandbox-api.iyzipay.com"   # Use production URL for live
-
-# App
-NEXT_PUBLIC_BASE_URL="http://localhost:3000"
-```
-
----
-
-### 4. Set Up the Database
+### 3. Set up the database
 
 ```bash
-# Run migrations
-npx prisma migrate dev
-
-# Seed initial data
-npm run seed
-
-# Generate Prisma client
-npx prisma generate
+npx prisma migrate dev   # apply/create migrations against your database
+npm run seed              # populate initial catalog/admin data
 ```
 
----
-
-### 5. Start the Development Server
+### 4. Run the development server
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open http://localhost:3000.
 
 ---
 
-### Production Build
+## Environment Variables
+
+Names and inferred purpose only, based on the keys present in `.env` / `.env.local` and their usage in code. **No values are reproduced here.** Set your own values locally; never commit real secrets.
+
+| Variable | Purpose |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string used by Prisma (`lib/db.ts`, `prisma.config.ts`) |
+| `POSTGRES_URL` | Alternate Postgres connection string; `prisma/seed.ts` and `prisma/syncCatalog.ts` fall back to `DATABASE_URL` if this isn't set |
+| `PRISMA_DATABASE_URL` | Present in `.env.local` (Vercel-provisioned Postgres); not referenced directly in the application code reviewed |
+| `NEXTAUTH_SECRET` | NextAuth JWT signing secret (`lib/auth.ts`); also reused as the server-to-server shared secret in `lib/internalAuth.ts` |
+| `NEXTAUTH_URL` | Referenced by NextAuth's server-side URL resolution (present in `.env`, not directly read elsewhere in code reviewed) |
+| `NEXT_PUBLIC_BASE_URL` | Public base URL of the app |
+| `ADMIN_NAME`, `ADMIN_SURNAME`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Used to seed an initial admin `User` (referenced by `prisma/seed.ts`) |
+| `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASS` | SMTP credentials for Nodemailer (`lib/mailer.ts`) |
+| `CLOUD_NAME`, `API_KEY`, `API_SECRET` | Cloudinary credentials (server-side signing in `app/api/cloudinary-signature`) |
+| `IYZICO_API_KEY`, `IYZICO_SECRET_KEY` | iyzico payment gateway credentials (`lib/iyzico.ts`) |
+| `IYZICO_BASE_URL` | iyzico API base URL; defaults to `https://sandbox-api.iyzipay.com` if unset |
+| `HOROZ_API_BASE_URL`, `HOROZ_PROCESS_KEY` | Horoz Kargo cargo-tracking API credentials |
+| `REMOVE_BG_API_KEY` | remove.bg API key (`app/api/remove-bg/route.ts`) |
+| `VERCEL_OIDC_TOKEN` | Present in `.env.local`, auto-generated by the Vercel CLI; not application-level configuration |
+
+> Note: the reviewed `.env` file also contained a couple of unlabeled stray value lines with no variable name attached. These were not documented here since their purpose could not be verified; if they are unused, consider removing them from the file.
+
+---
+
+## Available Scripts
+
+All scripts are exactly as defined in `package.json`:
+
+| Script | Command | Behavior |
+|---|---|---|
+| `dev` | `next dev` | Starts the Next.js development server |
+| `build` | `prisma generate && next build` | Regenerates the Prisma Client, then builds the production Next.js app. Does **not** touch the database. |
+| `build:fresh` | `prisma migrate reset --force && prisma db push --force-reset && prisma generate && npm run seed && next build` | **DESTRUCTIVE.** `prisma migrate reset --force` drops and recreates the entire database, then `prisma db push --force-reset` force-resets it again, before regenerating the client, reseeding, and building. **This wipes all data in whatever database `DATABASE_URL` points to. Never run this against a production or shared database.** See Troubleshooting below. |
+| `start` | `next start` | Starts the built app in production mode (requires `npm run build` first) |
+| `seed` | `npx tsx prisma/seed.ts` | Populates the database from the JSON fixtures in `data/` (products, categories, middle/sub categories) and creates an admin user from the `ADMIN_*` env vars. Not idempotent by design for reseeding purposes — intended to run against an empty/fresh schema. |
+| `sync-catalog` | `npx tsx prisma/syncCatalog.ts` | Idempotently adds new `Size` values (5XL–8XL, plus numeric pants sizes 66/68/70/72) and new `Brand` records ("Bmes", "Pars", "İş Pool") using `skipDuplicates: true`. Per its own header comment, it does **not** reset the database — safe to run against an existing, populated database. |
+| `postinstall` | `prisma generate` | Runs automatically after `npm install` to generate the Prisma Client into `generated/prisma` |
+
+---
+
+## Development
+
+```bash
+npm run dev
+```
+
+Useful Prisma commands during development (not `package.json` scripts, but standard Prisma CLI usage against `prisma/schema.prisma`):
+
+```bash
+npx prisma studio            # visual database browser
+npx prisma migrate dev        # create/apply a migration in development
+```
+
+---
+
+## Build
 
 ```bash
 npm run build
 npm start
 ```
 
-> **Note:** The `build` script resets and re-seeds the database. For production, use `next build` directly after running migrations separately.
+Do **not** use `npm run build:fresh` for a normal build — see the destructive-script warning above and in Troubleshooting.
 
 ---
 
-## 🔌 API Endpoints
+## API
 
-### Base URL
-```
-http://localhost:3000/api
-```
+Endpoints below were confirmed by reading the exported HTTP method handlers in each `app/api/**/route.ts` file. "Auth" reflects what each handler actually checks (session/role), not assumptions.
 
-### 🔐 Authentication
+### Auth & Account
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/[...nextauth]` | NextAuth handler (login, session) |
-| POST | `/api/auth/logout` | Clear session and logout |
-| POST | `/api/account/register` | Register new user |
-| POST | `/api/account/forgot_password` | Send password reset email |
-| POST | `/api/account/reset_password` | Reset password with token |
-| GET | `/api/account/check` | Check if email is already registered |
+| Method | Path | Purpose |
+|---|---|---|
+| GET, POST | `/api/auth/[...nextauth]` | NextAuth handler (Credentials login, session, logout via NextAuth's own endpoints) |
+| POST | `/api/auth/logout` | Application-specific logout endpoint |
+| POST | `/api/account/register` | Register a new user |
+| GET | `/api/account/check` | Check whether an email is already registered |
+| POST | `/api/account/forgot_password` | Send a password-reset email |
+| POST | `/api/account/reset_password` | Reset password using a reset token |
 
-### 📦 Products
+### Products, Categories, Brands, Colors, Sizes
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/products` | List all products (with filters) |
-| POST | `/api/products` | Create product (Admin) |
-| GET | `/api/products/[id]` | Get product detail |
-| PUT | `/api/products/[id]` | Update product (Admin) |
-| DELETE | `/api/products/[id]` | Delete product (Admin) |
-| GET | `/api/products/category/[id]/[midId]/[subId]` | Products by category |
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/api/products` | List products (supports filters) |
+| POST | `/api/products` | Create a product |
+| GET | `/api/products/[id]` | Get a product |
+| PUT | `/api/products/[id]` | Update a product |
+| DELETE | `/api/products/[id]` | Delete a product |
+| GET | `/api/products/category/[id]` | Products by top-level category |
+| GET | `/api/products/category/[id]/[midId]` | Products by middle category |
+| GET | `/api/products/category/[id]/[midId]/[subId]` | Products by sub-category |
+| GET | `/api/search` | Product search |
+| GET | `/api/category` | List categories |
+| GET | `/api/category/[id]` | Get a category |
+| GET | `/api/category/[id]/[midId]` | Get a middle category |
+| GET | `/api/category/[id]/[midId]/[subId]` | Get a sub-category |
+| GET | `/api/brand` | List brands |
+| POST | `/api/brand` | Create a brand |
+| GET | `/api/brand/[id]` | Get a brand |
+| PATCH | `/api/brand/[id]` | Update a brand |
+| DELETE | `/api/brand/[id]` | Delete a brand |
+| GET | `/api/color` | List colors |
+| POST | `/api/color` | Create a color |
+| GET | `/api/color/[id]` | Get a color |
+| PATCH | `/api/color/[id]` | Update a color |
+| DELETE | `/api/color/[id]` | Delete a color |
+| GET | `/api/size` | List sizes |
+| POST | `/api/size` | Create a size |
+| GET | `/api/size/[id]` | Get a size |
+| PATCH | `/api/size/[id]` | Update a size |
+| DELETE | `/api/size/[id]` | Delete a size |
 
-### 🗂️ Categories
+### Cart, Favorites, Reviews
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/category` | List top-level categories |
-| POST | `/api/category` | Create category (Admin) |
-| GET | `/api/category/[id]` | Get category detail |
-| GET | `/api/category/[id]/[midId]` | Get middle category |
-| GET | `/api/category/[id]/[midId]/[subId]` | Get sub-category |
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/api/cart` | Get current user's cart |
+| POST | `/api/cart` | Add an item to the cart |
+| PATCH | `/api/cart/[id]` | Update a cart item |
+| DELETE | `/api/cart/[id]` | Remove a cart item |
+| GET | `/api/favorites` | Get current user's favorites |
+| POST | `/api/favorites` | Add a favorite |
+| DELETE | `/api/favorites/[id]` | Remove a favorite |
+| POST | `/api/review` | Submit a review |
+| GET | `/api/review/[id]` | List reviews for a product (`[id]` is a product ID) |
 
-### 🛒 Cart
+### Orders & Payment
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/cart` | Get user's cart |
-| POST | `/api/cart` | Add item to cart |
-| PUT | `/api/cart/[id]` | Update cart item quantity |
-| DELETE | `/api/cart/[id]` | Remove item from cart |
-
-### 📋 Orders
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/order` | Create new order |
+| Method | Path | Purpose |
+|---|---|---|
+| POST | `/api/order` | Create an order |
+| GET | `/api/order` | List orders (server-side; see route for scope) |
+| PATCH | `/api/order` | Update an order |
 | GET | `/api/order/user` | Get current user's orders |
+| PATCH | `/api/order/user` | Update current user's order (e.g. cancel) |
+| POST | `/api/payment` | Initiate an iyzico payment |
 
-### 💳 Payment
+### Coupons
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/payment` | Initiate iyzico payment |
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/api/coupon` | List coupons |
+| POST | `/api/coupon` | Create a coupon |
+| DELETE | `/api/coupon` | Delete a coupon |
+| POST | `/api/coupon/validate` | Validate a coupon code |
 
-### 🏷️ Coupons
+### Content (Blog, Banners, Hero Slides)
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/coupon` | List coupons (Admin) |
-| POST | `/api/coupon` | Create coupon (Admin) |
-| POST | `/api/coupon/validate` | Validate coupon code |
-
-### ❤️ Favorites
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/favorites` | Get user's favorites |
-| POST | `/api/favorites` | Add to favorites |
-| DELETE | `/api/favorites/[id]` | Remove from favorites |
-
-### ⭐ Reviews
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/review` | List reviews |
-| POST | `/api/review` | Submit review |
-| DELETE | `/api/review/[id]` | Delete review (Admin/Owner) |
-
-### 📝 Blogs
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
+| Method | Path | Purpose |
+|---|---|---|
 | GET | `/api/blog` | List blog posts |
-| POST | `/api/blog` | Create post (Admin) |
-| PUT | `/api/blog/[id]` | Update post (Admin) |
-| DELETE | `/api/blog/[id]` | Delete post (Admin) |
-
-### 🖼️ Banners & Hero Slides
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
+| POST | `/api/blog` | Create a blog post |
+| GET | `/api/blog/[id]` | Get a blog post |
+| PUT | `/api/blog/[id]` | Update a blog post |
+| DELETE | `/api/blog/[id]` | Delete a blog post |
 | GET | `/api/banner` | List banners |
-| POST | `/api/banner` | Create banner (Admin) |
-| PUT | `/api/banner/[id]` | Update banner (Admin) |
-| DELETE | `/api/banner/[id]` | Delete banner (Admin) |
+| POST | `/api/banner` | Create a banner |
+| DELETE | `/api/banner/[id]` | Delete a banner |
 | GET | `/api/hero-slides` | List hero slides |
-| POST | `/api/hero-slides` | Create slide (Admin) |
-| PUT | `/api/hero-slides/[id]` | Update slide (Admin) |
-| DELETE | `/api/hero-slides/[id]` | Delete slide (Admin) |
+| POST | `/api/hero-slides` | Create a hero slide |
+| PATCH | `/api/hero-slides/[id]` | Update a hero slide |
+| DELETE | `/api/hero-slides/[id]` | Delete a hero slide |
 
-### 📍 Addresses & Location
+### Addresses & Location
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/address` | Get user's addresses |
-| POST | `/api/address` | Add new address |
-| PUT | `/api/address/[id]` | Update address |
-| DELETE | `/api/address/[id]` | Delete address |
-| GET | `/api/location/ilceler/[ilId]` | Get districts by province |
-| GET | `/api/location/mahalleler/[ilceId]` | Get neighborhoods by district |
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/api/address` | Get current user's addresses |
+| POST | `/api/address` | Add an address |
+| PATCH | `/api/address/[id]` | Update an address |
+| DELETE | `/api/address/[id]` | Delete an address |
+| GET | `/api/location/ilceler/[ilId]` | Get districts for a province |
+| GET | `/api/location/mahalleler/[ilceId]` | Get neighborhoods for a district |
 
-### 🚚 Cargo & Utilities
+### Users
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/cargo-tracking` | Track cargo by reference number |
-| POST | `/api/send-mail` | Send transactional email |
-| POST | `/api/upload` | Upload file to Cloudinary |
-| GET | `/api/cloudinary-signature` | Get signed upload credentials |
-| POST | `/api/remove-bg` | Remove image background |
-| POST | `/api/subscribe` | Subscribe to newsletter |
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/api/user` | Get current user's profile |
+| PATCH | `/api/user` | Update current user's profile |
+| GET | `/api/user/all` | List all users (admin) |
+| DELETE | `/api/user/all/[id]` | Delete a user (admin) |
 
----
+### Utilities & Third-Party Integrations
 
-## 💳 Payment Integration — iyzico
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/api/cargo-tracking` | Track a shipment via Horoz Kargo |
+| POST | `/api/upload` | Upload a file |
+| POST | `/api/cloudinary-signature` | Get a signed Cloudinary upload payload |
+| POST | `/api/remove-bg` | Remove an image background via the remove.bg API (session required, IP rate-limited) |
+| POST | `/api/send-mail` | Send a transactional email via Nodemailer |
+| GET | `/api/subscribe` | List newsletter subscribers (admin only) |
+| POST | `/api/subscribe` | Subscribe to the newsletter |
+| DELETE | `/api/subscribe/[id]` | Remove a subscriber |
 
-İşPool uses [iyzico](https://iyzico.com) as its payment gateway, enabling secure credit card payments and installment options for major Turkish bank cards.
-
-### Supported Cards
-
-| Card | Issuer |
-|------|--------|
-| Axess | Akbank |
-| Bonus | Garanti BBVA |
-| Maximum | İş Bankası |
-| World | Yapı Kredi |
-| Paraf | Halkbank |
-| BankKart Combo | Ziraat Bankası |
-
-### Payment Flow
-
-1. User fills in cart and proceeds to checkout
-2. Address step: select or add delivery address
-3. Payment step: enter card details (handled by iyzico's secure form)
-4. iyzico processes payment and returns callback
-5. On success → order is created, user is redirected to `/checkout/success`
-6. On failure → user is redirected to `/checkout/unsuccess`
-
-> **Sandbox Testing:** Set `IYZICO_BASE_URL=https://sandbox-api.iyzipay.com` and use iyzico's test card numbers during development.
+Note: `app/api/subscribe/route.js` and `app/api/subscribe/[id]/route.js` are plain JavaScript, unlike the rest of the API which is TypeScript.
 
 ---
 
-## 🎨 Product Design Tool
+## Database
 
-İşPool includes a canvas-based product customization tool for special production orders, allowing users to:
+PostgreSQL via Prisma ORM. Schema: `prisma/schema.prisma`. Generator output: `generated/prisma` (custom `output` path, not the default `node_modules/.prisma`).
 
-- Add and position text layers with font and color controls
-- Upload and place image overlays on product templates
-- Manage layers (reorder, toggle visibility, delete)
-- Export the final design as an image for order submission
+### Client setup (verified in `lib/db.ts`)
 
-The design tool is built with `react-rnd` for drag-and-resize, `html-to-image` for export, and a custom layer management system.
+```ts
+import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient } from '../generated/prisma/client'
 
----
-
-## 🔐 Security
-
-- **NextAuth.js** session management with JWT tokens stored in HttpOnly cookies
-- **bcrypt** password hashing (salt rounds: 12)
-- **Zod** schema validation on all API route inputs
-- **Role-based access control** — admin routes protected by session role check
-- **Cloudinary signed uploads** — server-generated signatures prevent unauthorized uploads
-- **KVKK / GDPR compliance** — cookie consent banner with granular controls
-- **Environment variable isolation** — all secrets stored in `.env.local`, never committed
-
----
-
-## 🚚 Cargo Tracking — Horoz Kargo
-
-İşPool integrates with Horoz Kargo for shipment tracking. After an order is dispatched, users can track their cargo from the profile panel at `/profile/cargo_tracking`.
-
-The integration uses a reference number returned at order creation to query real-time shipment status from the Horoz Kargo API.
-
----
-
-## 🧪 Development Tools
-
-### Database Management
-
-```bash
-# Create a new migration
-npx prisma migrate dev --name describe-your-change
-
-# Open Prisma Studio (visual DB editor)
-npx prisma studio
-
-# Seed the database
-npm run seed
-
-# Reset and re-seed (destructive)
-npx prisma migrate reset
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+const prisma = new PrismaClient({ adapter })
 ```
 
-### Code Quality
+The client is created with the `@prisma/adapter-pg` driver adapter (Prisma's driver-adapter API over `pg`/node-postgres), connected directly to `DATABASE_URL`. **`@prisma/extension-accelerate` is a `package.json` dependency but is not imported or applied anywhere found in the codebase** — there is no `withAccelerate()` call. Do not assume Prisma Accelerate or an edge-optimized client is in use unless that changes.
 
-- **TypeScript** — strict mode enabled for full type safety
-- **ESLint** — Next.js recommended ruleset
-- **PostCSS** — CSS processing pipeline for Tailwind v4
+### Models (from `prisma/schema.prisma`)
 
----
+| Model | Purpose |
+|---|---|
+| `Category` / `MiddleCategory` / `SubCategory` | Three-level product category hierarchy |
+| `Brand` | Product brands |
+| `Color` | Color variants (name + hex code) |
+| `Size` | Size variants (value, sort order, active flag) |
+| `product` | Product catalog (title, price, discount, images, `videoUrl`/`showVideo`, bulk-discount fields) |
+| `ProductSize` | Join table: which sizes a product offers |
+| `ProductStock` | Stock and price modifier per product/size combination |
+| `User` | Accounts (name, surname, email, hashed password, `UserRole`, password-reset token) |
+| `Address` | Saved user delivery addresses |
+| `Favorite` | Wishlist entries (unique per user+product) |
+| `CartItem` | Active cart items (optionally guest, `userId` nullable) |
+| `Order` | Orders (status, pricing, iyzico payment/transaction IDs, coupon code) |
+| `OrderItem` | Line items within an order |
+| `OrderAddress` | Snapshot of the delivery/billing address at order time |
+| `Review` | Product reviews (rating, title, comment; unique per user+product) |
+| `Blog` | Blog posts |
+| `Subscribe` | Newsletter subscribers |
+| `Banner` | Homepage banners |
+| `HeroSlide` | Hero slider slides (desktop/mobile images, ordering) |
+| `Coupon` | Discount codes (`PERCENTAGE`/`FIXED`, usage limits/count, expiry) |
 
-## 🚀 Deployment
+### Enums
 
-The project is containerized with Docker and deployed on a VPS behind an Nginx reverse proxy.
+`OrderStatus` (`pending`, `paid`, `shipped`, `delivered`, `cancelled`), `UserRole` (`USER`, `ADMIN`), `CouponType` (`PERCENTAGE`, `FIXED`).
 
-### Docker
+### Key relationships
 
-```bash
-# Build the image
-docker build -t ispool .
-
-# Run the container
-docker run -p 3000:3000 --env-file .env ispool
-```
-
-### Nginx Reverse Proxy (Production)
-
-```nginx
-server {
-    listen 80;
-    server_name yourdomain.com;
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-```
-
-### Production Checklist
-
-- Move all `.env.local` secrets to server environment variables
-- Switch iyzico URL to `https://api.iyzipay.com` (production)
-- Update `NEXTAUTH_URL` to your production domain
-- Enable Cloudinary production environment
-- Set `NODE_ENV=production`
-- Remove `EnsureDeleted` / `migrate reset` from the build script
-- Configure SSL via Let's Encrypt (Certbot)
+- `product` belongs to a `Category`, and optionally a `MiddleCategory`/`SubCategory`, plus an optional `Brand` and `Color`
+- `ProductStock` combines `product` + optional `Size` for per-variant inventory; `ProductSize` records which sizes a product supports
+- `Order` has many `OrderItem` and `OrderAddress` records; the address is a point-in-time snapshot, independent of the user's saved `Address` records
+- `Review` and `Favorite` are each unique per `(userId, productId)`
+- `CartItem.userId` is nullable, indicating guest-cart support at the schema level (see `utils/mergeGuestData.ts` for guest-to-user cart merge logic)
 
 ---
 
-## 🤝 Contributing
+## Authentication
 
-1. **Fork** this repository
-2. Create a feature branch:
-   ```bash
-   git checkout -b feature/AmazingFeature
-   ```
-3. Commit your changes:
-   ```bash
-   git commit -m 'feat: add AmazingFeature'
-   ```
-4. Push your branch:
-   ```bash
-   git push origin feature/AmazingFeature
-   ```
-5. Open a **Pull Request**
-
-### Code Standards
-
-- Use **TypeScript** — avoid `any` types
-- Keep components **modular and single-responsibility**
-- Type all API responses
-- Write descriptive commit messages following [Conventional Commits](https://www.conventionalcommits.org/)
+- **NextAuth.js** (`next-auth` v4) with a single `CredentialsProvider` (`lib/auth.ts`) — email + password checked against the `User` table with `bcrypt.compare`.
+- **Session strategy**: JWT, `maxAge` of 24 hours.
+- The JWT/session callbacks propagate `id`, `name`, `surname`, `email`, and `role` onto the session.
+- **Route protection**: `proxy.ts` (Next.js 16's middleware/proxy file) uses `withAuth` to gate `/admin/:path*`, `/profile/:path*`, `/checkout/:path*`, `/favorites/:path*`, and `/api/admin/:path*`. Admin sub-pages require `token.role === "ADMIN"`; `/admin` itself is left open because it renders its own login screen. Protected pages redirect unauthenticated users to `/auth/login?callbackUrl=...`.
+- **Server-to-server calls** (route handler calling another route handler) authenticate via a shared-secret header (`x-internal-secret`) built from `NEXTAUTH_SECRET`, implemented in `lib/internalAuth.ts` — this is not a general-purpose auth mechanism, only an internal-call guard.
+- Password reset uses a `resetToken`/`resetTokenExpires` pair on the `User` model, emailed via Nodemailer (`lib/mailer.ts`).
 
 ---
 
-## 📄 License
+## Configuration
 
-This project is licensed under the **MIT License**.
+- **`next.config.ts`**: allows Cloudinary (`res.cloudinary.com`) as a remote image host; sets security headers (`X-Content-Type-Options`, `X-Frame-Options`, `X-XSS-Protection`, `Referrer-Policy`, `Permissions-Policy`, `Strict-Transport-Security`) and a `Content-Security-Policy` on every route that explicitly allowlists iyzico script/CDN domains, Google Fonts, and Cloudinary for images/media.
+- **`components.json`**: shadcn-style component configuration — style `"new-york"`, RSC + TSX enabled, Tailwind CSS entry at `app/globals.css`, base color `slate`, Lucide icon library, path aliases (`@/components`, `@/lib`, `@/ui`, `@/hooks`).
+- **`tsconfig.json`**: TypeScript strict mode, `@/*` path alias mapped to the project root, Next.js TS plugin enabled.
+- **`prisma.config.ts`**: points the Prisma CLI at `prisma/schema.prisma` and `prisma/migrations`, using `DATABASE_URL`.
 
 ---
 
-<div align="center">
+## Troubleshooting
 
-*İşPool — Safe equipment for safer workplaces.* 🏭
+- **I ran `npm run build:fresh` and lost my data.** This is expected — `build:fresh` runs `prisma migrate reset --force` and `prisma db push --force-reset`, both of which drop and recreate the database schema, deleting all rows. This script should only ever be run against a disposable local/dev database that you're fine wiping, and never against staging or production. If you need a normal production build, use `npm run build` instead, which only runs `prisma generate && next build` and does not touch the database.
+- **Prisma Client errors after pulling new code / changing the schema.** Run `npx prisma generate` (also runs automatically via `postinstall` after `npm install`). The generated client lives at `generated/prisma`, not the default `node_modules/.prisma` location — make sure imports point at `../generated/prisma` (as `lib/db.ts` does) if you add new Prisma-using files.
+- **Database connection errors.** Confirm `DATABASE_URL` is set and reachable; `lib/db.ts` constructs the `@prisma/adapter-pg` adapter directly from `process.env.DATABASE_URL` with no fallback.
+- **`prisma/seed.ts` or `prisma/syncCatalog.ts` fail to find `DATABASE_URL`.** Both scripts explicitly do `process.env.DATABASE_URL = process.env.POSTGRES_URL || process.env.DATABASE_URL`, so if only one of those two variables is set, make sure it's the one actually populated in your `.env`.
+- **iyzico payments fail with a credentials error.** `lib/iyzico.ts` throws if `IYZICO_API_KEY` or `IYZICO_SECRET_KEY` is missing. Confirm both are set, and that `IYZICO_BASE_URL` points at the sandbox endpoint (`https://sandbox-api.iyzipay.com`) during development.
+- **`/api/remove-bg` returns 401 or 429.** It requires an authenticated session and is rate-limited to 10 requests per 10 minutes per IP (`lib/rate-limit.ts`). The limiter is in-memory per server process, so it resets on restart and is not shared across multiple instances/replicas.
+- **Image/video uploads fail.** Uploads go directly from the browser to Cloudinary using a signature obtained from `/api/cloudinary-signature`; verify `CLOUD_NAME`, `API_KEY`, and `API_SECRET` are set on the server.
+- **Cargo tracking returns no data.** Confirm `HOROZ_API_BASE_URL` and `HOROZ_PROCESS_KEY` are set; the integration depends entirely on the Horoz Kargo API being reachable.
 
-</div>
+---
+
+## License
+
+No `LICENSE` file was found in the project root, so no license can be documented here. If this project is intended to carry a specific license, add a `LICENSE` file and update this section accordingly.
