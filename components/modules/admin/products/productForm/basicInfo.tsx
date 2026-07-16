@@ -1,7 +1,7 @@
 // components/modules/admin/products/productForm/basicInfo.tsx
 "use client";
 
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -164,6 +164,10 @@ export default function BasicInfoSection({
 
   const selectedColor = colors.find((c) => c.id === productData.colorId);
 
+  const [vatRate, setVatRate] = useState<10 | 20>(10);
+  const vatInclusivePrice =
+    productData.price > 0 ? productData.price * (1 + vatRate / 100) : 0;
+
   return (
     <div className="space-y-6 w-full">
       {/* Temel Bilgiler Bölümü */}
@@ -228,6 +232,34 @@ export default function BasicInfoSection({
             step="any"
             placeholder="İndirim varsa"
           />
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+          <div>
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+              KDV'li Fiyat (%{vatRate})
+            </p>
+            <p className="text-lg font-bold text-slate-900">
+              {vatInclusivePrice > 0
+                ? vatInclusivePrice.toLocaleString("tr-TR", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                : "0.00"}{" "}
+              ₺
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setVatRate((prev) => (prev === 10 ? 20 : 10))}
+            className={`h-10 px-4 rounded-lg text-xs font-bold uppercase tracking-wide transition-colors shrink-0 ${
+              vatRate === 20
+                ? "bg-orange-500 text-white hover:bg-orange-600"
+                : "bg-slate-900 text-white hover:bg-slate-700"
+            }`}
+          >
+            {vatRate === 10 ? "KDV'yi %20'ye Çıkar" : "KDV'yi %10'a Düşür"}
+          </button>
         </div>
 
         <InputGroup

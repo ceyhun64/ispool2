@@ -285,19 +285,20 @@ model OrderItem {
 }
 
 model OrderAddress {
-  id        Int     @id @default(autoincrement())
-  orderId   Int
-  type      String
-  firstName String
-  lastName  String
-  address   String
-  district  String
-  tcno      String? @db.VarChar(11)
-  city      String
-  zip       String
-  phone     String
-  country   String
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id          Int     @id @default(autoincrement())
+  orderId     Int
+  type        String
+  firstName   String
+  lastName    String
+  address     String
+  district    String
+  tcno        String? @db.VarChar(11)
+  billingType String? @db.VarChar(20)
+  city        String
+  zip         String
+  phone       String
+  country     String
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([orderId], map: "OrderAddress_orderId_fkey")
   @@map("orderaddress")

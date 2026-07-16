@@ -27,6 +27,7 @@ import ProductInfo from "./productInfo";
 import ProductVariantSelector from "./productVariantSelector";
 import ProductActions from "./productActions";
 import ProductCarousel from "./productCarousel";
+import { withKdv } from "@/lib/pricing";
 
 interface Size {
   id: number;
@@ -469,18 +470,19 @@ export default function ProductDetailPage() {
         ? (product.stockMatrix.find((s) => s.sizeId === null) ?? null)
         : null;
 
-  let currentPrice = product.price + (primaryStockEntry?.priceModifier ?? 0);
+  let currentPrice = withKdv(
+    product.price + (primaryStockEntry?.priceModifier ?? 0),
+  );
   if (bulkDiscount.hasDiscount)
     currentPrice = currentPrice * (1 - bulkDiscount.discountRate / 100);
 
   const cartCombos = buildCartCombos();
   const combosBaseTotal =
-    cartCombos.reduce((sum, c) => sum + c.price, 0) * quantity;
+    withKdv(cartCombos.reduce((sum, c) => sum + c.price, 0)) * quantity;
   let combosTotal = combosBaseTotal;
   if (bulkDiscount.hasDiscount)
     combosTotal = combosBaseTotal * (1 - bulkDiscount.discountRate / 100);
-  const vatAmount = combosTotal * 0.1;
-  const totalWithVat = combosTotal + vatAmount;
+  const totalWithVat = combosTotal;
   const remainingForBulk = product.bulkDiscountQty
     ? Math.max(0, product.bulkDiscountQty - quantity)
     : 0;
@@ -549,7 +551,9 @@ export default function ProductDetailPage() {
                 rating={product.rating}
                 reviewCount={product.reviewCount}
                 currentPrice={currentPrice}
-                oldPrice={product.oldPrice}
+                oldPrice={
+                  product.oldPrice !== null ? withKdv(product.oldPrice) : null
+                }
                 hasDiscount={product.hasDiscount}
                 discountPercentage={product.discountPercentage}
                 inStock={product.stock.inStock}
@@ -704,19 +708,9 @@ export default function ProductDetailPage() {
                       </span>
                     </div>
                   )}
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-600">KDV (%10)</span>
-                    <span className="font-bold text-slate-900">
-                      {vatAmount.toLocaleString("tr-TR", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}{" "}
-                      TL
-                    </span>
-                  </div>
                   <div className="border-t border-slate-300 pt-2 flex justify-between">
                     <span className="text-base font-bold text-slate-900">
-                      Toplam (KDV Dahil)
+                      Toplam
                     </span>
                     <span className="text-md font-black text-orange-600">
                       {totalWithVat.toLocaleString("tr-TR", {
@@ -848,7 +842,7 @@ export default function ProductDetailPage() {
           <ProductTabs
             productId={product.id}
             productTitle={product.title}
-            productPrice={product.price}
+            productPrice={withKdv(product.price)}
             productDescription={product.description}
           />
         </div>

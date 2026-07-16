@@ -45,6 +45,7 @@ export type OrderAddressMinAggregateOutputType = {
   address: string | null
   district: string | null
   tcno: string | null
+  billingType: string | null
   city: string | null
   zip: string | null
   phone: string | null
@@ -60,6 +61,7 @@ export type OrderAddressMaxAggregateOutputType = {
   address: string | null
   district: string | null
   tcno: string | null
+  billingType: string | null
   city: string | null
   zip: string | null
   phone: string | null
@@ -75,6 +77,7 @@ export type OrderAddressCountAggregateOutputType = {
   address: number
   district: number
   tcno: number
+  billingType: number
   city: number
   zip: number
   phone: number
@@ -102,6 +105,7 @@ export type OrderAddressMinAggregateInputType = {
   address?: true
   district?: true
   tcno?: true
+  billingType?: true
   city?: true
   zip?: true
   phone?: true
@@ -117,6 +121,7 @@ export type OrderAddressMaxAggregateInputType = {
   address?: true
   district?: true
   tcno?: true
+  billingType?: true
   city?: true
   zip?: true
   phone?: true
@@ -132,6 +137,7 @@ export type OrderAddressCountAggregateInputType = {
   address?: true
   district?: true
   tcno?: true
+  billingType?: true
   city?: true
   zip?: true
   phone?: true
@@ -234,6 +240,7 @@ export type OrderAddressGroupByOutputType = {
   address: string
   district: string
   tcno: string | null
+  billingType: string | null
   city: string
   zip: string
   phone: string
@@ -272,6 +279,7 @@ export type OrderAddressWhereInput = {
   address?: Prisma.StringFilter<"OrderAddress"> | string
   district?: Prisma.StringFilter<"OrderAddress"> | string
   tcno?: Prisma.StringNullableFilter<"OrderAddress"> | string | null
+  billingType?: Prisma.StringNullableFilter<"OrderAddress"> | string | null
   city?: Prisma.StringFilter<"OrderAddress"> | string
   zip?: Prisma.StringFilter<"OrderAddress"> | string
   phone?: Prisma.StringFilter<"OrderAddress"> | string
@@ -288,6 +296,7 @@ export type OrderAddressOrderByWithRelationInput = {
   address?: Prisma.SortOrder
   district?: Prisma.SortOrder
   tcno?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingType?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrder
   zip?: Prisma.SortOrder
   phone?: Prisma.SortOrder
@@ -307,6 +316,7 @@ export type OrderAddressWhereUniqueInput = Prisma.AtLeast<{
   address?: Prisma.StringFilter<"OrderAddress"> | string
   district?: Prisma.StringFilter<"OrderAddress"> | string
   tcno?: Prisma.StringNullableFilter<"OrderAddress"> | string | null
+  billingType?: Prisma.StringNullableFilter<"OrderAddress"> | string | null
   city?: Prisma.StringFilter<"OrderAddress"> | string
   zip?: Prisma.StringFilter<"OrderAddress"> | string
   phone?: Prisma.StringFilter<"OrderAddress"> | string
@@ -323,6 +333,7 @@ export type OrderAddressOrderByWithAggregationInput = {
   address?: Prisma.SortOrder
   district?: Prisma.SortOrder
   tcno?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingType?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrder
   zip?: Prisma.SortOrder
   phone?: Prisma.SortOrder
@@ -346,6 +357,7 @@ export type OrderAddressScalarWhereWithAggregatesInput = {
   address?: Prisma.StringWithAggregatesFilter<"OrderAddress"> | string
   district?: Prisma.StringWithAggregatesFilter<"OrderAddress"> | string
   tcno?: Prisma.StringNullableWithAggregatesFilter<"OrderAddress"> | string | null
+  billingType?: Prisma.StringNullableWithAggregatesFilter<"OrderAddress"> | string | null
   city?: Prisma.StringWithAggregatesFilter<"OrderAddress"> | string
   zip?: Prisma.StringWithAggregatesFilter<"OrderAddress"> | string
   phone?: Prisma.StringWithAggregatesFilter<"OrderAddress"> | string
@@ -359,6 +371,7 @@ export type OrderAddressCreateInput = {
   address: string
   district: string
   tcno?: string | null
+  billingType?: string | null
   city: string
   zip: string
   phone: string
@@ -375,6 +388,7 @@ export type OrderAddressUncheckedCreateInput = {
   address: string
   district: string
   tcno?: string | null
+  billingType?: string | null
   city: string
   zip: string
   phone: string
@@ -388,6 +402,7 @@ export type OrderAddressUpdateInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.StringFieldUpdateOperationsInput | string
   tcno?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
@@ -404,6 +419,7 @@ export type OrderAddressUncheckedUpdateInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.StringFieldUpdateOperationsInput | string
   tcno?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
@@ -419,6 +435,7 @@ export type OrderAddressCreateManyInput = {
   address: string
   district: string
   tcno?: string | null
+  billingType?: string | null
   city: string
   zip: string
   phone: string
@@ -432,6 +449,7 @@ export type OrderAddressUpdateManyMutationInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.StringFieldUpdateOperationsInput | string
   tcno?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
@@ -447,6 +465,7 @@ export type OrderAddressUncheckedUpdateManyInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.StringFieldUpdateOperationsInput | string
   tcno?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
@@ -472,6 +491,7 @@ export type OrderAddressCountOrderByAggregateInput = {
   address?: Prisma.SortOrder
   district?: Prisma.SortOrder
   tcno?: Prisma.SortOrder
+  billingType?: Prisma.SortOrder
   city?: Prisma.SortOrder
   zip?: Prisma.SortOrder
   phone?: Prisma.SortOrder
@@ -492,6 +512,7 @@ export type OrderAddressMaxOrderByAggregateInput = {
   address?: Prisma.SortOrder
   district?: Prisma.SortOrder
   tcno?: Prisma.SortOrder
+  billingType?: Prisma.SortOrder
   city?: Prisma.SortOrder
   zip?: Prisma.SortOrder
   phone?: Prisma.SortOrder
@@ -507,6 +528,7 @@ export type OrderAddressMinOrderByAggregateInput = {
   address?: Prisma.SortOrder
   district?: Prisma.SortOrder
   tcno?: Prisma.SortOrder
+  billingType?: Prisma.SortOrder
   city?: Prisma.SortOrder
   zip?: Prisma.SortOrder
   phone?: Prisma.SortOrder
@@ -567,6 +589,7 @@ export type OrderAddressCreateWithoutOrderInput = {
   address: string
   district: string
   tcno?: string | null
+  billingType?: string | null
   city: string
   zip: string
   phone: string
@@ -581,6 +604,7 @@ export type OrderAddressUncheckedCreateWithoutOrderInput = {
   address: string
   district: string
   tcno?: string | null
+  billingType?: string | null
   city: string
   zip: string
   phone: string
@@ -625,6 +649,7 @@ export type OrderAddressScalarWhereInput = {
   address?: Prisma.StringFilter<"OrderAddress"> | string
   district?: Prisma.StringFilter<"OrderAddress"> | string
   tcno?: Prisma.StringNullableFilter<"OrderAddress"> | string | null
+  billingType?: Prisma.StringNullableFilter<"OrderAddress"> | string | null
   city?: Prisma.StringFilter<"OrderAddress"> | string
   zip?: Prisma.StringFilter<"OrderAddress"> | string
   phone?: Prisma.StringFilter<"OrderAddress"> | string
@@ -639,6 +664,7 @@ export type OrderAddressCreateManyOrderInput = {
   address: string
   district: string
   tcno?: string | null
+  billingType?: string | null
   city: string
   zip: string
   phone: string
@@ -652,6 +678,7 @@ export type OrderAddressUpdateWithoutOrderInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.StringFieldUpdateOperationsInput | string
   tcno?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
@@ -666,6 +693,7 @@ export type OrderAddressUncheckedUpdateWithoutOrderInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.StringFieldUpdateOperationsInput | string
   tcno?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
@@ -680,6 +708,7 @@ export type OrderAddressUncheckedUpdateManyWithoutOrderInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.StringFieldUpdateOperationsInput | string
   tcno?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
@@ -697,6 +726,7 @@ export type OrderAddressSelect<ExtArgs extends runtime.Types.Extensions.Internal
   address?: boolean
   district?: boolean
   tcno?: boolean
+  billingType?: boolean
   city?: boolean
   zip?: boolean
   phone?: boolean
@@ -713,6 +743,7 @@ export type OrderAddressSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   address?: boolean
   district?: boolean
   tcno?: boolean
+  billingType?: boolean
   city?: boolean
   zip?: boolean
   phone?: boolean
@@ -729,6 +760,7 @@ export type OrderAddressSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   address?: boolean
   district?: boolean
   tcno?: boolean
+  billingType?: boolean
   city?: boolean
   zip?: boolean
   phone?: boolean
@@ -745,13 +777,14 @@ export type OrderAddressSelectScalar = {
   address?: boolean
   district?: boolean
   tcno?: boolean
+  billingType?: boolean
   city?: boolean
   zip?: boolean
   phone?: boolean
   country?: boolean
 }
 
-export type OrderAddressOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "type" | "firstName" | "lastName" | "address" | "district" | "tcno" | "city" | "zip" | "phone" | "country", ExtArgs["result"]["orderAddress"]>
+export type OrderAddressOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "type" | "firstName" | "lastName" | "address" | "district" | "tcno" | "billingType" | "city" | "zip" | "phone" | "country", ExtArgs["result"]["orderAddress"]>
 export type OrderAddressInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
 }
@@ -776,6 +809,7 @@ export type $OrderAddressPayload<ExtArgs extends runtime.Types.Extensions.Intern
     address: string
     district: string
     tcno: string | null
+    billingType: string | null
     city: string
     zip: string
     phone: string
@@ -1212,6 +1246,7 @@ export interface OrderAddressFieldRefs {
   readonly address: Prisma.FieldRef<"OrderAddress", 'String'>
   readonly district: Prisma.FieldRef<"OrderAddress", 'String'>
   readonly tcno: Prisma.FieldRef<"OrderAddress", 'String'>
+  readonly billingType: Prisma.FieldRef<"OrderAddress", 'String'>
   readonly city: Prisma.FieldRef<"OrderAddress", 'String'>
   readonly zip: Prisma.FieldRef<"OrderAddress", 'String'>
   readonly phone: Prisma.FieldRef<"OrderAddress", 'String'>

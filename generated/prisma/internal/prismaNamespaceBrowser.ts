@@ -317,6 +317,7 @@ export const OrderAddressScalarFieldEnum = {
   address: 'address',
   district: 'district',
   tcno: 'tcno',
+  billingType: 'billingType',
   city: 'city',
   zip: 'zip',
   phone: 'phone',

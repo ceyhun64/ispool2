@@ -27,8 +27,7 @@ import {
   X,
   Sparkles,
 } from "lucide-react";
-
-const KDV_RATE = 0.1;
+import { withKdv } from "@/lib/pricing";
 
 const installmentRates = [
   { count: 1, rate: 0 },
@@ -95,9 +94,9 @@ export default function BasketSummaryCard({
   // yarışıp farklı toplamlar göstermesi engellenmiş oluyor.
   const itemsToRender = items;
 
-  // Toplu alım indirimini hesapla
+  // Toplu alım indirimini hesapla (fiyatlar KDV dahil gösterilir)
   const calculatedSubTotal = itemsToRender.reduce((acc, item) => {
-    let itemTotal = item.product.price * item.quantity;
+    let itemTotal = withKdv(item.product.price) * item.quantity;
 
     // Toplu alım indirimi kontrolü
     if (
@@ -118,16 +117,14 @@ export default function BasketSummaryCard({
       item.product.bulkDiscountRate &&
       item.quantity >= item.product.bulkDiscountQty
     ) {
-      const itemTotal = item.product.price * item.quantity;
+      const itemTotal = withKdv(item.product.price) * item.quantity;
       const discountAmount = (itemTotal * item.product.bulkDiscountRate) / 100;
       return acc + discountAmount;
     }
     return acc;
   }, 0);
 
-  const calculatedKdv = calculatedSubTotal * KDV_RATE;
-  const baseTotalBeforeDiscount =
-    calculatedSubTotal + calculatedKdv + selectedCargoFee;
+  const baseTotalBeforeDiscount = calculatedSubTotal + selectedCargoFee;
 
   // Apply coupon discount
   const discountAmount = appliedCoupon?.discountAmount || 0;
@@ -257,7 +254,7 @@ export default function BasketSummaryCard({
                 </div>
                 <div className="text-right flex flex-col justify-center">
                   <p className="text-xs font-semibold text-slate-950">
-                    ₺{(item.product.price * item.quantity).toFixed(2)}
+                    ₺{(withKdv(item.product.price) * item.quantity).toFixed(2)}
                   </p>
                 </div>
               </div>
@@ -366,7 +363,6 @@ export default function BasketSummaryCard({
                 icon: Truck,
                 isFree: selectedCargoFee === 0,
               },
-              { label: "KDV (%10)", val: calculatedKdv, icon: TrendingUp },
             ].map((row, i) => (
               <div
                 key={i}

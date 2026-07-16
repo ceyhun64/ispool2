@@ -3,6 +3,7 @@
 import React from "react";
 import { Trash2, Minus, Plus, Sparkles, Ruler, Tag } from "lucide-react";
 import { CartItemType } from "./cartDropdown";
+import { withKdv } from "@/lib/pricing";
 
 interface CartItemDropdownProps {
   item: CartItemType;
@@ -27,7 +28,7 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
   onRemove,
   isLoggedIn,
 }) => {
-  const unitPrice = item.product.price || 0;
+  const unitPrice = withKdv(item.product.price || 0);
   const displayImage = item.customImage || item.product.mainImage;
   const isCustomized = !!item.customImage;
 

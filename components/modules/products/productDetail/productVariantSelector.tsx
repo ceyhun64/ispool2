@@ -3,6 +3,7 @@
 import React from "react";
 import { Ruler, Palette, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { withKdv } from "@/lib/pricing";
 
 // ---------- İNTERFACES ----------
 interface Size {
@@ -268,7 +269,10 @@ export default function ProductVariantSelector({
                       )}
                     >
                       {stockEntry.priceModifier > 0 ? "+" : ""}
-                      {stockEntry.priceModifier.toLocaleString("tr-TR")} TL
+                      {withKdv(stockEntry.priceModifier).toLocaleString(
+                        "tr-TR",
+                      )}{" "}
+                      TL
                     </span>
                   )}
                 </div>

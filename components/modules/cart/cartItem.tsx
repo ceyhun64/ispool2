@@ -5,6 +5,7 @@ import { X, Plus, Minus, Sparkles, Ruler, Tag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { CartItemType } from "./cart";
+import { withKdv } from "@/lib/pricing";
 
 interface CartItemProps {
   item: CartItemType;
@@ -23,8 +24,8 @@ export default function CartItem({
   const displayImage = customImage || product.mainImage;
   const isCustomized = !!customImage;
 
-  // Fiyat ve indirim kontrolleri (Sıfır kontrolü eklendi)
-  const unitPrice = product.price || 0;
+  // Fiyat ve indirim kontrolleri (Sıfır kontrolü eklendi) — KDV dahil gösterilir
+  const unitPrice = withKdv(product.price || 0);
 
   const hasBulkDiscount = !!(
     product.bulkDiscountQty &&

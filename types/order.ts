@@ -43,7 +43,8 @@ export interface OrderAddress {
   zip: string; // Posta kodu - Schema'da String
   phone: string;
   country: string;
-  tcno?: string | null; // TC Kimlik No - VarChar(11)
+  tcno?: string | null; // TC Kimlik No veya Vergi Numarası - VarChar(11)
+  billingType?: "bireysel" | "kurumsal" | null; // Sadece type "billing" için
 }
 
 export interface User {
@@ -145,6 +146,7 @@ export interface AddressInput {
   phone: string;
   country: string;
   tcno?: string;
+  billingType?: "bireysel" | "kurumsal";
 }
 
 export interface PaymentCard {

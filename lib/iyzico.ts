@@ -1,5 +1,6 @@
 // lib/iyzico.ts
 import crypto from "crypto";
+import { getShippingFee } from "./pricing";
 
 const INSTALLMENT_RATES: { [key: number]: number } = {
   1: 0,
@@ -49,7 +50,8 @@ export function calculatePricing(
     0,
   );
   const serviceFee = subtotal * 0.1;
-  const baseTotal = subtotal + serviceFee;
+  const shippingFee = getShippingFee(subtotal + serviceFee);
+  const baseTotal = subtotal + serviceFee + shippingFee;
 
   const totalAfterDiscount = Math.max(0, baseTotal - discountAmount);
 
@@ -60,6 +62,7 @@ export function calculatePricing(
   return {
     subtotal,
     serviceFee,
+    shippingFee,
     baseTotal,
     discountAmount,
     totalAfterDiscount,

@@ -331,8 +331,20 @@ export default function OrderDetailDialog({
                 <p className="font-semibold text-slate-900">
                   {billingAddress.firstName} {billingAddress.lastName}
                 </p>
+                {billingAddress.billingType && (
+                  <p className="text-xs font-semibold text-orange-600">
+                    {billingAddress.billingType === "kurumsal"
+                      ? "Kurumsal Fatura"
+                      : "Bireysel Fatura"}
+                  </p>
+                )}
                 {billingAddress.tcno && (
-                  <p className="text-xs">TC: {billingAddress.tcno}</p>
+                  <p className="text-xs">
+                    {billingAddress.billingType === "kurumsal"
+                      ? "Vergi No"
+                      : "TC"}
+                    : {billingAddress.tcno}
+                  </p>
                 )}
                 <p className="text-xs">{billingAddress.address}</p>
                 <p className="text-xs font-semibold">

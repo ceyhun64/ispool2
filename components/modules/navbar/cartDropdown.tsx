@@ -36,6 +36,7 @@ import {
   GuestCartItem,
 } from "@/utils/cart";
 import { Skeleton } from "@/components/ui/skeleton";
+import { withKdv, getShippingFee } from "@/lib/pricing";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -260,7 +261,7 @@ const CartDropdown = forwardRef(
 
     // ─── Totals with Bulk Discount ─────────────────────────────────────────
     const subtotal = cartItems.reduce((acc, i) => {
-      let itemTotal = i.product.price * i.quantity;
+      let itemTotal = withKdv(i.product.price) * i.quantity;
 
       if (
         i.product.bulkDiscountQty &&
@@ -280,15 +281,16 @@ const CartDropdown = forwardRef(
         i.product.bulkDiscountRate &&
         i.quantity >= i.product.bulkDiscountQty
       ) {
-        const itemTotal = i.product.price * i.quantity;
+        const itemTotal = withKdv(i.product.price) * i.quantity;
         const discountAmount = (itemTotal * i.product.bulkDiscountRate) / 100;
         return acc + discountAmount;
       }
       return acc;
     }, 0);
 
-    const taxAmount = subtotal * 0.1;
-    const total = subtotal + taxAmount;
+    // subtotal KDV dahil olarak hesaplanır — ayrıca KDV eklenmez
+    const shippingFee = getShippingFee(subtotal);
+    const total = subtotal + shippingFee;
 
     // ─── Trigger Button ────────────────────────────────────────────────────
     // Mobil alt bar için özel görünüm
@@ -456,14 +458,19 @@ const CartDropdown = forwardRef(
                 )}
 
                 <div className="flex justify-between text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                  <span>KDV (%10)</span>
-                  <span className="text-slate-900 font-mono">
-                    ₺
-                    {taxAmount.toLocaleString("tr-TR", {
-                      minimumFractionDigits: 2,
-                    })}
-                  </span>
+                  <span>KARGO</span>
+                  {shippingFee === 0 ? (
+                    <span className="text-emerald-600 font-mono">ÜCRETSİZ</span>
+                  ) : (
+                    <span className="text-slate-900 font-mono">
+                      ₺
+                      {shippingFee.toLocaleString("tr-TR", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </span>
+                  )}
                 </div>
+
                 <div className="flex justify-between items-start pt-4 border-t border-slate-200">
                   <div className="flex flex-col">
                     <span className="text-xs font-black text-slate-900 uppercase tracking-tighter">

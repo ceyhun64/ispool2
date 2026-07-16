@@ -73,6 +73,20 @@ export async function POST(req: NextRequest) {
       paidPrice: serviceFeePaidPrice.toFixed(2),
     });
 
+    // 2b. Kargo Ücretini Kalem Olarak Ekle (Varsa — 3000 TL altı siparişlerde)
+    if (pricing.shippingFee > 0) {
+      const shippingFeePaidPrice =
+        pricing.shippingFee - pricing.shippingFee * discountRate;
+      formattedBasketItems.push({
+        id: "SHIPPING_FEE",
+        name: "Kargo Ücreti",
+        category1: "Hizmet",
+        itemType: "VIRTUAL",
+        price: pricing.shippingFee.toFixed(2),
+        paidPrice: shippingFeePaidPrice.toFixed(2),
+      });
+    }
+
     // 3. Taksit Farkını Ekle (Varsa)
     if (installment > 1 && pricing.installmentFee > 0) {
       formattedBasketItems.push({

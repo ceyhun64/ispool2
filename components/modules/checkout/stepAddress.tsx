@@ -22,6 +22,10 @@ import { Separator } from "@/components/ui/separator";
 import AdresForm, {
   AddressFormData,
 } from "@/components/modules/profile/addressForm";
+import BillingForm, {
+  BillingFormData,
+  isBillingFormValid,
+} from "@/components/modules/checkout/billingForm";
 import { Spinner } from "@/components/ui/spinner";
 import {
   MapPin,
@@ -63,6 +67,8 @@ interface StepAddressProps {
   isAddingNewAddress: boolean;
   setIsAddingNewAddress: (v: boolean) => void;
   isSavingAddress: boolean;
+  billingForm: BillingFormData;
+  setBillingForm: React.Dispatch<React.SetStateAction<BillingFormData>>;
 }
 
 export default function StepAddress({
@@ -76,7 +82,10 @@ export default function StepAddress({
   isAddingNewAddress,
   setIsAddingNewAddress,
   isSavingAddress,
+  billingForm,
+  setBillingForm,
 }: StepAddressProps) {
+  const billingValid = isBillingFormValid(billingForm);
   const selected = addresses?.find((a) => a.id === selectedAddress);
 
   if (!addresses || !Array.isArray(addresses)) {
@@ -248,6 +257,13 @@ export default function StepAddress({
             </div>
           )}
 
+          {/* Fatura Bilgileri */}
+          {!isAddingNewAddress && (
+            <div className="pt-2">
+              <BillingForm formData={billingForm} setFormData={setBillingForm} />
+            </div>
+          )}
+
           {/* Form Alanı */}
           {isAddingNewAddress && (
             <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
@@ -288,14 +304,20 @@ export default function StepAddress({
                 }`}
               />
               <p className="text-xs font-medium text-slate-500">
-                {selectedAddress
-                  ? "Adres doğrulandı, ödeme aşamasına geçilebilir."
-                  : "Lütfen ilerlemek için bir adres seçin."}
+                {!selectedAddress
+                  ? "Lütfen ilerlemek için bir adres seçin."
+                  : billingForm.differentBilling && !billingValid
+                    ? "Lütfen fatura bilgilerinizi eksiksiz doldurun."
+                    : "Adres doğrulandı, ödeme aşamasına geçilebilir."}
               </p>
             </div>
             <Button
               onClick={onNext}
-              disabled={!selectedAddress || isSavingAddress}
+              disabled={
+                !selectedAddress ||
+                isSavingAddress ||
+                (billingForm.differentBilling && !billingValid)
+              }
               size="lg"
               className="w-full sm:w-auto px-10 h-14 bg-slate-950 hover:bg-slate-800 rounded-2xl text-sm font-bold shadow-xl shadow-slate-200 transition-all active:scale-[0.98]"
             >
