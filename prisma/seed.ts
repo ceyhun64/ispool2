@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
-dotenv.config();
-
-process.env.DATABASE_URL = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+dotenv.config({ path: ".env.local" });
+dotenv.config({ path: ".env", override: true });
 
 import { prisma } from "@/lib/db";
 import bcrypt from "bcrypt";
@@ -168,7 +167,8 @@ async function resetDatabase() {
     "brand",
     "blog",
     "subscribe",
-    "Banner",
+    "banner",
+    "hero_slide",
     "user",
     "coupons",
   ];

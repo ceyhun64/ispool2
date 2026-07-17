@@ -9,13 +9,28 @@ interface Props {
   alt: string;
 }
 
+const MODAL_ZOOM_SCALE = 2.5;
+const DRAG_THRESHOLD = 4;
+
 export function CustomImageZoom({ src, alt }: Props) {
   const [showZoom, setShowZoom] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
+  const [modalScale, setModalScale] = useState(1);
+  const [modalTranslate, setModalTranslate] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const zoomLayerRef = useRef<HTMLDivElement>(null);
+  const modalImageWrapperRef = useRef<HTMLDivElement>(null);
+  const panStateRef = useRef<{
+    startX: number;
+    startY: number;
+    startTranslateX: number;
+    startTranslateY: number;
+    moved: boolean;
+  } | null>(null);
 
   // Cihazın dokunmatik olup olmadığını kontrol et
   useEffect(() => {
@@ -27,8 +42,85 @@ export function CustomImageZoom({ src, alt }: Props) {
     checkTouch();
   }, []);
 
+  const resetModalZoom = useCallback(() => {
+    setModalScale(1);
+    setModalTranslate({ x: 0, y: 0 });
+  }, []);
+
   const handleClose = useCallback(() => {
     setIsModalOpen(false);
+    resetModalZoom();
+  }, [resetModalZoom]);
+
+  const clampTranslate = useCallback(
+    (x: number, y: number, scale: number) => {
+      const el = modalImageWrapperRef.current;
+      if (!el) return { x, y };
+      const maxX = (el.offsetWidth * (scale - 1)) / 2;
+      const maxY = (el.offsetHeight * (scale - 1)) / 2;
+      return {
+        x: Math.max(-maxX, Math.min(maxX, x)),
+        y: Math.max(-maxY, Math.min(maxY, y)),
+      };
+    },
+    [],
+  );
+
+  // Resme tıklayınca yakınlaştır/uzaklaştır; sürükleme sonrası tetiklenen
+  // click'te toggle yapılmaz (sürükleme ile yakınlaştırmayı kapatmayı önler).
+  const handleModalImageClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (panStateRef.current?.moved) return;
+      if (modalScale === 1) {
+        setModalScale(MODAL_ZOOM_SCALE);
+      } else {
+        resetModalZoom();
+      }
+    },
+    [modalScale, resetModalZoom],
+  );
+
+  const handleModalPointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      if (modalScale === 1) return;
+      e.stopPropagation();
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      panStateRef.current = {
+        startX: e.clientX,
+        startY: e.clientY,
+        startTranslateX: modalTranslate.x,
+        startTranslateY: modalTranslate.y,
+        moved: false,
+      };
+      setIsPanning(true);
+    },
+    [modalScale, modalTranslate],
+  );
+
+  const handleModalPointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      const pan = panStateRef.current;
+      if (!pan || modalScale === 1) return;
+      const dx = e.clientX - pan.startX;
+      const dy = e.clientY - pan.startY;
+      if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
+        pan.moved = true;
+      }
+      if (!pan.moved) return;
+      const next = clampTranslate(
+        pan.startTranslateX + dx,
+        pan.startTranslateY + dy,
+        modalScale,
+      );
+      setModalTranslate(next);
+    },
+    [modalScale, clampTranslate],
+  );
+
+  const handleModalPointerUp = useCallback((e: React.PointerEvent) => {
+    setIsPanning(false);
+    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
   }, []);
 
   // Modal açıldığında body scroll'u, topbar, navbar ve CategoryBar'ı gizle
@@ -194,21 +286,52 @@ export function CustomImageZoom({ src, alt }: Props) {
             style={{ zIndex: 1000000 }}
           >
             <kbd className="px-2 py-1 bg-white/10 rounded text-xs">ESC</kbd>
-            <span>veya herhangi bir yere tıkla</span>
+            <span>
+              ile kapat • Resme tıkla:{" "}
+              {modalScale === 1 ? "yakınlaştır" : "uzaklaştır"}
+            </span>
           </div>
 
           {/* Image Container */}
           <div className="relative w-[95vw] h-[95vh] flex items-center justify-center">
-            <div className="relative w-full h-full">
-              <Image
-                src={src}
-                alt={alt}
-                fill
-                className="object-contain"
-                quality={100}
-                priority
-                sizes="95vw"
-              />
+            <div
+              ref={modalImageWrapperRef}
+              className="relative w-full h-full"
+              style={{
+                cursor:
+                  modalScale === 1
+                    ? "zoom-in"
+                    : isPanning
+                      ? "grabbing"
+                      : "grab",
+                touchAction: "none",
+              }}
+              onClick={handleModalImageClick}
+              onPointerDown={handleModalPointerDown}
+              onPointerMove={handleModalPointerMove}
+              onPointerUp={handleModalPointerUp}
+            >
+              <div
+                className="relative w-full h-full"
+                style={{
+                  transform: `translate(${modalTranslate.x}px, ${modalTranslate.y}px) scale(${modalScale})`,
+                  transition: isPanning
+                    ? "none"
+                    : "transform 0.25s ease-out",
+                  willChange: "transform",
+                }}
+              >
+                <Image
+                  src={src}
+                  alt={alt}
+                  fill
+                  className="object-contain select-none pointer-events-none"
+                  quality={100}
+                  priority
+                  sizes="95vw"
+                  draggable={false}
+                />
+              </div>
             </div>
           </div>
         </div>

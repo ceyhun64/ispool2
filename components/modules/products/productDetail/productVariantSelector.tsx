@@ -45,8 +45,7 @@ interface ProductVariantSelectorProps {
   currentMainImage: string;
   currentTitle: string;
   otherColors: ColorOption[];
-  selectedColorIds: number[];
-  onColorToggle: (colorId: number) => void;
+  onColorSelect: (productId: number) => void;
 }
 
 export default function ProductVariantSelector({
@@ -60,8 +59,7 @@ export default function ProductVariantSelector({
   currentMainImage,
   currentTitle,
   otherColors,
-  selectedColorIds,
-  onColorToggle,
+  onColorSelect,
 }: ProductVariantSelectorProps) {
   // Her beden için stok bilgisini stockMatrix'ten çek
   const getSizeStock = (sizeId: number): number => {
@@ -89,9 +87,6 @@ export default function ProductVariantSelector({
             <label className="text-sm font-bold text-slate-900">
               Renk Seçenekleri
             </label>
-            <span className="text-[10px] text-slate-400 font-medium">
-              (birden fazla seçebilirsiniz)
-            </span>
           </div>
 
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-3">
@@ -124,27 +119,16 @@ export default function ProductVariantSelector({
               )}
             </button>
 
-            {/* Diğer renkler - toggle seçim */}
+            {/* Diğer renkler - tıklanınca o ürüne yönlendirir */}
             {otherColors.map((colorOption) => {
-              const isSelected = selectedColorIds.includes(colorOption.id);
               return (
                 <button
                   type="button"
                   key={colorOption.id}
-                  onClick={() => onColorToggle(colorOption.id)}
-                  className={cn(
-                    "relative group bg-white border-2 rounded-sm p-1.5 sm:p-2 transition-all",
-                    isSelected
-                      ? "border-purple-600 bg-purple-50"
-                      : "border-slate-200 hover:border-purple-400",
-                  )}
+                  onClick={() => onColorSelect(colorOption.id)}
+                  className="relative group bg-white border-2 border-slate-200 hover:border-purple-400 rounded-sm p-1.5 sm:p-2 transition-all"
                   title={colorOption.color?.name || colorOption.title}
                 >
-                  {isSelected && (
-                    <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-purple-600 rounded-full flex items-center justify-center z-10">
-                      <Check size={10} className="text-white" strokeWidth={3} />
-                    </div>
-                  )}
                   <div className="aspect-square rounded overflow-hidden bg-white mb-1 sm:mb-2">
                     <img
                       src={colorOption.mainImage}

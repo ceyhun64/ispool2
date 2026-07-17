@@ -239,7 +239,7 @@ export default function PaymentPage() {
     [cartItems],
   );
 
-  // Kargo ücreti KDV dahil sepet tutarına göre belirlenir (3000 TL ve üzeri ücretsiz)
+  // Kargo ücreti KDV dahil sepet tutarına göre belirlenir (2000 TL ve üzeri ücretsiz)
   const selectedCargoFee = useMemo(
     () => getShippingFee(withKdv(subTotal)),
     [subTotal],
