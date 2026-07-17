@@ -2,9 +2,8 @@
 // resetDatabase() ÇALIŞTIRMAZ - sadece eksik kayıtları ekler.
 // Çalıştırmak için: npx tsx prisma/syncCatalog.ts
 import dotenv from "dotenv";
-dotenv.config();
-
-process.env.DATABASE_URL = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+dotenv.config({ path: ".env.local" });
+dotenv.config({ path: ".env", override: true });
 
 import { prisma } from "@/lib/db";
 

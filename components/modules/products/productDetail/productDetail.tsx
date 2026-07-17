@@ -159,7 +159,6 @@ export default function ProductDetailPage() {
     string | null
   >(null);
   const [selectedSizeIds, setSelectedSizeIds] = useState<number[]>([]);
-  const [selectedColorIds, setSelectedColorIds] = useState<number[]>([]);
 
   const { isFavorited, addFavorite, removeFavorite } = useFavorite();
   const cartDropdownRef = useRef<{ open: () => void; refreshCart: () => void }>(
@@ -176,7 +175,6 @@ export default function ProductDetailPage() {
         if (data.success) {
           setProduct(data.product);
           setSelectedSizeIds([]);
-          setSelectedColorIds([]);
         } else {
           setProduct(null);
         }
@@ -229,72 +227,41 @@ export default function ProductDetailPage() {
     );
   };
 
-  const toggleColor = (colorId: number) => {
-    setSelectedColorIds((prev) =>
-      prev.includes(colorId)
-        ? prev.filter((id) => id !== colorId)
-        : [...prev, colorId],
-    );
-  };
-
-  // Seçili renk(ler) ve beden(ler)den sepete eklenecek kombinasyonları oluşturur
+  // Seçili beden(ler)den sepete eklenecek kombinasyonları oluşturur
   const buildCartCombos = (): CartCombo[] => {
     if (!product) return [];
 
     const finalCustomImage = customDesign || uploadedImagePreview;
     const combos: CartCombo[] = [];
 
-    const colorEntries = [
-      {
-        id: product.id,
-        title: product.title,
-        price: product.price,
-        mainImage: product.mainImage,
-        availableSizes: product.availableSizes,
-        stockMatrix: product.stockMatrix,
-      },
-      ...product.otherColors
-        .filter((c) => selectedColorIds.includes(c.id))
-        .map((c) => ({
-          id: c.id,
-          title: c.title,
-          price: c.price,
-          mainImage: c.mainImage,
-          availableSizes: c.availableSizes,
-          stockMatrix: c.stockMatrix,
-        })),
-    ];
-
-    for (const entry of colorEntries) {
-      if (entry.availableSizes.length > 0) {
-        for (const sizeId of selectedSizeIds) {
-          if (!entry.availableSizes.some((s) => s.id === sizeId)) continue;
-          const stockEntry = entry.stockMatrix.find(
-            (s) => s.sizeId === sizeId,
-          );
-          if (!stockEntry || stockEntry.stock <= 0) continue;
-          const sizeInfo = entry.availableSizes.find((s) => s.id === sizeId);
-          combos.push({
-            productId: entry.id,
-            title: entry.title,
-            price: entry.price + (stockEntry.priceModifier || 0),
-            mainImage: entry.mainImage,
-            sizeId,
-            sizeValue: sizeInfo?.value ?? null,
-            customImage: entry.id === product.id ? finalCustomImage : null,
-          });
-        }
-      } else {
-        const stockEntry = entry.stockMatrix.find((s) => s.sizeId === null);
-        if (stockEntry && stockEntry.stock <= 0) continue;
+    if (product.availableSizes.length > 0) {
+      for (const sizeId of selectedSizeIds) {
+        const stockEntry = product.stockMatrix.find(
+          (s) => s.sizeId === sizeId,
+        );
+        if (!stockEntry || stockEntry.stock <= 0) continue;
+        const sizeInfo = product.availableSizes.find((s) => s.id === sizeId);
         combos.push({
-          productId: entry.id,
-          title: entry.title,
-          price: entry.price + (stockEntry?.priceModifier || 0),
-          mainImage: entry.mainImage,
+          productId: product.id,
+          title: product.title,
+          price: product.price + (stockEntry.priceModifier || 0),
+          mainImage: product.mainImage,
+          sizeId,
+          sizeValue: sizeInfo?.value ?? null,
+          customImage: finalCustomImage,
+        });
+      }
+    } else {
+      const stockEntry = product.stockMatrix.find((s) => s.sizeId === null);
+      if (!stockEntry || stockEntry.stock > 0) {
+        combos.push({
+          productId: product.id,
+          title: product.title,
+          price: product.price + (stockEntry?.priceModifier || 0),
+          mainImage: product.mainImage,
           sizeId: null,
           sizeValue: null,
-          customImage: entry.id === product.id ? finalCustomImage : null,
+          customImage: finalCustomImage,
         });
       }
     }
@@ -461,6 +428,15 @@ export default function ProductDetailPage() {
   const finalCustomImage = customDesign || uploadedImagePreview;
   const bulkDiscount = calculateBulkDiscount();
 
+  // Galeride özel tasarım/yüklenen resim varsa dizinin başına eklendiği için
+  // activeIndex'i product.images içindeki gerçek konumuna kaydır.
+  const customImageOffset = finalCustomImage ? 1 : 0;
+  const rawImageIndex = activeIndex - customImageOffset;
+  const selectedDesignImage =
+    rawImageIndex >= 0 && rawImageIndex < product.images.length
+      ? product.images[rawImageIndex]
+      : product.images[0] || product.mainImage;
+
   // Görüntü amaçlı: ilk seçili bedenin (veya bedensiz ürünün) stok kaydı
   const primaryStockEntry =
     selectedSizeIds.length > 0
@@ -494,7 +470,7 @@ export default function ProductDetailPage() {
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans selection:bg-orange-100 selection:text-orange-900">
       {showPreview && (
         <DesignPanel
-          productImage={product.images[0] || product.mainImage}
+          productImage={selectedDesignImage}
           onClose={() => setShowPreview(false)}
           onSaveDesign={handleSaveDesign}
           onDirectUpload={() => fileInputRef.current?.click()}
@@ -575,8 +551,7 @@ export default function ProductDetailPage() {
                   currentMainImage={product.mainImage}
                   currentTitle={product.title}
                   otherColors={product.otherColors}
-                  selectedColorIds={selectedColorIds}
-                  onColorToggle={toggleColor}
+                  onColorSelect={(id) => router.push(`/products/${id}`)}
                 />
 
                 {finalCustomImage && (

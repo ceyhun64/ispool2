@@ -12,8 +12,8 @@ export function withKdv(price: number): number {
 // alınır, eşit veya üzerindeyse kargo ücretsizdir. Sunucu tarafında
 // (lib/iyzico.ts -> calculatePricing) gerçek tahsilat için, istemci
 // tarafında ise (sepet/ödeme sayfaları) gösterim için kullanılır.
-export const FREE_SHIPPING_THRESHOLD = 3000;
-export const SHIPPING_FEE = 199;
+export const FREE_SHIPPING_THRESHOLD = 2000;
+export const SHIPPING_FEE = 149.9;
 
 export function getShippingFee(kdvDahilSepetTutari: number): number {
   return kdvDahilSepetTutari >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
