@@ -1,26 +1,9 @@
 // /api/upload/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { v2 as cloudinary } from "cloudinary";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { isInternalRequest } from "@/lib/internalAuth";
-
-const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
-
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET,
-});
-
-// Video MIME türleri
-const VIDEO_TYPES = [
-  "video/mp4",
-  "video/webm",
-  "video/ogg",
-  "video/quicktime",
-  "video/x-msvideo",
-];
+import { uploadToCloudinary, UploadError } from "@/lib/cloudinaryUpload";
 
 export async function POST(req: NextRequest) {
   // Doğrudan tarayıcıdan gelen isteklerde oturum, diğer route handler'ların
@@ -44,50 +27,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json(
-        { error: "Dosya boyutu 25MB'dan büyük olamaz." },
-        { status: 400 },
-      );
-    }
-
-    const folderName =
-      (folderNameInput || "genel")
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, "_")
-        .replace(/[^a-z0-9_]/g, "") || "genel";
-
-    const isVideo = VIDEO_TYPES.includes(file.type);
-    const buffer = Buffer.from(await file.arrayBuffer());
-
-    const uploadResult = await new Promise<any>((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        {
-          folder: `products/${folderName}`,
-          resource_type: isVideo ? "video" : "image",
-          // Video için ek ayarlar
-          ...(isVideo && {
-            chunk_size: 6000000, // 6MB chunk
-          }),
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        },
-      );
-      stream.end(buffer);
-    });
-
-    return NextResponse.json({
-      path: uploadResult.secure_url,
-      resourceType: isVideo ? "video" : "image",
-    });
+    const result = await uploadToCloudinary(file, folderNameInput || "genel");
+    return NextResponse.json(result);
   } catch (err: any) {
     console.error("Dosya yükleme hatası:", err);
+    const status = err instanceof UploadError ? 400 : 500;
     return NextResponse.json(
-      { error: "Yükleme başarısız" },
-      { status: 500 },
+      { error: err.message || "Yükleme başarısız" },
+      { status },
     );
   }
 }

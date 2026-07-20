@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { internalHeaders } from "@/lib/internalAuth";
+import { uploadToCloudinary } from "@/lib/cloudinaryUpload";
 import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -40,24 +40,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Resim yükleme
-    const uploadFormData = new FormData();
-    uploadFormData.append("file", imageFile);
-    uploadFormData.append("folderName", "banners");
-
-    const uploadRes = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`,
-      {
-        method: "POST",
-        headers: internalHeaders(),
-        body: uploadFormData,
-      },
+    const { path: imagePath } = await uploadToCloudinary(
+      imageFile,
+      "banners",
     );
-
-    if (!uploadRes.ok) {
-      throw new Error("Resim yüklenemedi");
-    }
-
-    const { path: imagePath } = await uploadRes.json();
 
     // Eski banner'ları pasif yap
     await prisma.banner.updateMany({
