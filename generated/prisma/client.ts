@@ -60,6 +60,11 @@ export type SubCategory = Prisma.SubCategoryModel
  */
 export type Brand = Prisma.BrandModel
 /**
+ * Model ShowcaseImage
+ * 
+ */
+export type ShowcaseImage = Prisma.ShowcaseImageModel
+/**
  * Model Color
  * 
  */

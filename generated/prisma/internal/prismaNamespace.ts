@@ -388,6 +388,7 @@ export const ModelName = {
   MiddleCategory: 'MiddleCategory',
   SubCategory: 'SubCategory',
   Brand: 'Brand',
+  ShowcaseImage: 'ShowcaseImage',
   Color: 'Color',
   Size: 'Size',
   product: 'product',
@@ -421,7 +422,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "category" | "middleCategory" | "subCategory" | "brand" | "color" | "size" | "product" | "productSize" | "productStock" | "user" | "address" | "favorite" | "cartItem" | "order" | "orderItem" | "orderAddress" | "review" | "blog" | "subscribe" | "banner" | "heroSlide" | "coupon"
+    modelProps: "category" | "middleCategory" | "subCategory" | "brand" | "showcaseImage" | "color" | "size" | "product" | "productSize" | "productStock" | "user" | "address" | "favorite" | "cartItem" | "order" | "orderItem" | "orderAddress" | "review" | "blog" | "subscribe" | "banner" | "heroSlide" | "coupon"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -718,6 +719,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.BrandCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.BrandCountAggregateOutputType> | number
+        }
+      }
+    }
+    ShowcaseImage: {
+      payload: Prisma.$ShowcaseImagePayload<ExtArgs>
+      fields: Prisma.ShowcaseImageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ShowcaseImageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShowcaseImagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ShowcaseImageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShowcaseImagePayload>
+        }
+        findFirst: {
+          args: Prisma.ShowcaseImageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShowcaseImagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ShowcaseImageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShowcaseImagePayload>
+        }
+        findMany: {
+          args: Prisma.ShowcaseImageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShowcaseImagePayload>[]
+        }
+        create: {
+          args: Prisma.ShowcaseImageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShowcaseImagePayload>
+        }
+        createMany: {
+          args: Prisma.ShowcaseImageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ShowcaseImageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShowcaseImagePayload>[]
+        }
+        delete: {
+          args: Prisma.ShowcaseImageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShowcaseImagePayload>
+        }
+        update: {
+          args: Prisma.ShowcaseImageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShowcaseImagePayload>
+        }
+        deleteMany: {
+          args: Prisma.ShowcaseImageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ShowcaseImageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ShowcaseImageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShowcaseImagePayload>[]
+        }
+        upsert: {
+          args: Prisma.ShowcaseImageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShowcaseImagePayload>
+        }
+        aggregate: {
+          args: Prisma.ShowcaseImageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateShowcaseImage>
+        }
+        groupBy: {
+          args: Prisma.ShowcaseImageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShowcaseImageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ShowcaseImageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShowcaseImageCountAggregateOutputType> | number
         }
       }
     }
@@ -2136,6 +2211,19 @@ export const BrandScalarFieldEnum = {
 export type BrandScalarFieldEnum = (typeof BrandScalarFieldEnum)[keyof typeof BrandScalarFieldEnum]
 
 
+export const ShowcaseImageScalarFieldEnum = {
+  id: 'id',
+  image: 'image',
+  title: 'title',
+  order: 'order',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ShowcaseImageScalarFieldEnum = (typeof ShowcaseImageScalarFieldEnum)[keyof typeof ShowcaseImageScalarFieldEnum]
+
+
 export const ColorScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -2645,6 +2733,7 @@ export type GlobalOmitConfig = {
   middleCategory?: Prisma.MiddleCategoryOmit
   subCategory?: Prisma.SubCategoryOmit
   brand?: Prisma.BrandOmit
+  showcaseImage?: Prisma.ShowcaseImageOmit
   color?: Prisma.ColorOmit
   size?: Prisma.SizeOmit
   product?: Prisma.productOmit

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
   Minus,
+  X,
   Instagram,
   Facebook,
   Phone,
@@ -54,10 +55,10 @@ interface DbCategory {
   name: string;
   middleCategories: DbMiddleCategory[];
 }
-interface DbBrand {
+interface ShowcaseImageItem {
   id: number;
-  name: string;
-  image: string | null;
+  image: string;
+  title: string | null;
 }
 
 export default function CategoryBar({
@@ -68,7 +69,8 @@ export default function CategoryBar({
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [showBrands, setShowBrands] = useState(false);
+  const [showShowcase, setShowShowcase] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [expandedMiddleCategory, setExpandedMiddleCategory] = useState<
     number | null
   >(null);
@@ -77,7 +79,7 @@ export default function CategoryBar({
   useEffect(() => {
     setActiveCategory(null);
     setIsMobileMenuOpen(false);
-    setShowBrands(false);
+    setShowShowcase(false);
     setExpandedCategory(null);
   }, [pathname, setIsMobileMenuOpen]);
 
@@ -92,7 +94,9 @@ export default function CategoryBar({
   }, []);
 
   const [categories, setCategories] = useState<DbCategory[]>([]);
-  const [brands, setBrands] = useState<DbBrand[]>([]);
+  const [showcaseImages, setShowcaseImages] = useState<ShowcaseImageItem[]>(
+    [],
+  );
 
   useEffect(() => {
     fetch("/api/category")
@@ -110,12 +114,22 @@ export default function CategoryBar({
             })),
           );
         }
-        if (Array.isArray(data.brands)) {
-          setBrands(data.brands);
+      })
+      .catch((err) => console.error("Kategori verileri alınamadı:", err));
+  }, [middleCategoryIcons]);
+
+  useEffect(() => {
+    fetch("/api/showcase")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.images)) {
+          setShowcaseImages(data.images);
         }
       })
-      .catch((err) => console.error("Kategori/marka verileri alınamadı:", err));
-  }, [middleCategoryIcons]);
+      .catch((err) =>
+        console.error("Örnek çalışma verileri alınamadı:", err),
+      );
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -347,7 +361,7 @@ export default function CategoryBar({
         className="hidden lg:block sticky top-0 z-49"
         onMouseLeave={() => {
           setActiveCategory(null);
-          setShowBrands(false);
+          setShowShowcase(false);
         }}
       >
         <div
@@ -378,7 +392,7 @@ export default function CategoryBar({
                   href={`/products/category/${cat.id}`}
                   onMouseEnter={() => {
                     setActiveCategory(cat.id);
-                    setShowBrands(false);
+                    setShowShowcase(false);
                   }}
                   className="relative text-[14px] px-2 font-bold flex items-center justify-center text-center uppercase transition-colors duration-300 group h-full"
                   style={{
@@ -412,12 +426,12 @@ export default function CategoryBar({
                 </Link>
               ))}
 
-              {/* REFERANSLAR - Link yerine div kullanarak 404 hatasını engelledik */}
+              {/* ÖZEL ÜRETİM ÖRNEK ÇALIŞMALAR - Link yerine div kullanarak 404 hatasını engelledik */}
               <div
                 className="group relative cursor-pointer"
                 onMouseEnter={() => {
                   setActiveCategory(null);
-                  setShowBrands(true);
+                  setShowShowcase(true);
                 }}
               >
                 <div
@@ -436,7 +450,7 @@ export default function CategoryBar({
                       opacity: scrollProgress > 0.8 ? 0.3 : 1,
                     }}
                   />
-                  REFERANSLAR
+                  ÖZEL ÜRETİMLER
                   {/* Alt Çizgi Efekti */}
                   <span
                     className="absolute left-1/2 w-0 h-[4px] transition-all duration-500 ease-out -translate-x-1/2 group-hover:w-full z-[110]"
@@ -540,7 +554,7 @@ export default function CategoryBar({
             </motion.div>
           )}
 
-          {showBrands && (
+          {showShowcase && (
             <motion.div
               initial={{ opacity: 0, y: 5, x: "-50%" }}
               animate={{ opacity: 1, y: 0, x: "-50%" }}
@@ -548,35 +562,67 @@ export default function CategoryBar({
               className="absolute left-1/2 top-full w-[95vw] max-w-[1400px] bg-white border border-slate-200 shadow-2xl z-50 rounded-b-2xl"
             >
               <div className="mx-auto px-8 py-10">
-                <div className="grid grid-cols-6 gap-6">
-                  {brands.map((brand) => (
-                    /* Link yerine div kullanıyoruz */
-                    <div
-                      key={brand.id}
-                      className="flex items-center justify-center p-6 bg-slate-50 rounded-lg hover:bg-slate-100 transition-all hover:shadow-md group cursor-default"
-                    >
-                      {brand.image ? (
-                        <div className="relative w-full h-16">
-                          <Image
-                            src={brand.image}
-                            alt={brand.name}
-                            fill
-                            className="object-contain"
-                          />
-                        </div>
-                      ) : (
-                        <span className="text-xs font-bold uppercase text-slate-400">
-                          {brand.name}
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-6">
+                  Özel Üretim Örnek Çalışmalar
+                </h3>
+                {showcaseImages.length > 0 ? (
+                  <div className="grid grid-cols-6 gap-6">
+                    {showcaseImages.map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setLightboxImage(item.image)}
+                        className="relative w-full h-28 rounded-lg overflow-hidden bg-slate-50 hover:shadow-md transition-all cursor-zoom-in group"
+                      >
+                        <Image
+                          src={item.image}
+                          alt={item.title || "Özel üretim örnek çalışma"}
+                          fill
+                          className="object-cover transition-transform group-hover:scale-105"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-400">
+                    Henüz örnek çalışma eklenmedi.
+                  </p>
+                )}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </nav>
+
+      {/* Örnek Çalışma Büyütme (Lightbox) */}
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-100 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 cursor-zoom-out"
+            onClick={() => setLightboxImage(null)}
+          >
+            <button
+              type="button"
+              className="absolute top-6 right-6 text-white/80 hover:text-white"
+              onClick={() => setLightboxImage(null)}
+              aria-label="Kapat"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <div className="relative w-full max-w-4xl h-[80vh]">
+              <Image
+                src={lightboxImage}
+                alt="Özel üretim örnek çalışma büyük görünüm"
+                fill
+                className="object-contain"
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
