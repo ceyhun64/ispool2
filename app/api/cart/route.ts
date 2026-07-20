@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { internalHeaders } from "@/lib/internalAuth";
+import { uploadToCloudinary as uploadImageToCloudinary } from "@/lib/cloudinaryUpload";
 
 const MAX_QUANTITY = 999;
 
@@ -11,19 +11,8 @@ const MAX_QUANTITY = 999;
 // Upload helper
 // ---------------------------------------------------------------------------
 async function uploadToCloudinary(file: File, folder: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const fd = new FormData();
-  fd.append("file", file);
-  fd.append("folderName", folder);
-
-  const res = await fetch(`${baseUrl}/api/upload`, {
-    method: "POST",
-    headers: internalHeaders(),
-    body: fd,
-  });
-  if (!res.ok) throw new Error("Cloudinary yükleme hatası");
-  const data = await res.json();
-  return data.path as string;
+  const { path } = await uploadImageToCloudinary(file, folder);
+  return path;
 }
 
 // ---------------------------------------------------------------------------

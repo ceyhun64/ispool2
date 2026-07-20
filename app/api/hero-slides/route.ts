@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { internalHeaders } from "@/lib/internalAuth";
+import { uploadToCloudinary } from "@/lib/cloudinaryUpload";
 import type { NextRequest } from "next/server";
 
 export async function GET() {
@@ -46,24 +46,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Resim upload işlemi
-    const uploadFormData = new FormData();
-    uploadFormData.append("file", desktopImage);
-    uploadFormData.append("folderName", "hero_slides");
-
-    const uploadRes = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`,
-      {
-        method: "POST",
-        headers: internalHeaders(),
-        body: uploadFormData,
-      },
+    const { path: imageUrl } = await uploadToCloudinary(
+      desktopImage,
+      "hero_slides",
     );
-
-    if (!uploadRes.ok) {
-      throw new Error("Resim yüklenemedi");
-    }
-
-    const { path: imageUrl } = await uploadRes.json();
 
     // Hero slide oluştur
     const slide = await prisma.heroSlide.create({

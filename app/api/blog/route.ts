@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { internalHeaders } from "@/lib/internalAuth";
+import { uploadToCloudinary } from "@/lib/cloudinaryUpload";
 import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -39,28 +39,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-
     // Dosyayı upload et
-    const uploadForm = new FormData();
-    uploadForm.append("file", file);
-    uploadForm.append("folderName", "blogs");
-
-    const uploadRes = await fetch(`${baseUrl}/api/upload`, {
-      method: "POST",
-      headers: internalHeaders(),
-      body: uploadForm,
-    });
-
-    const uploadData = await uploadRes.json();
-    if (!uploadRes.ok || !uploadData.path) {
-      return NextResponse.json(
-        { message: "Resim yükleme başarısız." },
-        { status: 500 }
-      );
-    }
-
-    const imagePath = uploadData.path;
+    const { path: imagePath } = await uploadToCloudinary(file, "blogs");
 
     // Blog oluştur
     const blog = await prisma.blog.create({
