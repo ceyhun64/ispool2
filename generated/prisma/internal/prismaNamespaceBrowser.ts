@@ -55,6 +55,7 @@ export const ModelName = {
   MiddleCategory: 'MiddleCategory',
   SubCategory: 'SubCategory',
   Brand: 'Brand',
+  ShowcaseImage: 'ShowcaseImage',
   Color: 'Color',
   Size: 'Size',
   product: 'product',
@@ -133,6 +134,19 @@ export const BrandScalarFieldEnum = {
 } as const
 
 export type BrandScalarFieldEnum = (typeof BrandScalarFieldEnum)[keyof typeof BrandScalarFieldEnum]
+
+
+export const ShowcaseImageScalarFieldEnum = {
+  id: 'id',
+  image: 'image',
+  title: 'title',
+  order: 'order',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ShowcaseImageScalarFieldEnum = (typeof ShowcaseImageScalarFieldEnum)[keyof typeof ShowcaseImageScalarFieldEnum]
 
 
 export const ColorScalarFieldEnum = {
