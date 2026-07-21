@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -75,6 +76,8 @@ export default function CategoryBar({
   const [lightboxImage, setLightboxImage] = useState<ShowcaseImageItem | null>(
     null,
   );
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => setIsMounted(true), []);
   const [expandedMiddleCategory, setExpandedMiddleCategory] = useState<
     number | null
   >(null);
@@ -610,38 +613,48 @@ export default function CategoryBar({
         </AnimatePresence>
       </nav>
 
-      {/* Örnek Çalışma Büyütme (Lightbox) */}
-      <AnimatePresence>
-        {lightboxImage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-100 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-6 cursor-zoom-out"
-            onClick={() => setLightboxImage(null)}
-          >
-            <button
-              type="button"
-              className="absolute top-6 right-6 text-white/80 hover:text-white"
-              onClick={() => setLightboxImage(null)}
-              aria-label="Kapat"
-            >
-              <X className="w-8 h-8" />
-            </button>
-            <div
-              className="relative w-full max-w-2xl aspect-square bg-white"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Image
-                src={lightboxImage.image}
-                alt={lightboxImage.title || "Özel üretim örnek çalışma büyük görünüm"}
-                fill
-                className="object-contain p-4"
-              />
-            </div>
-          </motion.div>
+      {/* Örnek Çalışma Büyütme (Lightbox) — sticky/z-index'li atalardan (navbar,
+          topbar) kaçmak için document.body'e portallanıyor; aksi halde bu
+          bileşenin sticky/z-49 sarmalayıcısının stacking context'inde
+          sıkışıp onların altında kalıyordu. */}
+      {isMounted &&
+        createPortal(
+          <AnimatePresence>
+            {lightboxImage && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-9999 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-6 cursor-zoom-out"
+                onClick={() => setLightboxImage(null)}
+              >
+                <button
+                  type="button"
+                  className="absolute top-6 right-6 text-white/80 hover:text-white"
+                  onClick={() => setLightboxImage(null)}
+                  aria-label="Kapat"
+                >
+                  <X className="w-8 h-8" />
+                </button>
+                <div
+                  className="relative w-full max-w-2xl aspect-square bg-white"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Image
+                    src={lightboxImage.image}
+                    alt={
+                      lightboxImage.title ||
+                      "Özel üretim örnek çalışma büyük görünüm"
+                    }
+                    fill
+                    className="object-contain p-4"
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body,
         )}
-      </AnimatePresence>
     </>
   );
 }
