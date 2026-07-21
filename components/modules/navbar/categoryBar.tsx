@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
   Minus,
-  X,
+  ArrowRight,
   Instagram,
   Facebook,
   Phone,
@@ -18,6 +18,7 @@ import {
   Ruler,
   Package,
   Info,
+  Images,
 } from "lucide-react";
 import {
   Sheet,
@@ -70,7 +71,6 @@ export default function CategoryBar({
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showShowcase, setShowShowcase] = useState(false);
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [expandedMiddleCategory, setExpandedMiddleCategory] = useState<
     number | null
   >(null);
@@ -94,9 +94,6 @@ export default function CategoryBar({
   }, []);
 
   const [categories, setCategories] = useState<DbCategory[]>([]);
-  const [showcaseImages, setShowcaseImages] = useState<ShowcaseImageItem[]>(
-    [],
-  );
 
   useEffect(() => {
     fetch("/api/category")
@@ -117,6 +114,10 @@ export default function CategoryBar({
       })
       .catch((err) => console.error("Kategori verileri alınamadı:", err));
   }, [middleCategoryIcons]);
+
+  const [showcaseImages, setShowcaseImages] = useState<ShowcaseImageItem[]>(
+    [],
+  );
 
   useEffect(() => {
     fetch("/api/showcase")
@@ -152,6 +153,11 @@ export default function CategoryBar({
       label: "Özel Üretim",
       icon: <Ruler size={16} />,
       href: "/products/special_production",
+    },
+    {
+      label: "Örnek Çalışmalar",
+      icon: <Images size={16} />,
+      href: "/products/special_production/gallery",
     },
     {
       label: "Hakkımızda",
@@ -426,43 +432,40 @@ export default function CategoryBar({
                 </Link>
               ))}
 
-              {/* ÖZEL ÜRETİM ÖRNEK ÇALIŞMALAR - Link yerine div kullanarak 404 hatasını engelledik */}
-              <div
-                className="group relative cursor-pointer"
+              {/* ÖZEL ÜRETİM ÖRNEK ÇALIŞMALAR - hover'da önizleme gösterir, tıklanınca galeri sayfasına yönlendirir */}
+              <Link
+                href="/products/special_production/gallery"
                 onMouseEnter={() => {
                   setActiveCategory(null);
                   setShowShowcase(true);
                 }}
+                className="relative py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center transition-colors duration-300 group"
+                style={{
+                  color: scrollProgress > 0.5 ? "#334155" : "#ffffff",
+                }}
               >
-                <div
-                  className="relative py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center h-full transition-colors duration-300"
+                <span
+                  className="absolute right-0 top-1/4 h-1/2 w-[1px] transition-all duration-300"
                   style={{
-                    color: scrollProgress > 0.5 ? "#334155" : "#ffffff",
+                    backgroundColor:
+                      scrollProgress > 0.5
+                        ? "#64748b"
+                        : "rgba(255, 255, 255, 0.3)",
+                    opacity: scrollProgress > 0.8 ? 0.3 : 1,
                   }}
-                >
-                  <span
-                    className="absolute right-0 top-1/4 h-1/2 w-[1px] transition-all duration-300"
-                    style={{
-                      backgroundColor:
-                        scrollProgress > 0.5
-                          ? "#64748b"
-                          : "rgba(255, 255, 255, 0.3)",
-                      opacity: scrollProgress > 0.8 ? 0.3 : 1,
-                    }}
-                  />
-                  ÖZEL ÜRETİMLER
-                  {/* Alt Çizgi Efekti */}
-                  <span
-                    className="absolute left-1/2 w-0 h-[4px] transition-all duration-500 ease-out -translate-x-1/2 group-hover:w-full z-[110]"
-                    style={{
-                      bottom: scrollProgress > 0.5 ? "-0.5rem" : "-1rem",
-                      backgroundColor:
-                        scrollProgress > 0.5 ? "#f97316" : "#ffffff",
-                      clipPath: "polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%)",
-                    }}
-                  />
-                </div>
-              </div>
+                />
+                ÖZEL ÜRETİMLER
+                {/* Alt Çizgi Efekti */}
+                <span
+                  className="absolute left-1/2 w-0 h-[4px] transition-all duration-500 ease-out -translate-x-1/2 group-hover:w-full z-[110]"
+                  style={{
+                    bottom: scrollProgress > 0.5 ? "-0.5rem" : "-1rem",
+                    backgroundColor:
+                      scrollProgress > 0.5 ? "#f97316" : "#ffffff",
+                    clipPath: "polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%)",
+                  }}
+                />
+              </Link>
 
               {/* EN YENİLER - Query parameter ile sort bilgisi eklendi */}
               <Link
@@ -562,17 +565,25 @@ export default function CategoryBar({
               className="absolute left-1/2 top-full w-[95vw] max-w-[1400px] bg-white border border-slate-200 shadow-2xl z-50 rounded-b-2xl"
             >
               <div className="mx-auto px-8 py-10">
-                <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-6">
-                  Özel Üretim Örnek Çalışmalar
-                </h3>
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-900">
+                    Özel Üretim Örnek Çalışmalar
+                  </h3>
+                  <Link
+                    href="/products/special_production/gallery"
+                    className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-orange-700 hover:text-orange-600 transition-colors"
+                  >
+                    Tümünü Gör
+                    <ArrowRight size={14} />
+                  </Link>
+                </div>
                 {showcaseImages.length > 0 ? (
                   <div className="grid grid-cols-6 gap-6">
-                    {showcaseImages.map((item) => (
-                      <button
+                    {showcaseImages.slice(0, 6).map((item) => (
+                      <Link
                         key={item.id}
-                        type="button"
-                        onClick={() => setLightboxImage(item.image)}
-                        className="relative w-full h-28 rounded-lg overflow-hidden bg-slate-50 hover:shadow-md transition-all cursor-zoom-in group"
+                        href="/products/special_production/gallery"
+                        className="relative w-full h-28 rounded-lg overflow-hidden bg-slate-50 hover:shadow-md transition-all group"
                       >
                         <Image
                           src={item.image}
@@ -580,7 +591,7 @@ export default function CategoryBar({
                           fill
                           className="object-cover transition-transform group-hover:scale-105"
                         />
-                      </button>
+                      </Link>
                     ))}
                   </div>
                 ) : (
@@ -593,36 +604,6 @@ export default function CategoryBar({
           )}
         </AnimatePresence>
       </nav>
-
-      {/* Örnek Çalışma Büyütme (Lightbox) */}
-      <AnimatePresence>
-        {lightboxImage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-100 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 cursor-zoom-out"
-            onClick={() => setLightboxImage(null)}
-          >
-            <button
-              type="button"
-              className="absolute top-6 right-6 text-white/80 hover:text-white"
-              onClick={() => setLightboxImage(null)}
-              aria-label="Kapat"
-            >
-              <X className="w-8 h-8" />
-            </button>
-            <div className="relative w-full max-w-4xl h-[80vh]">
-              <Image
-                src={lightboxImage}
-                alt="Özel üretim örnek çalışma büyük görünüm"
-                fill
-                className="object-contain"
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }
