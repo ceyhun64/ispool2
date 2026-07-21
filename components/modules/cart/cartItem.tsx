@@ -9,6 +9,7 @@ import { withKdv } from "@/lib/pricing";
 
 interface CartItemProps {
   item: CartItemType;
+  maxQuantity?: number;
   onIncrease: () => void;
   onDecrease: () => void;
   onRemove: () => void;
@@ -16,6 +17,7 @@ interface CartItemProps {
 
 export default function CartItem({
   item,
+  maxQuantity = Infinity,
   onIncrease,
   onDecrease,
   onRemove,
@@ -190,7 +192,8 @@ export default function CartItem({
             </span>
             <button
               onClick={onIncrease}
-              className="px-1.5 md:px-2 py-1 transition-all rounded-sm"
+              disabled={quantity >= maxQuantity}
+              className="px-1.5 md:px-2 py-1 transition-all rounded-sm disabled:opacity-30"
             >
               <Plus size={12} strokeWidth={2.5} />
             </button>

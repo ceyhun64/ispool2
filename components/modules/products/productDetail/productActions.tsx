@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 
 interface ProductActionsProps {
   quantity: number;
+  maxQuantity: number;
   onQuantityChange: (quantity: number) => void;
   onAddToCart: () => void;
   onToggleFavorite: () => void;
@@ -27,6 +28,7 @@ interface ProductActionsProps {
 
 export default function ProductActions({
   quantity,
+  maxQuantity,
   onQuantityChange,
   onAddToCart,
   onToggleFavorite,
@@ -78,8 +80,11 @@ export default function ProductActions({
               {quantity}
             </span>
             <button
-              onClick={() => onQuantityChange(quantity + 1)}
-              className="text-slate-500 hover:text-orange-600 transition-colors"
+              onClick={() =>
+                onQuantityChange(Math.min(maxQuantity, quantity + 1))
+              }
+              disabled={quantity >= maxQuantity}
+              className="text-slate-500 hover:text-orange-600 transition-colors disabled:opacity-30 disabled:hover:text-slate-500"
             >
               <Plus size={14} strokeWidth={3} />
             </button>
@@ -99,6 +104,11 @@ export default function ProductActions({
             {canAddToCart ? "Sepete Ekle" : "Stokta Yok"}
           </button>
         </div>
+      )}
+      {quantity > 0 && Number.isFinite(maxQuantity) && (
+        <p className="text-[10px] text-slate-400 font-medium -mt-1">
+          Stokta {maxQuantity} adet bulunuyor.
+        </p>
       )}
 
       {/* Favori + Paylaş */}

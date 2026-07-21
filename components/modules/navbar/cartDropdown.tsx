@@ -41,6 +41,12 @@ import { withKdv, getShippingFee } from "@/lib/pricing";
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+interface StockRow {
+  id: number;
+  sizeId: number | null;
+  stock: number;
+}
+
 interface Product {
   id: number;
   title: string;
@@ -48,6 +54,7 @@ interface Product {
   mainImage: string;
   bulkDiscountQty?: number | null;
   bulkDiscountRate?: number | null;
+  stock?: StockRow[];
 }
 
 export interface CartItemType {
@@ -58,6 +65,16 @@ export interface CartItemType {
   sizeId?: number | null;
   size?: { id: number; value: string } | null;
   customImage?: string | null;
+}
+
+// Stok takibi yoksa sınırsız kabul edilir.
+function getMaxQuantity(item: CartItemType): number {
+  const stock = item.product.stock;
+  if (!stock || stock.length === 0) return Infinity;
+  const row =
+    stock.find((s) => s.sizeId === (item.sizeId ?? null)) ??
+    stock.find((s) => s.sizeId === null);
+  return row ? row.stock : Infinity;
 }
 
 interface CartDropdownProps {
@@ -209,6 +226,13 @@ const CartDropdown = forwardRef(
 
       const newQuantity = Math.max(1, item.quantity + delta);
 
+      if (delta > 0 && newQuantity > getMaxQuantity(item)) {
+        toast.error(
+          `Bu üründen en fazla ${getMaxQuantity(item)} adet ekleyebilirsiniz.`,
+        );
+        return;
+      }
+
       try {
         const res = await fetch(`/api/cart/${item.id}`, {
           method: "PATCH",
@@ -217,7 +241,8 @@ const CartDropdown = forwardRef(
           credentials: "include",
         });
         if (!res.ok) {
-          toast.error("Miktar güncellenemedi");
+          const data = await res.json().catch(() => null);
+          toast.error(data?.error || "Miktar güncellenemedi");
           return;
         }
 
@@ -417,6 +442,7 @@ const CartDropdown = forwardRef(
                     >
                       <CartItemDropdown
                         item={item}
+                        maxQuantity={getMaxQuantity(item)}
                         onQuantityChange={handleQuantityChange}
                         onRemove={handleRemove}
                         isLoggedIn={isLoggedIn}
