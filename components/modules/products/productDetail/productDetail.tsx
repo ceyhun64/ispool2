@@ -204,6 +204,21 @@ export default function ProductDetailPage() {
     checkLogin();
   }, []);
 
+  // Seçili beden(ler) değişince, o an girilmiş miktar yeni stok sınırını
+  // aşıyorsa otomatik olarak sınıra çeker (ör. az stoklu bir bedene geçince).
+  useEffect(() => {
+    if (!product) return;
+    const entries =
+      product.availableSizes.length > 0
+        ? selectedSizeIds
+            .map((id) => product.stockMatrix.find((s) => s.sizeId === id))
+            .filter((s): s is StockEntry => !!s)
+        : product.stockMatrix.filter((s) => s.sizeId === null);
+    if (entries.length === 0) return;
+    const max = Math.min(...entries.map((s) => s.stock));
+    setQuantity((q) => (q > max ? Math.max(1, max) : q));
+  }, [product, selectedSizeIds]);
+
   const calculateBulkDiscount = () => {
     if (!product) return { hasDiscount: false, discountRate: 0 };
     const { bulkDiscountQty, bulkDiscountRate } = product;
@@ -466,6 +481,21 @@ export default function ProductDetailPage() {
     product.availableSizes.length === 0 || selectedSizeIds.length > 0;
   const sizeStockAvailable = hasValidSelection && cartCombos.length > 0;
 
+  // Seçili beden(ler)in (veya bedensiz üründe sizeId=null kaydının) stoğu
+  // kadarına izin verir; birden çok beden seçiliyse en düşük stoklu olan
+  // sınırı belirler, aksi halde bir bedenin stoğunu aşan miktar sepete
+  // eklenebilirdi.
+  const relevantStockEntries =
+    product.availableSizes.length > 0
+      ? selectedSizeIds
+          .map((id) => product.stockMatrix.find((s) => s.sizeId === id))
+          .filter((s): s is StockEntry => !!s)
+      : product.stockMatrix.filter((s) => s.sizeId === null);
+  const maxQuantity =
+    relevantStockEntries.length > 0
+      ? Math.min(...relevantStockEntries.map((s) => s.stock))
+      : Infinity;
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans selection:bg-orange-100 selection:text-orange-900">
       {showPreview && (
@@ -634,6 +664,7 @@ export default function ProductDetailPage() {
 
                 <ProductActions
                   quantity={quantity}
+                  maxQuantity={maxQuantity}
                   onQuantityChange={setQuantity}
                   onAddToCart={handleAddToCart}
                   onToggleFavorite={() =>

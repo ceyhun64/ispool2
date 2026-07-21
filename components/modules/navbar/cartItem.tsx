@@ -7,6 +7,7 @@ import { withKdv } from "@/lib/pricing";
 
 interface CartItemDropdownProps {
   item: CartItemType;
+  maxQuantity?: number;
   onQuantityChange: (
     id: number,
     delta: number,
@@ -24,6 +25,7 @@ interface CartItemDropdownProps {
 
 const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
   item,
+  maxQuantity = Infinity,
   onQuantityChange,
   onRemove,
   isLoggedIn,
@@ -208,7 +210,8 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
               onClick={() =>
                 onQuantityChange(callId, 1, item.sizeId, item.customImage)
               }
-              className="p-1 rounded-sm transition-colors hover:bg-white/50"
+              disabled={item.quantity >= maxQuantity}
+              className="p-1 rounded-sm transition-colors hover:bg-white/50 disabled:opacity-30"
             >
               <Plus className="h-3 w-3" />
             </button>

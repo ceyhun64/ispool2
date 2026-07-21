@@ -21,6 +21,12 @@ import { withKdv } from "@/lib/pricing";
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+interface StockRow {
+  id: number;
+  sizeId: number | null;
+  stock: number;
+}
+
 interface Product {
   id: number;
   title: string;
@@ -29,6 +35,18 @@ interface Product {
   category: string;
   bulkDiscountQty?: number | null;
   bulkDiscountRate?: number | null;
+  stock?: StockRow[];
+}
+
+// Bir sepet satırının (ürün + beden) izin verilen azami miktarı — stok
+// takibi yoksa (stock tanımlı değilse) sınırsız kabul edilir.
+function getMaxQuantity(item: CartItemType): number {
+  const stock = item.product.stock;
+  if (!stock || stock.length === 0) return Infinity;
+  const row =
+    stock.find((s) => s.sizeId === (item.sizeId ?? null)) ??
+    stock.find((s) => s.sizeId === null);
+  return row ? row.stock : Infinity;
 }
 
 export interface CartItemType {
@@ -126,6 +144,13 @@ export default function Cart() {
     if (!item) return;
     const newQuantity = Math.max(1, item.quantity + delta);
 
+    if (delta > 0 && newQuantity > getMaxQuantity(item)) {
+      toast.error(
+        `Bu üründen en fazla ${getMaxQuantity(item)} adet ekleyebilirsiniz.`,
+      );
+      return;
+    }
+
     try {
       const res = await fetch(`/api/cart/${item.id}`, {
         method: "PATCH",
@@ -137,7 +162,8 @@ export default function Cart() {
         await fetchCart();
         window.dispatchEvent(new Event("cartUpdated"));
       } else {
-        toast.error("Miktar güncellenemedi");
+        const data = await res.json().catch(() => null);
+        toast.error(data?.error || "Miktar güncellenemedi");
       }
     } catch {
       toast.error("Hata oluştu");
@@ -278,6 +304,7 @@ export default function Cart() {
                       >
                         <CartItem
                           item={item}
+                          maxQuantity={getMaxQuantity(item)}
                           onIncrease={() =>
                             handleQuantityChange(
                               isLoggedIn ? item.id : item.product.id,

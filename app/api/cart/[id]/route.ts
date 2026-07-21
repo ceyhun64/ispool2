@@ -74,6 +74,7 @@ export async function PATCH(
         id: cartItemId,
         userId: Number(session.user.id), // ← bu kullanıcıya ait mi?
       },
+      include: { product: { include: { stock: true } } },
     });
 
     if (!cartItem) {
@@ -92,6 +93,28 @@ export async function PATCH(
         { error: "Geçersiz miktar" },
         { status: 400 },
       );
+    }
+
+    // ─── Stok kontrolü ─────────────────────────────────────────────────────
+    if (body.quantity !== undefined) {
+      const stock = cartItem.product.stock;
+      const hasStockTracking = stock.length > 0;
+      if (hasStockTracking) {
+        const stockRow =
+          stock.find((s) => s.sizeId === cartItem.sizeId) ??
+          stock.find((s) => s.sizeId === null);
+
+        if (!stockRow || body.quantity > stockRow.stock) {
+          return NextResponse.json(
+            {
+              error: stockRow
+                ? `Bu üründen en fazla ${stockRow.stock} adet ekleyebilirsiniz.`
+                : "Ürün stokta yok",
+            },
+            { status: 400 },
+          );
+        }
+      }
     }
 
     // ─── Güncelle ──────────────────────────────────────────────────────────

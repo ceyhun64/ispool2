@@ -26,7 +26,7 @@ export async function GET() {
     const cartItems = await prisma.cartItem.findMany({
       where: { userId: Number(session.user.id) },
       include: {
-        product: true,
+        product: { include: { stock: true } }, // ← stok bilgisiyle birlikte
         size: true, // ← beden adı / bilgi ile birlikte döndür
       },
       orderBy: { createdAt: "desc" },
@@ -67,6 +67,7 @@ export async function POST(req: Request) {
     // ürün var mı
     const product = await prisma.product.findUnique({
       where: { id: productId },
+      include: { stock: true },
     });
     if (!product) {
       return NextResponse.json({ error: "Ürün bulunamadı" }, { status: 404 });
@@ -77,6 +78,40 @@ export async function POST(req: Request) {
       const size = await prisma.size.findUnique({ where: { id: sizeId } });
       if (!size) {
         return NextResponse.json({ error: "Geçersiz beden" }, { status: 400 });
+      }
+    }
+
+    // ─── Stok kontrolü ─────────────────────────────────────────────────────
+    // Aynı ürün+beden için sepette (farklı özel resim varyantları dahil)
+    // zaten bulunan toplam adet + eklenmek istenen adet, mevcut stoğu
+    // aşamaz.
+    const hasStockTracking = product.stock.length > 0;
+    if (hasStockTracking) {
+      const stockRow =
+        product.stock.find((s) => s.sizeId === sizeId) ??
+        product.stock.find((s) => s.sizeId === null);
+
+      if (!stockRow || stockRow.stock <= 0) {
+        return NextResponse.json({ error: "Ürün stokta yok" }, { status: 400 });
+      }
+
+      const currentQtyInCart = await prisma.cartItem.aggregate({
+        _sum: { quantity: true },
+        where: { userId: Number(session.user.id), productId, sizeId },
+      });
+      const alreadyInCart = currentQtyInCart._sum.quantity ?? 0;
+
+      if (alreadyInCart + quantity > stockRow.stock) {
+        const remaining = Math.max(0, stockRow.stock - alreadyInCart);
+        return NextResponse.json(
+          {
+            error:
+              remaining > 0
+                ? `Bu üründen sepetinize en fazla ${remaining} adet daha ekleyebilirsiniz (stok: ${stockRow.stock}).`
+                : `Bu üründen sepetinizde stok kadar ürün zaten mevcut (stok: ${stockRow.stock}).`,
+          },
+          { status: 400 },
+        );
       }
     }
 
