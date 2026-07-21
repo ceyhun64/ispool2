@@ -75,18 +75,17 @@ const ShowcaseGallery: React.FC = () => {
                 key={item.id}
                 type="button"
                 onClick={() => setLightboxImage(item)}
-                className="group relative w-full aspect-4/5 overflow-hidden bg-slate-100 border border-slate-200 cursor-zoom-in"
+                className="group relative w-full aspect-square overflow-hidden bg-white border border-slate-200 cursor-zoom-in"
               >
                 <Image
                   src={item.image}
                   alt={item.title || "Özel üretim örnek çalışma"}
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="object-contain p-3 transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 {item.title && (
-                  <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                  <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-slate-950/80 to-transparent px-4 py-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                     <span className="text-white text-[11px] font-black uppercase tracking-wider">
                       {item.title}
                     </span>
@@ -127,14 +126,14 @@ const ShowcaseGallery: React.FC = () => {
               initial={{ scale: 0.96, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.96, opacity: 0 }}
-              className="relative w-full max-w-4xl h-[70vh] sm:h-[80vh]"
+              className="relative w-full max-w-2xl aspect-square bg-white"
               onClick={(e) => e.stopPropagation()}
             >
               <Image
                 src={lightboxImage.image}
                 alt={lightboxImage.title || "Özel üretim örnek çalışma büyük görünüm"}
                 fill
-                className="object-contain"
+                className="object-contain p-4"
               />
             </motion.div>
             {lightboxImage.title && (
