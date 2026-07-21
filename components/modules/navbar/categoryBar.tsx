@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
   Minus,
+  X,
   ArrowRight,
   Instagram,
   Facebook,
@@ -71,6 +72,9 @@ export default function CategoryBar({
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showShowcase, setShowShowcase] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<ShowcaseImageItem | null>(
+    null,
+  );
   const [expandedMiddleCategory, setExpandedMiddleCategory] = useState<
     number | null
   >(null);
@@ -580,18 +584,19 @@ export default function CategoryBar({
                 {showcaseImages.length > 0 ? (
                   <div className="grid grid-cols-6 gap-6">
                     {showcaseImages.slice(0, 6).map((item) => (
-                      <Link
+                      <button
                         key={item.id}
-                        href="/products/special_production/gallery"
-                        className="relative w-full h-28 rounded-lg overflow-hidden bg-slate-50 hover:shadow-md transition-all group"
+                        type="button"
+                        onClick={() => setLightboxImage(item)}
+                        className="relative w-full aspect-square rounded-lg overflow-hidden bg-white border border-slate-200 hover:shadow-md transition-all cursor-zoom-in group"
                       >
                         <Image
                           src={item.image}
                           alt={item.title || "Özel üretim örnek çalışma"}
                           fill
-                          className="object-cover transition-transform group-hover:scale-105"
+                          className="object-contain p-1.5 transition-transform group-hover:scale-105"
                         />
-                      </Link>
+                      </button>
                     ))}
                   </div>
                 ) : (
@@ -604,6 +609,39 @@ export default function CategoryBar({
           )}
         </AnimatePresence>
       </nav>
+
+      {/* Örnek Çalışma Büyütme (Lightbox) */}
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-100 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-6 cursor-zoom-out"
+            onClick={() => setLightboxImage(null)}
+          >
+            <button
+              type="button"
+              className="absolute top-6 right-6 text-white/80 hover:text-white"
+              onClick={() => setLightboxImage(null)}
+              aria-label="Kapat"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <div
+              className="relative w-full max-w-2xl aspect-square bg-white"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={lightboxImage.image}
+                alt={lightboxImage.title || "Özel üretim örnek çalışma büyük görünüm"}
+                fill
+                className="object-contain p-4"
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

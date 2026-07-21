@@ -861,12 +861,12 @@ export default function HomePageManagement() {
 
                       {showcaseImagePreview ? (
                         <div className="relative">
-                          <div className="relative w-full h-48 rounded-xl overflow-hidden border-2 border-slate-200">
+                          <div className="relative w-full aspect-square rounded-xl overflow-hidden border-2 border-slate-200 bg-white">
                             <Image
                               src={showcaseImagePreview}
                               alt="Preview"
                               fill
-                              className="object-cover"
+                              className="object-contain p-2"
                             />
                           </div>
                           <Button
@@ -978,14 +978,14 @@ export default function HomePageManagement() {
                   {showcaseImages.map((item) => (
                     <div
                       key={item.id}
-                      className="group relative w-full h-40 rounded-sm overflow-hidden border border-slate-200 bg-slate-100 cursor-zoom-in"
+                      className="group relative w-full aspect-square rounded-sm overflow-hidden border border-slate-200 bg-white cursor-zoom-in"
                       onClick={() => setLightboxImage(item.image)}
                     >
                       <Image
                         src={item.image}
                         alt={item.title || "Örnek çalışma"}
                         fill
-                        className="object-cover transition-transform group-hover:scale-105"
+                        className="object-contain p-2 transition-transform group-hover:scale-105"
                       />
                       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button
@@ -1035,12 +1035,12 @@ export default function HomePageManagement() {
           >
             <X className="w-8 h-8" />
           </button>
-          <div className="relative w-full max-w-4xl h-[80vh]">
+          <div className="relative w-full max-w-2xl aspect-square bg-white">
             <Image
               src={lightboxImage}
               alt="Örnek çalışma büyük görünüm"
               fill
-              className="object-contain"
+              className="object-contain p-4"
             />
           </div>
         </div>
