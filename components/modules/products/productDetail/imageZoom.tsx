@@ -2,17 +2,26 @@
 
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
-import { X } from "lucide-react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Props {
-  src: string;
+  images: string[];
+  activeIndex: number;
+  onIndexChange: (index: number) => void;
   alt: string;
 }
 
 const MODAL_ZOOM_SCALE = 2.5;
 const DRAG_THRESHOLD = 4;
 
-export function CustomImageZoom({ src, alt }: Props) {
+export function CustomImageZoom({
+  images,
+  activeIndex,
+  onIndexChange,
+  alt,
+}: Props) {
+  const src = images[activeIndex] ?? images[0];
+  const hasMultiple = images.length > 1;
   const [showZoom, setShowZoom] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
@@ -51,6 +60,26 @@ export function CustomImageZoom({ src, alt }: Props) {
     setIsModalOpen(false);
     resetModalZoom();
   }, [resetModalZoom]);
+
+  const goToPrev = useCallback(
+    (e?: React.MouseEvent) => {
+      e?.stopPropagation();
+      if (!hasMultiple) return;
+      resetModalZoom();
+      onIndexChange((activeIndex - 1 + images.length) % images.length);
+    },
+    [hasMultiple, activeIndex, images.length, onIndexChange, resetModalZoom],
+  );
+
+  const goToNext = useCallback(
+    (e?: React.MouseEvent) => {
+      e?.stopPropagation();
+      if (!hasMultiple) return;
+      resetModalZoom();
+      onIndexChange((activeIndex + 1) % images.length);
+    },
+    [hasMultiple, activeIndex, images.length, onIndexChange, resetModalZoom],
+  );
 
   const clampTranslate = useCallback(
     (x: number, y: number, scale: number) => {
@@ -176,19 +205,23 @@ export function CustomImageZoom({ src, alt }: Props) {
     };
   }, [isModalOpen]);
 
-  // ESC tuşu ile kapatma
+  // ESC ile kapatma, ok tuşlarıyla diğer resimlere geçiş
   useEffect(() => {
     if (!isModalOpen) return;
 
-    const handleEscape = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         handleClose();
+      } else if (e.key === "ArrowLeft") {
+        goToPrev();
+      } else if (e.key === "ArrowRight") {
+        goToNext();
       }
     };
 
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [isModalOpen, handleClose]);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isModalOpen, handleClose, goToPrev, goToNext]);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -291,6 +324,36 @@ export function CustomImageZoom({ src, alt }: Props) {
               {modalScale === 1 ? "yakınlaştır" : "uzaklaştır"}
             </span>
           </div>
+
+          {/* Diğer resimlere geçiş okları */}
+          {hasMultiple && (
+            <>
+              <button
+                className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 text-white hover:text-slate-300 transition-all duration-300 p-2 md:p-3 hover:bg-white/10 rounded-full"
+                style={{ zIndex: 1000000 }}
+                onClick={goToPrev}
+                aria-label="Önceki resim"
+              >
+                <ChevronLeft size={32} />
+              </button>
+              <button
+                className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 text-white hover:text-slate-300 transition-all duration-300 p-2 md:p-3 hover:bg-white/10 rounded-full"
+                style={{ zIndex: 1000000 }}
+                onClick={goToNext}
+                aria-label="Sonraki resim"
+              >
+                <ChevronRight size={32} />
+              </button>
+
+              {/* Resim sayacı */}
+              <div
+                className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/80 text-xs font-bold tracking-widest bg-white/10 px-3 py-1.5 rounded-full"
+                style={{ zIndex: 1000000 }}
+              >
+                {activeIndex + 1} / {images.length}
+              </div>
+            </>
+          )}
 
           {/* Image Container */}
           <div className="relative w-[95vw] h-[95vh] flex items-center justify-center">
