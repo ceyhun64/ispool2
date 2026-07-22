@@ -308,12 +308,13 @@ export const ColorPickerOutput = ({
   );
 };
 
-// --- Renk Değer Gösterimi ---
+// --- Renk Değeri Girişi (elle de yazılabilir) ---
 export const ColorPickerFormat = ({
   className,
   ...props
 }: HTMLAttributes<HTMLDivElement>) => {
-  const { hue, saturation, lightness, mode } = useColorPicker();
+  const { hue, saturation, lightness, mode, setHue, setSaturation, setLightness } =
+    useColorPicker();
   const color = Color.hsl(hue, saturation, lightness);
 
   let displayValue = "";
@@ -324,12 +325,55 @@ export const ColorPickerFormat = ({
     displayValue = color.hsl().array().map(Math.round).join(", ");
   else if (mode === "css") displayValue = color.rgb().string(0);
 
+  // Kullanıcı yazarken dışarıdan gelen (picker'dan sürüklenerek değişen)
+  // displayValue ile çakışmaması için ayrı bir local state tutulur; input
+  // odaktayken dışarıdan senkronize edilmez.
+  const [localValue, setLocalValue] = useState(displayValue);
+  const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    if (!isFocused) setLocalValue(displayValue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displayValue, isFocused]);
+
+  const applyValue = useCallback(
+    (raw: string) => {
+      let parseable = raw.trim();
+      if (!parseable) return;
+      try {
+        if (mode === "hex" && !parseable.startsWith("#")) {
+          parseable = `#${parseable}`;
+        } else if (mode === "rgb") {
+          parseable = `rgb(${parseable})`;
+        } else if (mode === "hsl") {
+          parseable = `hsl(${parseable})`;
+        }
+        const parsed = Color(parseable);
+        const hsl = parsed.hsl();
+        setHue(hsl.hue() || 0);
+        setSaturation(hsl.saturationl());
+        setLightness(hsl.lightness());
+      } catch {
+        // Geçersiz/eksik değer — kullanıcı yazmaya devam ederken sessizce yok say
+      }
+    },
+    [mode, setHue, setSaturation, setLightness],
+  );
+
   return (
     <div className={cn("w-full", className)} {...props}>
       <Input
-        className="h-8 w-full bg-secondary px-2 text-xs shadow-none"
-        readOnly
-        value={displayValue}
+        className="h-8 w-full bg-secondary px-2 text-xs shadow-none font-mono"
+        value={localValue}
+        onFocus={() => setIsFocused(true)}
+        onChange={(e) => {
+          setLocalValue(e.target.value);
+          applyValue(e.target.value);
+        }}
+        onBlur={() => {
+          setIsFocused(false);
+          setLocalValue(displayValue);
+        }}
       />
     </div>
   );
