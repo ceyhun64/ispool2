@@ -76,8 +76,9 @@ export default function CartSummary({
           </div>
           {shippingFee > 0 && (
             <p className="text-[10px] text-slate-400 font-medium -mt-3">
-              {formatCurrency(FREE_SHIPPING_THRESHOLD)} ve üzeri alışverişlerde
-              kargo ücretsiz.
+              {formatCurrency(FREE_SHIPPING_THRESHOLD - subtotal)} daha
+              ekleyin, kargo ücretsiz olsun (
+              {formatCurrency(FREE_SHIPPING_THRESHOLD)} ve üzeri).
             </p>
           )}
 

@@ -36,7 +36,7 @@ import {
   GuestCartItem,
 } from "@/utils/cart";
 import { Skeleton } from "@/components/ui/skeleton";
-import { withKdv, getShippingFee } from "@/lib/pricing";
+import { withKdv, getShippingFee, FREE_SHIPPING_THRESHOLD } from "@/lib/pricing";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -496,6 +496,16 @@ const CartDropdown = forwardRef(
                     </span>
                   )}
                 </div>
+                {shippingFee > 0 && (
+                  <p className="text-[9px] text-slate-400 font-medium normal-case -mt-1">
+                    ₺
+                    {(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString(
+                      "tr-TR",
+                      { minimumFractionDigits: 2 },
+                    )}{" "}
+                    daha ekleyin, kargo ücretsiz olsun.
+                  </p>
+                )}
 
                 <div className="flex justify-between items-start pt-4 border-t border-slate-200">
                   <div className="flex flex-col">

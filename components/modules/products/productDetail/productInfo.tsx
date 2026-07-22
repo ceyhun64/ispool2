@@ -2,9 +2,16 @@
 
 import React from "react";
 import Image from "next/image";
-import { Star, CheckCircle, X, ArrowLeft, ChevronRight } from "lucide-react";
+import {
+  Star,
+  CheckCircle,
+  X,
+  ArrowLeft,
+  ChevronRight,
+  Truck,
+} from "lucide-react";
 import Link from "next/link";
-import { withKdv } from "@/lib/pricing";
+import { withKdv, FREE_SHIPPING_THRESHOLD } from "@/lib/pricing";
 
 interface StockEntry {
   id: number;
@@ -211,6 +218,17 @@ export default function ProductInfo({
             {withKdv(selectedStock.priceModifier).toLocaleString("tr-TR")} TL
           </span>
         )}
+
+        {/* Ücretsiz kargo eşiği */}
+        <div className="flex items-center gap-2 mt-3 text-xs text-slate-500">
+          <Truck size={14} className="text-emerald-600 shrink-0" />
+          <span>
+            <strong className="text-slate-700">
+              {FREE_SHIPPING_THRESHOLD.toLocaleString("tr-TR")} TL
+            </strong>{" "}
+            ve üzeri siparişlerde kargo ücretsiz.
+          </span>
+        </div>
       </div>
     </div>
   );
