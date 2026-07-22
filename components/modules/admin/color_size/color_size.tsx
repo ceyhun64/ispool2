@@ -434,12 +434,26 @@ export default function VariantManagement() {
                         style={{ backgroundColor: formData.hexCode }}
                       />
                       <div className="flex-1">
-                        <div className="text-xs font-medium text-gray-500 mb-1">
+                        <label
+                          htmlFor="hexCodeInput"
+                          className="text-xs font-medium text-gray-500 mb-1 block"
+                        >
                           HEX Kodu
-                        </div>
-                        <div className="font-mono text-sm font-semibold text-gray-900">
-                          {formData.hexCode}
-                        </div>
+                        </label>
+                        <input
+                          id="hexCodeInput"
+                          type="text"
+                          placeholder="#000000"
+                          className="w-full font-mono text-sm font-semibold text-gray-900 border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-gray-900 focus:border-transparent transition"
+                          value={formData.hexCode}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              hexCode: e.target.value.toUpperCase(),
+                            })
+                          }
+                          maxLength={7}
+                        />
                         {formData.name && (
                           <div className="text-xs text-gray-600 mt-2">
                             {formData.name}
