@@ -313,7 +313,9 @@ export default function ProductImageGallery({
                 </button>
               </div>
               <CustomImageZoom
-                src={displayImages[activeIndex] ?? displayImages[0]}
+                images={displayImages}
+                activeIndex={activeIndex}
+                onIndexChange={onIndexChange}
                 alt={productTitle}
               />
             </>

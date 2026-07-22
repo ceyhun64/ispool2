@@ -198,7 +198,6 @@ export async function GET(
       weight: null,
       dimensions: null,
       material: null,
-      warranty: "2 Yıl Garanti",
       origin: "Türkiye",
       certifications: ["CE", "ISO 9001", "TSE"],
     };

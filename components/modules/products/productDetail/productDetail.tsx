@@ -8,7 +8,6 @@ import {
   Info,
   Eye,
   ShoppingCart,
-  Award,
   BadgeCheck,
   ShieldCheck,
   HardHat,
@@ -107,7 +106,6 @@ interface ProductData {
     weight: string | null;
     dimensions: string | null;
     material: string | null;
-    warranty: string;
     origin: string;
     certifications: string[];
   };
@@ -324,6 +322,29 @@ export default function ProductDetailPage() {
       return;
     }
 
+    // Miktarı, tıklama anındaki gerçek stoğa göre son kez doğrula. Kullanıcı
+    // bir bedeni seçtikten sonra daha düşük stoklu başka bir bedene geçerse
+    // reaktif kırpma (aşağıdaki useEffect) bir sonraki render'a kadar
+    // gecikebilir. Misafir sepeti (localStorage) için sunucu tarafı hiç
+    // doğrulama yapmadığından bu son kontrol olmadan stok aşılabilirdi.
+    const relevantStockEntries =
+      product.availableSizes.length > 0
+        ? selectedSizeIds
+            .map((id) => product.stockMatrix.find((s) => s.sizeId === id))
+            .filter((s): s is StockEntry => !!s)
+        : product.stockMatrix.filter((s) => s.sizeId === null);
+    const currentMaxQuantity =
+      relevantStockEntries.length > 0
+        ? Math.min(...relevantStockEntries.map((s) => s.stock))
+        : Infinity;
+    if (quantity > currentMaxQuantity) {
+      setQuantity(Math.max(1, currentMaxQuantity));
+      toast.error(
+        `Stok yetersiz — miktar en fazla ${currentMaxQuantity} adet olabilir. Lütfen tekrar deneyin.`,
+      );
+      return;
+    }
+
     const combos = buildCartCombos();
     if (combos.length === 0) {
       toast.error("Seçili ürün(ler) stokta yok.");
@@ -494,7 +515,9 @@ export default function ProductDetailPage() {
   const maxQuantity =
     relevantStockEntries.length > 0
       ? Math.min(...relevantStockEntries.map((s) => s.stock))
-      : Infinity;
+      : product.availableSizes.length > 0
+        ? 1 // beden seçilmeden hangi stoğa bakılacağı bilinmez, artırmayı engelle
+        : Infinity;
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans selection:bg-orange-100 selection:text-orange-900">
@@ -737,12 +760,6 @@ export default function ProductDetailPage() {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      {
-                        icon: <Award size={16} />,
-                        color: "blue",
-                        label: "Garanti",
-                        value: product.specifications.warranty,
-                      },
                       {
                         icon: <BadgeCheck size={16} />,
                         color: "emerald",
