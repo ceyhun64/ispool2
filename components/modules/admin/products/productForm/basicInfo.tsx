@@ -1,7 +1,7 @@
 // components/modules/admin/products/productForm/basicInfo.tsx
 "use client";
 
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Package, Palette, Link2 } from "lucide-react";
 import type { ProductFormData } from "@/types/product";
+import { KDV_RATE, withKdv } from "@/lib/pricing";
 
 interface Category {
   id: number;
@@ -75,59 +76,73 @@ export default function BasicInfoSection({
     setProductData((prev) => {
       const numValue = value === "" ? undefined : Number(value);
 
-      // Otomatik fiyat ve indirim hesaplamaları
-      if (name === "oldPrice" && numValue && prev.price > 0) {
-        const discount = ((numValue - prev.price) / numValue) * 100;
-        return {
-          ...prev,
-          oldPrice: numValue,
-          discountPercentage: Number(discount.toFixed(2)),
-        };
-      }
-
-      if (name === "discountPercentage" && numValue && prev.price > 0) {
-        const oldPrice = prev.price / (1 - numValue / 100);
-        return {
-          ...prev,
-          discountPercentage: numValue,
-          oldPrice: Number(oldPrice.toFixed(2)),
-        };
-      }
-
-      if (name === "price" && numValue) {
-        if (prev.discountPercentage) {
-          const oldPrice = numValue / (1 - prev.discountPercentage / 100);
+      // "Eski Fiyat" (referans/karşılaştırma fiyatı) girildiğinde indirim
+      // yüzdesi bundan yeniden hesaplanır. Fiyat henüz girilmemiş olsa bile
+      // (prev.price > 0 şartı olmadan) alan güncellenir; aksi halde önce
+      // "Eski Fiyat" sonra "Güncel Fiyat" girildiğinde indirim yüzdesi hiç
+      // hesaplanmıyordu.
+      if (name === "oldPrice") {
+        if (numValue && numValue > 0 && prev.price > 0) {
+          const discount = ((numValue - prev.price) / numValue) * 100;
           return {
             ...prev,
-            price: numValue,
+            oldPrice: numValue,
+            discountPercentage: Number(discount.toFixed(2)),
+          };
+        }
+        return { ...prev, oldPrice: numValue };
+      }
+
+      // "İndirim Yüzdesi" elle girildiğinde "Eski Fiyat" bundan hesaplanır.
+      // %100 ve üzeri değerler bölme sonucunu sonsuza/negatife taşıyıp
+      // "Eski Fiyat"ı bozacağından hesaba katılmaz.
+      if (name === "discountPercentage") {
+        if (numValue && numValue > 0 && numValue < 100 && prev.price > 0) {
+          const oldPrice = prev.price / (1 - numValue / 100);
+          return {
+            ...prev,
+            discountPercentage: numValue,
             oldPrice: Number(oldPrice.toFixed(2)),
           };
         }
+        return { ...prev, discountPercentage: numValue };
       }
 
-      // Tip dönüşümleri ve normal atama
+      // "Güncel Fiyat" değiştiğinde "Eski Fiyat" (admin'in bilinçli girdiği
+      // referans fiyat) SABİT kalır; yalnızca ondan türetilen indirim
+      // yüzdesi yeniden hesaplanır. Önceki davranışta indirim yüzdesini
+      // korumak için "Eski Fiyat" sessizce değiştiriliyordu.
+      if (name === "price") {
+        const newPrice = numValue ?? 0;
+        if (prev.oldPrice && prev.oldPrice > 0) {
+          const discount =
+            newPrice > 0 && newPrice < prev.oldPrice
+              ? ((prev.oldPrice - newPrice) / prev.oldPrice) * 100
+              : 0;
+          return {
+            ...prev,
+            price: newPrice,
+            discountPercentage: Number(discount.toFixed(2)),
+          };
+        }
+        return { ...prev, price: newPrice };
+      }
+
+      // Tip dönüşümleri ve normal atama (diğer alanlar)
       return {
         ...prev,
         [name]: [
-          "price",
-          "oldPrice",
           "rating",
           "reviewCount",
-          "discountPercentage",
           "brandId",
           "colorId",
           "bulkDiscountQty",
           "bulkDiscountRate",
         ].includes(name)
           ? value === ""
-            ? [
-                "oldPrice",
-                "discountPercentage",
-                "brandId",
-                "colorId",
-                "bulkDiscountQty",
-                "bulkDiscountRate",
-              ].includes(name)
+            ? ["brandId", "colorId", "bulkDiscountQty", "bulkDiscountRate"].includes(
+                name,
+              )
               ? undefined
               : 0
             : Number(value)
@@ -164,9 +179,14 @@ export default function BasicInfoSection({
 
   const selectedColor = colors.find((c) => c.id === productData.colorId);
 
-  const [vatRate, setVatRate] = useState<10 | 20>(10);
+  // Sistemdeki tek KDV oranı lib/pricing.ts'deki KDV_RATE'dir (sepet,
+  // ödeme ve ürün sayfalarında kullanılır); burada girilen "Güncel Fiyat"
+  // KDV hariç kabul edilir ve müşteriye bu oranla gösterilir. Önceden bu
+  // önizleme %10/%20 arasında değiştirilebiliyordu ama sistemin geri kalanı
+  // her zaman sabit oranı kullandığından admin'e yanlış bir müşteri fiyatı
+  // gösteriyordu.
   const vatInclusivePrice =
-    productData.price > 0 ? productData.price * (1 + vatRate / 100) : 0;
+    productData.price > 0 ? withKdv(productData.price) : 0;
 
   return (
     <div className="space-y-6 w-full">
@@ -237,7 +257,7 @@ export default function BasicInfoSection({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
-              KDV'li Fiyat (%{vatRate})
+              KDV'li Fiyat (%{KDV_RATE * 100}) — Müşteriye Görünecek
             </p>
             <p className="text-lg font-bold text-slate-900">
               {vatInclusivePrice > 0
@@ -249,17 +269,6 @@ export default function BasicInfoSection({
               ₺
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setVatRate((prev) => (prev === 10 ? 20 : 10))}
-            className={`h-10 px-4 rounded-lg text-xs font-bold uppercase tracking-wide transition-colors shrink-0 ${
-              vatRate === 20
-                ? "bg-orange-500 text-white hover:bg-orange-600"
-                : "bg-slate-900 text-white hover:bg-slate-700"
-            }`}
-          >
-            {vatRate === 10 ? "KDV'yi %20'ye Çıkar" : "KDV'yi %10'a Düşür"}
-          </button>
         </div>
 
         <InputGroup
@@ -330,10 +339,10 @@ export default function BasicInfoSection({
                 {productData.price > 0 && (
                   <>
                     {" "}
-                    Birim fiyat:{" "}
+                    KDV'li birim fiyat:{" "}
                     <span className="font-bold">
                       {(
-                        productData.price *
+                        withKdv(productData.price) *
                         (1 - productData.bulkDiscountRate / 100)
                       ).toFixed(2)}{" "}
                       ₺
