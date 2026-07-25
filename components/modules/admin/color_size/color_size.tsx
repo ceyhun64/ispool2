@@ -156,6 +156,24 @@ export default function VariantManagement() {
     });
   };
 
+  // Serbest yazılan hex kodunu API'nin beklediği kesin "#RRGGBB" biçimine
+  // getirir: baştaki "#" eksikse ekler, 3 haneli kısayolu (#RGB) 6 haneye
+  // genişletir. Geçerli bir hex koduna dönüştürülemiyorsa null döner.
+  const normalizeHexCode = (raw: string): string | null => {
+    let v = raw.trim();
+    if (!v) return null;
+    if (!v.startsWith("#")) v = `#${v}`;
+    if (/^#[0-9A-Fa-f]{3}$/.test(v)) {
+      v = `#${v
+        .slice(1)
+        .split("")
+        .map((c) => c + c)
+        .join("")}`;
+    }
+    v = v.toUpperCase();
+    return /^#[0-9A-Fa-f]{6}$/.test(v) ? v : null;
+  };
+
   const MAX_LOGO_SIZE = 25 * 1024 * 1024; // 25MB — sunucudaki /api/upload sınırıyla aynı
 
   // Marka logosu yükleme
@@ -201,6 +219,23 @@ export default function VariantManagement() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submitting) return;
+
+    // API tam olarak "#RRGGBB" biçimini şart koşuyor; serbest yazılan
+    // hex kodu (örn. "#" eksik veya "#RGB" kısayolu) gönderilmeden önce
+    // normalize edilir, aksi halde sunucu 400 döndürüp ekleme/güncelleme
+    // sessizce başarısız oluyordu.
+    let normalizedHexCode: string | null = null;
+    if (activeTab === "color") {
+      normalizedHexCode = normalizeHexCode(formData.hexCode);
+      if (!normalizedHexCode) {
+        toast.error("Geçerli bir HEX kodu girin (örn: #FF5733).");
+        return;
+      }
+      if (normalizedHexCode !== formData.hexCode) {
+        setFormData((prev) => ({ ...prev, hexCode: normalizedHexCode! }));
+      }
+    }
+
     setSubmitting(true);
 
     const method = editingId ? "PATCH" : "POST";
@@ -210,7 +245,7 @@ export default function VariantManagement() {
 
     const payload =
       activeTab === "color"
-        ? { name: formData.name, hexCode: formData.hexCode }
+        ? { name: formData.name, hexCode: normalizedHexCode }
         : activeTab === "brand"
           ? { name: formData.name, image: formData.image || null }
           : {
@@ -452,6 +487,17 @@ export default function VariantManagement() {
                               hexCode: e.target.value.toUpperCase(),
                             })
                           }
+                          onBlur={(e) => {
+                            const normalized = normalizeHexCode(
+                              e.target.value,
+                            );
+                            if (normalized) {
+                              setFormData((prev) => ({
+                                ...prev,
+                                hexCode: normalized,
+                              }));
+                            }
+                          }}
                           maxLength={7}
                         />
                         {formData.name && (
