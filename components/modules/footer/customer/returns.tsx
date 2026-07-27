@@ -61,7 +61,7 @@ const ReturnAndExchange = () => {
             adresine gönderilmelidir.
           </p>
           <div className="bg-gray-100 p-4 rounded text-center font-mono text-sm">
-            Kuzuluk Mah. Yazakisa Cad. No:34 54400 Akyazı / SAKARYA <br />
+            Fatih mahallesi, kazım kara Bekir caddesi no 144 a, 64000 Merkez/Uşak <br />
             Tel: 0 264 437 93 28 / 29
           </div>
         </section>
@@ -194,7 +194,7 @@ const ReturnAndExchange = () => {
       </article>
 
       <footer className="mt-12 pt-6 border-t border-gray-200 text-center text-xs text-gray-400 uppercase">
-        İşPool - Değişim ve İade Merkezi - Sakarya
+        İşPool - Değişim ve İade Merkezi - Uşak, Türkiye
       </footer>
     </div>
   );

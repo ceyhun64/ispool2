@@ -27,7 +27,7 @@ export default function Footer() {
     setOpenSection(openSection === key ? null : key);
   };
 
-  const whatsappNumber = "+90 546 225 56 59"; // Tek yetkili iletişim numarası
+  const whatsappNumber = "+90 534 352 94 20"; // Tek yetkili iletişim numarası
   const whatsappLink = `https://wa.me/${whatsappNumber.replace(/[^\d]/g, "")}`;
 
   const socialLinks = [
@@ -83,11 +83,11 @@ export default function Footer() {
       title: "Popüler Linkler",
       links: [
         { label: "İş Elbiseleri", href: "/products/category/1" },
-        { label: "İş Ayakkabıları", href: "/products/category/2"},
+        { label: "İş Ayakkabıları", href: "/products/category/2" },
         { label: "İş Eldivenleri", href: "/products/category/3" },
-        { label: "Koruyucu Teknik Kıyafet", href: "/products/category/4"},
+        { label: "Koruyucu Teknik Kıyafet", href: "/products/category/4" },
         { label: "İş Güvenlik Ekipmanları", href: "/products/category/5" },
-        { label: "Outdoor", href: "/products/category/6"},
+        { label: "Outdoor", href: "/products/category/6" },
       ],
     },
     yardim: {

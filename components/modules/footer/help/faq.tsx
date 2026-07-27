@@ -82,8 +82,7 @@ const FAQ = () => {
             Değişim veya İadesi istenen ürün mümkünse orijinal ambalajında
             güvenli bir şekilde paketleyin ve beraberinde gönderilen Değiştirme
             / İade Formu (eksiksiz doldurup imzalanarak) ve faturası ile
-            birlikte aşağıda belirtilen iade adresine gönderilmelidir. Kuzuluk
-            Mah. Yazakisa Cad. No:34 54400 Akyazı / SAKARYA Tel: 0 264 437 93 28
+            birlikte aşağıda belirtilen iade adresine gönderilmelidir. Fatih mahallesi, kazım kara Bekir caddesi no 144 a, 64000 Merkez/Uşak Tel: 0 264 437 93 28
             / 29
           </p>
         </FAQItem>
@@ -132,7 +131,7 @@ const FAQ = () => {
 
         <FAQItem question="Değişim ve İade Adresiniz nedir?">
           <p>
-            Kuzuluk Mah. Yazakisa Cad. No:34 34700 Akyazı / SAKARYA Tel: 0 264
+            Fatih mahallesi, kazım kara Bekir caddesi no 144 a, 64000 Merkez/Uşak Tel: 0 264
             437 93 28 / 29
           </p>
         </FAQItem>

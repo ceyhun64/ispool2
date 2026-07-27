@@ -265,7 +265,7 @@ export default function AboutPage() {
                 Telefon Hattı
               </h5>
               <p className="text-lg md:text-xl font-black group-hover:text-white transition-colors">
-                +90 546 225 56 59
+                +90 534 352 94 20
               </p>
             </a>
             <a
