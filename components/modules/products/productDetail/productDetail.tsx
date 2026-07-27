@@ -26,7 +26,7 @@ import ProductInfo from "./productInfo";
 import ProductVariantSelector from "./productVariantSelector";
 import ProductActions from "./productActions";
 import ProductCarousel from "./productCarousel";
-import { withKdv } from "@/lib/pricing";
+import { withKdv, formatPrice } from "@/lib/pricing";
 
 interface Size {
   id: number;
@@ -711,11 +711,7 @@ export default function ProductDetailPage() {
                         : `Ürün Fiyatı (${quantity} adet)`}
                     </span>
                     <span className="font-bold text-slate-900">
-                      {combosBaseTotal.toLocaleString("tr-TR", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}{" "}
-                      TL
+                      {formatPrice(combosBaseTotal)} TL
                     </span>
                   </div>
                   {bulkDiscount.hasDiscount && (
@@ -726,13 +722,9 @@ export default function ProductDetailPage() {
                       </span>
                       <span className="font-bold text-emerald-700">
                         -
-                        {(
-                          combosBaseTotal *
-                          (bulkDiscount.discountRate / 100)
-                        ).toLocaleString("tr-TR", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}{" "}
+                        {formatPrice(
+                          combosBaseTotal * (bulkDiscount.discountRate / 100),
+                        )}{" "}
                         TL
                       </span>
                     </div>
@@ -742,11 +734,7 @@ export default function ProductDetailPage() {
                       Toplam
                     </span>
                     <span className="text-md font-black text-orange-600">
-                      {totalWithVat.toLocaleString("tr-TR", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}{" "}
-                      TL
+                      {formatPrice(totalWithVat)} TL
                     </span>
                   </div>
                 </div>

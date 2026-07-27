@@ -27,7 +27,7 @@ import {
   X,
   Sparkles,
 } from "lucide-react";
-import { withKdv } from "@/lib/pricing";
+import { withKdv, formatPrice } from "@/lib/pricing";
 
 const installmentRates = [
   { count: 1, rate: 0 },
@@ -254,7 +254,7 @@ export default function BasketSummaryCard({
                 </div>
                 <div className="text-right flex flex-col justify-center">
                   <p className="text-xs font-semibold text-slate-950">
-                    ₺{(withKdv(item.product.price) * item.quantity).toFixed(2)}
+                    ₺{formatPrice(withKdv(item.product.price) * item.quantity)}
                   </p>
                 </div>
               </div>
@@ -309,7 +309,7 @@ export default function BasketSummaryCard({
                     İndirim
                   </span>
                   <span className="text-sm font-bold text-emerald-900">
-                    -₺{appliedCoupon.discountAmount.toFixed(2)}
+                    -₺{formatPrice(appliedCoupon.discountAmount)}
                   </span>
                 </div>
               </div>
@@ -376,7 +376,7 @@ export default function BasketSummaryCard({
                     row.isFree ? "text-green-600 font-bold" : "text-slate-900"
                   }`}
                 >
-                  {row.isFree ? "ÜCRETSİZ" : `₺${Number(row.val).toFixed(2)}`}
+                  {row.isFree ? "ÜCRETSİZ" : `₺${formatPrice(Number(row.val))}`}
                 </span>
               </div>
             ))}
@@ -388,7 +388,7 @@ export default function BasketSummaryCard({
                   <Tag size={14} strokeWidth={1.5} /> Toplu Alım İndirimi
                 </span>
                 <span className="font-bold text-emerald-600">
-                  -₺{totalBulkDiscount.toFixed(2)}
+                  -₺{formatPrice(totalBulkDiscount)}
                 </span>
               </div>
             )}
@@ -400,7 +400,7 @@ export default function BasketSummaryCard({
                   <Tag size={14} strokeWidth={1.5} /> Kupon İndirimi
                 </span>
                 <span className="font-bold text-emerald-600">
-                  -₺{discountAmount.toFixed(2)}
+                  -₺{formatPrice(discountAmount)}
                 </span>
               </div>
             )}
@@ -421,7 +421,7 @@ export default function BasketSummaryCard({
                     <TrendingUp size={14} /> Vade Farkı
                   </span>
                   <span className="font-medium text-orange-600">
-                    +₺{interestAmount.toFixed(2)}
+                    +₺{formatPrice(interestAmount)}
                   </span>
                 </div>
                 <div className="bg-slate-950 p-4 rounded-xl text-white shadow-lg shadow-slate-200">
@@ -430,7 +430,7 @@ export default function BasketSummaryCard({
                       Aylık Ödeme
                     </span>
                     <span className="text-lg font-bold">
-                      ₺{monthlyPayment.toFixed(2)}
+                      ₺{formatPrice(monthlyPayment)}
                     </span>
                   </div>
                 </div>
@@ -462,17 +462,17 @@ export default function BasketSummaryCard({
                     selectedInstallment > 1 ? "text-slate-900" : "text-white"
                   }`}
                 >
-                  ₺{totalWithInstallment.toFixed(2)}
+                  ₺{formatPrice(totalWithInstallment)}
                 </p>
                 {(totalBulkDiscount > 0 || appliedCoupon) && (
                   <p
                     className={`text-[9px] ${selectedInstallment > 1 ? "text-emerald-600" : "text-emerald-400"}`}
                   >
                     {totalBulkDiscount > 0 && appliedCoupon
-                      ? `₺${(totalBulkDiscount + discountAmount).toFixed(2)} toplam tasarruf`
+                      ? `₺${formatPrice(totalBulkDiscount + discountAmount)} toplam tasarruf`
                       : totalBulkDiscount > 0
-                        ? `₺${totalBulkDiscount.toFixed(2)} toplu alım tasarrufu`
-                        : `₺${discountAmount.toFixed(2)} kupon tasarrufu`}
+                        ? `₺${formatPrice(totalBulkDiscount)} toplu alım tasarrufu`
+                        : `₺${formatPrice(discountAmount)} kupon tasarrufu`}
                   </p>
                 )}
               </div>

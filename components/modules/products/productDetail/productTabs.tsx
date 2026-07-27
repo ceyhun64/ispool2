@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { formatPrice } from "@/lib/pricing";
 
 interface Comment {
   id: number;
@@ -140,14 +141,8 @@ export default function ProductTabs({
     const total = price + (price * rate) / 100;
     const monthly = total / count;
     return {
-      monthly: monthly.toLocaleString("tr-TR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }),
-      total: total.toLocaleString("tr-TR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }),
+      monthly: formatPrice(monthly),
+      total: formatPrice(total),
     };
   };
 

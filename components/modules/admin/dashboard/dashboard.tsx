@@ -18,6 +18,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { formatPrice } from "@/lib/pricing";
 
 interface KPI {
   id: string;
@@ -300,7 +301,7 @@ export default function AdminDashboard() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <span className="text-sm font-semibold text-slate-900">
-                        {order.paidPrice?.toLocaleString("tr-TR")} ₺
+                        {order.paidPrice != null ? formatPrice(order.paidPrice) : ""} ₺
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">
@@ -340,7 +341,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="flex justify-between items-center mt-3">
                   <span className="text-sm font-bold text-slate-900">
-                    {order.paidPrice?.toLocaleString("tr-TR")} ₺
+                    {order.paidPrice != null ? formatPrice(order.paidPrice) : ""} ₺
                   </span>
                   <Link href={`/admin/orders?orderId=${order.id}`}>
                     <Button

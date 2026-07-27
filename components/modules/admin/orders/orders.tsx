@@ -13,6 +13,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { FormattedOrder } from "@/types/order";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
+import { formatPrice } from "@/lib/pricing";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -281,7 +282,7 @@ export default function Orders() {
                   </td>
                   <td className="px-6 py-4 text-center">
                     <p className="text-sm font-semibold text-slate-900">
-                      {order.paidPrice.toLocaleString("tr-TR")} {currencySymbol}
+                      {formatPrice(order.paidPrice)} {currencySymbol}
                     </p>
                     {order.installment && order.installment > 1 && (
                       <p className="text-xs text-blue-600">
@@ -348,7 +349,7 @@ export default function Orders() {
                 <div className="flex justify-between items-center pt-3 border-t border-slate-100">
                   <div>
                     <p className="text-sm font-bold text-slate-900">
-                      {order.paidPrice.toLocaleString("tr-TR")} {currencySymbol}
+                      {formatPrice(order.paidPrice)} {currencySymbol}
                     </p>
                     {order.installment && order.installment > 1 && (
                       <p className="text-xs text-blue-600">

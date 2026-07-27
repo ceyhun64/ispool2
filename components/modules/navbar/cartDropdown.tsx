@@ -36,7 +36,12 @@ import {
   GuestCartItem,
 } from "@/utils/cart";
 import { Skeleton } from "@/components/ui/skeleton";
-import { withKdv, getShippingFee, FREE_SHIPPING_THRESHOLD } from "@/lib/pricing";
+import {
+  withKdv,
+  getShippingFee,
+  FREE_SHIPPING_THRESHOLD,
+  formatPrice,
+} from "@/lib/pricing";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -461,10 +466,7 @@ const CartDropdown = forwardRef(
                 <div className="flex justify-between text-[11px] font-bold text-slate-400 uppercase tracking-widest">
                   <span>ARA TOPLAM</span>
                   <span className="text-slate-900 font-mono">
-                    ₺
-                    {subtotal.toLocaleString("tr-TR", {
-                      minimumFractionDigits: 2,
-                    })}
+                    ₺{formatPrice(subtotal)}
                   </span>
                 </div>
 
@@ -475,10 +477,7 @@ const CartDropdown = forwardRef(
                       TOPLU ALIM İNDİRİMİ
                     </span>
                     <span className="font-mono">
-                      -₺
-                      {totalBulkDiscount.toLocaleString("tr-TR", {
-                        minimumFractionDigits: 2,
-                      })}
+                      -₺{formatPrice(totalBulkDiscount)}
                     </span>
                   </div>
                 )}
@@ -489,21 +488,14 @@ const CartDropdown = forwardRef(
                     <span className="text-emerald-600 font-mono">ÜCRETSİZ</span>
                   ) : (
                     <span className="text-slate-900 font-mono">
-                      ₺
-                      {shippingFee.toLocaleString("tr-TR", {
-                        minimumFractionDigits: 2,
-                      })}
+                      ₺{formatPrice(shippingFee)}
                     </span>
                   )}
                 </div>
                 {shippingFee > 0 && (
                   <p className="text-[9px] text-slate-400 font-medium normal-case -mt-1">
-                    ₺
-                    {(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString(
-                      "tr-TR",
-                      { minimumFractionDigits: 2 },
-                    )}{" "}
-                    daha ekleyin, kargo ücretsiz olsun.
+                    ₺{formatPrice(FREE_SHIPPING_THRESHOLD - subtotal)} daha
+                    ekleyin, kargo ücretsiz olsun.
                   </p>
                 )}
 
@@ -517,10 +509,7 @@ const CartDropdown = forwardRef(
                     </span>
                   </div>
                   <span className="text-xl font-black text-slate-900 tracking-tighter font-mono leading-none">
-                    ₺
-                    {total.toLocaleString("tr-TR", {
-                      minimumFractionDigits: 2,
-                    })}
+                    ₺{formatPrice(total)}
                   </span>
                 </div>
               </div>

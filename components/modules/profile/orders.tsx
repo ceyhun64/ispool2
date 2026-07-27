@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import Link from "next/link";
+import { formatPrice } from "@/lib/pricing";
 import {
   Package,
   MapPin,
@@ -193,7 +194,7 @@ function getCurrencySymbol(currency?: string): string {
   return CURRENCY_SYMBOLS[currency || "TRY"] || "₺";
 }
 function formatMoney(amount: number, currency?: string): string {
-  return `${amount.toLocaleString("tr-TR")} ${getCurrencySymbol(currency)}`;
+  return `${formatPrice(amount)} ${getCurrencySymbol(currency)}`;
 }
 
 // ==== Alt Bileşenler ====
@@ -483,7 +484,7 @@ function PaymentSummaryTable({
           </span>
           <div className="text-right">
             <span className="text-2xl font-black text-orange-600 tracking-tighter">
-              {order.paidPrice.toLocaleString("tr-TR")}
+              {formatPrice(order.paidPrice)}
             </span>
             <span className="text-sm font-black text-orange-500 ml-1">
               {getCurrencySymbol(order.currency)}
@@ -494,9 +495,7 @@ function PaymentSummaryTable({
         {order.installment && order.installment > 1 && (
           <p className="text-[10px] text-slate-400 text-right font-medium">
             {order.installment} ×{" "}
-            {(order.paidPrice / order.installment).toLocaleString("tr-TR", {
-              maximumFractionDigits: 2,
-            })}{" "}
+            {formatPrice(order.paidPrice / order.installment)}{" "}
             {getCurrencySymbol(order.currency)}
           </p>
         )}
@@ -839,7 +838,7 @@ export default function Orders() {
                               )}
                               <div className="flex items-baseline gap-1.5">
                                 <span className="text-3xl font-black text-slate-950 tracking-tighter">
-                                  {order.paidPrice.toLocaleString("tr-TR")}
+                                  {formatPrice(order.paidPrice)}
                                 </span>
                                 <span className="text-base font-black text-orange-500">
                                   {getCurrencySymbol(order.currency)}

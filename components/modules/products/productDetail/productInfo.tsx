@@ -11,7 +11,7 @@ import {
   Truck,
 } from "lucide-react";
 import Link from "next/link";
-import { withKdv, FREE_SHIPPING_THRESHOLD } from "@/lib/pricing";
+import { withKdv, FREE_SHIPPING_THRESHOLD, formatPrice } from "@/lib/pricing";
 
 interface StockEntry {
   id: number;
@@ -197,13 +197,12 @@ export default function ProductInfo({
       <div className="flex flex-col border-t border-b border-slate-100 py-4">
         <div className="flex items-baseline gap-3">
           <span className="text-3xl font-black tracking-tighter text-slate-900">
-            {currentPrice.toLocaleString("tr-TR")}{" "}
-            <small className="text-sm">TL</small>
+            {formatPrice(currentPrice)} <small className="text-sm">TL</small>
           </span>
           {hasDiscount && (
             <>
               <span className="text-lg text-slate-400 line-through font-semibold">
-                {oldPrice?.toLocaleString("tr-TR")} TL
+                {oldPrice != null ? formatPrice(oldPrice) : ""} TL
               </span>
               <span className="bg-orange-600 text-white px-2 py-1 text-xs font-bold">
                 %{discountPercentage} İndirim
@@ -215,7 +214,7 @@ export default function ProductInfo({
         {selectedStock && selectedStock.priceModifier !== 0 && (
           <span className="text-xs text-slate-500 mt-2">
             Seçilen beden: {selectedStock.priceModifier > 0 ? "+" : ""}
-            {withKdv(selectedStock.priceModifier).toLocaleString("tr-TR")} TL
+            {formatPrice(withKdv(selectedStock.priceModifier))} TL
           </span>
         )}
 
@@ -224,7 +223,7 @@ export default function ProductInfo({
           <Truck size={14} className="text-emerald-600 shrink-0" />
           <span>
             <strong className="text-slate-700">
-              {FREE_SHIPPING_THRESHOLD.toLocaleString("tr-TR")} TL
+              {formatPrice(FREE_SHIPPING_THRESHOLD)} TL
             </strong>{" "}
             ve üzeri siparişlerde kargo ücretsiz.
           </span>

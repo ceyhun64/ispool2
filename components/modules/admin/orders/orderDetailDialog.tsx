@@ -21,6 +21,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { FormattedOrder } from "@/types/order";
+import { formatPrice } from "@/lib/pricing";
 
 interface Props {
   order: FormattedOrder | null;
@@ -150,7 +151,7 @@ export default function OrderDetailDialog({
             <div className="flex justify-between text-sm">
               <span className="text-slate-600">Toplam:</span>
               <span className="font-semibold">
-                {order.totalPrice.toLocaleString("tr-TR")} {currencySymbol}
+                {formatPrice(order.totalPrice)} {currencySymbol}
               </span>
             </div>
 
@@ -162,7 +163,7 @@ export default function OrderDetailDialog({
                   İndirim ({order.couponCode}):
                 </span>
                 <span className="font-semibold text-green-700">
-                  -{order.discountAmount.toFixed(2)} {currencySymbol}
+                  -{formatPrice(order.discountAmount)} {currencySymbol}
                 </span>
               </div>
             )}
@@ -172,13 +173,7 @@ export default function OrderDetailDialog({
               <div className="flex justify-between text-sm text-blue-600">
                 <span>Aylık Ödeme:</span>
                 <span className="font-semibold">
-                  {(order.paidPrice / order.installment).toLocaleString(
-                    "tr-TR",
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    },
-                  )}{" "}
+                  {formatPrice(order.paidPrice / order.installment)}{" "}
                   {currencySymbol}
                 </span>
               </div>
@@ -188,7 +183,7 @@ export default function OrderDetailDialog({
             <div className="flex justify-between text-base font-bold border-t border-slate-200 pt-2">
               <span>Ödenen:</span>
               <span>
-                {order.paidPrice.toLocaleString("tr-TR")} {currencySymbol}
+                {formatPrice(order.paidPrice)} {currencySymbol}
               </span>
             </div>
           </div>
@@ -276,11 +271,10 @@ export default function OrderDetailDialog({
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-bold text-slate-900">
-                      {item.totalPrice.toLocaleString("tr-TR")} {currencySymbol}
+                      {formatPrice(item.totalPrice)} {currencySymbol}
                     </p>
                     <p className="text-xs text-slate-500">
-                      Birim: {item.unitPrice.toLocaleString("tr-TR")}{" "}
-                      {currencySymbol}
+                      Birim: {formatPrice(item.unitPrice)} {currencySymbol}
                     </p>
                   </div>
                 </div>
