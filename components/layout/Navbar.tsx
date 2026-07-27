@@ -24,6 +24,7 @@ import CategoryBar from "@/components/modules/navbar/categoryBar";
 import CartDropdown from "@/components/modules/navbar/cartDropdown";
 import { useFavorite } from "@/contexts/favoriteContext";
 import UserMegaMenu from "@/components/modules/navbar/userMegaMenu";
+import { formatPrice } from "@/lib/pricing";
 
 interface SearchProduct {
   id: number;
@@ -406,7 +407,7 @@ export default function Navbar() {
                             {product.title}
                           </h3>
                           <span className="text-sm font-black text-slate-800">
-                            {product.price.toLocaleString("tr-TR")} ₺
+                            {formatPrice(product.price)} ₺
                           </span>
                         </div>
                         <ArrowRight

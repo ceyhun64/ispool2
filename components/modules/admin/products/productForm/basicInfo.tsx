@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Package, Palette, Link2 } from "lucide-react";
 import type { ProductFormData } from "@/types/product";
-import { KDV_RATE, withKdv } from "@/lib/pricing";
+import { KDV_RATE, withKdv, formatPrice } from "@/lib/pricing";
 
 interface Category {
   id: number;
@@ -260,13 +260,7 @@ export default function BasicInfoSection({
               KDV'li Fiyat (%{KDV_RATE * 100}) — Müşteriye Görünecek
             </p>
             <p className="text-lg font-bold text-slate-900">
-              {vatInclusivePrice > 0
-                ? vatInclusivePrice.toLocaleString("tr-TR", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })
-                : "0.00"}{" "}
-              ₺
+              {formatPrice(vatInclusivePrice)} ₺
             </p>
           </div>
         </div>
@@ -341,10 +335,10 @@ export default function BasicInfoSection({
                     {" "}
                     KDV'li birim fiyat:{" "}
                     <span className="font-bold">
-                      {(
+                      {formatPrice(
                         withKdv(productData.price) *
-                        (1 - productData.bulkDiscountRate / 100)
-                      ).toFixed(2)}{" "}
+                          (1 - productData.bulkDiscountRate / 100),
+                      )}{" "}
                       ₺
                     </span>
                   </>

@@ -18,3 +18,12 @@ export const SHIPPING_FEE = 149.9;
 export function getShippingFee(kdvDahilSepetTutari: number): number {
   return kdvDahilSepetTutari >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
 }
+
+// Tüm fiyat gösterimlerinde tek biçim: Türkçe binlik/ondalık ayırıcı ve
+// her zaman iki ondalık basamak (10 -> "10,00", 10,9 -> "10,90").
+export function formatPrice(value: number): string {
+  return value.toLocaleString("tr-TR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}

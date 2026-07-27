@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import ProductDetail from "@/components/modules/products/productDetail/productDetail";
 import Recommended from "@/components/modules/products/productDetail/recommended";
+import { formatPrice } from "@/lib/pricing";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const title = `${product.title} | İşPool`;
     const description =
       plainDescription ||
-      `${product.title} - ${product.category.name} - ${product.price.toLocaleString("tr-TR")} TL. İşPool'da premium iş güvenliği ekipmanları.`;
+      `${product.title} - ${product.category.name} - ${formatPrice(product.price)} TL. İşPool'da premium iş güvenliği ekipmanları.`;
 
     return {
       title,

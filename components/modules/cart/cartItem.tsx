@@ -5,7 +5,7 @@ import { X, Plus, Minus, Sparkles, Ruler, Tag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { CartItemType } from "./cart";
-import { withKdv } from "@/lib/pricing";
+import { withKdv, formatPrice } from "@/lib/pricing";
 
 interface CartItemProps {
   item: CartItemType;
@@ -149,10 +149,7 @@ export default function CartItem({
             {hasBulkDiscount && discountAmount > 0 && (
               <div className="mt-1">
                 <p className="text-[8px] md:text-[10px] text-emerald-600 bg-emerald-50 px-2 py-1 rounded inline-block font-medium">
-                  ₺
-                  {discountAmount.toLocaleString("tr-TR", {
-                    minimumFractionDigits: 2,
-                  })}{" "}
+                  ₺{formatPrice(discountAmount)}{" "}
                   tasarruf ettiniz
                 </p>
               </div>
@@ -206,27 +203,18 @@ export default function CartItem({
                 {/* Eski fiyat sadece indirim varsa ve 0 değilse */}
                 {unitPrice * quantity > 0 && (
                   <p className="text-[9px] md:text-[10px] text-slate-400 line-through mb-0.5 uppercase tracking-tighter">
-                    ₺
-                    {(unitPrice * quantity).toLocaleString("tr-TR", {
-                      minimumFractionDigits: 2,
-                    })}
+                    ₺{formatPrice(unitPrice * quantity)}
                   </p>
                 )}
                 <span className="text-[13px] sm:text-sm md:text-base font-black tracking-tighter font-mono text-emerald-700">
-                  ₺
-                  {finalPrice.toLocaleString("tr-TR", {
-                    minimumFractionDigits: 2,
-                  })}
+                  ₺{formatPrice(finalPrice)}
                 </span>
               </>
             ) : (
               <>
                 {unitPrice > 0 && (
                   <p className="hidden xs:block text-[9px] md:text-[10px] text-slate-400 font-bold mb-0.5 uppercase tracking-tighter">
-                    Birim: ₺
-                    {unitPrice.toLocaleString("tr-TR", {
-                      minimumFractionDigits: 2,
-                    })}
+                    Birim: ₺{formatPrice(unitPrice)}
                   </p>
                 )}
                 <span
@@ -234,9 +222,7 @@ export default function CartItem({
                     isCustomized ? "text-orange-900" : "text-slate-900"
                   }`}
                 >
-                  {finalPrice > 0
-                    ? `₺${finalPrice.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}`
-                    : ""}
+                  {finalPrice > 0 ? `₺${formatPrice(finalPrice)}` : ""}
                 </span>
               </>
             )}

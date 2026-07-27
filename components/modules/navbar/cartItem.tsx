@@ -3,7 +3,7 @@
 import React from "react";
 import { Trash2, Minus, Plus, Sparkles, Ruler, Tag } from "lucide-react";
 import { CartItemType } from "./cartDropdown";
-import { withKdv } from "@/lib/pricing";
+import { withKdv, formatPrice } from "@/lib/pricing";
 
 interface CartItemDropdownProps {
   item: CartItemType;
@@ -132,18 +132,12 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
             <>
               {totalPrice > 0 && (
                 <span className="text-sm font-semibold text-emerald-700">
-                  ₺
-                  {totalPrice.toLocaleString("tr-TR", {
-                    minimumFractionDigits: 2,
-                  })}
+                  ₺{formatPrice(totalPrice)}
                 </span>
               )}
               {unitPrice * item.quantity > 0 && (
                 <span className="text-[10px] text-slate-400 line-through">
-                  ₺
-                  {(unitPrice * item.quantity).toLocaleString("tr-TR", {
-                    minimumFractionDigits: 2,
-                  })}
+                  ₺{formatPrice(unitPrice * item.quantity)}
                 </span>
               )}
             </>
@@ -153,19 +147,12 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
                 <span
                   className={`text-sm font-semibold ${isCustomized ? "text-orange-900" : "text-slate-900"}`}
                 >
-                  ₺
-                  {totalPrice.toLocaleString("tr-TR", {
-                    minimumFractionDigits: 2,
-                  })}
+                  ₺{formatPrice(totalPrice)}
                 </span>
               )}
               {item.quantity > 1 && unitPrice > 0 && (
                 <span className="text-[10px] text-slate-400">
-                  (₺
-                  {unitPrice.toLocaleString("tr-TR", {
-                    minimumFractionDigits: 2,
-                  })}
-                  )
+                  (₺{formatPrice(unitPrice)})
                 </span>
               )}
             </>
@@ -175,11 +162,7 @@ const CartItemDropdown: React.FC<CartItemDropdownProps> = ({
         {/* İndirim miktarı (tasarruf) */}
         {hasBulkDiscount && discountAmount > 0 && (
           <span className="text-[10px] text-emerald-600 font-medium">
-            ₺
-            {discountAmount.toLocaleString("tr-TR", {
-              minimumFractionDigits: 2,
-            })}{" "}
-            tasarruf
+            ₺{formatPrice(discountAmount)} tasarruf
           </span>
         )}
 

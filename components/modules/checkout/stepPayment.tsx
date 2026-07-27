@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { formatPrice } from "@/lib/pricing";
 
 interface StepPaymentCardProps {
   holderName: string;
@@ -299,13 +300,13 @@ export default function StepPaymentCard({
             <div className="space-y-2 pt-4 border-t border-slate-200/60">
               <div className="flex justify-between text-xs text-slate-500">
                 <span>Ara Toplam</span>
-                <span>₺{totalPrice.toFixed(2)}</span>
+                <span>₺{formatPrice(totalPrice)}</span>
               </div>
               {selectedInstallment > 1 && (
                 <div className="flex justify-between text-xs text-orange-600/80 font-medium">
                   <span>Vade Farkı (%{installmentCalculation.rate})</span>
                   <span>
-                    +₺{installmentCalculation.interestAmount.toFixed(2)}
+                    +₺{formatPrice(installmentCalculation.interestAmount)}
                   </span>
                 </div>
               )}
@@ -315,13 +316,13 @@ export default function StepPaymentCard({
                 </span>
 
                 <span className="text-xl font-bold tracking-tight text-slate-900">
-                  ₺{installmentCalculation.total.toFixed(2)}
+                  ₺{formatPrice(installmentCalculation.total)}
                 </span>
               </div>
               {selectedInstallment > 1 && (
                 <p className="text-[10px] text-slate-400 text-right italic font-light">
                   {selectedInstallment} taksit x ₺
-                  {installmentCalculation.monthly.toFixed(2)}
+                  {formatPrice(installmentCalculation.monthly)}
                 </p>
               )}
             </div>

@@ -14,6 +14,7 @@ import {
   Package,
   Loader2,
 } from "lucide-react";
+import { formatPrice } from "@/lib/pricing";
 
 export interface Product {
   id: number;
@@ -208,11 +209,11 @@ export default function ProductTable({
                   <td className="px-6 py-4">
                     <div className="space-y-1">
                       <p className="font-bold text-xs text-slate-900">
-                        {product.price.toLocaleString("tr-TR")} ₺
+                        {formatPrice(product.price)} ₺
                       </p>
                       {hasDiscount && (
                         <p className="text-xs text-slate-400 line-through">
-                          {product.oldPrice?.toLocaleString("tr-TR")} ₺
+                          {formatPrice(product.oldPrice ?? 0)} ₺
                         </p>
                       )}
                     </div>
@@ -401,11 +402,11 @@ export default function ProductTable({
               <div className="flex justify-between items-center pt-3 border-t border-slate-100">
                 <div>
                   <p className="font-bold text-base text-slate-900">
-                    {product.price.toLocaleString("tr-TR")} ₺
+                    {formatPrice(product.price)} ₺
                   </p>
                   {hasDiscount && (
                     <p className="text-xs text-slate-400 line-through">
-                      {product.oldPrice?.toLocaleString("tr-TR")} ₺
+                      {formatPrice(product.oldPrice ?? 0)} ₺
                     </p>
                   )}
                 </div>
