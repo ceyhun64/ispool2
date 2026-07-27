@@ -207,7 +207,7 @@ export default function WhyChooseUsPage() {
               <div className="flex items-center gap-4">
                 <Phone className="w-5 h-5 text-orange-600" />
                 <span className="text-base font-bold uppercase tracking-widest">
-                  +90 546 225 56 59
+                  +90 534 352 94 20
                 </span>
               </div>
               <ChevronRight className="w-5 h-5 text-slate-500" />

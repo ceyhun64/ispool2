@@ -47,8 +47,8 @@ function buildHtmlTemplate(subject: string, message: string): string {
         <p style="margin:0 0 12px 0;font-size:13px;font-weight:700;color:#1a1a1a;">İşPool Endüstriyel Güvenlik</p>
         <div style="font-size:12px;color:#777;line-height:1.6;">
           <p style="margin:0 0 4px 0;">📍 Merkez / Uşak</p>
-          <p style="margin:0 0 4px 0;">📞 +90 546 225 56 59</p>
-          <!-- Yetkili numara: +90 546 225 56 59 -->
+          <p style="margin:0 0 4px 0;">📞 +90 534 352 94 20</p>
+          <!-- Yetkili numara: +90 534 352 94 20 -->
           <p style="margin:0;">✉️ info@ispool.com.tr</p>
         </div>
         <p style="margin:20px 0 0 0;font-size:11px;color:#bbb;border-top:1px solid #f0f0f0;padding-top:14px;">
