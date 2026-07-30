@@ -10,7 +10,11 @@ import { Canvas } from "./canvas";
 import { PropertiesPanel } from "./propertiesPanel";
 import { toast } from "sonner";
 import { toPng } from "html-to-image";
-import { extractPalette, applyColorMap } from "./colorUtils";
+import {
+  extractPalette,
+  applyColorMap,
+  resizeImageForUpload,
+} from "./colorUtils";
 
 export default function DesignPanel({
   productImage,
@@ -237,17 +241,9 @@ export default function DesignPanel({
     toast.loading("Arka plan kaldırılıyor...");
 
     try {
-      let imageBase64 = layer.image;
-
-      if (layer.image.startsWith("blob:")) {
-        const response = await fetch(layer.image);
-        const blob = await response.blob();
-        imageBase64 = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.readAsDataURL(blob);
-        });
-      }
+      // Sunucunun istek boyutu sınırını aşmamak için göndermeden önce
+      // küçültülür (bkz. resizeImageForUpload açıklaması).
+      const imageBase64 = await resizeImageForUpload(layer.image);
 
       const res = await fetch("/api/remove-bg", {
         method: "POST",

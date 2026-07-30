@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { internalHeaders } from "@/lib/internalAuth";
-import { calculatePricing, voidIyzicoPayment } from "@/lib/iyzico";
+import { calculatePricing, voidIyzicoPayment, processPayment } from "@/lib/iyzico";
+import { sendMail as sendMailDirect } from "@/lib/mailer";
 
 interface BasketItem {
   id: number;
@@ -53,17 +53,15 @@ interface UpdateOrderBody {
   status: "pending" | "paid" | "shipped" | "delivered" | "cancelled";
 }
 
-// Helper: mail gönder
+// Helper: mail gönder — doğrudan lib/mailer'ı çağırır (bkz. processPayment
+// açıklaması: NEXT_PUBLIC_BASE_URL üzerinden kendi kendine HTTP isteği atmak
+// apex→www yönlendirmesi yüzünden kırılgandı).
 const sendMail = async (
   recipients: string[],
   subject: string,
   message: string,
 ) => {
-  await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/send-mail`, {
-    method: "POST",
-    headers: internalHeaders({ "Content-Type": "application/json" }),
-    body: JSON.stringify({ recipients, subject, message }),
-  });
+  await sendMailDirect({ to: recipients, subject, message });
 };
 
 // POST: Yeni sipariş ve ödeme
@@ -293,30 +291,11 @@ export async function POST(req: NextRequest) {
       couponCode: couponCode,
     };
 
-    // Payment API çağrısı (sunucu içi, internal secret ile korunuyor)
-    const protocol = req.headers.get("x-forwarded-proto") || "http";
-    const host = req.headers.get("host") || "localhost:3000";
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `${protocol}://${host}`;
-
-    const paymentRes = await fetch(`${baseUrl}/api/payment`, {
-      method: "POST",
-      headers: internalHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify(paymentPayload),
-    });
-
-    if (!paymentRes.ok) {
-      const errText = await paymentRes.text();
-      console.error("❌ Payment API HTTP hatası:", paymentRes.status, errText);
-      return NextResponse.json(
-        {
-          status: "failure",
-          error: "Ödeme başarısız, lütfen tekrar deneyin",
-        },
-        { status: 400 },
-      );
-    }
-
-    const paymentResult = await paymentRes.json();
+    // Ödeme işleme — aynı process içinde doğrudan çağrılır (bkz. lib/iyzico.ts
+    // processPayment açıklaması: eskiden buradan kendi kendine bir HTTP
+    // isteği atılıyordu, bu da apex domain'in www'ye yönlendirmesi yüzünden
+    // kırılgandı).
+    const paymentResult = await processPayment(paymentPayload);
 
     if (!paymentResult || paymentResult.status !== "success") {
       console.error("❌ İyzipay ödeme hatası:", paymentResult);

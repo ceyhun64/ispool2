@@ -65,6 +65,31 @@ export async function extractPalette(
     .map(([color]) => color);
 }
 
+// Sunucuya (özellikle /api/remove-bg) gönderilmeden önce görseli küçültür.
+// Vercel'deki serverless fonksiyonların istek gövdesi ~4.5MB ile sınırlıdır;
+// telefon fotoğrafları (genelde 3-8MB) base64'e çevrilince (~%37 şişme) bu
+// sınırı kolayca aşıp isteği sessizce başarısız kılıyordu. remove.bg zaten
+// çıktıyı hesap kotasına göre düşük çözünürlükte üretiyor, bu yüzden büyük
+// boyutta girdi göndermenin bir faydası da yok.
+export async function resizeImageForUpload(
+  src: string,
+  maxDimension = 1600,
+  quality = 0.85,
+): Promise<string> {
+  const img = await loadImage(src);
+
+  const scale = Math.min(1, maxDimension / Math.max(img.width, img.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(img.width * scale));
+  canvas.height = Math.max(1, Math.round(img.height * scale));
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return src;
+
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL("image/jpeg", quality);
+}
+
 // Logodaki belirli renkleri (extractPalette ile aynı kümeleme mantığıyla) yeni renklerle değiştirir.
 export async function applyColorMap(
   src: string,

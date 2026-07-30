@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(node -e ' *)",
+      "Bash(rm -f \"c:/PROJECTS/global/İşPool/.env.prod_check_tmp\")",
+      "Bash(rm -f \"c:/PROJECTS/global/İşPool/.env.prod_check_tmp2\")",
+      "Bash(curl -s -D - -o /dev/null -X POST https://ispool.com.tr/api/payment -H \"Content-Type: application/json\" -d '{}')",
+      "Bash(curl -s -o /dev/null -w \"final status: %{http_code}\\\\nnum_redirects: %{num_redirects}\\\\n\" -L -X POST https://ispool.com.tr/api/payment -H \"Content-Type: application/json\" -d '{}')",
+      "Bash(curl -s -D - -o /tmp/payment_body.txt -L -X POST https://ispool.com.tr/api/payment -H 'Content-Type: application/json' -H 'x-internal-secret: __TRACKED_VAR__' -d '{}')",
+      "Bash(grep -rn \"\\\\\"/api/payment\\\\\"\\\\|'/api/payment'\\\\|fetch\\(\\\\`.*api/payment\" \"c:/PROJECTS/global/İşPool/app\" \"c:/PROJECTS/global/İşPool/components\" \"c:/PROJECTS/global/İşPool/lib\")",
+      "Bash(curl -s -o /dev/null -w \"products/10 status: %{http_code}\\\\n\" http://localhost:3000/products/10)",
+      "Bash(curl -s -X POST http://localhost:3000/api/order -H \"Content-Type: application/json\" -d '{}' -w \"\\\\napi/order status: %{http_code}\\\\n\")"
     ]
   }
 }

@@ -363,7 +363,6 @@ Endpoints below were confirmed by reading the exported HTTP method handlers in e
 | PATCH | `/api/order` | Update an order |
 | GET | `/api/order/user` | Get current user's orders |
 | PATCH | `/api/order/user` | Update current user's order (e.g. cancel) |
-| POST | `/api/payment` | Initiate an iyzico payment |
 
 ### Coupons
 

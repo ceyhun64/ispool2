@@ -3,24 +3,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { internalHeaders } from "@/lib/internalAuth";
+import { sendMail as sendMailDirect } from "@/lib/mailer";
 
 interface CancelOrderBody {
   orderId: number;
 }
 
-// Helper: mail gönder
+// Helper: mail gönder — doğrudan lib/mailer'ı çağırır (NEXT_PUBLIC_BASE_URL
+// üzerinden kendi kendine HTTP isteği apex→www yönlendirmesi yüzünden
+// kırılgandı).
 const sendMail = async (
   recipients: string[],
   subject: string,
   message: string,
 ) => {
   try {
-    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/send-mail`, {
-      method: "POST",
-      headers: internalHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ recipients, subject, message }),
-    });
+    await sendMailDirect({ to: recipients, subject, message });
   } catch (err) {
     console.error("Mail gönderilemedi:", err);
   }
