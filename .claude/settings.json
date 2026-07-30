@@ -10,7 +10,16 @@
       "Bash(curl -s -D - -o /tmp/payment_body.txt -L -X POST https://ispool.com.tr/api/payment -H 'Content-Type: application/json' -H 'x-internal-secret: __TRACKED_VAR__' -d '{}')",
       "Bash(grep -rn \"\\\\\"/api/payment\\\\\"\\\\|'/api/payment'\\\\|fetch\\(\\\\`.*api/payment\" \"c:/PROJECTS/global/İşPool/app\" \"c:/PROJECTS/global/İşPool/components\" \"c:/PROJECTS/global/İşPool/lib\")",
       "Bash(curl -s -o /dev/null -w \"products/10 status: %{http_code}\\\\n\" http://localhost:3000/products/10)",
-      "Bash(curl -s -X POST http://localhost:3000/api/order -H \"Content-Type: application/json\" -d '{}' -w \"\\\\napi/order status: %{http_code}\\\\n\")"
+      "Bash(curl -s -X POST http://localhost:3000/api/order -H \"Content-Type: application/json\" -d '{}' -w \"\\\\napi/order status: %{http_code}\\\\n\")",
+      "Bash(curl -s -o /dev/null -w \"category status: %{http_code}\\\\n\" https://www.ispool.com.tr/api/category)",
+      "Bash(curl -s -o /dev/null -w \"banner status: %{http_code}\\\\n\" https://www.ispool.com.tr/api/banner)",
+      "Bash(curl -s -o /dev/null -w \"showcase status: %{http_code}\\\\n\" https://www.ispool.com.tr/api/showcase)",
+      "Bash(curl -s https://www.ispool.com.tr/api/products)",
+      "Bash(curl -s https://www.ispool.com.tr/api/category)",
+      "Bash(curl -s -o /dev/null https://www.ispool.com.tr/api/products)",
+      "Bash(curl -s -o /dev/null https://www.ispool.com.tr/api/category)",
+      "Bash(curl -s -o /dev/null -w \"products status: %{http_code}\\\\n\" http://localhost:3000/api/products)",
+      "Bash(curl -s -o /dev/null -w \"category status: %{http_code}\\\\n\" http://localhost:3000/api/category)"
     ]
   }
 }
