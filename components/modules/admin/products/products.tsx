@@ -69,13 +69,42 @@ export default function Products(): React.ReactElement {
   const middleCategoriesData = middleCategoriesDataRaw as MiddleCategoryData[];
   const subCategoriesData = subCategoriesDataRaw as SubCategoryData[];
 
+  // /api/products, müşteri tarafındaki performans için sayfa başına en
+  // fazla 100 ürünle sınırlıdır. Admin listesi ise tüm ürünler üzerinde
+  // anlık arama/filtre yapabilmek için hepsinin tarayıcıda hazır olmasını
+  // bekler; bu yüzden burada API'nin sayfalarını sırayla/paralel çekip
+  // birleştiriyoruz (63 ürün varken tek istekle sadece ilk 24'ü geliyordu).
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/products");
-      const data = await res.json();
-      if (res.ok) setProducts(data.products || []);
-      else toast.error(data.error || "Ürünler yüklenemedi");
+      const firstRes = await fetch("/api/products?limit=100&page=1");
+      const firstData = await firstRes.json();
+      if (!firstRes.ok) {
+        toast.error(firstData.error || "Ürünler yüklenemedi");
+        return;
+      }
+
+      let allProducts = firstData.products || [];
+      const totalPages = firstData.pagination?.totalPages ?? 1;
+
+      if (totalPages > 1) {
+        const remainingPages = Array.from(
+          { length: totalPages - 1 },
+          (_, i) => i + 2,
+        );
+        const restResults = await Promise.all(
+          remainingPages.map((page) =>
+            fetch(`/api/products?limit=100&page=${page}`).then((r) =>
+              r.json(),
+            ),
+          ),
+        );
+        for (const data of restResults) {
+          allProducts = allProducts.concat(data.products || []);
+        }
+      }
+
+      setProducts(allProducts);
     } catch (err) {
       toast.error("Sunucu bağlantı hatası!");
     } finally {
