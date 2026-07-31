@@ -19,7 +19,12 @@
       "Bash(curl -s -o /dev/null https://www.ispool.com.tr/api/products)",
       "Bash(curl -s -o /dev/null https://www.ispool.com.tr/api/category)",
       "Bash(curl -s -o /dev/null -w \"products status: %{http_code}\\\\n\" http://localhost:3000/api/products)",
-      "Bash(curl -s -o /dev/null -w \"category status: %{http_code}\\\\n\" http://localhost:3000/api/category)"
+      "Bash(curl -s -o /dev/null -w \"category status: %{http_code}\\\\n\" http://localhost:3000/api/category)",
+      "Bash(curl -s \"https://www.ispool.com.tr/api/products\")",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const j=JSON.parse\\(d\\);console.log\\('returned:', j.products?.length\\); console.log\\('pagination:', JSON.stringify\\(j.pagination\\)\\);}\\)\")",
+      "Bash(curl -s -o /dev/null -w \"admin products status: %{http_code}\\\\n\" http://localhost:3000/admin/products)",
+      "Bash(curl -s -o /dev/null -w \"admin products: %{http_code}\\\\n\" https://www.ispool.com.tr/admin/products)",
+      "Bash(curl -s -o /dev/null -w \"home: %{http_code}\\\\n\" https://www.ispool.com.tr/)"
     ]
   }
 }
