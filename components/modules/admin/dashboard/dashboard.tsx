@@ -117,7 +117,11 @@ export default function AdminDashboard() {
         {
           id: "products",
           title: "Ürünler",
-          stat: products.products?.length || 0,
+          // /api/products sayfa başına en fazla 100 ürünle sınırlıdır; bu
+          // yüzden dönen dizinin uzunluğu değil, pagination.total (gerçek
+          // toplam) kullanılır — aksi halde 100'den (önceden 24'ten) fazla
+          // ürün varken sayaç yanlış/eksik gösterirdi.
+          stat: products.pagination?.total ?? products.products?.length ?? 0,
           description: "Toplam Ürün",
           icon: <Package className="w-5 h-5" />,
           href: "/admin/products",
