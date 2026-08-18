@@ -257,7 +257,7 @@ export default function AboutPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
             <a
-              href="tel:+905462255659"
+              href="tel:+905343529420"
               className="group p-8 md:p-12 bg-white border border-slate-200 hover:bg-slate-900 transition-all duration-500"
             >
               <Phone className="text-orange-600 mb-6 group-hover:scale-110 transition-transform" />

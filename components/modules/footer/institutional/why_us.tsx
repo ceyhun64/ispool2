@@ -201,7 +201,7 @@ export default function WhyChooseUsPage() {
 
           <div className="flex flex-col gap-4 w-full md:w-auto">
             <a
-              href="tel:905462255659"
+              href="tel:905343629420"
               className="flex items-center justify-between gap-8 bg-slate-800 p-6 hover:bg-slate-700 transition-all border border-slate-700"
             >
               <div className="flex items-center gap-4">

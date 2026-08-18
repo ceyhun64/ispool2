@@ -100,7 +100,7 @@ export default function Contact() {
                 icon={<Phone size={18} />}
                 title="Doğrudan Hat"
                 content="+90 534 352 94 20"
-                href="tel:+905462255659"
+                href="tel:+905343529420"
               />
               <ContactItem
                 icon={<Mail size={18} />}
