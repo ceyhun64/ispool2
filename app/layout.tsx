@@ -104,7 +104,7 @@ const organizationSchema = {
   logo: `${BASE_URL}/logo/logoyeni.png`,
   contactPoint: {
     "@type": "ContactPoint",
-    telephone: "+90-546-225-56-59",
+    telephone: "+90-534-352-94-20",
     contactType: "customer service",
     availableLanguage: "Turkish",
   },

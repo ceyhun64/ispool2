@@ -108,7 +108,7 @@ export default function BankAccounts() {
       {/* WhatsApp Destek Hattı (Görseldeki gibi sağ altta) */}
       <div className="fixed bottom-6 right-6 z-50">
         <a
-          href="https://wa.me/905462255659"
+          href="https://wa.me/905343529420"
           target="_blank"
           className="flex items-center gap-3 bg-white p-2 pr-4 rounded-full shadow-lg border border-green-500 hover:scale-105 transition-transform"
         >
