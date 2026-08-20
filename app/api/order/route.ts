@@ -5,6 +5,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { calculatePricing, voidIyzicoPayment, processPayment } from "@/lib/iyzico";
 import { sendMail as sendMailDirect } from "@/lib/mailer";
+import { getClientIp } from "@/lib/rate-limit";
+
+// iyzico geçerli bir IP bekler; header okunamadığında (yerel geliştirme,
+// bilinmeyen proxy) loopback'e düş.
+const resolveBuyerIp = (req: NextRequest): string => {
+  const ip = getClientIp(req);
+  return !ip || ip === "unknown" ? "127.0.0.1" : ip;
+};
 
 interface BasketItem {
   id: number;
@@ -176,8 +184,25 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const subtotal = recalculatedItems.reduce((s, i) => s + i.totalPrice, 0);
-    const baseTotal = subtotal * 1.1; // %10 hizmet bedeli — calculatePricing ile aynı formül
+    // Basket items formatlama — SUNUCUDA HESAPLANAN fiyatlarla.
+    // Kupon tabanı da bu diziden türetildiği için ödeme çağrısından ÖNCE
+    // hazırlanır; böylece kuponun uygulandığı taban ile iyzico'ya gönderilen
+    // tutar tek bir kaynaktan gelir.
+    const basketItemsFormatted = recalculatedItems.map((item) => ({
+      id: item.productId.toString(),
+      name: item.name,
+      category1: item.category,
+      itemType: "PHYSICAL",
+      price: item.totalPrice.toFixed(2),
+    }));
+
+    // Kuponun uygulanacağı taban, gerçek tahsilat tabanıyla AYNI fonksiyondan
+    // alınır. Önceden burada `subtotal * 1.1` hesaplanıyordu; calculatePricing
+    // 2026-07-16'da (175c1a5) baseTotal'e kargo ücretini ekleyince iki taban
+    // ayrıştı ve kupon kargo hariç tabana uygulanmaya başladı — müşteriye
+    // gösterilenden fazla tahsilat, ayrıca minAmount eşiğinin sepette geçip
+    // sipariş anında reddedilmesi. Tek formül, tek kaynak.
+    const baseTotal = calculatePricing(basketItemsFormatted, 1, 0).baseTotal;
 
     // --- Kupon sunucu tarafında yeniden doğrulanır --------------------------
     let validatedDiscount = 0;
@@ -239,7 +264,11 @@ export async function POST(req: NextRequest) {
       city: body.buyer?.city || shippingAddress.city || "",
       country: body.buyer?.country || shippingAddress.country || "Türkiye",
       zipCode: body.buyer?.zipCode || shippingAddress.zipCode || "",
-      ip: body.buyer?.ip || "127.0.0.1",
+      // IP istemciden ALINMAZ — istemci her istekte sabit "127.0.0.1"
+      // gönderiyordu ve iyzico'nun fraud skorlaması tüm işlemleri tek, geçersiz
+      // bir adresten geliyormuş gibi görüyordu. Gerçek istemci IP'si istek
+      // header'ından okunur.
+      ip: resolveBuyerIp(req),
     };
 
     // Shipping & Billing adres
@@ -258,15 +287,6 @@ export async function POST(req: NextRequest) {
       address: billingAddress.address ?? "",
       zipCode: billingAddress.zip ?? billingAddress.zipCode ?? "",
     };
-
-    // Basket items formatlama — SUNUCUDA HESAPLANAN fiyatlarla
-    const basketItemsFormatted = recalculatedItems.map((item) => ({
-      id: item.productId.toString(),
-      name: item.name,
-      category1: item.category,
-      itemType: "PHYSICAL",
-      price: item.totalPrice.toFixed(2),
-    }));
 
     // Payment card formatlama
     const paymentCardFormatted = {
@@ -358,6 +378,8 @@ export async function POST(req: NextRequest) {
             currency: currency || "TRY",
             paymentMethod: paymentMethod || "iyzipay",
             transactionId: paymentResult?.paymentId || null,
+            // Şemada iptal/iade için ayrılmış alan; önceden hiç yazılmıyordu.
+            iyziPaymentId: paymentResult?.paymentId || null,
             installment: installment,
             couponCode: couponCode || null,
             discountAmount: validatedDiscount || null,

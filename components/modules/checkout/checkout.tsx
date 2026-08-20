@@ -21,6 +21,21 @@ import Link from "next/link";
 import { ShieldCheck, Lock, HelpCircle, ArrowRight } from "lucide-react";
 import { withKdv, getShippingFee } from "@/lib/pricing";
 
+// Beden bazlı fiyat farkı. Sunucudaki eşleme ile birebir aynı olmalıdır
+// (app/api/order/route.ts): önce tam beden eşleşmesi, yoksa bedensiz (null)
+// stok satırı.
+function getPriceModifier(
+  stock: { sizeId: number | null; priceModifier?: number | null }[] | undefined,
+  sizeId: number | null | undefined,
+): number {
+  if (!stock || stock.length === 0) return 0;
+  const normalizedSizeId = sizeId ?? null;
+  const row =
+    stock.find((s) => s.sizeId === normalizedSizeId) ??
+    stock.find((s) => s.sizeId === null);
+  return row?.priceModifier ?? 0;
+}
+
 const installmentRates = [
   { count: 1, rate: 0 },
   { count: 2, rate: 3.5 },
@@ -162,7 +177,13 @@ export default function PaymentPage() {
               product: {
                 id: item.product.id,
                 title: item.product.title,
-                price: item.product.price,
+                // Seçili bedenin fiyat farkı (priceModifier) birim fiyata
+                // dahil edilir — sunucu da tahsilatı böyle hesaplıyor
+                // (order/route.ts: unitPrice = product.price + priceModifier).
+                // Önceden istemci bu farkı hiç okumadığı için müşteri sepette
+                // düşük tutar görüp karttan yüksek tutar çekiliyordu.
+                price:
+                  item.product.price + getPriceModifier(item.product.stock, item.sizeId),
                 mainImage: item.product.mainImage,
                 oldPrice: item.product.oldPrice,
                 category: item.product.category,
@@ -496,17 +517,35 @@ export default function PaymentPage() {
       });
       const data = await res.json();
 
-      if (data.status === "success") {
+      if (!res.ok || data.status !== "success") {
+        // Sunucunun döndürdüğü gerçek sebebi (kupon eşiği, iyzico errorCode,
+        // stok) kullanıcıya göster ve onu ödeme adımında bırak. Önceden bu
+        // mesaj bir Error'a sarılıp catch içinde yutuluyor, herkes aynı sabit
+        // "Ödeme Başarısız" sayfasını görüyordu.
+        const reason = data?.error || "Ödeme başarısız";
+        toast.error(reason, {
+          description: data?.errorCode ? `Hata kodu: ${data.errorCode}` : undefined,
+          duration: 8000,
+        });
+        return;
+      }
+
+      // Sepet temizleme ödemeden SONRA gelir ve başarısız olsa bile siparişi
+      // geçersiz kılmaz; bu yüzden kendi try/catch'inde. Aksi halde bir DELETE
+      // hatası, ödemesi alınmış müşteriyi "başarısız" sayfasına düşürüyordu.
+      try {
         await Promise.all(
           cartItems.map((item) =>
             fetch(`/api/cart/${item.id}`, { method: "DELETE" }),
           ),
         );
-        router.push("/checkout/success");
-      } else {
-        throw new Error(data.error || "Ödeme başarısız");
+      } catch (cleanupErr) {
+        console.error("Sepet temizlenemedi (sipariş başarılı):", cleanupErr);
       }
+
+      router.push("/checkout/success");
     } catch (err) {
+      // Buraya yalnızca ağ hatası / beklenmeyen istisna düşer.
       console.error("Payment error:", err);
       router.push("/checkout/unsuccess");
     } finally {
