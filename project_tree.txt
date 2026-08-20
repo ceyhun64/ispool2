@@ -1,281 +1,307 @@
+================================================================
+PROJE MİMARİSİ VE DOSYA YAPISI
+Oluşturulma Tarihi: 20.08.2026 09:55:42
+Kapsam: Tam Proje Haritası
+================================================================
+
+. (Root)
+├── .claude/
+│   ├── settings.json
+│   └── settings.local.json
+├── .env
+├── .env.local
 ├── .gitignore
-├── README.md
-├── app
-│   ├── admin
-│   │   ├── blogs
+├── .vercel/
+│   ├── project.json
+│   └── README.txt
+├── app/
+│   ├── admin/
+│   │   ├── blogs/
 │   │   │   └── page.tsx
-│   │   ├── color_size
+│   │   ├── color_size/
 │   │   │   └── page.tsx
-│   │   ├── coupon
+│   │   ├── coupon/
 │   │   │   └── page.tsx
-│   │   ├── dashboard
+│   │   ├── dashboard/
 │   │   │   └── page.tsx
-│   │   ├── home_settings
+│   │   ├── home_settings/
 │   │   │   └── page.tsx
-│   │   ├── orders
+│   │   ├── orders/
 │   │   │   └── page.tsx
 │   │   ├── page.tsx
-│   │   ├── products
-│   │   │   ├── edit
-│   │   │   │   └── [id]
+│   │   ├── products/
+│   │   │   ├── edit/
+│   │   │   │   └── [id]/
 │   │   │   │       └── page.tsx
-│   │   │   ├── new
+│   │   │   ├── new/
 │   │   │   │   └── page.tsx
 │   │   │   └── page.tsx
-│   │   ├── subscribers
+│   │   ├── subscribers/
 │   │   │   └── page.tsx
-│   │   └── users
+│   │   └── users/
 │   │       └── page.tsx
-│   ├── api
-│   │   ├── account
-│   │   │   ├── check
+│   ├── api/
+│   │   ├── account/
+│   │   │   ├── check/
 │   │   │   │   └── route.ts
-│   │   │   ├── forgot_password
+│   │   │   ├── forgot_password/
 │   │   │   │   └── route.ts
-│   │   │   ├── register
+│   │   │   ├── register/
 │   │   │   │   └── route.ts
-│   │   │   └── reset_password
+│   │   │   └── reset_password/
 │   │   │       └── route.ts
-│   │   ├── address
-│   │   │   ├── [id]
-│   │   │   │   └── route.ts
-│   │   │   └── route.ts
-│   │   ├── auth
-│   │   │   ├── [...nextauth]
-│   │   │   │   └── route.ts
-│   │   │   └── logout
-│   │   │       └── route.ts
-│   │   ├── banner
-│   │   │   ├── [id]
-│   │   │   │   └── route.ts
-│   │   │   └── route.ts
-│   │   ├── blog
-│   │   │   ├── [id]
-│   │   │   │   └── route.ts
-│   │   │   └── route.ts
-│   │   ├── cargo-tracking
-│   │   │   └── route.ts
-│   │   ├── cart
-│   │   │   ├── [id]
-│   │   │   │   └── route.ts
-│   │   │   └── route.ts
-│   │   ├── category
-│   │   │   ├── [id]
-│   │   │   │   ├── [midId]
-│   │   │   │   │   ├── [subId]
-│   │   │   │   │   │   └── route.ts
-│   │   │   │   │   └── route.ts
-│   │   │   │   └── route.ts
-│   │   │   └── route.ts
-│   │   ├── cloudinary-signature
-│   │   │   └── route.ts
-│   │   ├── color
-│   │   │   ├── [id]
-│   │   │   │   └── route.ts
-│   │   │   └── route.ts
-│   │   ├── coupon
+│   │   ├── address/
 │   │   │   ├── route.ts
-│   │   │   └── validate
+│   │   │   └── [id]/
 │   │   │       └── route.ts
-│   │   ├── favorites
-│   │   │   ├── [id]
+│   │   ├── auth/
+│   │   │   ├── logout/
 │   │   │   │   └── route.ts
+│   │   │   └── [...nextauth]/
+│   │   │       └── route.ts
+│   │   ├── banner/
+│   │   │   ├── route.ts
+│   │   │   └── [id]/
+│   │   │       └── route.ts
+│   │   ├── blog/
+│   │   │   ├── route.ts
+│   │   │   └── [id]/
+│   │   │       └── route.ts
+│   │   ├── brand/
+│   │   │   ├── route.ts
+│   │   │   └── [id]/
+│   │   │       └── route.ts
+│   │   ├── cargo-tracking/
 │   │   │   └── route.ts
-│   │   ├── hero-slides
-│   │   │   ├── [id]
-│   │   │   │   └── route.ts
+│   │   ├── cart/
+│   │   │   ├── route.ts
+│   │   │   └── [id]/
+│   │   │       └── route.ts
+│   │   ├── category/
+│   │   │   ├── route.ts
+│   │   │   └── [id]/
+│   │   │       ├── route.ts
+│   │   │       └── [midId]/
+│   │   │           ├── route.ts
+│   │   │           └── [subId]/
+│   │   │               └── route.ts
+│   │   ├── cloudinary-signature/
 │   │   │   └── route.ts
-│   │   ├── location
-│   │   │   ├── ilceler
-│   │   │   │   └── [ilId]
+│   │   ├── color/
+│   │   │   ├── route.ts
+│   │   │   └── [id]/
+│   │   │       └── route.ts
+│   │   ├── coupon/
+│   │   │   ├── route.ts
+│   │   │   └── validate/
+│   │   │       └── route.ts
+│   │   ├── favorites/
+│   │   │   ├── route.ts
+│   │   │   └── [id]/
+│   │   │       └── route.ts
+│   │   ├── hero-slides/
+│   │   │   ├── route.ts
+│   │   │   └── [id]/
+│   │   │       └── route.ts
+│   │   ├── location/
+│   │   │   ├── ilceler/
+│   │   │   │   └── [ilId]/
 │   │   │   │       └── route.ts
-│   │   │   └── mahalleler
-│   │   │       └── [ilceId]
+│   │   │   └── mahalleler/
+│   │   │       └── [ilceId]/
 │   │   │           └── route.ts
-│   │   ├── order
+│   │   ├── order/
 │   │   │   ├── route.ts
-│   │   │   └── user
+│   │   │   └── user/
 │   │   │       └── route.ts
-│   │   ├── payment
+│   │   ├── products/
+│   │   │   ├── category/
+│   │   │   │   └── [id]/
+│   │   │   │       ├── route.ts
+│   │   │   │       └── [midId]/
+│   │   │   │           ├── route.ts
+│   │   │   │           └── [subId]/
+│   │   │   │               └── route.ts
+│   │   │   ├── route.ts
+│   │   │   └── [id]/
+│   │   │       └── route.ts
+│   │   ├── remove-bg/
 │   │   │   └── route.ts
-│   │   ├── products
-│   │   │   ├── [id]
-│   │   │   │   └── route.ts
-│   │   │   ├── category
-│   │   │   │   └── [id]
-│   │   │   │       ├── [midId]
-│   │   │   │       │   ├── [subId]
-│   │   │   │       │   │   └── route.ts
-│   │   │   │       │   └── route.ts
-│   │   │   │       └── route.ts
+│   │   ├── review/
+│   │   │   ├── route.ts
+│   │   │   └── [id]/
+│   │   │       └── route.ts
+│   │   ├── search/
 │   │   │   └── route.ts
-│   │   ├── remove-bg
+│   │   ├── send-mail/
 │   │   │   └── route.ts
-│   │   ├── review
-│   │   │   ├── [id]
-│   │   │   │   └── route.ts
+│   │   ├── showcase/
+│   │   │   ├── route.ts
+│   │   │   └── [id]/
+│   │   │       └── route.ts
+│   │   ├── size/
+│   │   │   ├── route.ts
+│   │   │   └── [id]/
+│   │   │       └── route.ts
+│   │   ├── subscribe/
+│   │   │   ├── route.js
+│   │   │   └── [id]/
+│   │   │       └── route.js
+│   │   ├── upload/
 │   │   │   └── route.ts
-│   │   ├── send-mail
-│   │   │   └── route.ts
-│   │   ├── size
-│   │   │   ├── [id]
-│   │   │   │   └── route.ts
-│   │   │   └── route.ts
-│   │   ├── subscribe
-│   │   │   ├── [id]
-│   │   │   │   └── route.js
-│   │   │   └── route.js
-│   │   ├── upload
-│   │   │   └── route.ts
-│   │   └── user
-│   │       ├── all
-│   │       │   ├── [id]
-│   │       │   │   └── route.ts
-│   │       │   └── route.ts
+│   │   └── user/
+│   │       ├── all/
+│   │       │   ├── route.ts
+│   │       │   └── [id]/
+│   │       │       └── route.ts
 │   │       └── route.ts
-│   ├── auth
-│   │   ├── forgot-password
+│   ├── auth/
+│   │   ├── forgot-password/
 │   │   │   └── page.tsx
-│   │   ├── login
+│   │   ├── login/
 │   │   │   └── page.tsx
-│   │   ├── register
+│   │   ├── register/
 │   │   │   └── page.tsx
-│   │   └── reset-password
+│   │   └── reset-password/
 │   │       └── page.tsx
-│   ├── cart
+│   ├── cart/
 │   │   └── page.tsx
-│   ├── checkout
+│   ├── checkout/
 │   │   ├── page.tsx
-│   │   ├── success
+│   │   ├── success/
 │   │   │   └── page.tsx
-│   │   └── unsuccess
+│   │   └── unsuccess/
 │   │       └── page.tsx
-│   ├── customer
-│   │   ├── bank-details
+│   ├── customer/
+│   │   ├── bank-details/
 │   │   │   └── page.tsx
-│   │   ├── privacy
+│   │   ├── privacy/
 │   │   │   └── page.tsx
-│   │   ├── returns
+│   │   ├── returns/
 │   │   │   └── page.tsx
-│   │   ├── sales-agreement
+│   │   ├── sales-agreement/
 │   │   │   └── page.tsx
-│   │   └── terms
+│   │   └── terms/
 │   │       └── page.tsx
 │   ├── favicon.ico
-│   ├── favorites
+│   ├── favorites/
 │   │   └── page.tsx
 │   ├── globals.css
-│   ├── help
-│   │   ├── bank-info
+│   ├── help/
+│   │   ├── bank-info/
 │   │   │   └── page.tsx
-│   │   ├── contact
+│   │   ├── contact/
 │   │   │   └── page.tsx
-│   │   ├── distance-sales
+│   │   ├── distance-sales/
 │   │   │   └── page.tsx
-│   │   ├── faq
+│   │   ├── faq/
 │   │   │   └── page.tsx
-│   │   ├── kvkk
+│   │   ├── kvkk/
 │   │   │   └── page.tsx
-│   │   ├── printing
+│   │   ├── printing/
 │   │   │   └── page.tsx
-│   │   └── returns-help
+│   │   └── returns-help/
 │   │       └── page.tsx
-│   ├── institutional
-│   │   ├── about
+│   ├── institutional/
+│   │   ├── about/
 │   │   │   └── page.tsx
-│   │   ├── blog
-│   │   │   ├── [id]
-│   │   │   │   └── page.tsx
+│   │   ├── blog/
+│   │   │   ├── page.tsx
+│   │   │   └── [id]/
+│   │   │       └── page.tsx
+│   │   ├── career/
 │   │   │   └── page.tsx
-│   │   ├── career
+│   │   ├── cookie_policy/
 │   │   │   └── page.tsx
-│   │   ├── cookie_policy
+│   │   ├── partners/
 │   │   │   └── page.tsx
-│   │   ├── partners
+│   │   ├── quality/
 │   │   │   └── page.tsx
-│   │   ├── quality
-│   │   │   └── page.tsx
-│   │   └── why_us
+│   │   └── why_us/
 │   │       └── page.tsx
 │   ├── layout.tsx
 │   ├── not-found.tsx
 │   ├── page.tsx
-│   ├── products
-│   │   ├── [id]
-│   │   │   └── page.tsx
-│   │   ├── category
-│   │   │   └── [id]
-│   │   │       ├── [midId]
-│   │   │       │   ├── [subId]
-│   │   │       │   │   └── page.tsx
-│   │   │       │   └── page.tsx
-│   │   │       └── page.tsx
+│   ├── products/
+│   │   ├── category/
+│   │   │   └── [id]/
+│   │   │       ├── page.tsx
+│   │   │       └── [midId]/
+│   │   │           ├── page.tsx
+│   │   │           └── [subId]/
+│   │   │               └── page.tsx
 │   │   ├── page.tsx
-│   │   ├── special_production
+│   │   ├── special_production/
+│   │   │   ├── gallery/
+│   │   │   │   └── page.tsx
 │   │   │   └── page.tsx
-│   │   └── wholesale
+│   │   ├── wholesale/
+│   │   │   └── page.tsx
+│   │   └── [id]/
 │   │       └── page.tsx
-│   └── profile
-│       ├── addresses
-│       │   └── page.tsx
-│       ├── cargo_tracking
-│       │   └── page.tsx
-│       ├── orders
-│       │   └── page.tsx
-│       └── page.tsx
-├── components.json
-├── components
-│   ├── layout
+│   ├── profile/
+│   │   ├── addresses/
+│   │   │   └── page.tsx
+│   │   ├── cargo_tracking/
+│   │   │   └── page.tsx
+│   │   ├── orders/
+│   │   │   └── page.tsx
+│   │   └── page.tsx
+│   ├── robots.ts
+│   └── sitemap.ts
+├── components/
+│   ├── layout/
 │   │   ├── ClientLayoutWrapper.tsx
 │   │   ├── cookieConsent.tsx
-│   │   ├── footer.tsx
-│   │   ├── navbar.tsx
+│   │   ├── Footer.tsx
+│   │   ├── Navbar.tsx
 │   │   ├── pagination.tsx
 │   │   ├── scrollToTop.tsx
 │   │   ├── socialSidebar.tsx
 │   │   └── topbar.tsx
-│   ├── modules
-│   │   ├── admin
-│   │   │   ├── blogs
+│   ├── modules/
+│   │   ├── admin/
+│   │   │   ├── blogs/
 │   │   │   │   ├── addBlog.tsx
 │   │   │   │   ├── blogs.tsx
 │   │   │   │   └── updateBlog.tsx
-│   │   │   ├── color_size
+│   │   │   ├── color_size/
 │   │   │   │   └── color_size.tsx
-│   │   │   ├── coupon
+│   │   │   ├── coupon/
 │   │   │   │   └── coupon.tsx
-│   │   │   ├── dashboard
+│   │   │   ├── dashboard/
 │   │   │   │   └── dashboard.tsx
-│   │   │   ├── homeSettings
+│   │   │   ├── homeSettings/
 │   │   │   │   └── homeSettings.tsx
-│   │   │   ├── login
+│   │   │   ├── login/
 │   │   │   │   └── login.tsx
-│   │   │   ├── orders
+│   │   │   ├── orders/
 │   │   │   │   ├── orderDetailDialog.tsx
 │   │   │   │   └── orders.tsx
-│   │   │   ├── products
-│   │   │   │   ├── productForm.tsx
-│   │   │   │   ├── productForm
+│   │   │   ├── products/
+│   │   │   │   ├── productForm/
 │   │   │   │   │   ├── basicInfo.tsx
 │   │   │   │   │   ├── imageUpload.tsx
 │   │   │   │   │   └── variant.tsx
-│   │   │   │   ├── productTable.tsx
-│   │   │   │   └── products.tsx
+│   │   │   │   ├── productForm.tsx
+│   │   │   │   ├── products.tsx
+│   │   │   │   └── productTable.tsx
 │   │   │   ├── sideBar.tsx
-│   │   │   ├── subscribers
+│   │   │   ├── subscribers/
 │   │   │   │   └── subscribers.tsx
-│   │   │   └── users
+│   │   │   └── users/
 │   │   │       └── users.tsx
-│   │   ├── auth
+│   │   ├── auth/
 │   │   │   ├── forgot-password.tsx
 │   │   │   ├── login.tsx
 │   │   │   ├── register.tsx
 │   │   │   └── reset-password.tsx
-│   │   ├── cart
+│   │   ├── cart/
 │   │   │   ├── cart.tsx
 │   │   │   ├── cartItem.tsx
 │   │   │   └── cartSummary.tsx
-│   │   ├── checkout
+│   │   ├── checkout/
+│   │   │   ├── billingForm.tsx
 │   │   │   ├── cartSummary.tsx
 │   │   │   ├── checkout.tsx
 │   │   │   ├── paymentStepper.tsx
@@ -283,17 +309,17 @@
 │   │   │   ├── stepPayment.tsx
 │   │   │   ├── success.tsx
 │   │   │   └── unsuccess.tsx
-│   │   ├── favorites
+│   │   ├── favorites/
 │   │   │   ├── favorites.tsx
 │   │   │   └── productCard.tsx
-│   │   ├── footer
-│   │   │   ├── customer
+│   │   ├── footer/
+│   │   │   ├── customer/
 │   │   │   │   ├── bank-details.tsx
 │   │   │   │   ├── privacy.tsx
 │   │   │   │   ├── returns.tsx
 │   │   │   │   ├── sales-agreement.tsx
 │   │   │   │   └── terms.tsx
-│   │   │   ├── help
+│   │   │   ├── help/
 │   │   │   │   ├── bank-info.tsx
 │   │   │   │   ├── contact.tsx
 │   │   │   │   ├── distance-sales.tsx
@@ -301,7 +327,7 @@
 │   │   │   │   ├── kvkk.tsx
 │   │   │   │   ├── printing.tsx
 │   │   │   │   └── returns-help.tsx
-│   │   │   └── institutional
+│   │   │   └── institutional/
 │   │   │       ├── about.tsx
 │   │   │       ├── blog.tsx
 │   │   │       ├── blogDetail.tsx
@@ -310,7 +336,7 @@
 │   │   │       ├── quality.tsx
 │   │   │       ├── security_cookie.tsx
 │   │   │       └── why_us.tsx
-│   │   ├── home
+│   │   ├── home/
 │   │   │   ├── banner.tsx
 │   │   │   ├── bestseller.tsx
 │   │   │   ├── categories.tsx
@@ -320,18 +346,20 @@
 │   │   │   ├── products.tsx
 │   │   │   ├── services.tsx
 │   │   │   └── testimonial.tsx
-│   │   ├── navbar
+│   │   ├── navbar/
 │   │   │   ├── cartDropdown.tsx
 │   │   │   ├── cartItem.tsx
 │   │   │   ├── categoryBar.tsx
 │   │   │   └── userMegaMenu.tsx
-│   │   ├── products
+│   │   ├── products/
 │   │   │   ├── filter.tsx
+│   │   │   ├── filterUrlParams.ts
 │   │   │   ├── mobileFilter.tsx
 │   │   │   ├── productCard.tsx
-│   │   │   ├── productDetail
-│   │   │   │   ├── design
+│   │   │   ├── productDetail/
+│   │   │   │   ├── design/
 │   │   │   │   │   ├── canvas.tsx
+│   │   │   │   │   ├── colorUtils.ts
 │   │   │   │   │   ├── constants.ts
 │   │   │   │   │   ├── designPanel.tsx
 │   │   │   │   │   ├── layerItem.tsx
@@ -349,24 +377,25 @@
 │   │   │   │   ├── productTabs.tsx
 │   │   │   │   ├── productVariantSelector.tsx
 │   │   │   │   └── recommended.tsx
-│   │   │   ├── productSkeleton.tsx
-│   │   │   ├── productTopbar.tsx
-│   │   │   ├── production_sales
+│   │   │   ├── production_sales/
+│   │   │   │   ├── showcase_gallery.tsx
 │   │   │   │   ├── special_production.tsx
 │   │   │   │   └── wholesale.tsx
-│   │   │   └── products
-│   │   │       ├── allProducts.tsx
-│   │   │       ├── catProducts.tsx
-│   │   │       ├── midCatProducts.tsx
-│   │   │       └── subCatProducts.tsx
-│   │   └── profile
-│   │       ├── addressForm.tsx
+│   │   │   ├── products/
+│   │   │   │   ├── allProducts.tsx
+│   │   │   │   ├── catProducts.tsx
+│   │   │   │   ├── midCatProducts.tsx
+│   │   │   │   └── subCatProducts.tsx
+│   │   │   ├── productSkeleton.tsx
+│   │   │   └── productTopbar.tsx
+│   │   └── profile/
 │   │       ├── addresses.tsx
+│   │       ├── addressForm.tsx
 │   │       ├── cargoTracking.tsx
 │   │       ├── myPersonalInformation.tsx
 │   │       ├── orders.tsx
 │   │       └── sideBar.tsx
-│   └── ui
+│   └── ui/
 │       ├── accordion.tsx
 │       ├── alert-dialog.tsx
 │       ├── alert.tsx
@@ -420,85 +449,128 @@
 │       ├── toggle-group.tsx
 │       ├── toggle.tsx
 │       └── tooltip.tsx
-├── contexts
-│   ├── cartContext.tsx
+├── components.json
+├── contexts/
 │   └── favoriteContext.tsx
-├── data
+├── data/
 │   ├── categories.json
 │   ├── middleCategories.json
 │   ├── products.json
 │   └── subCategories.json
-├── generated
-│   └── prisma
+├── generated/
+│   └── prisma/
 │       ├── browser.ts
 │       ├── client.ts
 │       ├── commonInputTypes.ts
 │       ├── enums.ts
-│       ├── internal
+│       ├── internal/
 │       │   ├── class.ts
 │       │   ├── prismaNamespace.ts
 │       │   └── prismaNamespaceBrowser.ts
-│       ├── models.ts
-│       └── models
-│           ├── Address.ts
-│           ├── Banner.ts
-│           ├── Blog.ts
-│           ├── Brand.ts
-│           ├── CartItem.ts
-│           ├── Category.ts
-│           ├── Color.ts
-│           ├── Coupon.ts
-│           ├── Favorite.ts
-│           ├── HeroSlide.ts
-│           ├── MiddleCategory.ts
-│           ├── Order.ts
-│           ├── OrderAddress.ts
-│           ├── OrderItem.ts
-│           ├── ProductSize.ts
-│           ├── ProductStock.ts
-│           ├── Review.ts
-│           ├── Size.ts
-│           ├── SubCategory.ts
-│           ├── Subscribe.ts
-│           ├── User.ts
-│           └── product.ts
-├── hooks
+│       ├── models/
+│       │   ├── Address.ts
+│       │   ├── Banner.ts
+│       │   ├── Blog.ts
+│       │   ├── Brand.ts
+│       │   ├── CartItem.ts
+│       │   ├── Category.ts
+│       │   ├── Color.ts
+│       │   ├── Coupon.ts
+│       │   ├── Favorite.ts
+│       │   ├── HeroSlide.ts
+│       │   ├── MiddleCategory.ts
+│       │   ├── Order.ts
+│       │   ├── OrderAddress.ts
+│       │   ├── OrderItem.ts
+│       │   ├── product.ts
+│       │   ├── ProductSize.ts
+│       │   ├── ProductStock.ts
+│       │   ├── Review.ts
+│       │   ├── ShowcaseImage.ts
+│       │   ├── Size.ts
+│       │   ├── SubCategory.ts
+│       │   ├── Subscribe.ts
+│       │   └── User.ts
+│       └── models.ts
+├── hooks/
 │   └── use-mobile.ts
-├── lib
+├── lib/
 │   ├── auth.ts
 │   ├── cargo-utils.ts
+│   ├── cloudinaryUpload.ts
 │   ├── db.ts
+│   ├── generated/
+│   │   └── prisma/
+│   │       ├── browser.ts
+│   │       ├── client.ts
+│   │       ├── commonInputTypes.ts
+│   │       ├── enums.ts
+│   │       ├── internal/
+│   │       │   ├── class.ts
+│   │       │   ├── prismaNamespace.ts
+│   │       │   └── prismaNamespaceBrowser.ts
+│   │       ├── models/
+│   │       │   ├── Address.ts
+│   │       │   ├── Banner.ts
+│   │       │   ├── Blog.ts
+│   │       │   ├── CartItem.ts
+│   │       │   ├── Category.ts
+│   │       │   ├── Coupon.ts
+│   │       │   ├── Favorite.ts
+│   │       │   ├── Order.ts
+│   │       │   ├── OrderAddress.ts
+│   │       │   ├── OrderItem.ts
+│   │       │   ├── product.ts
+│   │       │   ├── Review.ts
+│   │       │   ├── SubCategory.ts
+│   │       │   ├── Subscribe.ts
+│   │       │   └── User.ts
+│   │       └── models.ts
+│   ├── internalAuth.ts
+│   ├── iyzico.ts
+│   ├── mailer.ts
+│   ├── pricing.ts
+│   ├── rate-limit.ts
+│   ├── sanitize.ts
 │   ├── session.ts
 │   ├── uploadToCloudinary.ts
 │   └── utils.ts
+├── next-env.d.ts
 ├── next.config.ts
 ├── package-lock.json
 ├── package.json
 ├── postcss.config.mjs
-├── prisma.config.ts
-├── prisma
-│   ├── migrations
-│   │   ├── 20260114090312_tablo_ekleme_mesaji
+├── prisma/
+│   ├── migrations/
+│   │   ├── 20260114090312_tablo_ekleme_mesaji/
 │   │   │   └── migration.sql
-│   │   ├── 20260117071015_init
+│   │   ├── 20260117071015_init/
 │   │   │   └── migration.sql
-│   │   ├── 20260127140158_new
+│   │   ├── 20260127140158_new/
 │   │   │   └── migration.sql
-│   │   ├── 20260202065416_add_subcategory_categoryid
+│   │   ├── 20260202065416_add_subcategory_categoryid/
 │   │   │   └── migration.sql
-│   │   ├── 20260203092950_add_color_and_size_tables
+│   │   ├── 20260203092950_add_color_and_size_tables/
+│   │   │   └── migration.sql
+│   │   ├── 20260717103300_align_schema_with_current_datamodel/
+│   │   │   └── migration.sql
+│   │   ├── 20260720111601_add_showcase_image/
 │   │   │   └── migration.sql
 │   │   └── migration_lock.toml
 │   ├── schema.prisma
-│   └── seed.ts
-├── public
-│   ├── about
+│   ├── seed.ts
+│   └── syncCatalog.ts
+├── prisma.config.ts
+├── project_tree.txt
+├── proxy.ts
+├── public/
+│   ├── about/
 │   │   ├── 1.jpg
 │   │   ├── 2.jpg
 │   │   ├── 3.jpg
 │   │   ├── 4.jpg
 │   │   └── banner.jpg
-│   ├── banner
+│   ├── banner/
 │   │   ├── 1.webp
 │   │   ├── 2.webp
 │   │   ├── 3.webp
@@ -506,7 +578,7 @@
 │   │   ├── 5.webp
 │   │   ├── 6.webp
 │   │   └── 7.webp
-│   ├── brands
+│   ├── brands/
 │   │   ├── 1.png
 │   │   ├── 10.png
 │   │   ├── 11.png
@@ -518,14 +590,15 @@
 │   │   ├── 7.png
 │   │   ├── 8.png
 │   │   └── 9.png
-│   ├── cards
+│   ├── cards/
 │   │   ├── axess.svg
 │   │   ├── bankkartcombo.svg
 │   │   ├── bonus.svg
 │   │   ├── maximum.svg
 │   │   ├── paraf.svg
 │   │   └── world.svg
-│   ├── categories
+│   ├── categories/
+│   │   ├── 1.jpg
 │   │   ├── 1.webp
 │   │   ├── 10.jpg
 │   │   ├── 10.png
@@ -540,7 +613,7 @@
 │   │   ├── 7.png
 │   │   ├── 8.jpg
 │   │   └── 9.jpg
-│   ├── categoryIcons
+│   ├── categoryIcons/
 │   │   ├── antistatik.png
 │   │   ├── ayak.png
 │   │   ├── ayakkabi.png
@@ -572,7 +645,7 @@
 │   │   ├── yelek.png
 │   │   └── yuksek.png
 │   ├── city.json
-│   ├── heroes
+│   ├── heroes/
 │   │   ├── 1.0.avif
 │   │   ├── 1.1.avif
 │   │   ├── 1.2.avif
@@ -583,17 +656,19 @@
 │   │   ├── 2.2.avif
 │   │   ├── 2.3.avif
 │   │   └── 2.4.avif
-│   ├── iyzico
+│   ├── iyzico/
 │   │   ├── iyzico_ile_ode_colored.webp
 │   │   ├── iyzico_ile_ode_colored_horizontal.webp
 │   │   └── logo_band_colored@3x.webp
-│   ├── logo
+│   ├── logo/
 │   │   ├── 1.png
+│   │   ├── Adsız tasarım (45).png
+│   │   ├── logofooter.png
 │   │   └── logoyeni.png
-│   ├── megaMenu
+│   ├── megaMenu/
 │   │   └── megaMenu.webp
 │   ├── og-image.png
-│   ├── products
+│   ├── products/
 │   │   ├── 1.jpg
 │   │   ├── 10.jpg
 │   │   ├── 11.jpg
@@ -610,30 +685,32 @@
 │   │   ├── 7.jpg
 │   │   ├── 8.jpg
 │   │   └── 9.jpg
-│   ├── socialMedia
+│   ├── socialMedia/
 │   │   ├── facebook.webp
 │   │   ├── instagram.webp
 │   │   ├── phone.webp
 │   │   └── whatsapp.webp
-│   ├── special_production
+│   ├── special_production/
 │   │   ├── banner.jpg
 │   │   ├── creative.jpg
 │   │   ├── master.jpg
 │   │   └── tech.jpg
-│   ├── wholesale
+│   ├── wholesale/
 │   │   ├── banner.avif
 │   │   ├── brands.jpg
 │   │   ├── catalogs.jpg
 │   │   ├── contact.jpg
 │   │   ├── products.jpg
 │   │   └── turkey.webp
-│   └── why_us
+│   └── why_us/
 │       ├── 1.webp
 │       ├── 2.webp
 │       ├── 3.webp
 │       └── 4.webp
+├── README.md
 ├── tsconfig.json
-├── types
+├── tsconfig.tsbuildinfo
+├── types/
 │   ├── bcrypt.d.ts
 │   ├── formidable.d.ts
 │   ├── horoz-cargo.ts
@@ -642,5 +719,6 @@
 │   ├── nodemailer.d.ts
 │   ├── order.ts
 │   └── product.ts
-└── utils
-    └── cart.ts
+└── utils/
+    ├── cart.ts
+    └── mergeGuestData.ts
