@@ -319,6 +319,14 @@ export async function POST(req: NextRequest) {
 
     if (!paymentResult || paymentResult.status !== "success") {
       console.error("❌ İyzipay ödeme hatası:", paymentResult);
+
+      // Yapılandırma hatası kullanıcının/kartın değil, sunucunun sorunudur:
+      // 400 yerine 503 dön ki izleme araçlarında ödeme reddiyle karışmasın.
+      // Ayrıntı (hangi env değişkeni eksik) sunucu log'unda kalır.
+      const isConfigError =
+        typeof paymentResult?.errorCode === "string" &&
+        paymentResult.errorCode.startsWith("IYZICO_CONFIG_");
+
       return NextResponse.json(
         {
           status: "failure",
@@ -328,7 +336,7 @@ export async function POST(req: NextRequest) {
             "Ödeme başarısız",
           errorCode: paymentResult?.errorCode,
         },
-        { status: 400 },
+        { status: isConfigError ? 503 : 400 },
       );
     }
 
