@@ -72,33 +72,190 @@ export function calculatePricing(
   };
 }
 
-function getIyzicoCredentials() {
-  const apiKey = process.env.IYZICO_API_KEY;
-  const secretKey = process.env.IYZICO_SECRET_KEY;
-  const baseUrl = process.env.IYZICO_BASE_URL || "https://sandbox-api.iyzipay.com";
-  if (!apiKey || !secretKey) {
-    throw new Error("IYZICO_API_KEY / IYZICO_SECRET_KEY tanımlı değil");
+export const IYZICO_SANDBOX_BASE_URL = "https://sandbox-api.iyzipay.com";
+
+/**
+ * Ödeme altyapısı yapılandırma hatalarının ayırt edici kodları. Client'a
+ * yalnızca bu kod ve genel bir mesaj döner; hangi değişkenin eksik olduğu
+ * sadece sunucu log'una yazılır.
+ */
+export type IyzicoConfigErrorCode =
+  | "IYZICO_CONFIG_API_KEY_MISSING"
+  | "IYZICO_CONFIG_SECRET_KEY_MISSING"
+  | "IYZICO_CONFIG_BASE_URL_INVALID"
+  | "IYZICO_CONFIG_LIVE_BLOCKED_IN_DEV";
+
+export class IyzicoConfigError extends Error {
+  readonly code: IyzicoConfigErrorCode;
+  constructor(code: IyzicoConfigErrorCode, message: string) {
+    super(message);
+    this.name = "IyzicoConfigError";
+    this.code = code;
+  }
+}
+
+export interface IyzicoEnvIssue {
+  code: IyzicoConfigErrorCode;
+  variable: string;
+  /** Sorunun açıklaması — değişken DEĞERİ asla yer almaz. */
+  detail: string;
+}
+
+export interface IyzicoEnvReport {
+  ok: boolean;
+  /** Hangi iyzico ortamına çıkılıyor (değer ifşa edilmeden). */
+  environment: "sandbox" | "production" | "bilinmiyor";
+  /** IYZICO_BASE_URL tanımsız olduğu için sandbox varsayılanına düşüldü mü. */
+  usingDefaultBaseUrl: boolean;
+  issues: IyzicoEnvIssue[];
+}
+
+/**
+ * Gerekli iyzico ortam değişkenlerini tek seferde doğrular. Saf fonksiyondur
+ * (log/ağ yok), böylece birim testlerinden çağrılabilir — bkz.
+ * tests/iyzicoEnv.test.ts.
+ *
+ * Hiçbir dönüş alanı gizli değer taşımaz: yalnızca değişken adı, durum ve
+ * türetilmiş ortam etiketi.
+ */
+export function checkIyzicoEnv(
+  env: NodeJS.ProcessEnv = process.env,
+): IyzicoEnvReport {
+  const issues: IyzicoEnvIssue[] = [];
+
+  // Vercel panosuna yapıştırırken araya kaçan boşluk/yeni satır, iyzico'da
+  // "api bilgileri bulunamadı" (errorCode 1001) olarak geri döner. Bu yüzden
+  // hem doğrulamada hem kullanımda trim'liyoruz.
+  const apiKey = env.IYZICO_API_KEY?.trim();
+  const secretKey = env.IYZICO_SECRET_KEY?.trim();
+  const rawBaseUrl = env.IYZICO_BASE_URL?.trim();
+
+  const usingDefaultBaseUrl = !rawBaseUrl;
+  const baseUrl = rawBaseUrl || IYZICO_SANDBOX_BASE_URL;
+
+  if (!apiKey) {
+    issues.push({
+      code: "IYZICO_CONFIG_API_KEY_MISSING",
+      variable: "IYZICO_API_KEY",
+      detail: "tanımlı değil veya boş",
+    });
+  }
+  if (!secretKey) {
+    issues.push({
+      code: "IYZICO_CONFIG_SECRET_KEY_MISSING",
+      variable: "IYZICO_SECRET_KEY",
+      detail: "tanımlı değil veya boş",
+    });
+  }
+
+  let environment: IyzicoEnvReport["environment"] = "bilinmiyor";
+  let parsedUrl: URL | null = null;
+  try {
+    parsedUrl = new URL(baseUrl);
+  } catch {
+    parsedUrl = null;
+  }
+
+  const isIyzicoHost =
+    parsedUrl !== null &&
+    parsedUrl.protocol === "https:" &&
+    (parsedUrl.hostname === "iyzipay.com" ||
+      parsedUrl.hostname.endsWith(".iyzipay.com"));
+
+  if (!isIyzicoHost) {
+    issues.push({
+      code: "IYZICO_CONFIG_BASE_URL_INVALID",
+      variable: "IYZICO_BASE_URL",
+      detail:
+        "geçerli bir iyzico adresi değil — https://api.iyzipay.com (canlı) " +
+        "veya https://sandbox-api.iyzipay.com (sandbox) olmalı (değer loglanmaz)",
+    });
+  } else {
+    environment = parsedUrl!.hostname.includes("sandbox")
+      ? "sandbox"
+      : "production";
   }
 
   // Next.js'te .env.local, .env'i ezer. .env sandbox'ı gösterirken .env.local
   // (vercel env pull çıktısı) canlı ortamı gösterdiği için yerel geliştirmede
   // farkında olmadan GERÇEK tahsilat yapılabiliyordu. Production dışı bir
   // ortamdan canlı iyzico'ya çıkışı açıkça izin verilmedikçe engelle.
-  const isProductionEndpoint =
-    !baseUrl.includes("sandbox") && baseUrl.includes("iyzipay.com");
   if (
-    isProductionEndpoint &&
-    process.env.NODE_ENV !== "production" &&
-    process.env.IYZICO_ALLOW_PRODUCTION_IN_DEV !== "1"
+    environment === "production" &&
+    env.NODE_ENV !== "production" &&
+    env.IYZICO_ALLOW_PRODUCTION_IN_DEV !== "1"
   ) {
-    throw new Error(
-      "Güvenlik: production iyzico endpoint'i production dışı bir ortamdan " +
+    issues.push({
+      code: "IYZICO_CONFIG_LIVE_BLOCKED_IN_DEV",
+      variable: "IYZICO_BASE_URL",
+      detail:
+        "Güvenlik: production iyzico endpoint'i production dışı bir ortamdan " +
         "kullanılamaz (gerçek para çekilir). Yerelde IYZICO_BASE_URL değerini " +
         "sandbox'a çevirin veya bilinçli olarak IYZICO_ALLOW_PRODUCTION_IN_DEV=1 tanımlayın.",
-    );
+    });
   }
 
-  return { apiKey, secretKey, baseUrl };
+  return { ok: issues.length === 0, environment, usingDefaultBaseUrl, issues };
+}
+
+let envReportLogged = false;
+
+/**
+ * Yapılandırma durumunu sunucu log'una konsolide biçimde yazar. Başarılı
+ * durum process başına bir kez, hatalı durum her çağrıda loglanır (her
+ * başarısız ödemenin sebebi log'da görünsün diye).
+ *
+ * ASLA değer loglamaz — yalnızca değişken adı ve "tanımlı / tanımlı değil".
+ */
+export function logIyzicoEnvReport(context: string): IyzicoEnvReport {
+  const report = checkIyzicoEnv();
+
+  if (report.ok) {
+    if (!envReportLogged) {
+      envReportLogged = true;
+      console.info(
+        `💳 iyzico yapılandırması tamam (${context}) — endpoint ortamı: ${report.environment}`,
+      );
+      if (report.usingDefaultBaseUrl) {
+        console.warn(
+          "💳 IYZICO_BASE_URL tanımlı değil — sandbox varsayılanı kullanılıyor. " +
+            "Canlı anahtarlarla sandbox'a çıkılırsa iyzico errorCode 1001 " +
+            '("api bilgileri bulunamadı") döner.',
+        );
+      }
+    }
+    return report;
+  }
+
+  const durum = (name: string) =>
+    `${name}=${process.env[name]?.trim() ? "tanımlı" : "tanımlı değil"}`;
+
+  console.error(
+    `💳 iyzico yapılandırması eksik/hatalı (${context}) — endpoint ortamı: ${report.environment}. ` +
+      `${durum("IYZICO_API_KEY")}, ${durum("IYZICO_SECRET_KEY")}, ${durum("IYZICO_BASE_URL")}` +
+      `${report.usingDefaultBaseUrl ? " (sandbox varsayılanına düşüldü)" : ""}`,
+  );
+  for (const issue of report.issues) {
+    console.error(`   • [${issue.code}] ${issue.variable}: ${issue.detail}`);
+  }
+
+  return report;
+}
+
+function getIyzicoCredentials() {
+  const report = logIyzicoEnvReport("ödeme çağrısı");
+  if (!report.ok) {
+    // İlk sorun en eyleme dönük olanıdır (eksik anahtar → hatalı adres →
+    // canlı ortam koruması).
+    const first = report.issues[0];
+    throw new IyzicoConfigError(first.code, `${first.variable}: ${first.detail}`);
+  }
+
+  return {
+    apiKey: process.env.IYZICO_API_KEY!.trim(),
+    secretKey: process.env.IYZICO_SECRET_KEY!.trim(),
+    baseUrl: process.env.IYZICO_BASE_URL?.trim() || IYZICO_SANDBOX_BASE_URL,
+  };
 }
 
 export async function iyzicoRequest(uri: string, payload: Record<string, any>) {
@@ -140,6 +297,14 @@ export async function iyzicoRequest(uri: string, payload: Record<string, any>) {
   }
 }
 
+/**
+ * Yapılandırma hatalarında kullanıcıya gösterilen genel mesaj. Ayrıntı
+ * (hangi değişken eksik) yalnızca sunucu log'unda kalır; client tarafı
+ * ayrımı `errorCode` üzerinden yapar.
+ */
+export const IYZICO_CONFIG_USER_MESSAGE =
+  "Ödeme altyapısına ulaşılamadı. Lütfen daha sonra tekrar deneyin.";
+
 interface ProcessPaymentPayload {
   paymentCard: {
     cardHolderName: string;
@@ -178,8 +343,19 @@ export async function processPayment(payload: ProcessPaymentPayload) {
       discountAmount = 0,
     } = payload;
 
-    if (!process.env.IYZICO_API_KEY || !process.env.IYZICO_SECRET_KEY) {
-      return { status: "error", error: "API Keys missing" };
+    // Yapılandırma eksikse iyzico'ya hiç çıkma: hangi değişkenin eksik
+    // olduğunu sunucu log'una yaz, client'a genel mesaj + ayırt edici kod dön.
+    try {
+      getIyzicoCredentials();
+    } catch (configError) {
+      if (configError instanceof IyzicoConfigError) {
+        return {
+          status: "error" as const,
+          error: IYZICO_CONFIG_USER_MESSAGE,
+          errorCode: configError.code,
+        };
+      }
+      throw configError;
     }
 
     const { basketItems: formattedBasketItems, price: priceToSend, paidPrice: paidPriceToSend, pricing } =
@@ -224,12 +400,34 @@ export async function processPayment(payload: ProcessPaymentPayload) {
       };
     }
 
+    // iyzico 1000/1001 = "api bilgileri bulunamadı" / imza doğrulanamadı:
+    // anahtarlar gönderildi ama sorgulanan ortamda (sandbox ↔ canlı) kayıtlı
+    // değil. Ortam etiketini log'a düş ki teşhis ilk denemede yapılabilsin.
+    if (result.errorCode === "1000" || result.errorCode === "1001") {
+      const report = checkIyzicoEnv();
+      console.error(
+        `💳 iyzico kimlik doğrulama hatası [errorCode ${result.errorCode}] — ` +
+          `endpoint ortamı: ${report.environment}` +
+          `${report.usingDefaultBaseUrl ? " (IYZICO_BASE_URL tanımsız, sandbox varsayılanı)" : ""}. ` +
+          "Anahtarların bu ortama ait olduğunu doğrulayın (değerler loglanmaz).",
+      );
+    }
+
     return {
       status: "error" as const,
       error: result.errorMessage,
       errorCode: result.errorCode,
     };
   } catch (error) {
+    // Yapılandırma hatası buraya normalde düşmez (yukarıda ön kontrol var),
+    // ama iyzicoRequest üzerinden gelirse de ayırt edici kodu koru.
+    if (error instanceof IyzicoConfigError) {
+      return {
+        status: "error" as const,
+        error: IYZICO_CONFIG_USER_MESSAGE,
+        errorCode: error.code,
+      };
+    }
     console.error("Payment Error:", error);
     return {
       status: "error" as const,
