@@ -21,21 +21,17 @@ const DistanceSalesAgreement = () => {
             <div className="pl-4 border-l-4 border-blue-100">
               <h3 className="font-bold underline mb-2">1.1. Satıcı</h3>
               <p>
-                <strong>ADI:</strong> İşPool Tekstil Üretim ve Paz. San. ve Tic.
-                A.Ş
+                <strong>ADI:</strong> İŞPOOL A.Ş.
               </p>
               <p>
-                <strong>ADRESİ:</strong> Küçük Çamlıca Mah. Adilbey Sk. No:4
-                34696 Üsküdar / İSTANBUL
+                <strong>ADRESİ:</strong> Fatih Mah. Kazım Kara Bekir Cad. No:144/A
+                64000 Merkez / UŞAK
               </p>
               <p>
-                <strong>TEL:</strong> 0216 472 73 00 (Pbx)
+                <strong>TEL:</strong> 0534 352 94 20
               </p>
               <p>
                 <strong>E-POSTA:</strong> info@ispool.com.tr
-              </p>
-              <p>
-                <strong>MERSİS NO:</strong> 0482039841800018
               </p>
             </div>
 
@@ -257,7 +253,6 @@ const DistanceSalesAgreement = () => {
             Siparişin gerçekleşmesi durumunda Alıcı işbu sözleşmenin tüm
             koşullarını kabul etmiş sayılır.
           </p>
-          <p className="mt-2">MERSİS: 0482039841800018</p>
         </footer>
       </article>
     </div>

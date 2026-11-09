@@ -185,7 +185,7 @@ export default function ForgotPasswordPage() {
           </div>
 
           <p className="mt-8 text-center text-[10px] text-slate-400 font-medium uppercase tracking-widest">
-            © 2026 İşPool Endüstriyel Çözümler A.Ş.
+            © 2026 İŞPOOL A.Ş.
           </p>
         </div>
       </motion.div>
