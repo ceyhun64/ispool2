@@ -5,32 +5,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { CreditCard, ExternalLink } from "lucide-react";
 
-const bankAccounts = [
-  {
-    bankName: "Yapı Kredi",
-    logo: "/banks/yapikredi.png", // Buraya kendi logo yolunuzu ekleyin
-    recipient: "İşPool Tekstil Üretim Paz. San. Tic. A.Ş.",
-    branchName: "ÜMRANİYE TİCARİ",
-    branchCode: "740",
-    iban: "[IBAN KALDIRILDI]",
-  },
-  {
-    bankName: "Garanti",
-    logo: "/banks/garanti.png",
-    recipient: "İşPool Tekstil Üretim Paz. San. Tic. A.Ş.",
-    branchName: "ATAŞEHİR",
-    branchCode: "1676",
-    iban: "[IBAN KALDIRILDI]",
-  },
-  {
-    bankName: "Ziraat Bankası",
-    logo: "/banks/ziraat.png",
-    recipient: "İşPool Tekstil Üretim Paz. San. Tic. A.Ş.",
-    branchName: "VELİ BABA - PENDİK",
-    branchCode: "2508",
-    iban: "[IBAN KALDIRILDI]",
-  },
-];
+type BankAccount = {
+  bankName: string;
+  logo: string;
+  recipient: string;
+  branchName: string;
+  branchCode: string;
+  iban: string;
+};
+
+// Banka hesap bilgileri geçici olarak kaldırıldı. Yeni, doğrulanmış hesap
+// bilgileri eklenene kadar liste boş kalmalıdır.
+const bankAccounts: BankAccount[] = [];
 
 export default function BankAccounts() {
   return (
@@ -43,6 +29,14 @@ export default function BankAccounts() {
           </h1>
           <div className="h-1 w-20 bg-orange-600 rounded-full"></div>
         </div>
+
+        {bankAccounts.length === 0 && (
+          <p className="text-slate-600 text-sm">
+            Banka hesap bilgilerimiz şu anda güncellenmektedir. Ödemenizi kredi
+            kartı ile güvenle yapabilirsiniz. Havale/EFT için lütfen bizimle
+            iletişime geçin.
+          </p>
+        )}
 
         {/* Banka Kartları Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

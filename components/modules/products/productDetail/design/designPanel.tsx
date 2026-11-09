@@ -16,6 +16,56 @@ import {
   resizeImageForUpload,
 } from "./colorUtils";
 
+// Dosyayı data URL olarak okur. Katman görselleri BİLEREK blob: değil data:
+// olarak tutulur — gerekçe handleFileUpload içindeki açıklamada.
+const readFileAsDataURL = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error("Dosya okunamadı"));
+    reader.readAsDataURL(file);
+  });
+
+// html-to-image, bir katman görselini gömemediğinde promise'i ARGÜMANSIZ
+// reddediyor (embed-images.js: clonedNode.onerror = reject). Bu yüzden catch
+// bloğuna çoğu zaman undefined düşüyor ve tek satırlık genel mesaj teşhisi
+// imkânsız kılıyordu. Elde ne varsa kullanıcıya taşı.
+const describeRenderError = (error: unknown, fallback: string): string => {
+  if (error instanceof Error && error.message) {
+    return `${fallback} (${error.message})`;
+  }
+  return `${fallback} Katman görsellerinden biri okunamadı — logoyu kaldırıp yeniden ekleyip deneyin.`;
+};
+
+// Dışa aktarımda görüntüye girmemesi gereken yardımcı öğeler.
+const EXPORT_EXCLUDED_CLASSES = [
+  "react-resizable-handle",
+  "export-hide-guides",
+  "export-hide-handles",
+  "selection-ring",
+];
+
+// "İndir" ve "kaydet & kapat" birebir aynı görüntüyü üretir; aynı kodun iki
+// kopyası yerine tek kaynak.
+const renderDesignToPng = async (): Promise<string> => {
+  const designArea = document.getElementById("design-area");
+  if (!designArea) {
+    throw new Error("Tasarım alanı bulunamadı");
+  }
+
+  // Seçim çerçevesinin kaldırılması ekrana yansısın diye bir tık bekle.
+  await new Promise((resolve) => setTimeout(resolve, 50));
+
+  return toPng(designArea, {
+    quality: 1,
+    pixelRatio: 2,
+    backgroundColor: "#ffffff",
+    filter: (node: HTMLElement) =>
+      !node.classList ||
+      !EXPORT_EXCLUDED_CLASSES.some((cls) => node.classList.contains(cls)),
+  });
+};
+
 export default function DesignPanel({
   productImage,
   onClose,
@@ -100,7 +150,23 @@ export default function DesignPanel({
       return;
     }
 
-    const url = URL.createObjectURL(file);
+    // Katman görseli data URL olarak tutulur, blob: olarak DEĞİL.
+    // html-to-image dışa aktarırken her <img> kaynağını fetch ile data URL'e
+    // çevirmeye çalışır; blob: adresleri CSP'nin connect-src listesinde
+    // olmadığı için bu fetch bloklanıyor, kütüphane hatayı yutup img.src'yi
+    // boş string'e çekiyor ve ardından gelen error olayı toPng promise'ini
+    // reddediyordu — "Tasarım kaydedilemedi" ve "Görsel oluşturulurken bir
+    // hata oluştu" hatalarının kaynağı buydu. data URL kullanıldığında
+    // html-to-image hiç fetch yapmaz (isDataUrl kısa devresi). Ek fayda:
+    // revoke edilmeyen object URL sızıntısı da ortadan kalkar.
+    let url: string;
+    try {
+      url = await readFileAsDataURL(file);
+    } catch (err) {
+      console.error("Dosya okuma hatası:", err);
+      toast.error("Dosya okunamadı. Lütfen tekrar deneyin.");
+      return;
+    }
 
     let palette: string[] = [];
     try {
@@ -291,37 +357,13 @@ export default function DesignPanel({
       return;
     }
 
-    const designArea = document.getElementById("design-area");
-    if (!designArea) return;
-
     const currentActiveId = activeLayerId;
     setActiveLayerId(null);
 
     toast.loading("Görsel hazırlanıyor...");
 
-    const filter = (node: HTMLElement) => {
-      const exclusionClasses = [
-        "react-resizable-handle",
-        "export-hide-guides",
-        "export-hide-handles",
-        "selection-ring",
-      ];
-
-      if (node.classList) {
-        return !exclusionClasses.some((cls) => node.classList.contains(cls));
-      }
-      return true;
-    };
-
     try {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-
-      const dataUrl = await toPng(designArea, {
-        quality: 1,
-        pixelRatio: 2,
-        filter: filter,
-        backgroundColor: "#ffffff",
-      });
+      const dataUrl = await renderDesignToPng();
 
       const link = document.createElement("a");
       link.download = `tasarim-${Date.now()}.png`;
@@ -333,7 +375,7 @@ export default function DesignPanel({
     } catch (error) {
       console.error("Export hatası:", error);
       toast.dismiss();
-      toast.error("Görsel oluşturulurken bir hata oluştu.");
+      toast.error(describeRenderError(error, "Görsel oluşturulamadı."));
     } finally {
       setActiveLayerId(currentActiveId);
     }
@@ -351,40 +393,13 @@ export default function DesignPanel({
       return;
     }
 
-    const designArea = document.getElementById("design-area");
-    if (!designArea) {
-      onClose();
-      return;
-    }
-
     const currentActiveId = activeLayerId;
     setActiveLayerId(null);
 
     toast.loading("Tasarım kaydediliyor...");
 
-    const filter = (node: HTMLElement) => {
-      const exclusionClasses = [
-        "react-resizable-handle",
-        "export-hide-guides",
-        "export-hide-handles",
-        "selection-ring",
-      ];
-
-      if (node.classList) {
-        return !exclusionClasses.some((cls) => node.classList.contains(cls));
-      }
-      return true;
-    };
-
     try {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-
-      const dataUrl = await toPng(designArea, {
-        quality: 1,
-        pixelRatio: 2,
-        filter: filter,
-        backgroundColor: "#ffffff",
-      });
+      const dataUrl = await renderDesignToPng();
 
       toast.dismiss();
       toast.success("Tasarımınız başarıyla kaydedildi! 🎨");
@@ -398,7 +413,7 @@ export default function DesignPanel({
     } catch (error) {
       console.error("Save error:", error);
       toast.dismiss();
-      toast.error("Tasarım kaydedilemedi.");
+      toast.error(describeRenderError(error, "Tasarım kaydedilemedi."));
       setActiveLayerId(currentActiveId);
     }
   };

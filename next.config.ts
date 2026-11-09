@@ -47,7 +47,12 @@ const nextConfig = {
               "font-src 'self' https://fonts.gstatic.com data:",
               "img-src 'self' data: blob: https://res.cloudinary.com https://www.instagram.com",
               "media-src 'self' blob: https://res.cloudinary.com",
-              "connect-src 'self' https://res.cloudinary.com https://api.cloudinary.com https://sandbox-api.iyzipay.com https://api.iyzipay.com",
+              // blob: ZORUNLU — 'self' blob: şemasını KAPSAMAZ. Tasarım
+              // editörü (html-to-image) dışa aktarırken katman görsellerini
+              // fetch ile gömüyor; blob: adresleri burada listelenmediğinde bu
+              // istekler sessizce bloklanıp PNG dışa aktarma ve tasarım
+              // kaydetme akışlarını düşürüyordu.
+              "connect-src 'self' blob: https://res.cloudinary.com https://api.cloudinary.com https://sandbox-api.iyzipay.com https://api.iyzipay.com",
               "frame-src 'none'",
               "object-src 'none'",
               "base-uri 'self'",

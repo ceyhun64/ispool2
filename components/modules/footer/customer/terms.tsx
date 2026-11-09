@@ -28,10 +28,10 @@ const TermsOfUse = () => {
           <p>
             Sitemizdeki web sayfaları ve ona bağlı tüm sayfalar (‘site’){" "}
             <strong>
-              Küçük Çamlıca Mah. Adil Bey Sk. No:4 34696 Üsküdar/ İstanbul
+              Fatih Mah. Kazım Kara Bekir Cad. No:144/A 64000 Merkez/Uşak
             </strong>{" "}
             adresindeki{" "}
-            <strong>İŞPOOL TEKSTİL ÜRETİM PAZ. SAN. VE TİC. A.Ş.</strong>{" "}
+            <strong>İŞPOOL A.Ş.</strong>{" "}
             firmasının (Firma) malıdır ve onun tarafından işletilir.
           </p>
           <p className="mt-4">
@@ -268,7 +268,7 @@ const TermsOfUse = () => {
               İşbu Sözleşme’nin uygulanmasından veya yorumlanmasından doğacak
               her türlü uyuşmazlığın çözümünde{" "}
               <strong>
-                İstanbul (Merkez) Adliyesi Mahkemeleri ve İcra Daireleri
+                Uşak (Merkez) Adliyesi Mahkemeleri ve İcra Daireleri
               </strong>{" "}
               yetkilidir.
             </p>
@@ -277,7 +277,7 @@ const TermsOfUse = () => {
       </article>
 
       <footer className="mt-12 pt-6 border-t border-gray-200 text-center text-xs text-gray-400">
-        © İŞPOOL TEKSTİL ÜRETİM PAZ. SAN. VE TİC. A.Ş. Tüm hakları saklıdır.
+        © İŞPOOL A.Ş. Tüm hakları saklıdır.
       </footer>
     </div>
   );
