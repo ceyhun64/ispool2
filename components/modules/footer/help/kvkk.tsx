@@ -304,8 +304,8 @@ const IsmontPrivacyPolicy = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <h4 className="font-bold text-lg">Veri Sorumlusu: İşPool</h4>
-            <p>Küçük Çamlıca Mah. Adil Bey Sk. No:4 34696</p>
-            <p>Üsküdar / İstanbul</p>
+            <p>Fatih Mah. Kazım Kara Bekir Cad. No:144/A 64000</p>
+            <p>Merkez / Uşak</p>
           </div>
           <div className="text-blue-900 font-semibold uppercase">
             Mail:{" "}

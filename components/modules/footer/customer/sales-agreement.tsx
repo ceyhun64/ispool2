@@ -18,7 +18,7 @@ const SalesAgreement = () => {
           </a>{" "}
           adlı web sitesinden gerçekleştirilen alışverişlerin hukuki statüsünü,
           tarafların hak ve yükümlülüklerini düzenlemektedir. Buna göre,{" "}
-          <strong>SATICI</strong> İşPool Tekstil Üretim Paz. San. Tic. A.Ş.,{" "}
+          <strong>SATICI</strong> İŞPOOL A.Ş.,{" "}
           <strong>ALICI</strong> ise işbu siteye üye olup alışveriş yapma
           iradesini ortaya koyan ve alışveriş yapmak için işbu sözleşmeyi
           onaylayan kişi-kuruluştur.
@@ -42,12 +42,11 @@ const SalesAgreement = () => {
             <h3 className="font-semibold mb-2 italic underline">1.2 SATICI</h3>
             <ul className="text-sm space-y-1">
               <li>
-                <strong>Ünvan:</strong> İşPool Tekstil Üretim Paz. San. Tic.
-                A.Ş.
+                <strong>Ünvan:</strong> İŞPOOL A.Ş.
               </li>
               <li>
-                <strong>Adres:</strong> Küçük Çamlıca Mah. Adil Bey Sk. No:4
-                Üsküdar/ İstanbul
+                <strong>Adres:</strong> Fatih Mah. Kazım Kara Bekir Cad. No:144/A
+                64000 Merkez/Uşak
               </li>
               <li>
                 <strong>E-Posta:</strong> info@ispool.com.tr

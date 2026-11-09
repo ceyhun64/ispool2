@@ -72,7 +72,7 @@ const QualityPolicy = () => {
       {/* ALT BİLGİ */}
       <footer className="mt-12 text-center">
         <div className="inline-block px-6 py-2 bg-blue-900 text-white rounded-full text-xs font-bold uppercase tracking-widest">
-          İşPool A.Ş. Kalite Standartları
+          İŞPOOL A.Ş. Kalite Standartları
         </div>
       </footer>
     </div>

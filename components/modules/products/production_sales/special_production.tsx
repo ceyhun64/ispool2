@@ -303,14 +303,14 @@ const OzelUretimPremium = () => {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 border-2 border-slate-950 shadow-2xl ">
               <a
-                href="tel:+902164727300"
+                href="tel:+905343529420"
                 className="bg-white p-10 sm:p-12 hover:bg-slate-950 hover:text-white transition-all group border-b-2 sm:border-b-0 sm:border-r-2 border-slate-950"
               >
                 <span className="block text-[10px] font-black uppercase text-slate-400 group-hover:text-amber-600 mb-4">
                   DİREKT TELEFON
                 </span>
                 <span className="text-xl sm:text-2xl font-black">
-                  +90 216 472 73 00
+                  +90 534 352 94 20
                 </span>
               </a>
               <button

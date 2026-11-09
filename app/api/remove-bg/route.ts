@@ -43,14 +43,34 @@ export async function POST(req: Request) {
       );
     }
 
-    // Base64'ü binary'ye çevir
-    const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+    // Base64'ü binary'ye çevir. MIME tipi data URL'in KENDİSİNDEN okunur;
+    // önceden gövde ne olursa olsun "image/png" olarak etiketlenip
+    // "image.png" adıyla gönderiliyordu. İstemci görseli yüklemeden önce
+    // küçültürken JPEG'e çeviriyor (colorUtils.ts -> resizeImageForUpload),
+    // yani remove.bg'ye PNG diye JPEG gövdesi gidiyor ve servis bunu
+    // `invalid_file_type` ile reddediyordu.
+    const dataUrlMatch = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([\s\S]*)$/.exec(
+      imageBase64,
+    );
+    const mimeType = dataUrlMatch?.[1] ?? "image/png";
+    const base64Data =
+      dataUrlMatch?.[2] ?? imageBase64.replace(/^data:image\/\w+;base64,/, "");
     const binaryData = Buffer.from(base64Data, "base64");
+
+    if (binaryData.length === 0) {
+      return NextResponse.json(
+        { error: "Resim verisi okunamadı" },
+        { status: 400 },
+      );
+    }
+
+    // remove.bg jpg/png/webp kabul eder; uzantı da gövdeyle tutarlı olmalı.
+    const extension = mimeType.split("/")[1].replace("jpeg", "jpg");
 
     // FormData oluştur
     const formData = new FormData();
-    const blob = new Blob([binaryData], { type: "image/png" });
-    formData.append("image_file", blob, "image.png");
+    const blob = new Blob([binaryData], { type: mimeType });
+    formData.append("image_file", blob, `image.${extension}`);
     formData.append("size", "auto");
 
     const response = await fetch("https://api.remove.bg/v1.0/removebg", {
