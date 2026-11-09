@@ -30,6 +30,8 @@ interface Props {
     orderId: number,
     currentStatus: FormattedOrder["status"],
   ) => void;
+  onCancel: (orderId: number) => void;
+  canCancel: (status: FormattedOrder["status"]) => boolean;
   getStatusInTurkish: (status: string) => string;
   getStatusBadge: (status: string) => React.ReactNode;
   getNextStatus: (
@@ -42,6 +44,8 @@ export default function OrderDetailDialog({
   order,
   setSelectedOrder,
   onUpdateStatus,
+  onCancel,
+  canCancel,
   getStatusInTurkish,
   getStatusBadge,
   getNextStatus,
@@ -196,6 +200,15 @@ export default function OrderDetailDialog({
             >
               <ArrowRight className="w-4 h-4 mr-2" />
               {getStatusInTurkish(nextStatus)} Yap
+            </Button>
+          )}
+          {canCancel(order.status) && (
+            <Button
+              variant="outline"
+              className="w-full mt-2 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-full"
+              onClick={() => onCancel(order.id)}
+            >
+              Siparişi İptal Et
             </Button>
           )}
         </div>

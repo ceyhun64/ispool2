@@ -43,6 +43,10 @@ export default function Orders() {
     id: number;
     currentStatus: FormattedOrder["status"];
   } | null>(null);
+  const [orderToCancel, setOrderToCancel] = useState<number | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+  // Otomatik iade başarısız olursa iyzico'nun hata metni burada tutulur
+  const [refundError, setRefundError] = useState<string | null>(null);
 
   const itemsPerPage = 15;
   const statusOrder: FormattedOrder["status"][] = [
@@ -97,6 +101,11 @@ export default function Orders() {
       ? statusOrder[index + 1]
       : null;
   };
+
+  // Yalnızca beklemede / ödenmiş siparişler iptal edilebilir (kargoya verilmiş,
+  // teslim edilmiş veya zaten iptal edilmiş olanlar edilemez).
+  const canCancel = (status: FormattedOrder["status"]) =>
+    status === "pending" || status === "paid";
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -156,7 +165,7 @@ export default function Orders() {
 
       const data = await res.json();
       if (data.status !== "success")
-        throw new Error(data.message || "Hata oluştu");
+        throw new Error(data.error || data.message || "Hata oluştu");
 
       toast.success("Sipariş durumu güncellendi.");
       await fetchOrders();
@@ -168,11 +177,75 @@ export default function Orders() {
           : prev,
       );
     } catch (error) {
-      toast.error("Güncelleme başarısız.");
+      toast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : "Güncelleme başarısız.",
+      );
     } finally {
       setIsUpdatingStatus(false);
       setIsUpdateDialogOpen(false);
       setOrderToUpdate(null);
+    }
+  };
+
+  const triggerCancel = (orderId: number) => {
+    setRefundError(null);
+    setOrderToCancel(orderId);
+  };
+
+  const closeCancelDialog = () => {
+    if (isCancelling) return;
+    setOrderToCancel(null);
+    setRefundError(null);
+  };
+
+  // skipRefund: iade iyzico panelinden elle yapıldıysa true gönderilir
+  const confirmCancel = async (skipRefund = false) => {
+    if (orderToCancel === null || isCancelling) return;
+    const cancelledId = orderToCancel;
+    setIsCancelling(true);
+    try {
+      const res = await fetch("/api/order", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: cancelledId,
+          status: "cancelled",
+          skipRefund,
+        }),
+      });
+      const data = await res.json();
+
+      if (data.status !== "success") {
+        if (data.code === "REFUND_FAILED") {
+          // Sipariş iptal edilmedi; admin ne yapacağına karar versin
+          setRefundError(data.error || "Bilinmeyen hata");
+          return;
+        }
+        throw new Error(data.error || "İptal başarısız.");
+      }
+
+      toast.success(
+        data.refunded
+          ? "Sipariş iptal edildi, ödeme iade edildi."
+          : "Sipariş iptal edildi.",
+      );
+      await fetchOrders();
+      setSelectedOrder((prev) =>
+        prev && prev.id === cancelledId ? { ...prev, status: "cancelled" } : prev,
+      );
+      setOrderToCancel(null);
+      setRefundError(null);
+    } catch (error) {
+      toast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : "İptal başarısız.",
+      );
+      setOrderToCancel(null);
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -318,6 +391,16 @@ export default function Orders() {
                           {getStatusInTurkish(nextStatus)} Yap
                         </Button>
                       )}
+                      {canCancel(order.status) && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                          onClick={() => triggerCancel(order.id)}
+                        >
+                          İptal Et
+                        </Button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -381,6 +464,16 @@ export default function Orders() {
                         Güncelle
                       </Button>
                     )}
+                    {canCancel(order.status) && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-red-200 text-red-600 text-xs"
+                        onClick={() => triggerCancel(order.id)}
+                      >
+                        İptal
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -411,6 +504,8 @@ export default function Orders() {
             order={selectedOrder}
             setSelectedOrder={setSelectedOrder}
             onUpdateStatus={triggerStatusUpdate}
+            onCancel={triggerCancel}
+            canCancel={canCancel}
             getStatusInTurkish={getStatusInTurkish}
             getStatusBadge={getStatusBadge}
             getNextStatus={getNextStatus}
@@ -445,6 +540,46 @@ export default function Orders() {
               className="bg-slate-900 hover:bg-slate-800"
             >
               {isUpdatingStatus ? <Spinner className="w-4 h-4" /> : "Evet, Güncelle"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Cancel Confirmation */}
+      <AlertDialog
+        open={orderToCancel !== null}
+        onOpenChange={(open) => {
+          if (!open) closeCancelDialog();
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Siparişi İptal Et #{orderToCancel}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {refundError
+                ? `İyzico üzerinden otomatik iade yapılamadı (${refundError}). Sipariş henüz iptal EDİLMEDİ. Ödemeyi iyzico panelinden elle iade ettiyseniz "İadeyi elle yaptım, iptal et" ile siparişi iptal edebilirsiniz.`
+                : "Ödemesi alınmış sipariş iptal edilirse tutar iyzico üzerinden müşteriye iade edilir, ürünler stoğa geri eklenir ve kullanılan kupon hakkı iade edilir. Bu işlem geri alınamaz."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isCancelling}>Vazgeç</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                confirmCancel(!!refundError);
+              }}
+              disabled={isCancelling}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isCancelling ? (
+                <Spinner className="w-4 h-4" />
+              ) : refundError ? (
+                "İadeyi elle yaptım, iptal et"
+              ) : (
+                "Evet, İptal Et"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
