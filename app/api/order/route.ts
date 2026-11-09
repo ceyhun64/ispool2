@@ -6,6 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { calculatePricing, voidIyzicoPayment, processPayment } from "@/lib/iyzico";
 import { sendMail as sendMailDirect } from "@/lib/mailer";
 import { getClientIp } from "@/lib/rate-limit";
+import { cancelOrder } from "@/lib/orderCancel";
 
 // iyzico geçerli bir IP bekler; header okunamadığında (yerel geliştirme,
 // bilinmeyen proxy) loopback'e düş.
@@ -635,6 +636,32 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
 }
 
+// Admin için izin verilen durum geçişleri. Teslim edilmiş veya iptal edilmiş
+// sipariş değiştirilemez; kargoya verilmiş sipariş iptal edilemez.
+const ALLOWED_TRANSITIONS: Record<
+  UpdateOrderBody["status"],
+  UpdateOrderBody["status"][]
+> = {
+  pending: ["paid", "cancelled"],
+  paid: ["shipped", "cancelled"],
+  shipped: ["delivered"],
+  delivered: [],
+  cancelled: [],
+};
+
+// Mail hatası sipariş durumunu değiştirmiş bir işlemi başarısız göstermemeli.
+const safeSendMail = async (
+  recipients: string[],
+  subject: string,
+  message: string,
+) => {
+  try {
+    await sendMail(recipients, subject, message);
+  } catch (err) {
+    console.error("Mail gönderilemedi:", err);
+  }
+};
+
 // PATCH: Sipariş durumunu güncelle
 export async function PATCH(req: NextRequest): Promise<NextResponse> {
   const session = await getServerSession(authOptions);
@@ -642,7 +669,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {
-    const body: UpdateOrderBody = await req.json();
+    const body: UpdateOrderBody & { skipRefund?: boolean } = await req.json();
     const { orderId, status } = body;
 
     if (!orderId || !status) {
@@ -652,24 +679,74 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    const validStatuses: UpdateOrderBody["status"][] = [
-      "pending",
-      "paid",
-      "shipped",
-      "delivered",
-      "cancelled",
-    ];
-
-    if (!validStatuses.includes(status)) {
+    if (!(status in ALLOWED_TRANSITIONS)) {
       return NextResponse.json(
         { status: "failure", error: "Geçersiz sipariş durumu" },
         { status: 400 },
       );
     }
 
-    const updatedOrder = await prisma.order.update({
+    const current = await prisma.order.findUnique({
       where: { id: Number(orderId) },
-      data: { status },
+      select: { status: true },
+    });
+    if (!current) {
+      return NextResponse.json(
+        { status: "failure", error: "Sipariş bulunamadı" },
+        { status: 404 },
+      );
+    }
+    if (!ALLOWED_TRANSITIONS[current.status].includes(status)) {
+      return NextResponse.json(
+        {
+          status: "failure",
+          error: `Sipariş "${current.status}" durumundan "${status}" durumuna geçirilemez.`,
+        },
+        { status: 409 },
+      );
+    }
+
+    let refunded = false;
+    if (status === "cancelled") {
+      // İptal: iade + stok + kupon geri alma tek yerde (lib/orderCancel.ts)
+      const result = await cancelOrder(Number(orderId), {
+        skipRefund: body.skipRefund === true,
+        ip: resolveBuyerIp(req),
+      });
+      if (!result.ok) {
+        const httpStatus =
+          result.code === "REFUND_FAILED"
+            ? 502
+            : result.code === "NOT_FOUND"
+              ? 404
+              : result.code === "NOT_CANCELLABLE"
+                ? 409
+                : 500;
+        return NextResponse.json(
+          { status: "failure", code: result.code, error: result.message },
+          { status: httpStatus },
+        );
+      }
+      refunded = result.refunded;
+    } else {
+      // Eşzamanlı değişikliğe karşı mevcut duruma koşullu güncelleme
+      const changed = await prisma.order.updateMany({
+        where: { id: Number(orderId), status: current.status },
+        data: { status },
+      });
+      if (changed.count === 0) {
+        return NextResponse.json(
+          {
+            status: "failure",
+            error: "Sipariş durumu bu sırada değişti, lütfen yenileyin.",
+          },
+          { status: 409 },
+        );
+      }
+    }
+
+    const updatedOrder = await prisma.order.findUniqueOrThrow({
+      where: { id: Number(orderId) },
       include: {
         items: { include: { product: true, size: true } },
         addresses: true,
@@ -697,8 +774,10 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
         specificNote =
           "Siparişiniz başarıyla adresinize teslim edilmiştir. Ürünlerimizle ilgili deneyiminizi bizimle paylaşmanız bizi mutlu edecektir.";
       } else if (updatedOrder.status === "cancelled") {
-        specificNote =
-          "Talebiniz üzerine veya operasyonel bir nedenle siparişiniz iptal edilmiştir. Geri ödeme süreciniz bankanıza bağlı olarak kısa süre içinde başlatılacaktır.";
+        // Mail yalnızca gerçekten yapılan iade için söz verir.
+        specificNote = refunded
+          ? "Siparişiniz iptal edilmiş ve ödemeniz için iade işlemi başlatılmıştır. İadenin kartınıza yansıma süresi bankanıza bağlıdır."
+          : "Siparişiniz iptal edilmiştir. İade ile ilgili sorularınız için bizimle iletişime geçebilirsiniz.";
       } else if (updatedOrder.status === "paid") {
         specificNote =
           "Ödemeniz alınmış olup, siparişiniz hazırlanma aşamasına geçmiştir.";
@@ -719,7 +798,7 @@ Saygılarımızla,
 **İŞPOOL Ekibi**
 `;
 
-      await sendMail(
+      await safeSendMail(
         [updatedOrder.user.email],
         `Sipariş Durumunuz Güncellendi: #${updatedOrder.id}`,
         userMessage,
@@ -727,16 +806,20 @@ Saygılarımızla,
     }
 
     // Admin bilgilendirme maili
+    const refundLine =
+      status === "cancelled"
+        ? `**İyzico iadesi:** ${refunded ? "yapıldı" : "yapılmadı (elle iade edildi veya ödeme yoktu)"}\n`
+        : "";
     const adminMessage = `
 **#${
       updatedOrder.id
     }** numaralı siparişin durumu başarılı bir şekilde güncellenmiştir.
 
 **Yeni Durum:** **${turkishStatus}** (${updatedOrder.status})
-**Güncelleme Zamanı:** ${new Date().toLocaleString("tr-TR")}
+${refundLine}**Güncelleme Zamanı:** ${new Date().toLocaleString("tr-TR")}
 `;
 
-    await sendMail(
+    await safeSendMail(
       ["info@ispool.com.tr"],
       `✅ Sipariş Durumu Değişikliği: #${updatedOrder.id}`,
       adminMessage,
@@ -749,7 +832,11 @@ Saygılarımızla,
       paidPrice: updatedOrder.paidPrice / 100,
     };
 
-    return NextResponse.json({ status: "success", order: formattedOrder });
+    return NextResponse.json({
+      status: "success",
+      order: formattedOrder,
+      refunded,
+    });
   } catch (error: any) {
     console.error("Order PATCH Error:", error);
     return NextResponse.json(

@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { sendMail as sendMailDirect } from "@/lib/mailer";
+import { cancelOrder } from "@/lib/orderCancel";
+import { getClientIp } from "@/lib/rate-limit";
 
 interface CancelOrderBody {
   orderId: number;
@@ -83,57 +85,47 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
         { status: 400 },
       );
 
-    // Kullanıcının kendi siparişi mi kontrol et
-    const order = await prisma.order.findUnique({
-      where: { id: Number(orderId) },
-      include: {
-        items: {
-          include: {
-            product: true,
-            size: true, // Beden bilgisi
-          },
-        },
-        addresses: true,
-        user: true, // kullanıcının emailini almak için
-      },
+    // İptal: sahiplik, durum, iyzico iadesi, stok ve kupon iadesi tek yerde
+    const result = await cancelOrder(Number(orderId), {
+      userId: Number(session.user.id),
+      ip: getClientIp(req),
     });
-
-    if (!order || order.userId !== Number(session.user.id)) {
+    if (!result.ok) {
+      const httpStatus =
+        result.code === "NOT_FOUND"
+          ? 403
+          : result.code === "NOT_CANCELLABLE"
+            ? 400
+            : result.code === "REFUND_FAILED"
+              ? 502
+              : 500;
       return NextResponse.json(
-        { status: "failure", error: "Sipariş bulunamadı veya erişim yok" },
-        { status: 403 },
-      );
-    }
-
-    // Eğer sipariş durumu delivered/shipped/cancelled ise iptal edilemez
-    if (["delivered", "shipped", "cancelled"].includes(order.status)) {
-      return NextResponse.json(
-        { status: "failure", error: "Bu sipariş artık iptal edilemez." },
-        { status: 400 },
-      );
-    }
-
-    // Sadece cancelled olarak güncelle
-    const updatedOrder = await prisma.order.update({
-      where: { id: Number(orderId) },
-      data: { status: "cancelled" },
-      include: {
-        items: {
-          include: {
-            product: true,
-            size: true, // Beden bilgisi
-          },
+        {
+          status: "failure",
+          error:
+            result.code === "REFUND_FAILED"
+              ? "Ödemeniz iade edilemediği için sipariş iptal edilemedi. Lütfen bizimle iletişime geçin."
+              : result.message,
         },
+        { status: httpStatus },
+      );
+    }
+
+    const updatedOrder = await prisma.order.findUniqueOrThrow({
+      where: { id: Number(orderId) },
+      include: {
+        items: { include: { product: true, size: true } },
         addresses: true,
         user: true,
       },
     });
+    const order = updatedOrder;
 
     // Kullanıcıya mail
     const userName = order.user?.name ?? order.user?.email ?? "User";
     const userEmail = order.user?.email ?? "";
     if (userEmail) {
-      const userMessage = `Sayın ${userName},\n\n#${order.id} numaralı siparişiniz başarıyla iptal edilmiştir.\n\nTeşekkür ederiz.`;
+      const userMessage = `Sayın ${userName},\n\n#${order.id} numaralı siparişiniz başarıyla iptal edilmiştir.${result.refunded ? " Ödemeniz için iade işlemi başlatılmıştır; kartınıza yansıma süresi bankanıza bağlıdır." : ""}\n\nTeşekkür ederiz.`;
       await sendMail(
         [userEmail],
         `Sipariş #${order.id} İptal Edildi`,
