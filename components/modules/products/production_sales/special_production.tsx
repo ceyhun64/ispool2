@@ -273,9 +273,9 @@ const OzelUretimPremium = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border border-white/10">
             {[
               { label: "ANTİSTATİK", sub: "ESD Koruma" },
-              { label: "ALEV ALMAZ", sub: "FR Sertifikalı" },
+              { label: "ALEV ALMAZ", sub: "FR Kumaş" },
               { label: "ASİT DİRENCİ", sub: "Kimyasal Bariyer" },
-              { label: "YÜKSEK GÖRÜNÜM", sub: "EN ISO 20471" },
+              { label: "YÜKSEK GÖRÜNÜM", sub: "Reflektörlü Kumaş" },
             ].map((item, idx) => (
               <div
                 key={idx}

@@ -63,12 +63,6 @@ export default function WhyChooseUsPage() {
           transition={{ duration: 0.8 }}
           className="relative z-10"
         >
-          <div className="inline-flex items-center gap-2 mb-6 px-3 py-1 bg-slate-900 text-white rounded-none tracking-tighter">
-            <span className="text-[10px] uppercase font-bold tracking-widest">
-              ISO 9001:2025 Certified Production
-            </span>
-          </div>
-
           <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-[1] mb-8 text-slate-900 uppercase">
             Güvenliği <br />
             <span className="text-orange-600">Tasarımla</span> Birleştirin.

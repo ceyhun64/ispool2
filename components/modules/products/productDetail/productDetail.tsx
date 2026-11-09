@@ -754,18 +754,6 @@ export default function ProductDetailPage() {
                         label: "Menşei",
                         value: product.specifications.origin,
                       },
-                      {
-                        icon: <ShieldCheck size={16} />,
-                        color: "orange",
-                        label: "Sertifikalar",
-                        value: product.specifications.certifications.join(", "),
-                      },
-                      {
-                        icon: <HardHat size={16} />,
-                        color: "purple",
-                        label: "İSG Uyumu",
-                        value: "Onaylı",
-                      },
                     ].map(({ icon, color, label, value }) => (
                       <div
                         key={label}

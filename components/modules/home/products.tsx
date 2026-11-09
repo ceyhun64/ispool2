@@ -97,10 +97,10 @@ export default function Products() {
               <Award className="w-5 h-5 text-orange-600" />
               <div className="flex flex-col">
                 <span className="text-base font-black text-slate-950 uppercase leading-none">
-                  ISO-9001
+                  KALİTE
                 </span>
                 <span className="text-[8px] font-bold text-slate-500 tracking-widest uppercase mt-1">
-                  Sertifikalı Üretim
+                  Özenli Üretim
                 </span>
               </div>
             </div>

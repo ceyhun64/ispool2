@@ -2,20 +2,22 @@ import React from "react";
 import Image from "next/image";
 
 const BrandPartners = () => {
+  // Yalnızca katalogda ürünü bulunan markalar. Açıklamalar bilerek nötr
+  // tutuldu: resmi bayilik/yetkili satıcılık iddiası içermez.
   const brands = [
     {
       id: 1,
       name: "PORTWEST",
       image: "/brands/4.png",
       description:
-        "İŞMONT’un Türkiye Satış Bayisi olduğu Portwest; deneyim ve kalitesini, marka değeri ve hizmet mirasıyla birleştiren, uluslararası kalite standartlarını karşılayan iş elbiseleri üretmektedir. Portwest, konforlu, kaliteli, modern iş elbiseleri tasarımı ve üretiminde dünya lideri markalardan biridir.",
+        "Ürün yelpazemizde Portwest markasının iş elbiseleri yer almaktadır.",
     },
     {
       id: 2,
       name: "3M",
       image: "/brands/1.png",
       description:
-        "Dünyanın lider güvenlik ve koruyucu ekipman sağlayıcılarından 3M artık İŞPOOL'ta!",
+        "Ürün yelpazemizde 3M markasının kişisel koruyucu ekipmanları yer almaktadır.",
       list: [
         "Solunum koruyucular",
         "Göz koruyucular",
@@ -28,43 +30,33 @@ const BrandPartners = () => {
       name: "YDS",
       image: "/brands/2.png",
       description:
-        "Yakupoğlu, askeri ve iş güvenliği alanda, deri, ayakkabı-bot ürünlerini NATO standartlarında üreten ve bunları TSK'nin yanında Avrupa, Orta Doğu, Körfez ve UNICEF gibi uluslararası kuruluşlara satan ve en son teknoloji, malzeme ve laboratuvar imkanlarına sahip olan tek Türk firmasıdır.",
+        "Ürün yelpazemizde YDS markasının iş ayakkabısı ve bot ürünleri yer almaktadır.",
     },
     {
       id: 4,
       name: "CERVA",
       image: "/brands/3.png",
       description:
-        "1991 yılından beri iş giyimi ve güvenliği alanında hizmet veren Cerva’nın ürünleri artık İşmont’ta! Birkaç yüz metreden itibaren görülebilir üstün konforlu Cerva ürünlerini en ekonomik fiyatlarla sitemizde ve mağazalarımızda bulabilirsiniz.",
+        "Ürün yelpazemizde Cerva markasının iş giyimi ürünleri yer almaktadır.",
     },
     {
       id: 5,
       name: "MAPA",
       image: "/brands/5.png",
       description:
-        "1957 yılında kurulan MAPA, ilk pamuk havı emdirilmiş eldiven imalatı yapmıştır. Aynı yenilikçi vizyonla çalışmalarına devam eden MAPA, son kullanıcıların ihtiyaçlarını karşılayan yüksek teknolojili kaliteli koruyucu eldivenlerini dağıtımı etkinliği ile birleştirerek tüm Dünya’ya satış yapmaktadır.",
-    },
-    {
-      id: 6,
-      name: "THERMOFORM",
-      image: "/brands/12.png",
-      description:
-        "Thermoform® ürünlerinde doğal veya teknik iplik/kumaş kullanılır. Vücuttaki teri/nemi emen, nefes alabilir, doğal özelliklerde fonksiyonel ürünler üreten önde gelen termal giyim üreticilerindendir.",
-    },
-    {
-      id: 7,
-      name: "DUPONT - NOMEX / PARTNER",
-      image: "/brands/6.png",
-      description:
-        "Ismontpro markamızın alev almaz ürünler kategorisinde DUPONT™ firmasının benzersiz ısı ve alev direncine sahip Nomex® kumaşını kullanıyoruz. Nomex®, kullanıcılarını tehlikelerden üstün bir bariyer sağlayarak koruyan, erimeyen, damlamayan veya yanmayı desteklemeyen ısıya ve aleve dayanıklı bir elyaftır.",
+        "Ürün yelpazemizde Mapa markasının koruyucu eldivenleri yer almaktadır.",
     },
   ];
 
   return (
     <div className="max-w-6xl mx-auto py-12 px-4 font-sans">
       <h2 className="text-3xl font-bold text-center text-gray-900 mb-12 border-b pb-4 uppercase tracking-wider">
-        Marka Ortaklarımız
+        Ürün Yelpazemizdeki Markalar
       </h2>
+
+      <p className="text-center text-xs text-gray-500 -mt-8 mb-10">
+        Marka adları ve logoları ilgili sahiplerinin tescilli markalarıdır.
+      </p>
 
       <div className="flex flex-col gap-10">
         {brands.map((brand) => (

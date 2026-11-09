@@ -234,8 +234,8 @@ export default function ProductTabs({
                   Güvenlik Standartları
                 </h4>
                 <p className="text-[11px] text-slate-400 leading-relaxed">
-                  Bu ürün CE ve EN ISO iş güvenliği standartlarına tam uyumluluk
-                  göstermektedir. Saha testlerinden başarıyla geçmiştir.
+                  Ürünün standart ve uygunluk bilgileri için ürün açıklamasına
+                  bakabilir veya bizimle iletişime geçebilirsiniz.
                 </p>
               </div>
             </div>

@@ -199,7 +199,7 @@ export async function GET(
       dimensions: null,
       material: null,
       origin: "Türkiye",
-      certifications: ["CE", "ISO 9001", "TSE"],
+      certifications: [] as string[],
     };
 
     const shipping = {
