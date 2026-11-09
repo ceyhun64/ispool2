@@ -1,6 +1,6 @@
 import React from "react";
 
-const IsmontPrivacyPolicy = () => {
+const PrivacyPolicy = () => {
   return (
     <div className="max-w-5xl mx-auto p-6 md:p-12 bg-white text-gray-800 font-sans leading-relaxed border shadow-sm my-10">
       {/* BAŞLIK */}
@@ -322,4 +322,4 @@ const IsmontPrivacyPolicy = () => {
   );
 };
 
-export default IsmontPrivacyPolicy;
+export default PrivacyPolicy;

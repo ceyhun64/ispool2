@@ -22,21 +22,6 @@ const fadeInUp = {
   transition: { duration: 0.8, ease: "easeOut" },
 };
 
-// --- YARDIMCI BİLEŞEN: İSTATİSTİK KARTI ---
-const StatItem = ({ val, label }: { val: string; label: string }) => (
-  <div className="relative p-6 md:p-8 bg-slate-50 border-b lg:border-b-0 lg:border-r border-slate-200 last:border-0 group overflow-hidden">
-    <div className="absolute inset-0 bg-orange-600 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out" />
-    <div className="relative z-10">
-      <p className="text-3xl md:text-5xl font-black text-slate-900 group-hover:text-white transition-colors duration-300 tracking-tighter">
-        {val}
-      </p>
-      <p className="text-[9px] md:text-[10px] font-bold text-slate-400 group-hover:text-orange-100 uppercase tracking-[0.2em] mt-2">
-        {label}
-      </p>
-    </div>
-  </div>
-);
-
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 selection:bg-orange-600 selection:text-white font-sans overflow-x-hidden">
@@ -135,16 +120,6 @@ export default function AboutPage() {
               </p>
             </div>
           </motion.div>
-        </div>
-      </section>
-
-      {/* --- İSTATİSTİK ŞERİDİ --- */}
-      <section className="border-y border-slate-200 bg-white">
-        <div className="grid grid-cols-2 lg:grid-cols-4">
-          <StatItem val="500K+" label="Yıllık Üretim" />
-          <StatItem val="1200+" label="Kurumsal Partner" />
-          <StatItem val="850+" label="Sertifikalı Ürün" />
-          <StatItem val="81 İl" label="Lojistik Ağ" />
         </div>
       </section>
 

@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     template: "%s | İşPool",
   },
   description:
-    "Yüksek standartlı, teknik donanımlı iş elbiseleri ve profesyonel iş güvenliği ekipmanları. CE sertifikalı ürünler, kurumsal baskı ve nakış hizmetleri.",
+    "Yüksek standartlı, teknik donanımlı iş elbiseleri ve profesyonel iş güvenliği ekipmanları. Kurumsal baskı ve nakış hizmetleri.",
   keywords: [
     "iş elbisesi",
     "iş güvenliği ekipmanları",
@@ -39,7 +39,6 @@ export const metadata: Metadata = {
     "koruyucu giysi",
     "toplu alım",
     "kurumsal iş kıyafeti",
-    "CE sertifikalı",
     "İşPool",
   ],
   authors: [{ name: "İşPool Endüstriyel Güvenlik" }],
@@ -63,7 +62,7 @@ export const metadata: Metadata = {
     siteName: "İşPool",
     title: "İşPool | Premium İş Elbiseleri ve Endüstriyel Güvenlik Çözümleri",
     description:
-      "Yüksek standartlı iş elbiseleri ve iş güvenliği ekipmanları. CE sertifikalı ürünler, hızlı teslimat.",
+      "Yüksek standartlı iş elbiseleri ve iş güvenliği ekipmanları. Hızlı teslimat.",
     images: [
       {
         url: "/og-image.png",
@@ -77,7 +76,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "İşPool | Premium İş Elbiseleri",
     description:
-      "CE sertifikalı iş elbiseleri ve güvenlik ekipmanları. Hızlı kargo, kurumsal çözümler.",
+      "İş elbiseleri ve güvenlik ekipmanları. Hızlı kargo, kurumsal çözümler.",
     images: ["/og-image.png"],
     creator: "@ispool",
   },

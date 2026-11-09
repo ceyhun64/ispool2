@@ -131,7 +131,7 @@ export default function Footer() {
         <div className="container mx-auto px-6 md:px-12 py-6">
           <div className="flex flex-wrap justify-between items-center gap-6 md:gap-8">
             {[
-              { Icon: ShieldCheck, text: "EN ISO Sertifikalı Ürünler" },
+              { Icon: ShieldCheck, text: "Güvenli Ödeme Altyapısı" },
               { Icon: Truck, text: "Aynı Gün Lojistik Çıkışı" },
               { Icon: MapPin, text: "Global Tedarik Ağı" },
             ].map((item, idx) => (

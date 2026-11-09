@@ -286,7 +286,7 @@ export default function ProductImageGallery({
             ) : (
               <span className="bg-slate-900/85 backdrop-blur text-white text-[8px] font-bold px-2.5 py-1 uppercase tracking-tight flex items-center gap-1.5 rounded-sm">
                 <ShieldCheck size={10} className="text-orange-400" />{" "}
-                Sertifikalı Koruma
+                İş Güvenliği
               </span>
             )}
             {hasDiscount && (
