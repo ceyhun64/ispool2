@@ -87,7 +87,31 @@ export async function resizeImageForUpload(
   if (!ctx) return src;
 
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-  return canvas.toDataURL("image/jpeg", quality);
+
+  // Şeffaflık taşıyan görseller PNG olarak gönderilir. Önceden çıktı koşulsuz
+  // JPEG'e çevriliyordu; JPEG alfa kanalı taşımadığı için şeffaf bölgeler
+  // SİYAHA dönüyor ve remove.bg'ye "arka planı siyah" bir logo gidiyordu —
+  // hem sonuç bozuluyor hem de zaten arka planı kaldırılmış bir logo ikinci
+  // kez işlenemez hale geliyordu. Şeffaflık yoksa JPEG kalır (fotoğraflarda
+  // gövde boyutu belirgin biçimde küçük).
+  return hasTransparency(ctx, canvas.width, canvas.height)
+    ? canvas.toDataURL("image/png")
+    : canvas.toDataURL("image/jpeg", quality);
+}
+
+// Alfa kanalında tam opak olmayan piksel var mı. Tüm pikselleri taramak yerine
+// örnekleme yapar: 4 piksellik adımlarla bakmak, gözle görülür herhangi bir
+// şeffaf bölgeyi yakalamak için fazlasıyla yeterli.
+function hasTransparency(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+): boolean {
+  const { data } = ctx.getImageData(0, 0, width, height);
+  for (let i = 3; i < data.length; i += 16) {
+    if (data[i] < 255) return true;
+  }
+  return false;
 }
 
 // Logodaki belirli renkleri (extractPalette ile aynı kümeleme mantığıyla) yeni renklerle değiştirir.

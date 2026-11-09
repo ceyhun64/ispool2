@@ -126,7 +126,7 @@ export default function TopBar() {
               </a>
 
               <a
-                href="https://wa.me/900534359420"
+                href="https://wa.me/905343529420"
                 className="flex items-center gap-1.5 text-[12px] font-bold text-green-500 hover:text-green-400 transition-colors"
                 aria-label="WhatsApp destek hattı"
               >
