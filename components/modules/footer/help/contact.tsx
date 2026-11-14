@@ -81,8 +81,8 @@ export default function Contact() {
           </div>
           <div className="lg:col-span-4 flex items-end">
             <p className="text-slate-600 text-sm leading-relaxed max-w-[280px]">
-              Projeleriniz, talepleriniz veya teknik destek ihtiyaçlarınız için
-              küresel standartlarda kurumsal destek sağlıyoruz.
+              Siparişleriniz, talepleriniz veya ürünlerle ilgili soru ve
+              destek ihtiyaçlarınız için bize yazabilir ya da arayabilirsiniz.
             </p>
           </div>
         </header>

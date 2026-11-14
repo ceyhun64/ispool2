@@ -1,203 +1,155 @@
 import React from "react";
+import { COMPANY_EMAIL, COMPANY_PHONE } from "@/lib/company";
 
-const ReturnAndExchange = () => {
+const Todo = ({ children }: { children: React.ReactNode }) => (
+  <span className="font-medium text-amber-700">⚠ DOLDURULACAK: {children}</span>
+);
+
+const Returns = () => {
   return (
-    <div className="max-w-5xl mx-auto p-4 md:p-10 bg-white text-gray-800 font-sans leading-relaxed border shadow-sm my-10">
-      {/* Başlık Bölümü */}
-      <header className="mb-8 border-b-2 border-gray-100 pb-6 text-center">
-        <h1 className="text-3xl font-extrabold text-gray-900 uppercase">
-          İade ve Değişim Şartları
-        </h1>
-      </header>
+    <div className="max-w-3xl mx-auto px-6 py-16 text-gray-800 leading-relaxed">
+      {/* TODO-HUKUK: avukat onayı bekliyor */}
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        İade ve Değişim
+      </h1>
+      <p className="text-gray-600 mb-10">
+        Siparişinizden vazgeçmek ya da ürünü değiştirmek istediğinizde
+        izlemeniz gereken adımları ve bu konudaki haklarınızı burada
+        bulabilirsiniz.
+      </p>
 
-      <article className="space-y-8 text-sm md:text-base">
-        {/* Giriş Sorusu */}
-        <section>
-          <h2 className="text-xl font-bold mb-4 text-blue-900">
-            Satın Aldığım Ürünü Hangi Koşullarda Değiştirebilir veya İade
-            Edebilirim?
-          </h2>
-          <p>
-            ispool.com.tr' den alınmış olan ürünler kullanılmadığı, orijinal
-            kutusunda ve içinde bulunan ambalajlara zarar görmediği, faturasının
-            ve tüm tamamlayıcı aksesuarlarının hasarsız ve eksiksiz gönderildiği
-            takdirde aynı ürünün başka bir bedeni veya rengiyle değiştirilir
-            veya iade edilebilir.
-          </p>
-        </section>
+      <section className="mb-10">
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          Yasal cayma hakkı
+        </h2>
+        <p>
+          Mesafeli Sözleşmeler Yönetmeliği uyarınca, internetten yapılan
+          alışverişlerde tüketici, ürünü teslim aldığı tarihten itibaren 14 gün
+          içinde herhangi bir gerekçe göstermeden ve cezai şart ödemeden
+          sözleşmeden cayabilir. Cayma bildirimini aşağıdaki iletişim
+          bilgilerinden yapabilirsiniz.
+        </p>
+      </section>
 
-        {/* Süreler Kartı */}
-        <section className="grid md:grid-cols-2 gap-6">
-          <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
-            <h3 className="font-bold text-lg mb-2 text-blue-800">
-              Değişim Süresi
-            </h3>
-            <p>
-              Değiştirme işlemleri müşteri ürünü teslim aldıktan sonraki{" "}
-              <strong>30 (otuz) gün</strong> içerisinde kargoya teslim
-              etmelidir. 30 günü aşan ürünlerin değişimi yapılmamaktadır.
-            </p>
-          </div>
-          <div className="bg-red-50 p-6 rounded-lg border border-red-100">
-            <h3 className="font-bold text-lg mb-2 text-red-800">İade Süresi</h3>
-            <p>
-              İade işlemlerinde ise, müşteri ürünü teslim aldıktan sonra{" "}
-              <strong>14 (on dört) gün</strong> içerisinde kargoya teslim
-              etmelidir. 14 günü aşan ürünlerin iadesi yapılmamaktadır.
-            </p>
-          </div>
-        </section>
+      <section className="mb-10">
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          İade süreci
+        </h2>
+        <p className="mb-2">
+          İade süresi (yasal 14 günün üzerinde ek bir süre tanınıyorsa):{" "}
+          <Todo>İşPool'un tanıdığı iade süresi ve süre başlangıcı</Todo>
+        </p>
+        <p className="mb-2">
+          İade edilecek ürünün durumuna ilişkin koşullar:{" "}
+          <Todo>
+            iade kabul şartları (kullanılmamış olma, etiket, ambalaj, fatura
+            vb.)
+          </Todo>
+        </p>
+        <p>
+          İade adresi: <Todo>iade adresi</Todo>
+        </p>
+      </section>
 
-        {/* Adımlar */}
-        <section>
-          <h2 className="text-xl font-bold mb-4 text-gray-900 border-l-4 border-gray-900 pl-3">
-            Ürünümü Değiştirmek veya İade Etmek için Ne Yapmalıyım?
-          </h2>
-          <p className="mb-4">
-            Değişim veya İadesi istenen ürün mümkünse orijinal ambalajında
-            güvenli bir şekilde paketleyin ve beraberinde gönderilen{" "}
-            <strong>Değiştirme / İade Formu</strong> (eksiksiz doldurup
-            imzalanarak) ve faturası ile birlikte aşağıda belirtilen iade
-            adresine gönderilmelidir.
-          </p>
-          <div className="bg-gray-100 p-4 rounded text-center font-mono text-sm">
-            Fatih mahallesi, kazım kara Bekir caddesi no 144 a, 64000 Merkez/Uşak <br />
-            Tel: 0 264 437 93 28 / 29
-          </div>
-        </section>
+      <section className="mb-10">
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          Değişim
+        </h2>
+        <p>
+          Değişim süresi ve kuralları:{" "}
+          <Todo>değişim süresi, beden/renk değişim koşulları, fiyat farkı</Todo>
+        </p>
+      </section>
 
-        {/* İade Koşulları ve Kargo */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="text-xl font-bold mb-2">İade koşulları nelerdir?</h2>
-            <p>
-              İşPool'tan satın aldığınız ürünü, kargodan teslim aldığınız günden
-              itibaren 14 gün içinde iade koşulları dahilinde kargo bedelini
-              ödeyerek iade edebilirsiniz. Eğer ürün iade koşullarını
-              karşılamıyorsa ürün adresinize geri gönderilebilir. Ürünlerin
-              cayma hakkı dahilinde iade alınabilmesi için satın alınan ürünün
-              orijinal kutusunda ve içinde bulunan ambalajlara zarar verilmemiş
-              olması, faturasının ve tüm tamamlayıcı aksesuarlarının hasarsız ve
-              eksiksiz gönderilmesi gerekir.
-            </p>
-          </div>
+      <section className="mb-10">
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          Kargo masrafı
+        </h2>
+        <p>
+          İade ve değişim gönderilerinde kargo ücretini kimin karşıladığı:{" "}
+          <Todo>
+            kargo masrafı sorumlusu (cayma, değişim ve hatalı ürün için ayrı
+            ayrı)
+          </Todo>
+        </p>
+      </section>
 
-          <div className="bg-orange-50 p-4 rounded border border-orange-200">
-            <h2 className="text-lg font-bold mb-1">
-              Değişim ve İade İşlemlerinde Kargoyu Kim Öder?
-            </h2>
-            <p>Değişim ve iade işlemlerinde kargo masrafı müşteriye aittir.</p>
-          </div>
-        </section>
+      <section className="mb-10">
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          Hatalı veya ayıplı ürün
+        </h2>
+        <p>
+          Ürün size ayıplı ya da sipariş ettiğinizden farklı ulaştıysa,
+          Tüketicinin Korunması Hakkında Kanun kapsamındaki seçimlik haklarınız
+          saklıdır. Süreçte izlenecek adımlar:{" "}
+          <Todo>
+            ayıplı ürün bildirim yöntemi, istenen belgeler/fotoğraflar ve
+            işlem süresi
+          </Todo>
+        </p>
+      </section>
 
-        {/* Hatalı Ürün ve Firma Faturaları */}
-        <section className="grid md:grid-cols-2 gap-8 border-t pt-8">
-          <div>
-            <h2 className="font-bold text-lg mb-2">
-              Hatalı Ürünlerde Aynı Koşullar Geçerli mi?
-            </h2>
-            <p className="text-sm">
-              İşPool, hatalı ürünü ücretsiz değiştirmeyi ve kargo masrafını
-              karşılamayı taahhüt eder. Paketi ve ambalajı zarar görmemiş ancak
-              paket içerisinden hatalı çıkan ürün 14 (on dört) gün içerisinde
-              "Değiştirme / İade Formu" eksiksiz doldurulup imzalanarak,
-              faturası ile birlikte yukarıda belirtilen iade adresine
-              gönderilmelidir.
-            </p>
-          </div>
-          <div>
-            <h2 className="font-bold text-lg mb-2">
-              Firma Adına Yapılan Alışverişlerde İade Faturası Gerekli mi?
-            </h2>
-            <p className="text-sm">
-              Firma adına yapılan alışverişlerde ürünün iadesi veya farklı bir
-              ürünle değişimi için <strong>"ürün iade faturası"</strong>{" "}
-              gönderilmesi gerekmektedir. Ürün iade faturası olmayan ürünler
-              teslim alınmaz. Ancak aynı ürünün farklı bedeni veya rengi için
-              yapılan değişimlerde iade faturası gerekmemektedir.
-            </p>
-          </div>
-        </section>
+      <section className="mb-10">
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          Fatura kesilen kurumsal siparişler
+        </h2>
+        <p>
+          Şirket adına fatura düzenlenmiş siparişlerde iade usulü:{" "}
+          <Todo>
+            kurumsal faturalı siparişlerde iade faturası/iade usulü
+          </Todo>
+        </p>
+      </section>
 
-        {/* İndirme Linki */}
-        <section className="text-center py-4 bg-gray-900 text-white rounded-lg">
-          <p className="font-bold cursor-pointer hover:underline">
-            Ürün İade veya Değişim Talep Formunu İndirmek için tıklayınız...
-          </p>
-        </section>
+      <section className="mb-10">
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          Kişiye özel baskılı ürünler
+        </h2>
+        <p>
+          Kendi tasarımınızı yüklediğiniz ya da isteğinize göre hazırlanan
+          ürünlerde cayma hakkının geçerli olup olmadığı mevzuattaki istisnalara
+          göre değerlendirilir.{" "}
+          <Todo>
+            kişiye özel/baskılı ürünlerde iade durumu (avukat tarafından
+            netleştirilecek)
+          </Todo>
+        </p>
+      </section>
 
-        {/* İade Durumu Başlığı */}
-        <div className="pt-8 border-t-2 border-gray-200">
-          <h2 className="text-2xl font-black text-center uppercase mb-8">
-            İade Durumu
-          </h2>
+      <section className="mb-10">
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          Ödemenin geri yapılması
+        </h2>
+        <p>
+          İade bedelinin geri ödenme yöntemi ve süresi:{" "}
+          <Todo>geri ödeme yöntemi ve süresi</Todo>
+        </p>
+      </section>
 
-          <div className="space-y-6">
-            <div>
-              <h3 className="font-bold text-lg mb-2 italic">
-                Ürünümü gönderdim. İadem ne zaman yapılır?
-              </h3>
-              <p>
-                Değiştirme / İade Formunu doldurup geri gönderdiğiniz ürün, iade
-                onayı için bazı incelemelerden geçer. Talebiniz kabul olduğunda
-                para iadeniz, alışverişinizde kullanmış olduğunuz hesabınızın
-                ait olduğu bankaya, iadenizin onaylandığı anda otomatik olarak
-                yapılır. İşPool tarafından iade işlemi bankanıza yapıldığı an,
-                hesabınıza tanımlı olan e-posta adresinize işlem detaylarını
-                gösteren bir dekont gönderilir. Bu dekontu içeren e-posta
-                elinize ulaştıysa, İşPool tarafından bankanıza yapılan iade
-                ödemesi tamamlanmış demektir. Bankanızın bu tutarı kart veya
-                banka hesabınıza yansıtma süresi ise bankanızın işlem sürecine
-                göre değişkenlik gösterir.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="border p-4 rounded shadow-sm">
-                <h3 className="font-bold mb-2">
-                  İade başvurumun durumunu nasıl öğrenebilirim?
-                </h3>
-                <p className="text-sm text-gray-600">
-                  İade talebiniz kabul veya reddedildiğinde e-posta yoluyla
-                  bilgilendirme yapılır.
-                </p>
-              </div>
-              <div className="border p-4 rounded shadow-sm">
-                <h3 className="font-bold mb-2">
-                  İade talebim neden reddedildi?
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Eğer taahhüt edilen iade koşulları yerine getirilmediği
-                  taktirde iade talebiniz reddedilir. Ret nedeni belirtilmemişse{" "}
-                  <strong>info@ispool.com.tr</strong> adresinden bize
-                  ulaşabilirsiniz.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 p-6 rounded-lg italic text-gray-700 border-l-4 border-gray-400">
-              <h3 className="font-bold not-italic text-black mb-2">
-                Taksitle aldığım ürünün iadesi neden taksitle yapılıyor?
-              </h3>
-              <p className="text-sm">
-                Taksitlendirilmiş kredi kartı alışverişi iadelerinde, İşPool
-                tarafından tutarın tamamı kredi kartınızın ait olduğu bankaya
-                tek seferde ödenir. Ancak bankaların iç işleyişleri nedeniyle,
-                bu tutarlar banka tarafından kartınıza sipariş sırasında
-                seçtiğiniz ay kadar taksitle iade edilir. İade ödemelerinin
-                taksitle yapılmasında İşPool'un herhangi bir dahiliyeti olmayıp
-                detaylı bilgi için bankanızla iletişime geçmeniz gerekir.
-              </p>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <footer className="mt-12 pt-6 border-t border-gray-200 text-center text-xs text-gray-400 uppercase">
-        İşPool - Değişim ve İade Merkezi - Uşak, Türkiye
-      </footer>
+      <section className="rounded-lg bg-gray-50 border border-gray-200 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+          Bize ulaşın
+        </h2>
+        <ul className="space-y-1">
+          <li>
+            E-posta:{" "}
+            <a className="underline" href={`mailto:${COMPANY_EMAIL}`}>
+              {COMPANY_EMAIL}
+            </a>
+          </li>
+          <li>
+            Telefon:{" "}
+            <a
+              className="underline"
+              href={`tel:${COMPANY_PHONE.replace(/\s/g, "")}`}
+            >
+              {COMPANY_PHONE}
+            </a>
+          </li>
+        </ul>
+      </section>
     </div>
   );
 };
 
-export default ReturnAndExchange;
+export default Returns;

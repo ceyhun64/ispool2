@@ -52,7 +52,7 @@ const OzelUretimPremium = () => {
             Talep ve Adet Bilgisi:
             ${formData.details}
             --------------------------
-            Bu talep Özel Üretim (Bespoke) sayfasından gönderilmiştir.
+            Bu talep Özel Tasarım sayfasından gönderilmiştir.
           `,
         }),
       });
@@ -196,7 +196,7 @@ const OzelUretimPremium = () => {
                 className="text-transparent"
                 style={{ WebkitTextStroke: "2px #f59e0b" } as any}
               >
-                ÜRETİM
+                TASARIM
               </span>
             </h1>
             <div className="flex flex-col md:flex-row gap-8 md:gap-16 items-start">

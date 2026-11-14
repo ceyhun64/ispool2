@@ -379,8 +379,7 @@ export default function ProductTabs({
             <div className="bg-orange-50/50 border border-orange-100 p-4 flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
               <ShieldCheck className="text-orange-600 shrink-0" size={18} />
               <p className="text-[9px] md:text-[10px] text-orange-800 font-bold uppercase tracking-wider leading-relaxed">
-                Güvenli Ödeme: 256-Bit SSL Sertifikalı iyzico Altyapısı ile kart
-                verileriniz korunur.
+                Ödemeler iyzico altyapısıyla alınır; bağlantı SSL ile şifrelidir.
               </p>
             </div>
           </div>

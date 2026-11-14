@@ -624,7 +624,7 @@ export default function PaymentPage() {
             {/* Trust Badges */}
             <div className="flex flex-wrap justify-center gap-8 py-4 opacity-50 grayscale hover:grayscale-0 transition-all">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
-                <Lock className="w-4 h-4" /> 256-Bit SSL
+                <Lock className="w-4 h-4" /> SSL ile şifreli bağlantı
               </div>
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
                 <ShieldCheck className="w-4 h-4" /> PCI-DSS Uyumlu

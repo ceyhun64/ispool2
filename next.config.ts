@@ -9,6 +9,25 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/customer/returns",
+        destination: "/help/returns-help",
+        permanent: true,
+      },
+      {
+        source: "/customer/sales-agreement",
+        destination: "/help/distance-sales",
+        permanent: true,
+      },
+      {
+        source: "/help/bank-info",
+        destination: "/customer/bank-details",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

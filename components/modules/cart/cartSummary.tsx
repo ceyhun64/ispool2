@@ -127,7 +127,7 @@ export default function CartSummary({
                 Endüstriyel Güvenlik
               </span>
               <span className="text-[9px] font-medium text-slate-400 uppercase">
-                256-Bit SSL Şifreleme Korunuyor
+                SSL ile şifreli bağlantı
               </span>
             </div>
           </div>

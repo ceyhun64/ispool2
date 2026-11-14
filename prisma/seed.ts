@@ -61,8 +61,6 @@ const BRANDS = [
   "CERVA",
   "PORTWEST",
   "MAPA",
-  "NOMEX",
-  "RELAXIA",
   "PANDA",
   "GVS",
   "POLYBOOT",
@@ -222,10 +220,7 @@ async function seedSizes() {
 async function seedBrands() {
   console.log("🏷️  Markalar ekleniyor...");
   await prisma.brand.createMany({
-    data: BRANDS.map((name, i) => ({
-      name,
-      image: `/brands/${i + 1}.png`,
-    })),
+    data: BRANDS.map((name) => ({ name })),
   });
 }
 

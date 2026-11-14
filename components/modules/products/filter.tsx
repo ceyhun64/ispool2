@@ -354,19 +354,6 @@ const Filter: React.FC<FilterProps> = ({
                   : "border-slate-100 bg-white text-slate-600 hover:border-slate-300",
               )}
             >
-              <div className="relative w-6 h-6 shrink-0 flex items-center justify-center">
-                {brand.image ? (
-                  <img
-                    src={brand.image}
-                    alt={brand.name}
-                    className="w-full h-full object-contain transition-all duration-300"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-slate-100 rounded-full flex items-center justify-center text-[8px] text-slate-400">
-                    {brand.name[0]}
-                  </div>
-                )}
-              </div>
               <span className="truncate">{brand.name}</span>
             </button>
           ))}

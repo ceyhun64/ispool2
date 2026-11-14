@@ -449,19 +449,6 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
                   : "border-slate-200 bg-white",
               )}
             >
-              <div className="w-6 h-6 relative shrink-0">
-                {brand.image ? (
-                  <img
-                    src={brand.image}
-                    alt={brand.name}
-                    className="w-full h-full object-contain"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-slate-100 rounded-full flex items-center justify-center text-[8px]">
-                    {brand.name[0]}
-                  </div>
-                )}
-              </div>
               <span className="truncate">{brand.name}</span>
             </button>
           ))}

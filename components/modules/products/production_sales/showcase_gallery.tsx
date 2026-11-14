@@ -43,7 +43,7 @@ const ShowcaseGallery: React.FC = () => {
             </span>
           </div>
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter text-slate-900 leading-[1.05] uppercase max-w-4xl">
-            Özel Üretim <br />
+            Özel Tasarım <br />
             <span className="text-slate-600">Örnek Çalışmalarımız</span>
           </h1>
           <p className="mt-6 text-slate-600 text-sm sm:text-base max-w-2xl leading-relaxed">

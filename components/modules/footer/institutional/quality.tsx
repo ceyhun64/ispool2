@@ -1,80 +1,69 @@
 import React from "react";
+import { COMPANY_LEGAL_TITLE, COMPANY_NAME } from "@/lib/company";
+
+const sections = [
+  {
+    title: "Ne sunuyoruz?",
+    text: "İş elbiseleri, iş ayakkabıları, eldiven ve diğer kişisel koruyucu donanımları tek bir mağazada topluyoruz. Bireysel alışverişin yanında toplu alım ve özel tasarım talepleri de alıyoruz.",
+  },
+  {
+    title: "Ürün seçimi ve tedarik",
+    text: "Kataloğa girecek ürünleri kullanım alanına, malzemesine ve ürün açıklamalarının eksiksiz olmasına bakarak seçiyoruz. Ürün sayfalarında gösterilen bilgilerin ürünle uyuşması önceliğimizdir.",
+  },
+  {
+    title: "Kurumsal baskı ve nakış",
+    text: "Firma logosu ya da isim baskısı isteyen müşterilerimiz için baskı ve nakış hizmeti veriyoruz. Uygulama öncesinde istek ve ölçüler müşteriyle netleştirilir.",
+  },
+  {
+    title: "Ödeme",
+    text: "Ödemeler iyzico altyapısıyla alınır. Uygun kartlarda 12 taksit seçeneğine kadar ödeme yapabilirsiniz.",
+  },
+  {
+    title: "Kontrol ve sevkiyat",
+    text: "Sipariş verildiğinde ürünlerin stok durumu ve tutarlar sunucu tarafında yeniden hesaplanır. Gönderiler Horoz Lojistik ile yola çıkar ve kargo takip numarasıyla sipariş sayfanızdan izlenebilir.",
+  },
+  {
+    title: "Satış sonrası destek",
+    text: "Sipariş, iade ya da ürün hakkında sorularınız için e-posta ve telefon üzerinden bize ulaşabilirsiniz. İade ve değişim koşulları ilgili sayfada ayrıca açıklanmıştır.",
+  },
+];
 
 const QualityPolicy = () => {
   return (
-    <div className="max-w-4xl mx-auto my-12 p-8 md:p-16 bg-white shadow-xl border border-gray-100 rounded-xl font-sans text-gray-800">
-      {/* BAŞLIK VE GİRİŞ */}
-      <header className="text-center mb-12">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-blue-900 mb-6 tracking-tight uppercase">
-          Kalite Politikamız
-        </h1>
-        <p className="text-lg leading-relaxed text-gray-700 italic">
-          İŞPOOL A.Ş. olarak kalite politikamız; sahip olduğumuz yüksek bilgi
-          birikimi, üretim tecrübesi, deneyimli ve nitelikli iş gücümüz,
-          kullandığımız güncel teknoloji ile sektörün öncü firması olarak örnek
-          ve rekabetçi yapımızın sürekliliğini sağlayan aşağıdaki unsurlardan
-          oluşmaktadır:
-        </p>
-      </header>
+    <div className="max-w-3xl mx-auto my-12 px-6 md:px-10 py-10 font-sans text-gray-800">
+      <h1 className="text-3xl font-bold text-gray-900 mb-3">
+        Hizmet Anlayışımız
+      </h1>
+      <p className="text-gray-600 mb-10 leading-relaxed">
+        {COMPANY_NAME}, çalışma hayatında ihtiyaç duyulan koruyucu giyim ve
+        ekipmanı güvenilir biçimde müşterisine ulaştırmak için çalışır. Aşağıda
+        siparişin verilmesinden teslimatına kadar nasıl çalıştığımızı
+        özetledik.
+      </p>
 
-      {/* POLİTİKA MADDELERİ */}
-      <section className="mb-16">
-        <ul className="space-y-6">
-          {[
-            "Tüm faaliyet alanlarımızda, Kalite Yönetim Sistemimizin gereklerini tam olarak gerçekleştirmek ve etkinliğinin sürekli iyileşmesini sağlamak,",
-            "Müşterilerimizin talep ve beklentilerini karşılayacak nitelikte kaliteli ürünler üretmek, satış öncesi ve sonrası destek sağlayarak müşteri memnuniyetini arttırmak,",
-            "Ürünlerimizin, müşteri taleplerine, ulusal ve uluslararası standartlara ve yasal mevzuata uygunluğunu sağlamak ve sürekliliğini temin etmek,",
-            "Çalışanlarımızın iş sağlığı ve güvenliğini ön planda tutarak, mesleki ve sosyal gelişimine destek vermek, kalite bilincini geliştirmek,",
-            "Faaliyetlerimizi sürdürürken, çevreyi ve doğal kaynakları korumak,",
-            "Başarılarımızın sürdürülebilir olmasını, daha yüksek seviyelere taşınmasını hedeflemek ve marka bilincimizin geliştirilmesini çalışanlarımızın ortak ve asli hedefleri içinde görmesini sağlamak.",
-          ].map((item, index) => (
-            <li key={index} className="flex items-start group">
-              <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-blue-900 text-white text-sm font-bold mr-4 group-hover:bg-blue-700 transition-colors">
-                {index + 1}
-              </span>
-              <p className="pt-1 text-gray-700 font-medium">{item}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* VİZYON VE MİSYON ALANI */}
-      <div className="grid md:grid-cols-2 gap-8 border-t-2 border-gray-100 pt-12">
-        {/* VİZYON */}
-        <div className="bg-blue-50 p-8 rounded-2xl border-b-4 border-blue-900">
-          <div className="flex items-center mb-4">
-            <h2 className="text-2xl font-black text-blue-900 uppercase tracking-wider">
-              Vizyon
+      <div className="space-y-8">
+        {sections.map((s) => (
+          <section key={s.title} className="border-l-4 border-blue-900 pl-5">
+            <h2 className="text-lg font-semibold text-gray-900 mb-1">
+              {s.title}
             </h2>
-          </div>
-          <p className="text-gray-800 leading-relaxed font-semibold">
-            Kalitesi ve tasarımlarıyla Dünya çalışanlarını giydiren lider marka
-            olmak.
-          </p>
-        </div>
+            <p className="text-gray-700 leading-relaxed">{s.text}</p>
+          </section>
+        ))}
 
-        {/* MİSYON */}
-        <div className="bg-gray-50 p-8 rounded-2xl border-b-4 border-gray-400">
-          <div className="flex items-center mb-4">
-            <h2 className="text-2xl font-black text-gray-800 uppercase tracking-wider">
-              Misyon
-            </h2>
-          </div>
-          <p className="text-gray-800 leading-relaxed font-medium">
-            Her zaman daha iyiyi hedefleyerek, sektörde kaliteyi arttıran,
-            çalışanlarına işlerini sevdiren, müşterilerinin güven duyduğu,
-            ürünleriyle sağlıklı ve güvenli çalışma ortamlarına katkıda bulunan
-            örnek bir kuruluş olmaktır.
+        <section className="border-l-4 border-gray-300 pl-5">
+          <h2 className="text-lg font-semibold text-gray-900 mb-1">
+            Sahip olunan belgeler
+          </h2>
+          <p className="text-gray-700 leading-relaxed">
+            ⚠ DOLDURULACAK: sahip olunan belgeler
           </p>
-        </div>
+        </section>
       </div>
 
-      {/* ALT BİLGİ */}
-      <footer className="mt-12 text-center">
-        <div className="inline-block px-6 py-2 bg-blue-900 text-white rounded-full text-xs font-bold uppercase tracking-widest">
-          İŞPOOL A.Ş. Kalite Standartları
-        </div>
-      </footer>
+      <p className="mt-12 pt-6 border-t border-gray-200 text-sm text-gray-500">
+        {COMPANY_LEGAL_TITLE}
+      </p>
     </div>
   );
 };

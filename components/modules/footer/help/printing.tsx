@@ -1,94 +1,102 @@
-import React from 'react';
+import React from "react";
+import { COMPANY_EMAIL, COMPANY_PHONE } from "@/lib/company";
 
-const BaskiNakisHizmetleri = () => {
+const methods = [
+  {
+    name: "Endüstriyel nakış",
+    products: "Polo ve tişört yaka/göğüs, iş ceketi, yelek, şapka",
+    when: "Logonun ürünle birlikte uzun yıllar kullanılacağı, kumaşı kalın ve dokulu işlerde; kabartmalı, kurumsal bir görünüm istendiğinde",
+    wash: "Genel olarak çok iyi; iplik kumaşa dikildiği için sık yıkamada da yerinde kalır",
+    detail: "Çok ince çizgiler ve küçük yazılar nakışta zor okunur, sade ve dolgulu logolarda en iyi sonucu verir",
+  },
+  {
+    name: "DTF baskı",
+    products: "Tişört, sweatshirt, çok renkli ya da fotoğraf benzeri tasarımlar",
+    when: "Renk sayısı fazla, gradyanlı veya ayrıntılı tasarımlarda; az adetli işlerde",
+    wash: "Doğru uygulandığında ve ürün etiketindeki yıkama talimatına uyulduğunda iyi; yüksek ısıda ütüden kaçınılmalı",
+    detail: "Kumaşa ince bir katman olarak oturur; çok esneyen kumaşlarda baskı yüzeyi gerginlikten etkilenebilir",
+  },
+  {
+    name: "Serigrafi",
+    products: "Tişört, iş elbisesi, büyük adetli düz renkli logolar",
+    when: "Az renkli, net kenarlı logoların yüksek adetle basılacağı işlerde",
+    wash: "Genel olarak dayanıklı; sık yıkanan iş kıyafetlerinde tercih edilen bir yöntemdir",
+    detail: "Her renk için ayrı kalıp hazırlandığı için renk sayısı arttıkça hazırlık da artar",
+  },
+];
+
+const PrintingServices = () => {
   return (
-    <div className="max-w-4xl mx-auto p-6 py-24 bg-white text-gray-800 leading-relaxed">
-      {/* Ana Başlık */}
-      <header className="mb-10 text-center">
-        <h1 className="text-3xl font-bold text-blue-900 mb-4 uppercase tracking-wide">
-          Baskı Nakış Hizmetleri
-        </h1>
-        <div className="h-1 w-24 bg-blue-600 mx-auto"></div>
-      </header>
+    <div className="max-w-5xl mx-auto px-6 py-20 text-gray-800">
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        Baskı ve Nakış
+      </h1>
+      <p className="text-gray-600 mb-10">
+        Logonuzu ya da isim bilgisini ürüne işletebilirsiniz. Aşağıdaki tablo
+        hangi yöntemin hangi iş için uygun olduğunu karşılaştırır.
+      </p>
 
-      {/* Giriş Bölümü */}
-      <section className="mb-12 space-y-4">
-        <p>
-          Günümüz dünyasında kurumsal kimliğimizi tanıtmanın tartışmasız ilk ve en önemli yolu firma logonuzdur. 
-          Kurumsal kimliğinizi ön planda tutmak için vazgeçilmez bir reklam olan logo, bir ürünün, firmanın ya da 
-          hizmetin isminin, harf ve resimsel öğeler kullanılarak sembolleştirilmesidir.
-        </p>
-        <p>
-          Firmamız kurumsal logonuzu satın aldığınız ürünlerin üzerine baskı veya nakış olarak uygulayabilmektedir.
-        </p>
-        <p className="font-medium italic text-blue-800">
-          Müşteri odaklı ve kaliteli hizmet anlayışımızla sektörümüzün logo uygulamalarında en iyi standartları 
-          kullanan firması olmaktan gurur duyarak, bize güvendiğiniz için teşekkür ediyoruz.
-        </p>
-      </section>
+      <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        Hangi yöntem bana uygun?
+      </h2>
 
-      {/* Baskı Çeşitleri Başlığı */}
-      <section className="mb-8">
-        <h2 className="text-2xl font-bold border-b-2 border-gray-200 pb-2 mb-8 text-gray-700">
-          Baskı Çeşitlerimiz
+      <div className="overflow-x-auto border border-gray-200 rounded-lg">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-gray-100 text-gray-700">
+            <tr>
+              <th className="p-3 font-semibold">Yöntem</th>
+              <th className="p-3 font-semibold">Sık kullanıldığı ürünler</th>
+              <th className="p-3 font-semibold">Ne zaman tercih edilir?</th>
+              <th className="p-3 font-semibold">Yıkamaya dayanım</th>
+              <th className="p-3 font-semibold">Dikkat edilecek nokta</th>
+            </tr>
+          </thead>
+          <tbody>
+            {methods.map((m) => (
+              <tr key={m.name} className="border-t border-gray-200 align-top">
+                <th scope="row" className="p-3 font-semibold text-gray-900">
+                  {m.name}
+                </th>
+                <td className="p-3">{m.products}</td>
+                <td className="p-3">{m.when}</td>
+                <td className="p-3">{m.wash}</td>
+                <td className="p-3">{m.detail}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <p className="mt-4 text-sm text-gray-600">
+        ⚠ DOLDURULACAK: sunulan baskı/nakış teknikleri (yukarıdaki üç yöntem
+        dışında sunulanlar varsa eklenecek, sunulmayan varsa onaylanacak)
+      </p>
+
+      <section className="mt-12 rounded-lg bg-gray-50 border border-gray-200 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+          Teklif almak için
         </h2>
-
-        {/* Transfer Baskı */}
-        <div className="mb-10">
-          <h3 className="text-xl font-semibold text-blue-700 mb-3">Transfer Baskı</h3>
-          <p>
-            Transfer baskıda grafik bir şablona gerilmiş ipeğin yüzeyine aynalanarak foto emisyonları yardımıyla aktarılır. 
-            İkinci işlem grafiğin boya yardımıyla transfer kağıdına incecik aktarılmasıdır; daha sonra kurutulup pres 
-            ısısı yardımıyla ürüne uygulanır. Kullanım amacı ince, detaylı veya renk sayısı fazla olan grafiklerde 
-            kusursuz sonuç almaktır.
-          </p>
-        </div>
-
-        {/* Serigrafi Baskı */}
-        <div className="mb-10">
-          <h3 className="text-xl font-semibold text-blue-700 mb-3">Serigrafi Baskı</h3>
-          <p>
-            Serigrafi baskıya ipek baskısı veya özgün baskı adı da verilmektedir. Serigafi baskıda grafik bir şablona 
-            gerilmiş ipeğin yüzeyine foto emisyonları yardımıyla aktarılır. Daha sonra bu şablon üzerine boya dökülüp 
-            grafik ragle lastiği basıncı ile baskı yapılacak malzemeye transfer edilir. Baskının uzun süre solmadan 
-            dayanıklı kalması istenilen yerlerde serigrafi baskı tercih edilir.
-          </p>
-        </div>
-
-        {/* Folyo Flex Baskı */}
-        <div className="mb-10 p-5 bg-gray-50 rounded-lg">
-          <h3 className="text-xl font-semibold text-blue-700 mb-3">Folyo Flex Baskı</h3>
-          <p className="mb-4">
-            Folyo Flex baskı grafiğin mevcut bulunan folyolardan ploter makineleri yardımıyla kesim yapılarak daha sonra 
-            uygun sıcaklıkta ayarlanmış pres ile ürüne uygulanmasıdır. Ploter makineleri elmas uç ile kesim yapabilen 
-            makinelerdir. X, Y, Z düzleminde kesim yapabildiğinden her türlü şekli ve yazıyı kesebilmektedir.
-          </p>
-          <div className="mt-4">
-            <h4 className="font-bold mb-2">Özellikleri:</h4>
-            <ul className="list-disc list-inside space-y-1 ml-4 text-gray-700">
-              <li>Hoş görüntü</li>
-              <li>Sıkı dokunuş</li>
-              <li>Darbelere ve sürtünmelere karşı dayanıklılık</li>
-              <li>Pürüzsüz yüzeylerde kayganlık özelliği</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Dijital Baskı */}
-        <div className="mb-10">
-          <h3 className="text-xl font-semibold text-blue-700 mb-3">Dijital Baskı</h3>
-          <p>
-            Geleneksel ofset baskı tekniğinde kullanılan, film ve klasik anlamdaki kalıp gibi iki vazgeçilmez unsurun 
-            ortadan kaldırılmasıyla, herhangi bir fotoğraf, diapozitif, negatif ve basılmış görüntünün, tarayıcılarla 
-            yada doğrudan dijital kameralar yoluyla bilgisayara aktarılarak, üzerinde çalışılıp değişiklikler 
-            yapılmasına; bilgisayarda metin, grafik, çizim v.b. birleştirilerek bir grafik dökümanın bir dijital baskı 
-            makinası yardımıyla doğrudan baskı materyaline basılmasına olanak tanıyan bir baskı sistemidir. Çok renkli 
-            veya fotoğraf niteliğindeki diyaznlar için kullanılır.
-          </p>
-        </div>
+        <p className="text-gray-700 mb-3">
+          Ürün türünü, adedi ve tercih ettiğiniz yöntemi aşağıdaki
+          bilgilerden bize iletebilirsiniz.
+        </p>
+        <ul className="space-y-1 text-gray-800">
+          <li>
+            E-posta:{" "}
+            <a className="underline" href={`mailto:${COMPANY_EMAIL}`}>
+              {COMPANY_EMAIL}
+            </a>
+          </li>
+          <li>
+            Telefon:{" "}
+            <a className="underline" href={`tel:${COMPANY_PHONE.replace(/\s/g, "")}`}>
+              {COMPANY_PHONE}
+            </a>
+          </li>
+        </ul>
       </section>
     </div>
   );
 };
 
-export default BaskiNakisHizmetleri;
+export default PrintingServices;

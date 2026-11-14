@@ -9,7 +9,7 @@ import {
   ShieldCheck,
   Truck,
   Mail,
-  MapPin,
+  CreditCard,
   MessageCircle,
   ChevronDown,
 } from "lucide-react";
@@ -58,29 +58,17 @@ export default function Footer() {
   ];
 
   const menuGroups = {
-    kurumsal: {
-      title: "Kurumsal",
+    alisveris: {
+      title: "Alışveriş",
       links: [
-        { label: "Hakkımızda", href: "/institutional/about" },
-        { label: "İşPool Neden Farklıdır?", href: "/institutional/why_us" },
-        { label: "Kalite Politikamız", href: "/institutional/quality" },
-        { label: "İşPool Blog", href: "/institutional/blog" },
-        { label: "İş Ortaklarımız", href: "/institutional/partners" },
-        { label: "Kariyer", href: "/institutional/career" },
+        { label: "Havale ve EFT Bilgileri", href: "/customer/bank-details" },
+        { label: "Logo Baskı ve Nakış", href: "/help/printing" },
+        { label: "İade ve Değişim Koşulları", href: "/help/returns-help" },
+        { label: "Sıkça Sorulan Sorular", href: "/help/faq" },
       ],
     },
-    musteriIliskileri: {
-      title: "Müşteri İlişkileri",
-      links: [
-        { label: "Banka Hesap Bilgileri", href: "/customer/bank-details" },
-        { label: "Gizlilik ve Güvenlik", href: "/customer/privacy" },
-        { label: "Satış Sözleşmesi", href: "/customer/sales-agreement" },
-        { label: "Site Kullanım Şartları", href: "/customer/terms" },
-        { label: "İade ve Değişim", href: "/customer/returns" },
-      ],
-    },
-    populerLinkler: {
-      title: "Popüler Linkler",
+    kategoriler: {
+      title: "Kategoriler",
       links: [
         { label: "İş Elbiseleri", href: "/products/category/1" },
         { label: "İş Ayakkabıları", href: "/products/category/2" },
@@ -90,16 +78,25 @@ export default function Footer() {
         { label: "Outdoor", href: "/products/category/6" },
       ],
     },
-    yardim: {
-      title: "Yardım",
+    destek: {
+      title: "Destek",
       links: [
         { label: "İletişim", href: "/help/contact" },
-        { label: "Sıkça Sorulan Sorular", href: "/help/faq" },
-        { label: "KVKK", href: "/help/kvkk" },
         { label: "Mesafeli Satış Sözleşmesi", href: "/help/distance-sales" },
-        { label: "Banka Bilgileri & Havale Bildirim", href: "/help/bank-info" },
-        { label: "İade ve Değişim", href: "/help/returns-help" },
-        { label: "Baskı ve Nakış Hizmetleri", href: "/help/printing" },
+        { label: "Kullanım Koşulları", href: "/customer/terms" },
+        { label: "Gizlilik Politikası", href: "/customer/privacy" },
+        { label: "KVKK", href: "/help/kvkk" },
+      ],
+    },
+    sirket: {
+      title: "Şirket",
+      links: [
+        { label: "Hakkımızda", href: "/institutional/about" },
+        { label: "Neden İşPool?", href: "/institutional/why_us" },
+        { label: "Kalite Yaklaşımımız", href: "/institutional/quality" },
+        { label: "Markalarımız", href: "/institutional/partners" },
+        { label: "İşPool Blog", href: "/institutional/blog" },
+        { label: "Kariyer", href: "/institutional/career" },
       ],
     },
   };
@@ -131,9 +128,9 @@ export default function Footer() {
         <div className="container mx-auto px-6 md:px-12 py-6">
           <div className="flex flex-wrap justify-between items-center gap-6 md:gap-8">
             {[
-              { Icon: ShieldCheck, text: "Güvenli Ödeme Altyapısı" },
-              { Icon: Truck, text: "Aynı Gün Lojistik Çıkışı" },
-              { Icon: MapPin, text: "Global Tedarik Ağı" },
+              { Icon: ShieldCheck, text: "iyzico ile Ödeme" },
+              { Icon: Truck, text: "Horoz Lojistik ile Kargo" },
+              { Icon: CreditCard, text: "12 Taksit Seçeneği" },
             ].map((item, idx) => (
               <div key={idx} className="flex items-center gap-3 min-w-fit">
                 <item.Icon

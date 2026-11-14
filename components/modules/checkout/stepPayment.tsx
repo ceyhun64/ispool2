@@ -371,7 +371,7 @@ export default function StepPaymentCard({
         </div>
         <div className="h-4 w-[1px] bg-slate-300" />
         <div className="flex items-center gap-1.5 text-[10px] font-medium tracking-tight uppercase">
-          <Shield size={12} /> SSL SECURE
+          <Shield size={12} /> SSL ile şifreli bağlantı
         </div>
       </div>
     </div>

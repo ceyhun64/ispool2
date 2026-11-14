@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import {
   Star,
   CheckCircle,
@@ -123,15 +122,6 @@ export default function ProductInfo({
           </div>
           {brand && (
             <div className="flex items-center gap-2 text-xs text-slate-600">
-              {brand.image && (
-                <Image
-                  src={brand.image}
-                  alt={brand.name}
-                  width={24}
-                  height={24}
-                  className="object-contain"
-                />
-              )}
               <span className="font-semibold">{brand.name}</span>
             </div>
           )}

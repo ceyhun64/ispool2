@@ -1,9 +1,7 @@
-import About from "@/components/modules/footer/customer/sales-agreement";
+import { permanentRedirect } from "next/navigation";
 
-export default function AboutPage() {
-  return (
-    <>
-      <About />
-    </>
-  );
+// Asıl yönlendirme next.config.ts içindeki 301 redirect ile yapılır;
+// bu, o kural devre dışı kalırsa devreye giren yedektir.
+export default function SalesAgreementRedirectPage() {
+  permanentRedirect("/help/distance-sales");
 }

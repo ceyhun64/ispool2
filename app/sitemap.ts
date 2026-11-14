@@ -25,8 +25,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/help/distance-sales`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${baseUrl}/customer/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${baseUrl}/customer/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
-    { url: `${baseUrl}/customer/returns`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
-    { url: `${baseUrl}/customer/sales-agreement`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${baseUrl}/institutional/cookie_policy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
   ];
 

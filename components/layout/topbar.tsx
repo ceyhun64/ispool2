@@ -30,33 +30,33 @@ export default function TopBar() {
   ];
 
   const menuItems = [
+    {
+      label: "Kargo Takibi",
+      icon: <Truck size={14} />,
+      href: "/profile/cargo_tracking",
+    },
     { label: "İletişim", icon: <Mail size={14} />, href: "/help/contact" },
     {
       label: "Hakkımızda",
       icon: <Info size={14} />,
       href: "/institutional/about",
     },
-    {
-      label: "Kargo Takibi",
-      icon: <Truck size={14} />,
-      href: "/profile/cargo_tracking",
-    },
   ];
 
   const highlightItems = [
     {
-      label: "Toptan Satış",
-      icon: <Package size={14} />,
-      href: "/products/wholesale",
-      // Kontrast için bg-orange-600 yerine biraz daha koyu olan bg-orange-700 kullanıldı
-      color: "bg-orange-700 hover:bg-orange-800",
-    },
-    {
-      label: "Özel Üretim",
+      label: "Özel Tasarım",
       icon: <Ruler size={14} />,
       href: "/products/special_production",
       // Kontrast için bg-slate-800 yerine bg-slate-900 kullanıldı
       color: "bg-slate-900 hover:bg-black",
+    },
+    {
+      label: "Toplu Alım",
+      icon: <Package size={14} />,
+      href: "/products/wholesale",
+      // Kontrast için bg-orange-600 yerine biraz daha koyu olan bg-orange-700 kullanıldı
+      color: "bg-orange-700 hover:bg-orange-800",
     },
   ];
 

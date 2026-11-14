@@ -67,14 +67,14 @@ const initialCategories: CategoryData[] = [
   },
   {
     id: 8,
-    name: "Özel Üretim",
+    name: "Özel Tasarım",
     desc: "Firmanıza özel logo ve tasarım çözümleri",
     image: "/categories/9.jpg",
     href: "/products/special_production",
   },
   {
     id: 9,
-    name: "Toplu Satış",
+    name: "Toplu Alım",
     desc: "Kurumsal ihtiyaçlara avantajlı çözümler",
     image: "/categories/8.jpg",
     href: "/products/wholesale",

@@ -1,5 +1,12 @@
 "use client";
 import React, { useState } from "react";
+import Link from "next/link";
+import { COMPANY_EMAIL, COMPANY_PHONE } from "@/lib/company";
+import {
+  FREE_SHIPPING_THRESHOLD,
+  SHIPPING_FEE,
+  formatPrice,
+} from "@/lib/pricing";
 
 const FAQItem = ({
   question,
@@ -13,179 +20,179 @@ const FAQItem = ({
   return (
     <div className="border-b border-gray-200">
       <button
-        className="w-full py-5 text-left flex justify-between items-center focus:outline-none"
+        type="button"
+        aria-expanded={isOpen}
+        className="w-full py-4 text-left flex justify-between items-center gap-4"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className="text-lg font-semibold text-gray-900">{question}</span>
+        <span className="font-medium text-gray-900">{question}</span>
         <span
-          className={`ml-6 transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+          aria-hidden
+          className={`text-gray-500 transition-transform ${isOpen ? "rotate-45" : ""}`}
         >
-          <svg
-            className="w-6 h-6 text-gray-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
+          +
         </span>
       </button>
-      <div
-        className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-[1000px] mb-5" : "max-h-0"}`}
-      >
-        <div className="text-gray-600 leading-relaxed text-base">
-          {children}
-        </div>
-      </div>
+      {isOpen && (
+        <div className="pb-4 text-gray-600 leading-relaxed">{children}</div>
+      )}
     </div>
   );
 };
 
+const Group = ({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) => (
+  <section className="mb-10">
+    <h2 className="text-lg font-semibold text-blue-900 mb-1">{title}</h2>
+    {children}
+  </section>
+);
+
 const FAQ = () => {
   return (
-    <div className="max-w-4xl mx-auto p-6 md:py-12 bg-white">
-      <header className="mb-10 text-center">
-        <h1 className="text-3xl font-bold text-gray-900 uppercase tracking-wide">
-          Sıkça Sorulan Sorular
-        </h1>
-        <div className="h-1 w-20 bg-blue-600 mx-auto mt-4"></div>
-      </header>
+    <div className="max-w-3xl mx-auto px-6 py-16">
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        Sık Karşılaşılan Konular
+      </h1>
+      <p className="text-gray-600 mb-10">
+        Alışverişle ilgili merak edilenleri konulara göre topladık.
+      </p>
 
-      <div className="space-y-2">
-        <FAQItem question="Satın Aldığım Ürünü Hangi Koşullarda Değiştirebilir veya İade Edebilirim?">
+      <Group title="Üyelik ve hesap">
+        <FAQItem question="Alışveriş için üye olmam gerekiyor mu?">
           <p>
-            ispool.com.tr' den alınmış olan ürünler kullanılmadığı, orijinal
-            kutusunda ve içinde bulunan ambalajlara zarar görmediği, faturasının
-            ve tüm tamamlayıcı aksesuarlarının hasarsız ve eksiksiz gönderildiği
-            takdirde aynı ürünün başka bir bedeni veya rengiyle değiştirilir
-            veya iade edilebilir.
+            Ödeme sayfasına geçmek ve siparişi tamamlamak için hesabınıza giriş
+            yapmış olmanız gerekir. Hesabınızın profil bölümünde adreslerinizi
+            ve siparişlerinizi görüntüleyebilirsiniz.
           </p>
         </FAQItem>
-
-        <FAQItem question="Değişim ve İade Süreleri Nedir?">
+        <FAQItem question="Şifremi unuttum, ne yapmalıyım?">
           <p>
-            Değiştirme işlemleri müşteri ürünü teslim aldıktan sonraki 30 (otuz)
-            gün içerisinde kargoya teslim etmelidir. 30 günü aşan ürünlerin
-            değişimi yapılmamaktadır. İade işlemlerinde ise, müşteri ürünü
-            teslim aldıktan sonra 14 (on dört) gün içerisinde kargoya teslim
-            etmelidir. 14 günü aşan ürünlerin iadesi yapılmamaktadır.
+            Giriş sayfasındaki şifre yenileme bağlantısını kullanarak yeni bir
+            şifre belirleyebilirsiniz.{" "}
+            <Link className="underline" href="/auth/forgot-password">
+              Şifremi yenile
+            </Link>
           </p>
         </FAQItem>
+      </Group>
 
-        <FAQItem question="Ürünümü Değiştirmek veya İade Etmek için Ne Yapmalıyım?">
+      <Group title="Sipariş ve ödeme">
+        <FAQItem question="Hangi yöntemlerle ödeme yapabilirim?">
           <p>
-            Değişim veya İadesi istenen ürün mümkünse orijinal ambalajında
-            güvenli bir şekilde paketleyin ve beraberinde gönderilen Değiştirme
-            / İade Formu (eksiksiz doldurup imzalanarak) ve faturası ile
-            birlikte aşağıda belirtilen iade adresine gönderilmelidir. Fatih mahallesi, kazım kara Bekir caddesi no 144 a, 64000 Merkez/Uşak Tel: 0 264 437 93 28
-            / 29
+            Ödemeler iyzico altyapısıyla alınır. Kartınızla tek çekim ya da
+            taksitli ödeme yapabilirsiniz.
           </p>
         </FAQItem>
-
-        <FAQItem question="İade koşulları nelerdir?">
+        <FAQItem question="Taksit seçenekleri nelerdir?">
           <p>
-            İşPool'tan satın aldığınız ürünü, kargodan teslim aldığınız günden
-            itibaren 14 gün içinde iade koşulları dahilinde kargo bedelini
-            ödeyerek iade edebilirsiniz. Eğer ürün iade koşullarını
-            karşılamıyorsa ürün adresinize geri gönderilebilir. Ürünlerin cayma
-            hakkı dahilinde iade alınabilmesi için satın alınan ürünün orijinal
-            kutusunda ve içinde bulunan ambalajlara zarar verilmemiş olması,
-            faturasının ve tüm tamamlayıcı aksesuarlarının hasarsız ve eksiksiz
-            gönderilmesi gerekir.
+            Ödeme sayfasında 1, 2, 3, 6, 9 ve 12 taksit seçenekleri sunulur.
+            Birden fazla taksit seçtiğinizde vade farkı ve toplam tutar ekranda
+            gösterilir.
           </p>
         </FAQItem>
-
-        <FAQItem question="Değişim ve İade İşlemlerinde Kargoyu Kim Öder?">
-          <p>Değişim ve iade işlemlerinde kargo masrafı müşteriye aittir.</p>
-        </FAQItem>
-
-        <FAQItem question="Hatalı Ürünlerde Aynı Koşullar Geçerli mi?">
+        <FAQItem question="İndirim kuponunu nerede kullanırım?">
           <p>
-            İşPool, hatalı ürünü ücretsiz değiştirmeyi ve kargo masrafını
-            karşılamayı taahhüt eder. Paketi ve ambalajı zarar görmemiş ancak
-            paket içerisinden hatalı çıkan ürün 14 (on dört) gün içerisinde
-            "Değiştirme / İade Formu" eksiksiz doldurulup imzalanarak, faturası
-            ile birlikte aşağıda belirtilen iade adresine gönderilmelidir.
+            Kupon kodunuzu ödeme sayfasındaki sepet özetinde girebilirsiniz.
+            Bazı kuponlar yalnızca belirli bir tutarın üzerindeki sepetlerde
+            geçerlidir.
           </p>
         </FAQItem>
-
-        <FAQItem question="Firma Adına Yapılan Alışverişlerde İade Faturası Gerekli mi?">
+        <FAQItem question="Verdiğim siparişi iptal edebilir miyim?">
           <p>
-            Firma adına yapılan alışverişlerde ürünün iadesi veya farklı bir
-            ürünle değişimi için "ürün iade faturası" gönderilmesi
-            gerekmektedir. Ürün iade faturası olmayan ürünler teslim alınmaz.
-            Ancak aynı ürünün farklı bedeni veya rengi için yapılan değişimlerde
-            iade faturası gerekmemektedir.
-            <br />
-            <br />
-            <span className="font-semibold text-blue-600 cursor-pointer underline">
-              Ürün İade veya Değişim Talep Formunu İndirmek için tıklayınız...
-            </span>
+            ⚠ DOLDURULACAK: sipariş iptal süreci
           </p>
         </FAQItem>
+      </Group>
 
-        <FAQItem question="Değişim ve İade Adresiniz nedir?">
+      <Group title="Kargo ve teslimat">
+        <FAQItem question="Kargo ücreti ne kadar?">
           <p>
-            Fatih mahallesi, kazım kara Bekir caddesi no 144 a, 64000 Merkez/Uşak Tel: 0 264
-            437 93 28 / 29
+            Sepet tutarı (KDV dahil) {formatPrice(FREE_SHIPPING_THRESHOLD)} ve
+            üzerindeyse kargo ücretsizdir. Bu tutarın altındaki siparişlerde{" "}
+            {formatPrice(SHIPPING_FEE)} kargo bedeli eklenir.
           </p>
         </FAQItem>
-
-        <FAQItem question="Ürünümü gönderdim. İadem ne zaman yapılır?">
+        <FAQItem question="Siparişimi hangi firma taşıyor?">
+          <p>Gönderiler Horoz Lojistik ile yapılır.</p>
+        </FAQItem>
+        <FAQItem question="Kargomun nerede olduğunu nasıl görürüm?">
           <p>
-            Değiştirme / İade Formunu doldurup geri gönderdiğiniz ürün, iade
-            onayı için bazı incelemelerden geçer. Talebiniz kabul olduğunda para
-            iadeniz, alışverişinizde kullanmış olduğunuz hesabınızın ait olduğu
-            bankaya, iadenizin onaylandığı anda otomatik olarak yapılır. İşPool
-            tarafından iade işlemi bankanıza yapıldığı an, hesabınıza tanımlı
-            olan e-posta adresinize işlem detaylarını gösteren bir dekont
-            gönderilir. Bu dekontu içeren e-posta elinize ulaştıysa, İşPool
-            tarafından bankanıza yapılan iade ödemesi tamamlanmış demektir.
-            Bankanızın bu tutarı kart veya banka hesabınıza yansıtma süresi ise
-            bankanızın işlem sürecine göre değişkenlik gösterir.
+            Profilinizdeki kargo takip bölümünde takip numaranızı girerek
+            gönderinizin durumunu sorgulayabilirsiniz.
           </p>
         </FAQItem>
+      </Group>
 
-        <FAQItem question="İade başvurumun durumunu nasıl öğrenebilirim?">
+      <Group title="Toplu alım ve özel tasarım">
+        <FAQItem question="Çok adetli sipariş vermek istiyorum.">
           <p>
-            İade talebiniz kabul veya reddedildiğinde e-posta yoluyla
-            bilgilendirme yapılır.
+            Toplu alımlar için{" "}
+            <Link className="underline" href="/products/wholesale">
+              toplu alım sayfasını
+            </Link>{" "}
+            inceleyebilir, talebinizi bize iletebilirsiniz.
           </p>
         </FAQItem>
-
-        <FAQItem question="İade talebim neden reddedildi?">
+        <FAQItem question="Ürüne logo ya da isim işletebilir miyim?">
           <p>
-            Eğer taahhüt edilen iade koşulları yerine getirilmediği taktirde
-            iade talebiniz reddedilir. Eğer tarafınıza herhangi bir ret nedeni
-            belirtilmemişse ya da belirtilen iade koşullarına aykırı bir durum
-            olduğunu düşünürseniz <strong>info@ispool.com.tr</strong>{" "}
-            adresinden bize ulaşabilirsiniz.
+            Evet, endüstriyel nakış ve baskı seçeneklerimiz var. Yöntemlerin
+            karşılaştırması için{" "}
+            <Link className="underline" href="/help/printing">
+              baskı ve nakış sayfasına
+            </Link>{" "}
+            bakabilirsiniz.
           </p>
         </FAQItem>
-
-        <FAQItem question="Taksitle aldığım ürünün iadesi neden taksitle yapılıyor?">
+        <FAQItem question="Kendi tasarımımla ürün yaptırabilir miyim?">
           <p>
-            Taksitlendirilmiş kredi kartı alışverişi iadelerinde, İşPool
-            tarafından tutarın tamamı kredi kartınızın ait olduğu bankaya tek
-            seferde ödenir. Ancak bankaların iç işleyişleri nedeniyle, bu
-            tutarlar banka tarafından kartınıza sipariş sırasında seçtiğiniz ay
-            kadar taksitle iade edilir. İade ödemelerinin taksitle yapılmasında
-            İşPool'un herhangi bir dahiliyeti olmayıp detaylı bilgi için
-            bankanızla iletişime geçmeniz gerekir.
+            Özel tasarım talepleri için{" "}
+            <Link className="underline" href="/products/special_production">
+              özel tasarım sayfasını
+            </Link>{" "}
+            kullanabilirsiniz.
           </p>
         </FAQItem>
-      </div>
+      </Group>
 
-      <footer className="mt-16 pt-8 border-t border-gray-100 text-center">
-        <p className="text-sm text-gray-400 uppercase tracking-widest italic">
-          İşPool Tekstil - Bilgi Merkezi
-        </p>
-      </footer>
+      <Group title="İade ve değişim">
+        <FAQItem question="Aldığım üründen vazgeçersem ne olur?">
+          <p>
+            İade ve değişim koşulları ayrı bir sayfada anlatılmıştır.{" "}
+            <Link className="underline" href="/help/returns-help">
+              İade ve değişim sayfası
+            </Link>
+          </p>
+        </FAQItem>
+      </Group>
+
+      <section className="mt-12 rounded-lg bg-gray-50 border border-gray-200 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+          Aradığınızı bulamadınız mı?
+        </h2>
+        <ul className="space-y-1 text-gray-800">
+          <li>
+            E-posta:{" "}
+            <a className="underline" href={`mailto:${COMPANY_EMAIL}`}>
+              {COMPANY_EMAIL}
+            </a>
+          </li>
+          <li>
+            Telefon:{" "}
+            <a
+              className="underline"
+              href={`tel:${COMPANY_PHONE.replace(/\s/g, "")}`}
+            >
+              {COMPANY_PHONE}
+            </a>
+          </li>
+        </ul>
+      </section>
     </div>
   );
 };

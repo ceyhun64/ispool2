@@ -140,7 +140,7 @@ export default function Products() {
                   <span className="animate-ping absolute inline-flex h-full w-full bg-orange-400 opacity-75"></span>
                   <span className="relative inline-flex h-2 w-2 bg-orange-500"></span>
                 </span>
-                B2B Kurumsal İş Ortaklığı
+                Kurumsal Siparişler
               </div>
 
               <h3 className="text-2xl sm:text-3xl font-black tracking-tighter uppercase leading-[0.95] text-white">
@@ -149,9 +149,9 @@ export default function Products() {
               </h3>
 
               <p className="text-slate-500 font-medium tracking-wide text-xs md:text-sm max-w-xl mx-auto lg:mx-0 opacity-80 leading-relaxed">
-                Şirketinizin kurumsal kimliğine özel tasarım, yüksek adetli
-                üretim kapasitesi ve lojistik gücümüzle küresel standartlarda
-                çözüm sunuyoruz. Toptan satış avantajlarını keşfedin.
+                Firmanıza özel logo baskısı ve nakış, çok adetli siparişler için
+                toplu alım talebi. Detaylar ve teklif için toplu alım sayfasını
+                inceleyin.
               </p>
             </div>
 
@@ -159,12 +159,12 @@ export default function Products() {
             <div className="w-full lg:w-auto flex flex-col items-center gap-4">
               <Link href="/products/wholesale" className="w-full md:w-auto">
                 <button className="w-full rounded-sm md:w-auto flex items-center justify-center gap-4 bg-white text-slate-950 px-8 md:px-14 py-5 md:py-7 font-black text-[11px] md:text-[12px] tracking-[0.15em] transition-all duration-500 hover:bg-orange-600 hover:text-white shadow-2xl hover:shadow-orange-900/20 group">
-                  TOPTAN SATIŞ MERKEZİ
+                  TOPLU ALIM SAYFASI
                   <ArrowRight className="w-5 h-5 transition-transform duration-500 group-hover:translate-x-2" />
                 </button>
               </Link>
               <span className="text-slate-500 text-[10px] font-bold tracking-widest uppercase opacity-50">
-                Hızlı Teklif & Kurumsal Katalog
+                Hızlı Teklif
               </span>
             </div>
           </div>

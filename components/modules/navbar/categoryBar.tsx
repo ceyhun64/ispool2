@@ -150,14 +150,13 @@ export default function CategoryBar({
   }, []);
 
   const secondaryLinks = [
-    { label: "İletişim", icon: <Mail size={16} />, href: "/help/contact" },
     {
-      label: "Toptan Satış",
-      icon: <Package size={16} />,
-      href: "/products/wholesale",
+      label: "Kargo Takibi",
+      icon: <Truck size={16} />,
+      href: "/profile/cargo_tracking",
     },
     {
-      label: "Özel Üretim",
+      label: "Özel Tasarım",
       icon: <Ruler size={16} />,
       href: "/products/special_production",
     },
@@ -167,14 +166,15 @@ export default function CategoryBar({
       href: "/products/special_production/gallery",
     },
     {
+      label: "Toplu Alım",
+      icon: <Package size={16} />,
+      href: "/products/wholesale",
+    },
+    { label: "İletişim", icon: <Mail size={16} />, href: "/help/contact" },
+    {
       label: "Hakkımızda",
       icon: <Info size={16} />,
       href: "/institutional/about",
-    },
-    {
-      label: "Kargo Takibi",
-      icon: <Truck size={16} />,
-      href: "/profile/cargo_tracking",
     },
     {
       label: "Kariyer",
@@ -461,7 +461,7 @@ export default function CategoryBar({
                     opacity: scrollProgress > 0.8 ? 0.3 : 1,
                   }}
                 />
-                ÖZEL ÜRETİMLER
+                ÖZEL TASARIMLAR
                 {/* Alt Çizgi Efekti */}
                 <span
                   className="absolute left-1/2 w-0 h-[4px] transition-all duration-500 ease-out -translate-x-1/2 group-hover:w-full z-[110]"
@@ -574,7 +574,7 @@ export default function CategoryBar({
               <div className="mx-auto px-8 py-10">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-sm font-black uppercase tracking-widest text-slate-900">
-                    Özel Üretim Örnek Çalışmalar
+                    Özel Tasarım Örnek Çalışmalar
                   </h3>
                   <Link
                     href="/products/special_production/gallery"

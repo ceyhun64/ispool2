@@ -39,7 +39,7 @@ const ToptanSatisPremium = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           recipients: ["info@ispool.com.tr"],
-          subject: `Toplu Satış Talep: ${formData.company}`,
+          subject: `Toplu Alım Talebi:${formData.company}`,
           message: `Ad: ${formData.name}\nŞirket: ${formData.company}\nE-posta: ${formData.email}\nTel: ${formData.phone}\n\nDetay:\n${formData.details}`,
         }),
       });
@@ -196,7 +196,7 @@ const ToptanSatisPremium = () => {
                 className="text-transparent"
                 style={{ WebkitTextStroke: "1px rgba(255,255,255,0.3)" } as any}
               >
-                SATIŞ
+                ALIM
               </span>
             </h1>
             <div className="flex flex-col md:flex-row gap-8 md:gap-16 items-start">
@@ -212,7 +212,7 @@ const ToptanSatisPremium = () => {
                   Hızlı Teklif Al
                 </button>
                 <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest text-center sm:text-left">
-                  Kapasite: 500.000+ Adet/Ay
+                  ⚠ DOLDURULACAK: aylık üretim/tedarik kapasitesi (doğrulanabiliyorsa)
                 </span>
               </div>
             </div>
@@ -364,7 +364,7 @@ const ToptanSatisPremium = () => {
 
       <footer className="bg-slate-950 py-10 text-center border-t border-white/10 px-6">
         <p className="text-slate-600 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.4em] leading-relaxed">
-          İŞPOOL PROFESYONEL İŞ KIYAFETLERİ // TOPTAN SATIŞ DEPARTMANI 2026
+          İŞPOOL PROFESYONEL İŞ KIYAFETLERİ // TOPLU ALIM
         </p>
       </footer>
     </div>
