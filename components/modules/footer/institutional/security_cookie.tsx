@@ -53,7 +53,7 @@ export default function CookiePolicy() {
                   Güvenlik Protokolü
                 </span>
               </div>
-              <h1 className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter text-slate-950 leading-none mb-8">
+              <h1 className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter text-sax-800 leading-none mb-8">
                 Çerez <br />
                 <span className="text-orange-600 drop-shadow-sm">
                   Politikası
@@ -101,7 +101,7 @@ export default function CookiePolicy() {
                     </div>
                   </div>
 
-                  <h2 className="text-lg font-black tracking-tight text-slate-900 uppercase italic">
+                  <h2 className="text-lg font-black tracking-tight text-sax-800 uppercase italic">
                     {section.title}
                   </h2>
 

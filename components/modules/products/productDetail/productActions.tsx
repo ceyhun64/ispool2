@@ -49,18 +49,18 @@ export default function ProductActions({
         className={cn(
           "h-12 w-full text-[11px] rounded-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-sm border",
           hasUploadedImage
-            ? "bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100"
-            : "bg-white border-slate-200 text-slate-700 hover:border-slate-900 hover:bg-slate-50",
+            ? "bg-sax-100 border-sax-800 text-sax-800 hover:bg-sax-100/70"
+            : "bg-white border-sax-800 text-sax-800 hover:bg-sax-100",
         )}
       >
         {hasUploadedImage ? (
           <>
-            <BadgeCheck size={16} className="text-orange-600" />
+            <BadgeCheck size={16} className="text-sax-800" />
             Farklı Resim Seç
           </>
         ) : (
           <>
-            <Upload size={16} className="text-slate-500" />
+            <Upload size={16} className="text-sax-800" />
             Kendi Resmini Yükle
           </>
         )}
@@ -96,7 +96,7 @@ export default function ProductActions({
             className={cn(
               "flex-1 h-12 rounded-sm text-[11px] font-bold uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-2",
               canAddToCart
-                ? "bg-slate-900 text-white hover:bg-orange-600"
+                ? "bg-orange-600 text-white hover:bg-orange-700"
                 : "bg-slate-200 text-slate-400 cursor-not-allowed",
             )}
           >
@@ -118,19 +118,19 @@ export default function ProductActions({
           className={cn(
             "flex-1 h-11 border rounded-sm flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider transition-all",
             isFavorited
-              ? "bg-slate-50 border-slate-200 text-slate-900"
-              : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50",
+              ? "bg-sax-100 border-sax-800 text-sax-800"
+              : "bg-white border-sax-800 text-sax-800 hover:bg-sax-100",
           )}
         >
           <Heart
             size={14}
-            className={cn(isFavorited && "fill-orange-500 text-orange-500")}
+            className={cn(isFavorited && "fill-sax-700 text-sax-700")}
           />
           {isFavorited ? "Listede" : "Listeye Ekle"}
         </button>
         <button
           onClick={onShare}
-          className="w-11 h-11 rounded-sm bg-white border border-slate-200 flex items-center justify-center hover:border-orange-600 hover:text-orange-600 transition-all shadow-sm"
+          className="w-11 h-11 rounded-sm bg-white border border-sax-800 text-sax-800 flex items-center justify-center hover:bg-sax-100 transition-all shadow-sm"
         >
           <Share2 size={14} />
         </button>

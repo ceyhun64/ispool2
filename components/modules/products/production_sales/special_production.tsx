@@ -86,7 +86,7 @@ const OzelUretimPremium = () => {
       {isModalOpen && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center p-2 sm:p-4">
           <div
-            className="absolute inset-0 bg-slate-950/95 backdrop-blur-md"
+            className="absolute inset-0 bg-sax-950/95 backdrop-blur-md"
             onClick={() => !isLoading && setIsModalOpen(false)}
           />
           <div className="relative bg-white w-full max-w-2xl border-t-[8px] sm:border-t-[12px] border-amber-600 p-6 sm:p-10 md:p-16 shadow-2xl animate-in fade-in zoom-in duration-300 max-h-[95vh] overflow-y-auto">
@@ -172,14 +172,14 @@ const OzelUretimPremium = () => {
       )}
 
       {/* --- HERO SECTION --- */}
-      <section className="relative min-h-[85vh] md:h-[90vh] flex items-center bg-slate-950 overflow-hidden py-20 md:py-0">
+      <section className="relative min-h-[85vh] md:h-[90vh] flex items-center bg-sax-950 overflow-hidden py-20 md:py-0">
         <div className="absolute inset-0 z-0">
           <img
             src="/special_production/banner.jpg"
             className="w-full h-full object-cover opacity-20 contrast-150 scale-110"
             alt="Zanaat"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-sax-950 via-sax-950/80 to-transparent"></div>
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
@@ -247,7 +247,7 @@ const OzelUretimPremium = () => {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                   />
                 </div>
-                <div className="p-8 sm:p-10 bg-white group-hover:bg-slate-950 group-hover:text-white transition-all">
+                <div className="p-8 sm:p-10 bg-white group-hover:bg-sax-950 group-hover:text-white transition-all">
                   <span className="text-amber-600 font-black text-3xl sm:text-4xl mb-4 block italic">
                     0{idx + 1}.
                   </span>
@@ -265,7 +265,7 @@ const OzelUretimPremium = () => {
       </section>
 
       {/* --- TEKNİK ÖZELLİKLER --- */}
-      <section className="py-20 md:py-32 bg-slate-950 text-white overflow-hidden">
+      <section className="py-20 md:py-32 bg-sax-950 text-white overflow-hidden">
         <div className="container mx-auto px-6">
           <h2 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter italic mb-12 sm:mb-20">
             FONKSİYONEL <span className="text-amber-600">ÜSTÜNLÜK</span>
@@ -304,7 +304,7 @@ const OzelUretimPremium = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 border-2 border-slate-950 shadow-2xl ">
               <a
                 href="tel:+905343529420"
-                className="bg-white p-10 sm:p-12 hover:bg-slate-950 hover:text-white transition-all group border-b-2 sm:border-b-0 sm:border-r-2 border-slate-950"
+                className="bg-white p-10 sm:p-12 hover:bg-sax-950 hover:text-white transition-all group border-b-2 sm:border-b-0 sm:border-r-2 border-slate-950"
               >
                 <span className="block text-[10px] font-black uppercase text-slate-400 group-hover:text-amber-600 mb-4">
                   DİREKT TELEFON
@@ -329,7 +329,7 @@ const OzelUretimPremium = () => {
         </div>
       </section>
 
-      <footer className="bg-slate-950 py-12 text-center">
+      <footer className="bg-sax-950 py-12 text-center">
         <p className="text-slate-600 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.5em] px-6">
           İŞPOOL ÖZEL TASARIM ATÖLYESİ // BESPOKE PRODUCTION 2026
         </p>

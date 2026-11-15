@@ -128,10 +128,10 @@ export default function Products() {
         </div>
 
         {/* Kurumsal Alt Banner - Toptan Satış */}
-        <footer className="relative bg-slate-950 overflow-hidden group border border-white/5 ">
+        <footer className="relative bg-sax-950 overflow-hidden group border border-white/5 ">
           {/* Arka Plan Görseli */}
           {/* Katman Efekti */}
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent z-0" />
+          <div className="absolute inset-0 bg-gradient-to-r from-sax-950 via-sax-950/80 to-transparent z-0" />
 
           <div className="relative z-10 p-8 sm:p-12 lg:p-20 flex flex-col lg:flex-row items-center justify-between gap-10 md:gap-16">
             <div className="max-w-2xl space-y-4 md:space-y-6 text-center lg:text-left">

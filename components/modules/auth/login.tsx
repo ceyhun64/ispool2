@@ -81,7 +81,7 @@ export default function LoginForm() {
         className="w-full max-w-[1200px] min-h-[700px] grid grid-cols-1 lg:grid-cols-12 bg-white overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.08)] border border-slate-100 "
       >
         {/* SOL PANEL: KURUMSAL VİZYON */}
-        <div className="lg:col-span-5 bg-[#0f172a] p-12 flex flex-col justify-between text-white relative overflow-hidden">
+        <div className="lg:col-span-5 bg-sax-950 p-12 flex flex-col justify-between text-white relative overflow-hidden">
           {/* Sofistike Arka Plan Dokusu */}
           <div
             className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -229,7 +229,7 @@ export default function LoginForm() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-12 rounded-sm bg-[#0f172a] text-white hover:bg-orange-600  transition-all duration-300 shadow-lg shadow-slate-200"
+                className="w-full h-12 rounded-sm bg-sax-800 text-white hover:bg-sax-700  transition-all duration-300 shadow-lg shadow-slate-200"
               >
                 {isLoading ? (
                   <Loader2 className="animate-spin" size={20} />

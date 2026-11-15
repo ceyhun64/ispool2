@@ -94,7 +94,7 @@ export default function CategoriesSection() {
         {loading ? (
           <Skeleton className="w-full h-125 rounded-xl bg-slate-200" />
         ) : (
-          <div className="relative overflow-hidden rounded-xl bg-slate-950 border border-white/10 shadow-2xl">
+          <div className="relative overflow-hidden rounded-xl bg-sax-950 border border-white/10 shadow-2xl">
             {/* Tarayıcı çizgisi */}
             <div className="absolute top-0 left-0 w-full h-0.5 bg-orange-500/80 shadow-[0_0_15px_rgba(234,88,12,0.9)] z-30" />
             {/* Köşe detayları */}
@@ -178,7 +178,7 @@ export default function CategoriesSection() {
                     className="object-cover lg:object-contain object-center opacity-60 transition-opacity duration-700"
                   />
                   {/* Sadece mobilede sol kenar geçiş gradyanı */}
-                  <div className="absolute inset-0 bg-linear-to-r from-slate-950 via-slate-950/10 to-transparent lg:hidden" />
+                  <div className="absolute inset-0 bg-linear-to-r from-sax-950 via-sax-950/10 to-transparent lg:hidden" />
                 </div>
 
                 {/* Özellikler paneli — her zaman görselin altında */}
@@ -189,7 +189,7 @@ export default function CategoriesSection() {
                       return (
                         <div
                           key={f.title}
-                          className="flex items-start gap-3 bg-slate-950/80 backdrop-blur-sm px-5 py-3.5 hover:bg-white/5 transition-colors"
+                          className="flex items-start gap-3 bg-sax-950/80 backdrop-blur-sm px-5 py-3.5 hover:bg-white/5 transition-colors"
                         >
                           <div className="shrink-0 mt-0.5 p-1.5 rounded bg-orange-500/10 border border-orange-500/20">
                             <Icon size={13} className="text-orange-400" />

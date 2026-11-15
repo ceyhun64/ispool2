@@ -165,7 +165,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
     icon?: any;
   }) => (
     <div className="flex items-center gap-2 mb-6 text-slate-400">
-      {Icon && <Icon size={12} className="text-orange-600" />}
+      {Icon && <Icon size={12} className="text-sax-800" />}
       <h3 className="text-[10px] uppercase tracking-[0.2em] font-black">
         {children}
       </h3>
@@ -191,7 +191,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
                 className={cn(
                   "py-5 border-2 rounded-sm transition-all flex flex-col items-center gap-3",
                   isActive
-                    ? "border-slate-950 bg-slate-950 text-white shadow-lg"
+                    ? "border-sax-800 bg-sax-800 text-white shadow-lg"
                     : "border-slate-200 bg-white text-slate-400",
                 )}
               >
@@ -219,7 +219,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
                 className={cn(
                   "w-full flex rounded-sm items-center gap-4 p-4 border transition-all text-left group",
                   isActive
-                    ? "border-orange-500 bg-orange-50/30"
+                    ? "border-sax-700 bg-sax-100/40"
                     : "border-slate-100 bg-white",
                 )}
               >
@@ -227,7 +227,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
                   className={cn(
                     "p-2 transition-colors",
                     isActive
-                      ? "bg-orange-500 text-white"
+                      ? "bg-sax-700 text-white"
                       : "bg-slate-100 text-slate-400",
                   )}
                 >
@@ -267,7 +267,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
             className={cn(
               "rounded-sm w-full text-left py-3 px-4 border text-[12px] font-bold uppercase",
               !currentCategory
-                ? "bg-orange-50 border-orange-500 text-orange-600"
+                ? "bg-sax-100 border-sax-700 text-sax-800"
                 : "bg-white border-slate-200 text-slate-900",
             )}
           >
@@ -283,7 +283,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
                 key={cat.id}
                 className={cn(
                   "bg-white border rounded-sm overflow-hidden",
-                  isActive ? "border-orange-500" : "border-slate-200",
+                  isActive ? "border-sax-700" : "border-slate-200",
                 )}
               >
                 <div className="flex items-center">
@@ -303,7 +303,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
                     className={cn(
                       "flex-1 text-left py-3 px-4 text-[12px] font-bold uppercase",
                       isActive
-                        ? "text-orange-600 bg-orange-50/30"
+                        ? "text-sax-800 bg-sax-100/40"
                         : "text-slate-700",
                     )}
                   >
@@ -354,7 +354,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
                                 ),
                               )
                             }
-                            className="flex-1 text-left py-2 px-3 text-[10px] font-black uppercase text-orange-600"
+                            className="flex-1 text-left py-2 px-3 text-[10px] font-black uppercase text-sax-800"
                           >
                             {mid.name}
                           </button>
@@ -399,7 +399,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
                                     ),
                                   )
                                 }
-                                className="w-full text-left py-2 px-3 text-[11px] font-semibold text-slate-600 hover:text-orange-600 flex items-center gap-2"
+                                className="w-full text-left py-2 px-3 text-[11px] font-semibold text-slate-600 hover:text-sax-800 flex items-center gap-2"
                               >
                                 <ChevronRight
                                   size={12}
@@ -429,7 +429,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
             className={cn(
               "flex items-center gap-2 py-3 px-3 border rounded-sm text-[10px] font-bold uppercase",
               brandFilter === "all"
-                ? "border-orange-500 text-orange-600 bg-orange-50/50"
+                ? "border-sax-700 text-sax-800 bg-sax-100"
                 : "border-slate-200 bg-white",
             )}
           >
@@ -445,7 +445,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
               className={cn(
                 "flex items-center gap-2 py-3 px-3 border rounded-sm text-[10px] font-bold uppercase",
                 brandFilter === String(brand.id)
-                  ? "border-orange-500 text-orange-600 bg-orange-50/50 shadow-sm"
+                  ? "border-sax-700 text-sax-800 bg-sax-100 shadow-sm"
                   : "border-slate-200 bg-white",
               )}
             >
@@ -464,7 +464,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
             className={cn(
               "flex items-center gap-2 py-3 px-3 border rounded-sm text-[10px] font-bold uppercase",
               colorFilter === "all"
-                ? "border-orange-500 text-orange-600 bg-orange-50/50"
+                ? "border-sax-700 text-sax-800 bg-sax-100"
                 : "border-slate-200 bg-white",
             )}
           >
@@ -480,7 +480,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
               className={cn(
                 "flex items-center gap-2 py-3 px-3 border rounded-sm text-[10px] font-bold uppercase",
                 colorFilter === String(color.id)
-                  ? "border-orange-500 text-orange-600 bg-orange-50/50"
+                  ? "border-sax-700 text-sax-800 bg-sax-100"
                   : "border-slate-200 bg-white",
               )}
             >
@@ -503,7 +503,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
             className={cn(
               "flex items-center justify-center py-3 px-2 border rounded-sm text-[10px] font-bold uppercase",
               sizeFilter === "all"
-                ? "border-orange-500 text-orange-600 bg-orange-50/50"
+                ? "border-sax-700 text-sax-800 bg-sax-100"
                 : "border-slate-200 bg-white",
             )}
           >
@@ -516,7 +516,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
               className={cn(
                 "flex items-center justify-center py-3 px-2 border rounded-sm text-[10px] font-bold uppercase",
                 sizeFilter === String(size.id)
-                  ? "border-orange-500 text-orange-600 bg-orange-50/50 shadow-sm"
+                  ? "border-sax-700 text-sax-800 bg-sax-100 shadow-sm"
                   : "border-slate-200 bg-white",
               )}
             >
@@ -577,7 +577,7 @@ const MobileFilter: React.FC<MobileFilterProps> = ({
             setExpandedCategories([]);
             setExpandedMiddleCategories([]);
           }}
-          className="w-full flex items-center justify-center gap-3 py-5 bg-slate-50 border-2 border-dashed border-slate-200 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-orange-600 hover:border-orange-200 transition-all"
+          className="w-full flex items-center justify-center gap-3 py-5 bg-slate-50 border-2 border-dashed border-slate-200 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-sax-800 hover:border-sax-100 transition-all"
         >
           AYARLARI SIFIRLA
         </button>

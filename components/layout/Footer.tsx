@@ -6,16 +6,14 @@ import {
   Instagram,
   Facebook,
   Phone,
-  ShieldCheck,
-  Truck,
   Mail,
-  CreditCard,
   MessageCircle,
   ChevronDown,
 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { sortCategoriesByDisplayOrder } from "@/lib/categoryOrder";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -60,33 +58,25 @@ export default function Footer() {
   const menuGroups = {
     alisveris: {
       title: "Alışveriş",
-      links: [
-        { label: "Havale ve EFT Bilgileri", href: "/customer/bank-details" },
-        { label: "Logo Baskı ve Nakış", href: "/help/printing" },
-        { label: "İade ve Değişim Koşulları", href: "/help/returns-help" },
-        { label: "Sıkça Sorulan Sorular", href: "/help/faq" },
-      ],
-    },
-    kategoriler: {
-      title: "Kategoriler",
-      links: [
-        { label: "İş Elbiseleri", href: "/products/category/1" },
-        { label: "İş Ayakkabıları", href: "/products/category/2" },
-        { label: "İş Eldivenleri", href: "/products/category/3" },
-        { label: "Koruyucu Teknik Kıyafet", href: "/products/category/4" },
-        { label: "İş Güvenlik Ekipmanları", href: "/products/category/5" },
-        { label: "Outdoor", href: "/products/category/6" },
-      ],
-    },
-    destek: {
-      title: "Destek",
-      links: [
-        { label: "İletişim", href: "/help/contact" },
-        { label: "Mesafeli Satış Sözleşmesi", href: "/help/distance-sales" },
-        { label: "Kullanım Koşulları", href: "/customer/terms" },
-        { label: "Gizlilik Politikası", href: "/customer/privacy" },
-        { label: "KVKK", href: "/help/kvkk" },
-      ],
+      // Kategoriler ortak gösterim sırasıyla dizilir; Toplu Alım ve Özel
+      // Tasarım listede olmadığı için kendi sırasıyla sonda kalır.
+      links: sortCategoriesByDisplayOrder(
+        [
+          { label: "İş Elbiseleri", href: "/products/category/1" },
+          {
+            label: "İş Ayakkabıları",
+            orderName: "İş Ayakkabıları ve Ayak Koruma",
+            href: "/products/category/2",
+          },
+          { label: "İş Eldivenleri", href: "/products/category/3" },
+          { label: "Koruyucu Teknik Kıyafet", href: "/products/category/4" },
+          { label: "İş Güvenlik Ekipmanları", href: "/products/category/5" },
+          { label: "Outdoor", href: "/products/category/6" },
+          { label: "Toplu Alım", href: "/products/wholesale" },
+          { label: "Özel Tasarım", href: "/products/special_production" },
+        ],
+        (l) => l.orderName ?? l.label,
+      ),
     },
     sirket: {
       title: "Şirket",
@@ -97,6 +87,22 @@ export default function Footer() {
         { label: "Markalarımız", href: "/institutional/partners" },
         { label: "İşPool Blog", href: "/institutional/blog" },
         { label: "Kariyer", href: "/institutional/career" },
+        { label: "İletişim", href: "/help/contact" },
+      ],
+    },
+    destek: {
+      title: "Destek ve Yasal",
+      links: [
+        { label: "Sıkça Sorulan Sorular", href: "/help/faq" },
+        { label: "İade ve Değişim Koşulları", href: "/help/returns-help" },
+        { label: "Kargo Takibi", href: "/profile/cargo_tracking" },
+        { label: "Logo Baskı ve Nakış", href: "/help/printing" },
+        { label: "Havale ve EFT Bilgileri", href: "/customer/bank-details" },
+        { label: "Gizlilik Politikası", href: "/customer/privacy" },
+        { label: "KVKK", href: "/help/kvkk" },
+        { label: "Mesafeli Satış Sözleşmesi", href: "/help/distance-sales" },
+        { label: "Kullanım Koşulları", href: "/customer/terms" },
+        { label: "Çerez Politikası", href: "/institutional/cookie_policy" },
       ],
     },
   };
@@ -122,158 +128,120 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-slate-950 text-slate-400 relative border-t-4 border-orange-600 font-sans">
-      {/* Avantajlar Barı */}
-      <div className="hidden md:block border-b border-white/5 bg-white/5">
-        <div className="container mx-auto px-6 md:px-12 py-6">
-          <div className="flex flex-wrap justify-between items-center gap-6 md:gap-8">
-            {[
-              { Icon: ShieldCheck, text: "iyzico ile Ödeme" },
-              { Icon: Truck, text: "Horoz Lojistik ile Kargo" },
-              { Icon: CreditCard, text: "12 Taksit Seçeneği" },
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-center gap-3 min-w-fit">
-                <item.Icon
-                  className="text-orange-600 shrink-0"
-                  size={24}
-                  aria-hidden="true"
-                />
-                <span className="text-[11px] font-black tracking-widest text-white uppercase">
-                  {item.text}
-                </span>
-              </div>
-            ))}
-          </div>
+    <footer className="bg-sax-950 text-sax-100/80 relative border-t-4 border-orange-600 font-sans">
+      {/* Bülten şeridi */}
+      <div className="bg-sax-900">
+        <div className="container mx-auto px-6 md:px-12 py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-10">
+          <label
+            htmlFor="newsletter-email"
+            className="text-white text-[12px] font-bold tracking-widest uppercase block"
+          >
+            Bültene Katılın
+          </label>
+          <form
+            onSubmit={handleSubscribe}
+            className="relative w-full md:max-w-md"
+          >
+            <input
+              id="newsletter-email"
+              type="email"
+              placeholder="E-posta adresiniz"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-sm bg-sax-950 border border-sax-700 p-4 pr-14 text-[13px] text-white placeholder:text-sax-100/50 focus:outline-none focus:border-sax-600 transition-all"
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              aria-label="Gönder"
+              className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-orange-500 hover:text-orange-400 transition-colors"
+            >
+              <Mail size={22} aria-hidden="true" />
+            </button>
+          </form>
         </div>
       </div>
 
       <div className="container mx-auto px-6 md:px-12 py-12 md:py-16">
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-12">
-          {/* Sol Kolon: Logo ve Bülten */}
-          <div className="xl:col-span-3 space-y-8">
-            <Link
-              href="/"
-              className="inline-block"
-              aria-label="İşPool Ana Sayfa"
-            >
-              <Image
-                src="/logo/logofooter.png"
-                alt="İşPool Logo"
-                width={140}
-                height={40}
-                className="object-contain"
-              />
-            </Link>
+        <Link
+          href="/"
+          className="inline-block mb-10"
+          aria-label="İşPool Ana Sayfa"
+        >
+          <Image
+            src="/logo/logofooter.png"
+            alt="İşPool Logo"
+            width={140}
+            height={40}
+            className="object-contain"
+          />
+        </Link>
 
-            <div className="space-y-4">
-              <label
-                htmlFor="newsletter-email"
-                className="text-white text-[11px] font-black tracking-widest uppercase block"
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-12">
+          {Object.entries(menuGroups).map(([key, group]) => (
+            <div key={key} className="border-b border-white/10 md:border-none">
+              <button
+                onClick={() => toggleSection(key)}
+                aria-expanded={openSection === key}
+                aria-controls={`section-${key}`}
+                // min-h-[48px] ile mobil menü başlıkları kolay tıklanır hale getirildi
+                className="w-full py-4 md:py-0 md:mb-6 flex items-center justify-between text-left focus:outline-none min-h-12 md:min-h-0"
               >
-                Bültene Katılın
-              </label>
-              <form
-                onSubmit={handleSubscribe}
-                className="relative group max-w-sm"
-              >
-                <input
-                  id="newsletter-email"
-                  type="email"
-                  placeholder="E-posta adresiniz"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-sm bg-slate-900 border border-slate-800 p-4 pr-14 text-[13px] text-white focus:outline-none focus:border-orange-600 transition-all"
-                />
-                <button
-                  type="submit"
-                  disabled={loading}
-                  aria-label="Gönder"
-                  // w-12 h-full yaparak butonu 48px genişliğine ulaştırdık
-                  className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-orange-600 hover:text-orange-400 transition-colors"
-                >
-                  <Mail size={22} aria-hidden="true" />
-                </button>
-              </form>
-            </div>
-
-            {/* Sosyal Medya - İkon tıklama alanları p-2.5 ile genişletildi */}
-            <div className="flex items-center gap-4">
-              {socialLinks.map((social, i) => (
-                <a
-                  key={i}
-                  href={social.href}
-                  aria-label={social.aria}
-                  className="p-2.5 bg-white/5 text-slate-400 hover:bg-orange-600 hover:text-white transition-all rounded-sm flex items-center justify-center min-w-11 min-h-11"
-                >
-                  <social.icon size={20} aria-hidden="true" />
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Sağ Kolon: Menüler */}
-          <div className="xl:col-span-9 grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-8">
-            {Object.entries(menuGroups).map(([key, group]) => (
-              <div key={key} className="border-b border-white/5 md:border-none">
-                <button
-                  onClick={() => toggleSection(key)}
-                  aria-expanded={openSection === key}
-                  aria-controls={`section-${key}`}
-                  // min-h-[48px] ile mobil menü başlıkları kolay tıklanır hale getirildi
-                  className="w-full py-4 md:py-0 md:mb-6 flex items-center justify-between text-left focus:outline-none min-h-12 md:min-h-0"
-                >
-                  <h4 className="text-white text-[15px] font-bold uppercase tracking-tight">
-                    {group.title}
-                  </h4>
-                  <ChevronDown
-                    size={20}
-                    className={cn(
-                      "text-slate-500 transition-transform md:hidden",
-                      openSection === key && "rotate-180",
-                    )}
-                  />
-                </button>
-
-                <ul
-                  id={`section-${key}`}
+                <h4 className="text-white text-[15px] font-bold uppercase tracking-tight">
+                  {group.title}
+                </h4>
+                <ChevronDown
+                  size={20}
                   className={cn(
-                    "space-y-4 overflow-hidden transition-all duration-300 md:max-h-none",
-                    openSection === key
-                      ? "max-h-96 pb-6"
-                      : "max-h-0 md:max-h-none",
+                    "text-sax-100/60 transition-transform md:hidden",
+                    openSection === key && "rotate-180",
                   )}
-                >
-                  {group.links.map((link) => (
-                    <li key={link.label}>
-                      <Link
-                        href={link.href}
-                        className="text-[13px] text-slate-400 hover:text-white hover:translate-x-1 transition-all py-1.5 inline-block"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+                />
+              </button>
+
+              <ul
+                id={`section-${key}`}
+                className={cn(
+                  "space-y-3 overflow-hidden transition-all duration-300 md:max-h-none",
+                  openSection === key
+                    ? "max-h-[40rem] pb-6"
+                    : "max-h-0 md:max-h-none",
+                )}
+              >
+                {group.links.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-[13px] text-sax-100/80 hover:text-white hover:translate-x-1 transition-all py-1 inline-block"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Alt Bar: Copyright ve Ödeme — mobilde pb-20 ile sabit bottom nav'ın altından kaçar */}
-      <div className="bg-white pt-6 pb-20 lg:pb-6 border-t border-slate-200">
+      {/* Alt Bar: telif ve sosyal ikonlar — mobilde pb-20 ile sabit bottom nav'ın altından kaçar */}
+      <div className="pt-6 pb-20 lg:pb-6 border-t border-white/10">
         <div className="container mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 text-center md:text-left leading-relaxed">
+          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-sax-100/70 text-center md:text-left leading-relaxed">
             © {currentYear} İŞPOOL ENDÜSTRİYEL GÜVENLİK SİSTEMLERİ.{" "}
             <br className="md:hidden" /> TÜM HAKLARI SAKLIDIR.
           </div>
-          <div className="relative h-8 w-64">
-            <Image
-              src="/iyzico/logo_band_colored@3x.webp"
-              alt="iyzico ile güvenli ödeme seçenekleri"
-              fill
-              className="object-contain"
-            />
+          <div className="flex items-center gap-3">
+            {socialLinks.map((social, i) => (
+              <a
+                key={i}
+                href={social.href}
+                aria-label={social.aria}
+                className="p-2.5 bg-white/5 text-sax-100/80 hover:bg-orange-600 hover:text-white transition-all rounded-sm flex items-center justify-center min-w-11 min-h-11"
+              >
+                <social.icon size={20} aria-hidden="true" />
+              </a>
+            ))}
           </div>
         </div>
       </div>

@@ -257,39 +257,27 @@ export default function AllProducts({
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full lg:w-auto">
+          <div className="grid grid-cols-1 gap-2 sm:gap-4 w-full lg:w-auto">
             {[
               {
-                label: "Güvenlik Skoru",
-                val: "%100",
-                icon: ShieldCheck,
-                color: "text-emerald-600",
-              },
-              {
-                label: isDiscountMode ? "İndirimli Ürün" : "Anlık Stok",
+                label: isDiscountMode ? "İndirimli Ürün" : "Ürün Sayısı",
                 val: isDiscountMode ? filteredProducts.length : products.length,
                 icon: isDiscountMode ? Percent : Activity,
                 color: isDiscountMode ? "text-emerald-600" : "text-orange-600",
               },
-              {
-                label: "Standartlar",
-                val: "EN/ISO",
-                icon: Cog,
-                color: "text-blue-600",
-              },
             ].map((stat, i) => (
               <div
                 key={i}
-                className="bg-slate-50 p-3 sm:p-5 min-w-[100px] sm:min-w-[140px] group hover:border-b-2 hover:border-b-orange-600 transition-all duration-300"
+                className="bg-sax-100 p-3 sm:p-5 min-w-[100px] sm:min-w-[140px] group hover:border-b-2 hover:border-b-orange-600 transition-all duration-300"
               >
                 <stat.icon
                   size={16}
-                  className={`${stat.color} mb-2 sm:mb-3 group-hover:rotate-180 transition-transform duration-500`}
+                  className={`text-sax-800 mb-2 sm:mb-3 group-hover:rotate-180 transition-transform duration-500`}
                 />
-                <div className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 mb-1">
+                <div className="text-xl sm:text-2xl font-black tracking-tight text-sax-800 mb-1">
                   {stat.val}
                 </div>
-                <div className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                <div className="text-[8px] sm:text-[9px] font-black text-sax-800 uppercase tracking-widest">
                   {stat.label}
                 </div>
               </div>
@@ -301,7 +289,7 @@ export default function AllProducts({
           <div className="flex gap-2">
             <button
               onClick={() => setIsMobileFilterOpen(true)}
-              className="flex-1 flex items-center rounded-sm justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-slate-900 text-white text-[10px] sm:text-[11px] font-black tracking-widest uppercase"
+              className="flex-1 flex items-center rounded-sm justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-sax-800 text-white text-[10px] sm:text-[11px] font-black tracking-widest uppercase"
             >
               <SlidersHorizontal size={14} className="text-orange-500" />
               PARAMETRELER
@@ -472,7 +460,7 @@ export default function AllProducts({
             <div className="p-6 sm:p-8 border-t bg-slate-50">
               <button
                 onClick={() => setIsMobileFilterOpen(false)}
-                className="w-full rounded-sm py-5 sm:py-6 bg-slate-900 text-white font-black uppercase tracking-[0.3em] text-xs hover:bg-orange-600 transition-colors duration-500"
+                className="w-full rounded-sm py-5 sm:py-6 bg-sax-800 text-white font-black uppercase tracking-[0.3em] text-xs hover:bg-sax-700 transition-colors duration-500"
               >
                 Sistemleri Güncelle
               </button>

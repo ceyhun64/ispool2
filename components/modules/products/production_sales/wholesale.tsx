@@ -70,7 +70,7 @@ const ToptanSatisPremium = () => {
       {isModalOpen && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center p-2 sm:p-4">
           <div
-            className="absolute inset-0 bg-slate-950/98 backdrop-blur-md"
+            className="absolute inset-0 bg-sax-950/98 backdrop-blur-md"
             onClick={() => !isLoading && setIsModalOpen(false)}
           />
           <div className="relative bg-white w-full max-w-2xl border-t-[8px] sm:border-t-[12px] border-amber-600 p-6 sm:p-10 md:p-16 shadow-2xl animate-in fade-in zoom-in duration-300 overflow-y-auto max-h-[95vh]">
@@ -172,14 +172,14 @@ const ToptanSatisPremium = () => {
       )}
 
       {/* --- HERO --- */}
-      <section className="relative min-h-[80vh] md:h-[90vh] flex items-center bg-slate-950 py-20 md:py-0 overflow-hidden">
+      <section className="relative min-h-[80vh] md:h-[90vh] flex items-center bg-sax-950 py-20 md:py-0 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
             src="/wholesale/banner.avif"
             className="w-full h-full object-cover opacity-20 contrast-125 scale-110"
             alt="B2B"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-sax-950 via-sax-950/80 to-transparent" />
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
@@ -201,8 +201,9 @@ const ToptanSatisPremium = () => {
             </h1>
             <div className="flex flex-col md:flex-row gap-8 md:gap-16 items-start">
               <p className="text-slate-400 text-lg sm:text-xl font-light leading-relaxed max-w-xl border-l-4 border-amber-600 pl-6 sm:pl-8">
-                Dünya standartlarında üretim parkurumuzla kurumsal kıyafet
-                ihtiyaçlarınıza teknik çözümler üretiyoruz.
+                Seçili ürünlerde belirlenen adet ve üzeri alımlarda toplu alım
+                indirimi uygulanır. Kurumsal siparişler için teklif formunu
+                doldurabilirsiniz.
               </p>
               <div className="flex flex-col gap-4 w-full sm:w-auto">
                 <button
@@ -251,7 +252,7 @@ const ToptanSatisPremium = () => {
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="p-8 sm:p-12 border-b sm:border-b-0 sm:border-r border-slate-950 last:border-0 hover:bg-slate-950 hover:text-white transition-all duration-500 group"
+                className="p-8 sm:p-12 border-b sm:border-b-0 sm:border-r border-slate-950 last:border-0 hover:bg-sax-950 hover:text-white transition-all duration-500 group"
               >
                 <span className="text-amber-600 font-black text-xl block mb-6 italic">
                   {item.id} //
@@ -362,7 +363,7 @@ const ToptanSatisPremium = () => {
         </div>
       </section>
 
-      <footer className="bg-slate-950 py-10 text-center border-t border-white/10 px-6">
+      <footer className="bg-sax-950 py-10 text-center border-t border-white/10 px-6">
         <p className="text-slate-600 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.4em] leading-relaxed">
           İŞPOOL PROFESYONEL İŞ KIYAFETLERİ // TOPLU ALIM
         </p>

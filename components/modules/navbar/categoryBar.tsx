@@ -35,6 +35,7 @@ import {
 import middleCategoriesDataRaw from "@/data/middleCategories.json";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { sortCategoriesByDisplayOrder } from "@/lib/categoryOrder";
 
 // ─── Tip Tanımlamaları ───────────────────────────────────────────────────────
 interface MiddleCategoryInput {
@@ -71,7 +72,6 @@ export default function CategoryBar({
   const pathname = usePathname();
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
   const [showShowcase, setShowShowcase] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<ShowcaseImageItem | null>(
     null,
@@ -108,14 +108,18 @@ export default function CategoryBar({
       .then((data) => {
         if (!data.success) return;
         if (Array.isArray(data.categories)) {
+          // Yalnızca ekrandaki gösterim sırası değişir (lib/categoryOrder.ts).
           setCategories(
-            data.categories.map((cat: DbCategory) => ({
-              ...cat,
-              middleCategories: cat.middleCategories.map((mid) => ({
-                ...mid,
-                icon: middleCategoryIcons.get(mid.name),
+            sortCategoriesByDisplayOrder(
+              data.categories.map((cat: DbCategory) => ({
+                ...cat,
+                middleCategories: cat.middleCategories.map((mid) => ({
+                  ...mid,
+                  icon: middleCategoryIcons.get(mid.name),
+                })),
               })),
-            })),
+              (cat: DbCategory) => cat.name,
+            ),
           );
         }
       })
@@ -137,16 +141,6 @@ export default function CategoryBar({
       .catch((err) =>
         console.error("Örnek çalışma verileri alınamadı:", err),
       );
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const progress = Math.min(window.scrollY / 80, 1);
-      setScrollProgress(progress);
-    };
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const secondaryLinks = [
@@ -199,7 +193,9 @@ export default function CategoryBar({
   ];
 
   const currentCategory = categories.find((c) => c.id === activeCategory);
-  const navHeight = 80 - scrollProgress * 16;
+  const isGalleryActive = pathname.startsWith(
+    "/products/special_production/gallery",
+  );
 
   return (
     <>
@@ -377,141 +373,79 @@ export default function CategoryBar({
           setShowShowcase(false);
         }}
       >
-        <div
-          className="absolute inset-0 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500"
-          aria-hidden="true"
-        />
-        <div
-          className="absolute inset-0 bg-white transition-opacity duration-300"
-          style={{ opacity: scrollProgress }}
-          aria-hidden="true"
-        />
-        <div
-          className="absolute inset-0 shadow-md pointer-events-none"
-          style={{ opacity: scrollProgress }}
-          aria-hidden="true"
-        />
-
-        <div className="relative z-10 max-w-8xl mx-auto">
-          <div
-            className="flex items-center justify-center px-8"
-            style={{ height: `${navHeight}px`, transition: "height 0.3s ease" }}
-          >
-            <div className="grid grid-cols-9 w-full">
-              {/* KATEGORİLER */}
-              {categories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/products/category/${cat.id}`}
-                  onMouseEnter={() => {
-                    setActiveCategory(cat.id);
-                    setShowShowcase(false);
-                  }}
-                  className="relative text-[14px] px-2 font-bold flex items-center justify-center text-center uppercase transition-colors duration-300 group h-full"
-                  style={{
-                    color: scrollProgress > 0.5 ? "#334155" : "#ffffff",
-                  }}
-                >
-                  {/* Dikey Ayraç Çizgisi */}
-                  <span
-                    className="absolute right-0 top-1/4 h-1/2 w-[1px] transition-all duration-300"
-                    style={{
-                      backgroundColor:
-                        scrollProgress > 0.5
-                          ? "#64748b"
-                          : "rgba(255, 255, 255, 0.3)",
-                      opacity: scrollProgress > 0.8 ? 0.3 : 1,
+        <div className="box-border h-14 bg-sax-800 ">
+          <div className="relative z-10 max-w-8xl mx-auto h-full px-8 flex items-stretch">
+            {/* Sol: kategoriler ve sabit bağlantılar, eşit aralıklı */}
+            <div className="flex flex-1 items-stretch">
+              {categories.map((cat) => {
+                const href = `/products/category/${cat.id}`;
+                const isActive =
+                  pathname === href || pathname.startsWith(`${href}/`);
+                return (
+                  <Link
+                    key={cat.id}
+                    href={href}
+                    aria-current={isActive ? "page" : undefined}
+                    onMouseEnter={() => {
+                      setActiveCategory(cat.id);
+                      setShowShowcase(false);
                     }}
-                  />
+                    className={`group relative flex flex-1 min-w-0 items-center justify-center px-3 text-center text-[14px] font-semibold leading-tight transition-colors duration-200 hover:text-sax-100 focus-visible:text-sax-100 focus-visible:outline-none ${isActive ? "text-sax-100" : "text-white"}`}
+                  >
+                    {cat.name}
+                    <span
+                      aria-hidden="true"
+                      className={`absolute inset-x-3 bottom-0 h-[2px] bg-orange-500 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 ${isActive ? "opacity-100" : "opacity-0"}`}
+                    />
+                  </Link>
+                );
+              })}
 
-                  <span className="relative z-10">{cat.name}</span>
-
-                  {/* Alt Çizgi */}
-                  <span
-                    className="absolute left-1/2 w-0 h-[4px] transition-all duration-500 ease-out -translate-x-1/2 group-hover:w-full z-[110]"
-                    style={{
-                      bottom: scrollProgress > 0.5 ? "-0.5rem" : "-1rem",
-                      backgroundColor:
-                        scrollProgress > 0.5 ? "#f97316" : "#ffffff",
-                      clipPath: "polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%)",
-                    }}
-                  />
-                </Link>
-              ))}
-
-              {/* ÖZEL ÜRETİM ÖRNEK ÇALIŞMALAR - hover'da önizleme gösterir, tıklanınca galeri sayfasına yönlendirir */}
+              {/* ÖZEL TASARIMLAR - hover'da önizleme gösterir, tıklanınca galeri sayfasına yönlendirir */}
               <Link
                 href="/products/special_production/gallery"
+                aria-current={isGalleryActive ? "page" : undefined}
                 onMouseEnter={() => {
                   setActiveCategory(null);
                   setShowShowcase(true);
                 }}
-                className="relative py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center transition-colors duration-300 group"
-                style={{
-                  color: scrollProgress > 0.5 ? "#334155" : "#ffffff",
-                }}
+                className={`group relative flex flex-1 min-w-0 items-center justify-center px-3 text-center text-[14px] font-semibold leading-tight transition-colors duration-200 hover:text-sax-100 focus-visible:text-sax-100 focus-visible:outline-none ${isGalleryActive ? "text-sax-100" : "text-white"}`}
               >
+                Özel tasarımlar
                 <span
-                  className="absolute right-0 top-1/4 h-1/2 w-[1px] transition-all duration-300"
-                  style={{
-                    backgroundColor:
-                      scrollProgress > 0.5
-                        ? "#64748b"
-                        : "rgba(255, 255, 255, 0.3)",
-                    opacity: scrollProgress > 0.8 ? 0.3 : 1,
-                  }}
-                />
-                ÖZEL TASARIMLAR
-                {/* Alt Çizgi Efekti */}
-                <span
-                  className="absolute left-1/2 w-0 h-[4px] transition-all duration-500 ease-out -translate-x-1/2 group-hover:w-full z-[110]"
-                  style={{
-                    bottom: scrollProgress > 0.5 ? "-0.5rem" : "-1rem",
-                    backgroundColor:
-                      scrollProgress > 0.5 ? "#f97316" : "#ffffff",
-                    clipPath: "polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%)",
-                  }}
+                  aria-hidden="true"
+                  className={`absolute inset-x-3 bottom-0 h-[2px] bg-orange-500 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 ${isGalleryActive ? "opacity-100" : "opacity-0"}`}
                 />
               </Link>
 
               {/* EN YENİLER - Query parameter ile sort bilgisi eklendi */}
               <Link
                 href="/products?sort=dateNew"
-                className="relative py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center transition-colors duration-300 group"
-                style={{ color: scrollProgress > 0.5 ? "#334155" : "#ffffff" }}
+                className="group relative flex flex-1 min-w-0 items-center justify-center px-3 text-center text-[14px] font-semibold leading-tight text-white transition-colors duration-200 hover:text-sax-100 focus-visible:text-sax-100 focus-visible:outline-none"
               >
+                En yeniler
                 <span
-                  className="absolute right-0 top-1/4 h-1/2 w-[1px] transition-all duration-300"
-                  style={{
-                    backgroundColor:
-                      scrollProgress > 0.5
-                        ? "#64748b"
-                        : "rgba(255, 255, 255, 0.3)",
-                    opacity: scrollProgress > 0.8 ? 0.3 : 1,
-                  }}
+                  aria-hidden="true"
+                  className="absolute inset-x-3 bottom-0 h-[2px] bg-orange-500 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
                 />
-                EN YENİLER
-                <span
-                  className="absolute left-1/2 w-0 h-[4px] transition-all duration-500 ease-out -translate-x-1/2 group-hover:w-full z-[110]"
-                  style={{
-                    bottom: scrollProgress > 0.5 ? "-0.5rem" : "-1rem",
-                    backgroundColor:
-                      scrollProgress > 0.5 ? "#f97316" : "#ffffff",
-                    clipPath: "polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%)",
-                  }}
-                />
-              </Link>
-
-              {/* İNDİRİM (Çizgisiz Kalabilir) */}
-              <Link
-                href="/products?discount=true"
-                className="py-2 text-[14px] font-bold uppercase flex items-center justify-center text-center"
-              >
-                <span className="bg-red-800 text-white px-4 py-1.5 rounded-md shadow-sm hover:bg-red-700 transition-colors">
-                  İNDİRİM
-                </span>
               </Link>
             </div>
+
+            {/* Sağ uç: Fırsatlar (eski İNDİRİM bağlantısıyla aynı adres) */}
+            <Link
+              href="/products?discount=true"
+              className="group relative ml-6 flex shrink-0 items-center gap-2 px-3 text-[14px] font-semibold text-white transition-colors duration-200 hover:text-sax-100 focus-visible:text-sax-100 focus-visible:outline-none"
+            >
+              <span
+                aria-hidden="true"
+                className="h-1.5 w-1.5 rounded-full bg-orange-500"
+              />
+              Fırsatlar
+              <span
+                aria-hidden="true"
+                className="absolute inset-x-3 bottom-0 h-[2px] bg-orange-500 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
+              />
+            </Link>
           </div>
         </div>
         {/* MEGA MENU & BRANDS */}
@@ -521,36 +455,44 @@ export default function CategoryBar({
               initial={{ opacity: 0, y: 5, x: "-50%" }}
               animate={{ opacity: 1, y: 0, x: "-50%" }}
               exit={{ opacity: 0, y: 5, x: "-50%" }}
-              className="absolute left-1/2 top-full w-[95vw] max-w-[1500px] bg-white border border-slate-200 shadow-2xl z-50 rounded-b-xl"
+              className="absolute left-1/2 top-full w-[95vw] max-w-[1500px] bg-white border-t-[3px] border-sax-800 rounded-xl shadow-lg z-50"
             >
-              <div className="mx-auto px-8 py-10">
-                <div className="grid grid-cols-5 gap-8">
+              <div className="mx-auto px-8 py-8 grid grid-cols-[240px_1fr] gap-10">
+                {/* Sol: öne çıkan alan (mevcut kategori adı) */}
+                <div className="border-r border-sax-100 pr-8">
+                  <Link
+                    href={`/products/category/${currentCategory.id}`}
+                    className="group/feat block"
+                  >
+                    <h3 className="text-xl font-semibold text-sax-800 group-hover/feat:text-sax-600 transition-colors">
+                      {currentCategory.name}
+                    </h3>
+                    <span className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-sax-800 group-hover/feat:text-sax-600 transition-colors">
+                      Tümünü Gör
+                      <ArrowRight size={14} />
+                    </span>
+                  </Link>
+                </div>
+
+                {/* Sağ: 3 sütun liste */}
+                <div className="grid grid-cols-3 gap-x-8 gap-y-8">
                   {currentCategory.middleCategories.map((mid) => (
                     <div key={mid.id}>
                       <Link
                         href={`/products/category/${currentCategory.id}/${mid.id}`}
-                        className="flex items-center gap-3 mb-4 group/midlink"
+                        className="block"
                       >
-                        {mid.icon && (
-                          <img
-                            src={mid.icon}
-                            alt={mid.name}
-                            width={32}
-                            height={32}
-                            className="object-contain group-hover/midlink:scale-110 transition-transform"
-                          />
-                        )}
-                        <h4 className="text-[13px] font-black uppercase text-slate-800 group-hover/midlink:text-orange-600 transition-colors">
+                        <h4 className="pb-2 mb-3 border-b border-sax-100 text-[12px] font-semibold uppercase tracking-widest text-sax-800">
                           {mid.name}
                         </h4>
                       </Link>
 
-                      <ul className="space-y-2 border-l border-slate-100 ml-4 pl-4">
+                      <ul className="space-y-2">
                         {mid.subCategories.map((sub) => (
                           <li key={sub.id}>
                             <Link
                               href={`/products/category/${currentCategory.id}/${mid.id}/${sub.id}`}
-                              className="text-[13px] text-slate-500 hover:text-orange-600 transition-colors block"
+                              className="text-[14px] text-slate-700 hover:text-sax-600 transition-colors block"
                             >
                               {sub.name}
                             </Link>

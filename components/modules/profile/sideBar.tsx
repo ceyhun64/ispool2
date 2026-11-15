@@ -77,7 +77,7 @@ export default function Sidebar() {
     <aside className="w-full md:w-64 lg:w-72 md:min-h-screen bg-slate-50/50">
       <div className="flex flex-col py-12 px-6 h-full border-r border-slate-200/60 bg-white">
         {/* User Identity Section - Industrial Card Style */}
-        <div className="mb-12 relative overflow-hidden p-6  bg-slate-100 text-slatw-800 ">
+        <div className="mb-12 relative overflow-hidden p-6  bg-sax-100 text-sax-800 ">
           {/* Background Pattern */}
           <div className="absolute top-0 right-0 opacity-10 -translate-y-8 translate-x-6">
             <ShieldCheck size={100} />
@@ -128,7 +128,7 @@ export default function Sidebar() {
                         className={cn(
                           "group flex items-center rounded-sm gap-3 px-4 py-3 text-[13px] font-bold transition-all duration-300  relative",
                           isActive
-                            ? "bg-slate-50 text-slate-950 shadow-sm border border-slate-100"
+                            ? "bg-sax-100 text-sax-800 shadow-sm border border-sax-100"
                             : "text-slate-500 hover:text-slate-900 hover:bg-slate-50/50"
                         )}
                       >

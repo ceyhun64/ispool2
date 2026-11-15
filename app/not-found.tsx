@@ -8,8 +8,8 @@ export default function NotFound() {
   return (
     <div className="not-found-page flex flex-col items-center justify-center min-h-[100dvh] bg-white text-[#0a0a0a] px-6 overflow-hidden">
       {/* Arka Plan Büyük Rakam Vurgusu */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03]">
-        <h2 className="text-[30vw] font-black tracking-tighter leading-none select-none">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <h2 className="text-[30vw] font-black tracking-tighter leading-none select-none text-sax-800/30">
           404
         </h2>
       </div>
@@ -37,7 +37,7 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row items-center gap-6">
           <Link
             href="/"
-            className="group rounded-sm flex items-center gap-3 px-8 py-4 bg-[#0a0a0a] text-white  text-[11px] font-black tracking-[0.2em] uppercase transition-all hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-600/20 active:scale-95"
+            className="group rounded-sm flex items-center gap-3 px-8 py-4 bg-sax-950 text-white  text-[11px] font-black tracking-[0.2em] uppercase transition-all hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-600/20 active:scale-95"
           >
             <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
             Ana Sayfaya Dön

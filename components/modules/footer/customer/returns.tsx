@@ -9,7 +9,7 @@ const Returns = () => {
   return (
     <div className="max-w-3xl mx-auto px-6 py-16 text-gray-800 leading-relaxed">
       {/* TODO-HUKUK: avukat onayı bekliyor */}
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">
+      <h1 className="text-3xl font-bold text-sax-800 mb-2">
         İade ve Değişim
       </h1>
       <p className="text-gray-600 mb-10">
@@ -19,7 +19,7 @@ const Returns = () => {
       </p>
 
       <section className="mb-10">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-sax-800 mb-2">
           Yasal cayma hakkı
         </h2>
         <p>
@@ -32,7 +32,7 @@ const Returns = () => {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-sax-800 mb-2">
           İade süreci
         </h2>
         <p className="mb-2">
@@ -52,7 +52,7 @@ const Returns = () => {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-sax-800 mb-2">
           Değişim
         </h2>
         <p>
@@ -62,7 +62,7 @@ const Returns = () => {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-sax-800 mb-2">
           Kargo masrafı
         </h2>
         <p>
@@ -75,7 +75,7 @@ const Returns = () => {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-sax-800 mb-2">
           Hatalı veya ayıplı ürün
         </h2>
         <p>
@@ -90,7 +90,7 @@ const Returns = () => {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-sax-800 mb-2">
           Fatura kesilen kurumsal siparişler
         </h2>
         <p>
@@ -102,7 +102,7 @@ const Returns = () => {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-sax-800 mb-2">
           Kişiye özel baskılı ürünler
         </h2>
         <p>
@@ -117,7 +117,7 @@ const Returns = () => {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-sax-800 mb-2">
           Ödemenin geri yapılması
         </h2>
         <p>
@@ -127,7 +127,7 @@ const Returns = () => {
       </section>
 
       <section className="rounded-lg bg-gray-50 border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+        <h2 className="text-lg font-semibold text-sax-800 mb-2">
           Bize ulaşın
         </h2>
         <ul className="space-y-1">

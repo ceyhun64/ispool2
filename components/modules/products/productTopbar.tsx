@@ -11,9 +11,6 @@ import {
   Calendar,
   CalendarClock,
   ChevronDown,
-  Sparkles,
-  Flame,
-  Tag,
   Percent,
 } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
@@ -64,13 +61,13 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
   ] as const;
 
   const sortOptions = [
-    { id: "az", label: "İsim (A-Z)", icon: ArrowDownAZ },
-    { id: "za", label: "İsim (Z-A)", icon: ArrowUpAZ },
-    { id: "priceLow", label: "Fiyat (Önce En Düşük)", icon: TrendingDown },
-    { id: "priceHigh", label: "Fiyat (Önce En Yüksek)", icon: TrendingUp },
-    { id: "dateNew", label: "Tarih (En Yeni)", icon: Calendar },
-    { id: "dateOld", label: "Tarih (En Eski)", icon: CalendarClock },
-    { id: "discountHigh", label: "İndirim Oranı (En Yüksek)", icon: Percent },
+    { id: "az", label: "A-Z", icon: ArrowDownAZ },
+    { id: "za", label: "Z-A", icon: ArrowUpAZ },
+    { id: "priceLow", label: "Fiyat ↑", icon: TrendingDown },
+    { id: "priceHigh", label: "Fiyat ↓", icon: TrendingUp },
+    { id: "dateNew", label: "Yeni → Eski", icon: Calendar },
+    { id: "dateOld", label: "Eski → Yeni", icon: CalendarClock },
+    { id: "discountHigh", label: "İndirim ↓", icon: Percent },
   ] as const;
 
   // Aktif seçeneği bul
@@ -170,7 +167,7 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
           {/* Özel Sıralama Dropdown */}
           <div className="flex items-center gap-4 relative" ref={dropdownRef}>
             <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">
-              Sıralama
+              Sırala
             </span>
 
             <div className="relative">
@@ -234,97 +231,64 @@ const ProductTopBar: React.FC<ProductTopBarProps> = ({
               </AnimatePresence>
             </div>
           </div>
-        </div>
 
-        {/* Hızlı Erişim Butonları - İndirim modunda farklı butonlar */}
-        <div className="flex items-center gap-3">
-          {!isDiscountMode && (
-            <>
-              {/* En Yeniler */}
-              <button
-                onClick={handleNewArrivals}
-                className={cn(
-                  "group flex items-center gap-2 px-4 py-2 rounded-sm transition-all text-[10px] font-bold uppercase tracking-tight border",
-                  sort === "dateNew"
-                    ? "border-orange-600 bg-orange-50 text-orange-600 shadow-sm shadow-orange-100"
-                    : "border-slate-200 bg-white text-slate-600 hover:border-orange-600 hover:text-orange-600 hover:bg-orange-50/50",
-                )}
-              >
-                <Sparkles
-                  size={14}
+          {/* Hızlı erişim sekmeleri - İndirim modunda farklı sekmeler */}
+          <div className="flex items-center gap-6 border-l border-slate-200 pl-8">
+            {!isDiscountMode && (
+              <>
+                <button
+                  onClick={handleNewArrivals}
+                  aria-pressed={sort === "dateNew"}
                   className={cn(
-                    "transition-all",
+                    "relative -mb-px px-1 py-2 text-[12px] font-semibold border-b-2 transition-colors",
                     sort === "dateNew"
-                      ? "text-orange-600 scale-110"
-                      : "text-orange-500 group-hover:rotate-12",
+                      ? "border-sax-700 text-sax-800"
+                      : "border-transparent text-slate-600 hover:text-sax-800",
                   )}
-                />
-                En Yeniler
-              </button>
+                >
+                  Yeni Gelenler
+                </button>
 
-              {/* Çok Satanlar */}
-              <button
-                onClick={handleBestSellers}
-                className="group flex items-center gap-2 px-4 py-2 rounded-sm bg-white text-slate-600 border border-slate-200 hover:border-red-600 hover:text-red-600 hover:bg-red-50/50 transition-all text-[10px] font-bold uppercase tracking-tight"
-              >
-                <Flame
-                  size={14}
-                  className="text-red-500 group-hover:scale-110 group-hover:animate-pulse transition-transform"
-                />
-                Çok Satanlar
-              </button>
+                <button
+                  onClick={handleBestSellers}
+                  className="relative -mb-px px-1 py-2 text-[12px] font-semibold border-b-2 transition-colors border-transparent text-slate-600 hover:text-sax-800"
+                >
+                  Karışık
+                </button>
 
-              {/* İndirimdekiler - window.location.href ile tam sayfa yenileme */}
-              <button
-                onClick={handleDiscounts}
-                className="group flex items-center gap-2 px-4 py-2 rounded-sm bg-white text-slate-600 border border-slate-200 hover:border-emerald-600 hover:text-emerald-600 hover:bg-emerald-50/50 transition-all text-[10px] font-bold uppercase tracking-tight"
-              >
-                <Tag
-                  size={14}
-                  className="text-emerald-500 group-hover:-rotate-12 transition-transform"
-                />
-                İndirimdekiler
-              </button>
-            </>
-          )}
+                <button
+                  onClick={handleDiscounts}
+                  className="relative -mb-px px-1 py-2 text-[12px] font-semibold border-b-2 transition-colors border-transparent text-slate-600 hover:text-sax-800"
+                >
+                  Fırsatlar
+                </button>
+              </>
+            )}
 
-          {isDiscountMode && (
-            <>
-              {/* En Çok İndirimli - İndirim yüzdesine göre */}
-              <button
-                onClick={handleMostDiscounted}
-                className={cn(
-                  "group flex items-center gap-2 px-4 py-2 rounded-sm transition-all text-[10px] font-bold uppercase tracking-tight border",
-                  sort === "discountHigh"
-                    ? "border-emerald-600 bg-emerald-50 text-emerald-600 shadow-sm"
-                    : "border-slate-200 bg-white text-slate-600 hover:border-emerald-600 hover:text-emerald-600 hover:bg-emerald-50/50",
-                )}
-              >
-                <Percent
-                  size={14}
+            {isDiscountMode && (
+              <>
+                <button
+                  onClick={handleMostDiscounted}
+                  aria-pressed={sort === "discountHigh"}
                   className={cn(
-                    "transition-all",
+                    "relative -mb-px px-1 py-2 text-[12px] font-semibold border-b-2 transition-colors",
                     sort === "discountHigh"
-                      ? "text-emerald-600 scale-110"
-                      : "text-emerald-500 group-hover:-rotate-12",
+                      ? "border-sax-700 text-sax-800"
+                      : "border-transparent text-slate-600 hover:text-sax-800",
                   )}
-                />
-                En Çok İndirimli
-              </button>
+                >
+                  En Çok İndirimli
+                </button>
 
-              {/* Tüm Ürünler - window.location.href ile tam sayfa yenileme */}
-              <button
-                onClick={handleAllProducts}
-                className="group flex items-center gap-2 px-4 py-2 rounded-sm bg-slate-900 text-white border border-slate-900 hover:bg-slate-800 transition-all text-[10px] font-bold uppercase tracking-tight"
-              >
-                <LayoutGrid
-                  size={14}
-                  className="group-hover:rotate-12 transition-transform"
-                />
-                Tüm Ürünler
-              </button>
-            </>
-          )}
+                <button
+                  onClick={handleAllProducts}
+                  className="relative -mb-px px-1 py-2 text-[12px] font-semibold border-b-2 transition-colors border-transparent text-slate-600 hover:text-sax-800"
+                >
+                  Tüm Ürünler
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </nav>

@@ -618,7 +618,7 @@ export default function Orders() {
               <div className="h-px flex-1 bg-gradient-to-r from-slate-200 to-transparent" />
             </div>
 
-            <h1 className="text-4xl font-black tracking-tight text-slate-900 uppercase leading-none">
+            <h1 className="text-4xl font-black tracking-tight text-sax-800 uppercase leading-none">
               Sipariş <span className="text-orange-600">Geçmişi</span>
             </h1>
             <p className="text-slate-400 text-[10px] uppercase tracking-[0.35em] font-black mt-2 flex items-center gap-2">

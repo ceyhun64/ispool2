@@ -333,7 +333,7 @@ export default function BasketSummaryCard({
                     onClick={handleApplyCoupon}
                     disabled={couponLoading || !couponCode.trim()}
                     size="sm"
-                    className="h-10 px-4 bg-slate-900 hover:bg-slate-800 rounded-xl shrink-0"
+                    className="h-10 px-4 bg-sax-800 hover:bg-sax-700 rounded-xl shrink-0"
                   >
                     {couponLoading ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -424,7 +424,7 @@ export default function BasketSummaryCard({
                     +₺{formatPrice(interestAmount)}
                   </span>
                 </div>
-                <div className="bg-slate-950 p-4 rounded-xl text-white shadow-lg shadow-slate-200">
+                <div className="bg-sax-950 p-4 rounded-xl text-white shadow-lg shadow-slate-200">
                   <div className="flex justify-between items-center">
                     <span className="text-[10px] font-light uppercase tracking-[0.2em] opacity-60">
                       Aylık Ödeme
@@ -443,7 +443,7 @@ export default function BasketSummaryCard({
             className={`p-5 rounded-2xl transition-all duration-500 ${
               selectedInstallment > 1
                 ? "bg-slate-50 border border-slate-100"
-                : "bg-slate-950 text-white shadow-xl shadow-slate-300"
+                : "bg-sax-950 text-white shadow-xl shadow-slate-300"
             }`}
           >
             <div className="flex justify-between items-center">

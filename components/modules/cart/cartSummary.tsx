@@ -108,7 +108,7 @@ export default function CartSummary({
 
       <div className="space-y-6">
         <Link href="/checkout" className="block w-full">
-          <Button className="w-full rounded-sm bg-slate-900 hover:bg-slate-800 text-white h-16 text-[11px] tracking-[0.2em] font-bold transition-all duration-500 group relative overflow-hidden">
+          <Button className="w-full rounded-sm bg-sax-800 hover:bg-sax-700 text-white h-16 text-[11px] tracking-[0.2em] font-bold transition-all duration-500 group relative overflow-hidden">
             <span className="relative z-10 flex items-center justify-center">
               ÖDEME ADIMINA İLERLE
               <ArrowRight className="ml-3 h-4 w-4 transition-transform group-hover:translate-x-1" />

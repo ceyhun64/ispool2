@@ -167,7 +167,7 @@ export default function Navbar() {
         initial={{ y: 0 }}
         animate={{ y: navbarHidden ? "-100%" : 0 }}
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="sticky top-0 left-0 right-0 z-50 bg-white shadow-md"
+        className="sticky top-0 left-0 right-0 z-50 bg-white border-b border-sax-100 shadow-sm"
       >
         <div className="mx-auto px-5 md:px-12 flex flex-col">
           <div className="h-16 md:h-25 flex items-center justify-between gap-4 md:gap-10">
@@ -186,10 +186,10 @@ export default function Navbar() {
                 sizes="(max-width: 768px) 100px, 140px"
               />
               <div className="hidden xl:flex flex-col border-l border-slate-200 pl-5 py-0.5">
-                <span className="text-[10px] font-black text-slate-950 tracking-[0.3em] uppercase leading-none">
+                <span className="text-[10px] font-black text-sax-800 tracking-[0.3em] uppercase leading-none">
                   PREMIUM
                 </span>
-                <span className="text-[10px] font-bold text-orange-700 tracking-[0.3em] uppercase leading-none mt-1">
+                <span className="text-[10px] font-bold text-sax-800 tracking-[0.3em] uppercase leading-none mt-1">
                   KORUMA
                 </span>
               </div>
@@ -200,7 +200,7 @@ export default function Navbar() {
               <button
                 onClick={() => setSearchOpen(true)}
                 aria-label="Ürün ara (Ctrl+K)"
-                className="w-full h-12 flex rounded-sm items-center justify-between px-6 bg-slate-50 border border-slate-300 hover:border-orange-600 transition-all group"
+                className="w-full h-12 flex rounded-sm items-center justify-between px-6 bg-slate-50 border border-slate-300 hover:border-sax-600 outline-none focus-visible:border-sax-600 focus-visible:ring-2 focus-visible:ring-sax-600 transition-all group"
               >
                 <div className="flex items-center gap-4">
                   <Search
@@ -241,7 +241,7 @@ export default function Navbar() {
                 </div>
                 {favorites.length > 0 && (
                   <span
-                    className="absolute top-2 right-2 text-[9px] rounded-full font-black bg-slate-950 text-white w-4 h-4 flex items-center justify-center"
+                    className="absolute top-2 right-2 text-[9px] rounded-full font-black bg-sax-700 text-white w-4 h-4 flex items-center justify-center"
                     aria-hidden="true"
                   >
                     {favorites.length}
@@ -292,7 +292,7 @@ export default function Navbar() {
             <button
               onClick={() => setSearchOpen(true)}
               aria-label="Ürün ara"
-              className="w-full h-11 rounded-sm flex items-center gap-3 px-4 bg-slate-100 border border-slate-300 text-slate-900"
+              className="w-full h-11 rounded-sm flex items-center gap-3 px-4 bg-slate-100 border border-slate-300 text-slate-900 outline-none focus-visible:border-sax-600 focus-visible:ring-2 focus-visible:ring-sax-600"
             >
               <Search size={18} className="text-slate-800" aria-hidden="true" />
               <span className="text-[11px] font-bold text-slate-800 uppercase tracking-wider">
@@ -472,8 +472,8 @@ export default function Navbar() {
             aria-current={pathname === "/" ? "page" : undefined}
             className={`flex flex-col items-center justify-center gap-1 transition-colors ${
               pathname === "/"
-                ? "text-orange-700"
-                : "text-slate-500 hover:text-orange-700 active:text-orange-700"
+                ? "text-sax-800"
+                : "text-slate-500 hover:text-sax-800 active:text-sax-800"
             }`}
           >
             <svg
@@ -503,8 +503,8 @@ export default function Navbar() {
             aria-current={pathname === "/favorites" ? "page" : undefined}
             className={`flex flex-col items-center justify-center gap-1 transition-colors relative ${
               pathname === "/favorites"
-                ? "text-orange-700"
-                : "text-slate-500 hover:text-orange-700 active:text-orange-700"
+                ? "text-sax-800"
+                : "text-slate-500 hover:text-sax-800 active:text-sax-800"
             }`}
           >
             <div className="relative">
@@ -518,7 +518,7 @@ export default function Navbar() {
               />
               {favorites.length > 0 && (
                 <span
-                  className="absolute -top-1.5 -right-2 text-[8px] rounded-full font-black bg-slate-950 text-white w-3.5 h-3.5 flex items-center justify-center leading-none"
+                  className="absolute -top-1.5 -right-2 text-[8px] rounded-full font-black bg-sax-700 text-white w-3.5 h-3.5 flex items-center justify-center leading-none"
                   aria-hidden="true"
                 >
                   {favorites.length > 9 ? "9+" : favorites.length}
@@ -540,7 +540,7 @@ export default function Navbar() {
             onClick={() => setUserMenuOpen(!userMenuOpen)}
             aria-label="Hesabım"
             aria-expanded={userMenuOpen}
-            className="flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-orange-600 active:text-orange-600 transition-colors"
+            className="flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-sax-800 active:text-sax-800 transition-colors"
           >
             <User size={20} strokeWidth={2.5} aria-hidden="true" />
             <span className="text-[10px] font-black uppercase tracking-wider">

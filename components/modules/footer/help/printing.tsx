@@ -28,7 +28,7 @@ const methods = [
 const PrintingServices = () => {
   return (
     <div className="max-w-5xl mx-auto px-6 py-20 text-gray-800">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">
+      <h1 className="text-3xl font-bold text-sax-800 mb-2">
         Baskı ve Nakış
       </h1>
       <p className="text-gray-600 mb-10">
@@ -36,7 +36,7 @@ const PrintingServices = () => {
         hangi yöntemin hangi iş için uygun olduğunu karşılaştırır.
       </p>
 
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">
+      <h2 className="text-xl font-semibold text-sax-800 mb-4">
         Hangi yöntem bana uygun?
       </h2>
 
@@ -73,7 +73,7 @@ const PrintingServices = () => {
       </p>
 
       <section className="mt-12 rounded-lg bg-gray-50 border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+        <h2 className="text-lg font-semibold text-sax-800 mb-2">
           Teklif almak için
         </h2>
         <p className="text-gray-700 mb-3">

@@ -48,7 +48,7 @@ const Group = ({
   children: React.ReactNode;
 }) => (
   <section className="mb-10">
-    <h2 className="text-lg font-semibold text-blue-900 mb-1">{title}</h2>
+    <h2 className="text-lg font-semibold text-sax-800 mb-1">{title}</h2>
     {children}
   </section>
 );
@@ -56,7 +56,7 @@ const Group = ({
 const FAQ = () => {
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">
+      <h1 className="text-3xl font-bold text-sax-800 mb-2">
         Sık Karşılaşılan Konular
       </h1>
       <p className="text-gray-600 mb-10">
@@ -172,7 +172,7 @@ const FAQ = () => {
       </Group>
 
       <section className="mt-12 rounded-lg bg-gray-50 border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+        <h2 className="text-lg font-semibold text-sax-800 mb-2">
           Aradığınızı bulamadınız mı?
         </h2>
         <ul className="space-y-1 text-gray-800">

@@ -101,7 +101,7 @@ export default function HorozCargoTracking() {
               <div className="h-[2px] flex-1 bg-slate-200/60" />
             </div>
 
-            <h1 className="text-4xl font-black tracking-tight text-slate-900 uppercase">
+            <h1 className="text-4xl font-black tracking-tight text-sax-800 uppercase">
               Kargo <span className="text-orange-600">Takip</span>
             </h1>
             <p className="text-slate-500 text-[11px] uppercase tracking-[0.3em] font-bold mt-2 flex items-center gap-2">

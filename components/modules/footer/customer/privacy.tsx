@@ -21,7 +21,7 @@ const Clause = ({
   children: React.ReactNode;
 }) => (
   <section className="mb-10">
-    <h2 className="text-xl font-semibold text-gray-900 mb-3">{title}</h2>
+    <h2 className="text-xl font-semibold text-sax-800 mb-3">{title}</h2>
     <div className="space-y-3 text-gray-700">{children}</div>
   </section>
 );
@@ -108,7 +108,7 @@ const Privacy = () => {
   return (
     <div className="max-w-3xl mx-auto px-6 py-16 text-gray-800 leading-relaxed">
       {/* TODO-HUKUK: avukat onayı bekliyor */}
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">
+      <h1 className="text-3xl font-bold text-sax-800 mb-2">
         Gizlilik ve Kişisel Verilerin Korunması
       </h1>
       <p className="text-gray-600 mb-10">

@@ -20,7 +20,7 @@ const Clause = ({
   children: React.ReactNode;
 }) => (
   <section className="mb-8">
-    <h2 className="text-lg font-semibold text-gray-900 mb-2">{title}</h2>
+    <h2 className="text-lg font-semibold text-sax-800 mb-2">{title}</h2>
     <div className="space-y-2 text-gray-700">{children}</div>
   </section>
 );
@@ -29,7 +29,7 @@ const TermsOfUse = () => {
   return (
     <div className="max-w-3xl mx-auto px-6 py-16 text-gray-800 leading-relaxed">
       {/* TODO-HUKUK: avukat onayı bekliyor */}
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">
+      <h1 className="text-3xl font-bold text-sax-800 mb-2">
         Site Kullanım Şartları
       </h1>
       <p className="text-gray-600 mb-10">

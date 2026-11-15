@@ -327,12 +327,12 @@ const CartDropdown = forwardRef(
     const TriggerButton = mobileBottomBar ? (
       <button
         aria-label="Sepeti Aç"
-        className="flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-orange-600 active:text-orange-600 transition-colors relative w-full h-full"
+        className="flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-sax-800 active:text-sax-800 transition-colors relative w-full h-full"
       >
         <div className="relative">
           <ShoppingCart size={20} strokeWidth={2.5} />
           {showCount && cartItems.length > 0 && (
-            <span className="absolute -top-1.5 -right-2 h-3.5 w-3.5 rounded-full bg-slate-900 text-white text-[8px] flex items-center justify-center font-bold leading-none">
+            <span className="absolute -top-1.5 -right-2 h-3.5 w-3.5 rounded-full bg-sax-700 text-white text-[8px] flex items-center justify-center font-bold leading-none">
               {cartItems.length > 9 ? "9+" : cartItems.length}
             </span>
           )}
@@ -350,7 +350,7 @@ const CartDropdown = forwardRef(
           <ShoppingCart size={18} strokeWidth={2.5} />
         </div>
         {showCount && cartItems.length > 0 && (
-          <span className="absolute top-2 right-2 h-4 w-4 rounded-full bg-slate-900 text-white text-[9px] flex items-center justify-center font-bold font-mono shadow-sm">
+          <span className="absolute top-2 right-2 h-4 w-4 rounded-full bg-sax-700 text-white text-[9px] flex items-center justify-center font-bold font-mono shadow-sm">
             {cartItems.length}
           </span>
         )}

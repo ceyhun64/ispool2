@@ -147,21 +147,21 @@ export default function ProductTabs({
   };
 
   const tabs = [
-    { id: "info", label: "Detaylar", icon: <Info size={14} /> },
+    { id: "info", label: "Açıklama", icon: <Info size={14} /> },
     {
       id: "comments",
-      label: "Yorumlar",
+      label: "Değerlendirmeler",
       icon: <MessageSquare size={14} />,
       count: comments.length,
     },
     {
       id: "installments",
-      label: "Taksitler",
+      label: "Taksit",
       icon: <CreditCard size={14} />,
     },
     {
       id: "suggestions",
-      label: "Öneri",
+      label: "Tasarım Önerisi",
       icon: <BadgeCheck size={14} />,
     },
   ];
@@ -176,17 +176,17 @@ export default function ProductTabs({
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               className={cn(
-                "flex items-center gap-2 pb-4 px-3 md:px-5 text-[10px] md:text-[11px] uppercase tracking-wider transition-all relative whitespace-nowrap font-bold",
+                "flex items-center gap-2 pb-4 px-3 md:px-5 text-[10px] md:text-[11px] uppercase tracking-wider transition-all relative whitespace-nowrap font-bold border-b-2 -mb-px",
                 activeTab === tab.id
-                  ? "text-orange-600"
-                  : "text-slate-500 hover:text-slate-800",
+                  ? "border-sax-700 text-sax-800"
+                  : "border-transparent text-slate-500 hover:text-slate-800",
               )}
             >
               <span
                 className={cn(
                   "p-1.5 transition-colors hidden sm:block",
                   activeTab === tab.id
-                    ? "bg-orange-50 text-orange-600"
+                    ? "bg-sax-100 text-sax-800"
                     : "bg-slate-50 text-slate-400",
                 )}
               >
@@ -197,9 +197,6 @@ export default function ProductTabs({
                 <span className="ml-1 text-[9px] bg-slate-100 px-1.5 py-0.5 text-slate-500">
                   {tab.count}
                 </span>
-              )}
-              {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-orange-600 animate-in fade-in duration-300" />
               )}
             </button>
           ))}

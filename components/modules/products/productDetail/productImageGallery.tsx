@@ -304,7 +304,7 @@ export default function ProductImageGallery({
               <div className="absolute bottom-3 right-3 md:bottom-auto md:top-3 md:right-3 z-20 flex gap-2">
                 <button
                   onClick={onShowPreview}
-                  className="bg-orange-600 text-white px-3 py-2 text-[10px] sm:px-5 sm:py-3 sm:text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 sm:gap-2 shadow-xl hover:bg-slate-900 transition-all rounded-sm"
+                  className="bg-white border-2 border-sax-800 text-sax-800 px-3 py-2 text-[10px] sm:px-5 sm:py-3 sm:text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 sm:gap-2 shadow-xl hover:bg-sax-100 transition-all rounded-sm"
                 >
                   <Eye size={13} className="sm:w-4 sm:h-4" />
                   {customDesign || uploadedImagePreview

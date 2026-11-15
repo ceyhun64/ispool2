@@ -80,7 +80,7 @@ export default function ProductCard({ product }: { product: ProductData }) {
           >
             <Heart
               className={`h-4 w-4 sm:h-5 sm:w-5 ${
-                favorited ? "fill-red-500 text-red-500" : "text-slate-600"
+                favorited ? "fill-sax-700 text-sax-700" : "text-slate-600"
               } group-hover/fav:scale-110 transition-transform`}
               strokeWidth={1.5}
             />
@@ -158,7 +158,7 @@ export default function ProductCard({ product }: { product: ProductData }) {
               {product.category}
             </span>
             {hasRealDiscount && discount > 0 && (
-              <span className="bg-red-200 text-red-800 px-1.5 py-0.5 text-[8px] sm:text-[10px] font-bold uppercase">
+              <span className="bg-sax-800 text-white px-1.5 py-0.5 text-[8px] sm:text-[10px] font-bold uppercase">
                 %{discount} İndirim
               </span>
             )}

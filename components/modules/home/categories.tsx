@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
+import { sortCategoriesByDisplayOrder } from "@/lib/categoryOrder";
 
 // Kategori verilerinin tipini tanımlayalım
 interface CategoryData {
@@ -103,10 +104,14 @@ export default function CategoriesSection() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        setCategories(initialCategories);
+        setCategories(
+          sortCategoriesByDisplayOrder(initialCategories, (c) => c.name),
+        );
       } catch (error) {
         console.error("Kategoriler yüklenirken hata oluştu:", error);
-        setCategories(initialCategories);
+        setCategories(
+          sortCategoriesByDisplayOrder(initialCategories, (c) => c.name),
+        );
       } finally {
         setLoading(false);
       }

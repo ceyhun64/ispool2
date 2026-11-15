@@ -37,6 +37,12 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+--color-sax-950: #05122f;
+--color-sax-900: #071d46;
+--color-sax-800: #09275e;
+--color-sax-700: #0e3678;
+--color-sax-600: #14438d;
+--color-sax-100: #cbdaf4;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

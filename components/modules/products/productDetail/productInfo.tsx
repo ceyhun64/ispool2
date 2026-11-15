@@ -6,7 +6,6 @@ import {
   CheckCircle,
   X,
   ArrowLeft,
-  ChevronRight,
   Truck,
 } from "lucide-react";
 import Link from "next/link";
@@ -72,7 +71,7 @@ export default function ProductInfo({
 
           {category && (
             <>
-              <ChevronRight size={10} />
+              <span aria-hidden="true">/</span>
               <Link
                 href={`/products/category/${category.id}`}
                 className="hover:text-orange-600 transition-colors"
@@ -82,7 +81,7 @@ export default function ProductInfo({
 
               {middleCategory && (
                 <>
-                  <ChevronRight size={10} />
+                  <span aria-hidden="true">/</span>
                   <Link
                     href={`/products/category/${category.id}/${middleCategory.id}`}
                     className="hover:text-orange-600 transition-colors"
@@ -94,7 +93,7 @@ export default function ProductInfo({
 
               {subCategory && (
                 <>
-                  <ChevronRight size={10} />
+                  <span aria-hidden="true">/</span>
                   <Link
                     href={`/products/category/${category.id}/${middleCategory?.id}/${subCategory.id}`}
                     className="hover:text-orange-600 transition-colors"
@@ -106,8 +105,8 @@ export default function ProductInfo({
             </>
           )}
 
-          <ChevronRight size={10} />
-          <span className="text-slate-300">Ürün Detayı</span>
+          <span aria-hidden="true">/</span>
+          <span className="text-sax-800 font-bold" aria-current="page">Ürün Detayı</span>
         </nav>
       </div>
 
@@ -209,13 +208,11 @@ export default function ProductInfo({
         )}
 
         {/* Ücretsiz kargo eşiği */}
-        <div className="flex items-center gap-2 mt-3 text-xs text-slate-500">
-          <Truck size={14} className="text-emerald-600 shrink-0" />
+        <div className="flex items-center gap-2 mt-3 rounded-sm bg-sax-100 px-3 py-2 text-xs text-sax-800">
+          <Truck size={14} className="text-sax-800 shrink-0" />
           <span>
-            <strong className="text-slate-700">
-              {formatPrice(FREE_SHIPPING_THRESHOLD)} TL
-            </strong>{" "}
-            ve üzeri siparişlerde kargo ücretsiz.
+            <strong>{formatPrice(FREE_SHIPPING_THRESHOLD)} TL</strong> ve üzeri
+            alışverişte kargo ücretsiz.
           </span>
         </div>
       </div>

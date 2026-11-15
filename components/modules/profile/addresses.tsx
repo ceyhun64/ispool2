@@ -228,7 +228,7 @@ export default function Adreslerim() {
                 <div className="h-[2px] flex-1 bg-slate-200/60" />
               </div>
 
-              <h1 className="text-4xl font-black tracking-tight text-slate-900 uppercase">
+              <h1 className="text-4xl font-black tracking-tight text-sax-800 uppercase">
                 Adres <span className="text-orange-600">Defteri</span>
               </h1>
 

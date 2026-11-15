@@ -194,7 +194,7 @@ export default function ProductVariantSelector({
                   className={cn(
                     "h-12 border-2 rounded-sm font-bold text-sm transition-all relative",
                     isSelected
-                      ? "border-indigo-600 bg-indigo-50 text-indigo-700"
+                      ? "border-sax-800 bg-sax-800 text-white"
                       : isOutOfStock
                         ? "border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed"
                         : "border-slate-200 bg-white hover:border-slate-400",

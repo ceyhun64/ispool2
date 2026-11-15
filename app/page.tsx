@@ -1,3 +1,5 @@
+import CorporateCards from "@/components/modules/home/corporateCards";
+import TrustStrip from "@/components/modules/home/trustStrip";
 import DesignPaths from "@/components/modules/home/designPaths";
 import HeroSlider from "@/components/modules/home/heroSlider";
 import Banner from "@/components/modules/home/banner";
@@ -11,6 +13,7 @@ export default function Home() {
   return (
     <div>
       <HeroSlider />
+      <CorporateCards />
       <DesignPaths />
       <Products />
       <Categories />

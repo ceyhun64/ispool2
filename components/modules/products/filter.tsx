@@ -166,7 +166,7 @@ const Filter: React.FC<FilterProps> = ({
       {/* KATEGORİLER BÖLÜMÜ */}
       <section>
         <div className="flex items-center gap-2 mb-6">
-          <Hash size={14} className="text-orange-600" />
+          <Hash size={14} className="text-sax-800" />
           <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">
             KATEGORİLER
           </h3>
@@ -187,7 +187,7 @@ const Filter: React.FC<FilterProps> = ({
             className={cn(
               "group relative flex items-center rounded-sm justify-between py-2.5 px-3 transition-all duration-300",
               !currentCategory && subCategoryFilter === "all"
-                ? "bg-slate-950 text-white shadow-lg shadow-slate-200"
+                ? "bg-sax-800 text-white shadow-lg shadow-slate-200"
                 : "text-slate-500 hover:bg-slate-100 hover:text-slate-950",
             )}
           >
@@ -215,7 +215,7 @@ const Filter: React.FC<FilterProps> = ({
                   className={cn(
                     "group flex items-center transition-all duration-300",
                     currentCategory?.id === cat.id
-                      ? "bg-orange-50 text-orange-600"
+                      ? "bg-sax-100 text-sax-800"
                       : "text-slate-500 hover:bg-slate-100 hover:text-slate-950",
                   )}
                 >
@@ -242,10 +242,10 @@ const Filter: React.FC<FilterProps> = ({
                   {hasMiddle && (
                     <button
                       onClick={(e) => toggleCategory(cat.id, e)}
-                      className="px-3 py-2.5 hover:bg-orange-100 transition-colors rounded-sm"
+                      className="px-3 py-2.5 hover:bg-sax-100 transition-colors rounded-sm"
                     >
                       {isExpanded ? (
-                        <ChevronUp size={14} className="text-orange-600" />
+                        <ChevronUp size={14} className="text-sax-800" />
                       ) : (
                         <ChevronDown size={14} />
                       )}
@@ -272,9 +272,9 @@ const Filter: React.FC<FilterProps> = ({
                               ),
                             )
                           }
-                          className="w-full text-left py-1 px-2 hover:bg-orange-50 rounded-sm transition-colors"
+                          className="w-full text-left py-1 px-2 hover:bg-sax-100 rounded-sm transition-colors"
                         >
-                          <span className="text-[9px] font-black uppercase tracking-wider text-orange-600">
+                          <span className="text-[9px] font-black uppercase tracking-wider text-sax-800">
                             {mid.name}
                           </span>
                         </button>
@@ -298,7 +298,7 @@ const Filter: React.FC<FilterProps> = ({
                               }
                               className={cn(
                                 "text-left py-1.5 px-2 text-[10px] font-semibold transition-colors rounded-sm",
-                                "text-slate-600 hover:text-orange-600 hover:bg-orange-50/50",
+                                "text-slate-600 hover:text-sax-800 hover:bg-sax-100/50",
                               )}
                             >
                               {sub.name}
@@ -319,7 +319,7 @@ const Filter: React.FC<FilterProps> = ({
       {/* ÇÖZÜM ORTAKLARI (MARKALAR) */}
       <section className="pt-8 border-t border-slate-100 mt-8">
         <div className="flex items-center gap-2 mb-6">
-          <Factory size={14} className="text-orange-600" />
+          <Factory size={14} className="text-sax-800" />
           <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">
             ÇÖZÜM ORTAKLARI
           </h3>
@@ -332,7 +332,7 @@ const Filter: React.FC<FilterProps> = ({
             className={cn(
               "flex items-center gap-2 py-2 px-3 border rounded-sm text-[10px] font-bold uppercase transition-all",
               brandFilter === "all"
-                ? "border-orange-500 bg-orange-50 text-orange-600 shadow-sm"
+                ? "border-sax-700 bg-sax-100 text-sax-800 shadow-sm"
                 : "border-slate-100 bg-white text-slate-600 hover:border-slate-300",
             )}
           >
@@ -350,7 +350,7 @@ const Filter: React.FC<FilterProps> = ({
               className={cn(
                 "group flex items-center gap-2 py-2 px-3 border rounded-sm text-[10px] font-bold uppercase text-left transition-all",
                 brandFilter === String(brand.id)
-                  ? "border-orange-500 bg-orange-50 text-orange-600 shadow-sm"
+                  ? "border-sax-700 bg-sax-100 text-sax-800 shadow-sm"
                   : "border-slate-100 bg-white text-slate-600 hover:border-slate-300",
               )}
             >
@@ -363,7 +363,7 @@ const Filter: React.FC<FilterProps> = ({
       {/* RENK FİLTRESİ */}
       <section className="pt-8 border-t border-slate-100 mt-8">
         <div className="flex items-center gap-2 mb-6">
-          <Palette size={14} className="text-orange-600" />
+          <Palette size={14} className="text-sax-800" />
           <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">
             RENK
           </h3>
@@ -376,7 +376,7 @@ const Filter: React.FC<FilterProps> = ({
             className={cn(
               "flex items-center gap-2 py-2 px-3 border rounded-sm text-[10px] font-bold uppercase transition-all",
               colorFilter === "all"
-                ? "border-orange-500 bg-orange-50 text-orange-600 shadow-sm"
+                ? "border-sax-700 bg-sax-100 text-sax-800 shadow-sm"
                 : "border-slate-100 bg-white text-slate-600 hover:border-slate-300",
             )}
           >
@@ -394,7 +394,7 @@ const Filter: React.FC<FilterProps> = ({
               className={cn(
                 "group flex items-center gap-2 py-2 px-3 border rounded-sm text-[10px] font-bold uppercase text-left transition-all",
                 colorFilter === String(color.id)
-                  ? "border-orange-500 bg-orange-50 text-orange-600 shadow-sm"
+                  ? "border-sax-700 bg-sax-100 text-sax-800 shadow-sm"
                   : "border-slate-100 bg-white text-slate-600 hover:border-slate-300",
               )}
             >
@@ -412,7 +412,7 @@ const Filter: React.FC<FilterProps> = ({
       {/* BEDEN FİLTRESİ */}
       <section className="pt-8 border-t border-slate-100 mt-8">
         <div className="flex items-center gap-2 mb-6">
-          <Ruler size={14} className="text-orange-600" />
+          <Ruler size={14} className="text-sax-800" />
           <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">
             BEDEN
           </h3>
@@ -425,7 +425,7 @@ const Filter: React.FC<FilterProps> = ({
             className={cn(
               "flex items-center justify-center py-2.5 px-2 border rounded-sm text-[10px] font-bold uppercase transition-all",
               sizeFilter === "all"
-                ? "border-orange-500 bg-orange-50 text-orange-600 shadow-sm"
+                ? "border-sax-700 bg-sax-100 text-sax-800 shadow-sm"
                 : "border-slate-100 bg-white text-slate-600 hover:border-slate-300",
             )}
           >
@@ -440,7 +440,7 @@ const Filter: React.FC<FilterProps> = ({
               className={cn(
                 "flex items-center justify-center py-2.5 px-2 border rounded-sm text-[10px] font-bold uppercase transition-all",
                 sizeFilter === String(size.id)
-                  ? "border-orange-500 bg-orange-50 text-orange-600 shadow-sm"
+                  ? "border-sax-700 bg-sax-100 text-sax-800 shadow-sm"
                   : "border-slate-100 bg-white text-slate-600 hover:border-slate-300",
               )}
             >
@@ -453,7 +453,7 @@ const Filter: React.FC<FilterProps> = ({
       {/* FİYAT ARALIĞI */}
       <section className="pt-8 border-t border-slate-100 mt-8">
         <div className="flex items-center gap-2 mb-8">
-          <Banknote size={14} className="text-orange-600" />
+          <Banknote size={14} className="text-sax-800" />
           <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">
             FİYAT SPEKTRUMU
           </h3>
@@ -489,7 +489,7 @@ const Filter: React.FC<FilterProps> = ({
           setMaxPrice(300000);
           setExpandedCategories([]);
         }}
-        className="group rounded-sm w-full mt-8 py-4 flex items-center justify-center gap-3 bg-white border-2 border-slate-950 transition-all hover:bg-slate-950 hover:text-white"
+        className="group rounded-sm w-full mt-8 py-4 flex items-center justify-center gap-3 bg-white border-2 border-sax-800 text-sax-800 transition-all hover:bg-sax-800 hover:text-white"
       >
         <RotateCcw size={14} />
         <span className="text-[10px] font-black uppercase tracking-[0.2em]">

@@ -26,7 +26,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 selection:bg-orange-600 selection:text-white font-sans overflow-x-hidden">
       {/* --- HERO SECTION --- */}
-      <section className="relative min-h-[70vh] md:min-h-[85vh] flex items-center justify-center overflow-hidden bg-slate-950 px-6 py-20 md:py-0">
+      <section className="relative min-h-[70vh] md:min-h-[85vh] flex items-center justify-center overflow-hidden bg-sax-950 px-6 py-20 md:py-0">
         <div className="absolute inset-0 z-0">
           <Image
             src="/about/banner.jpg"
@@ -35,7 +35,7 @@ export default function AboutPage() {
             priority
             className="object-cover opacity-30 grayscale scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-transparent to-white" />
+          <div className="absolute inset-0 bg-gradient-to-b from-sax-950/80 via-transparent to-white" />
         </div>
 
         <div className="container mx-auto relative z-10">
@@ -99,7 +99,7 @@ export default function AboutPage() {
             transition={{ delay: 0.2 }}
             className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8"
           >
-            <div className="p-8 md:p-10 bg-slate-900 text-white space-y-4 shadow-xl">
+            <div className="p-8 md:p-10 bg-sax-900 text-white space-y-4 shadow-xl">
               <Shield className="w-10 h-10 md:w-12 md:h-12 text-orange-600" />
               <h4 className="text-xl font-black uppercase italic">
                 Sıfır Hata Vizyonu
@@ -233,7 +233,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
             <a
               href="tel:+905343529420"
-              className="group p-8 md:p-12 bg-white border border-slate-200 hover:bg-slate-900 transition-all duration-500"
+              className="group p-8 md:p-12 bg-white border border-slate-200 hover:bg-sax-900 transition-all duration-500"
             >
               <Phone className="text-orange-600 mb-6 group-hover:scale-110 transition-transform" />
               <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
@@ -245,7 +245,7 @@ export default function AboutPage() {
             </a>
             <a
               href="mailto:info@ispool.com.tr"
-              className="group p-8 md:p-12 bg-white border border-slate-200 hover:bg-slate-900 transition-all duration-500"
+              className="group p-8 md:p-12 bg-white border border-slate-200 hover:bg-sax-900 transition-all duration-500"
             >
               <Mail className="text-orange-600 mb-6 group-hover:scale-110 transition-transform" />
               <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
@@ -255,7 +255,7 @@ export default function AboutPage() {
                 info@ispool.com.tr
               </p>
             </a>
-            <div className="group p-8 md:p-12 bg-white border border-slate-200 hover:bg-slate-900 transition-all duration-500">
+            <div className="group p-8 md:p-12 bg-white border border-slate-200 hover:bg-sax-900 transition-all duration-500">
               <MapPin className="text-orange-600 mb-6 group-hover:scale-110 transition-transform" />
               <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
                 Merkez
@@ -269,7 +269,7 @@ export default function AboutPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-slate-950 py-10 md:py-16 px-6 border-t border-white/5">
+      <footer className="bg-sax-950 py-10 md:py-16 px-6 border-t border-white/5">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <p className="text-[9px] md:text-[10px] text-slate-500 tracking-[0.2em] md:tracking-[0.4em] font-bold uppercase text-center md:text-left leading-relaxed">
             © 2026 İşpool Industrial & Safety / Koruyucu Ekipman Çözümleri

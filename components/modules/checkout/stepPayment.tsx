@@ -341,7 +341,7 @@ export default function StepPaymentCard({
                 }
               }}
               disabled={!isFormValid || processing}
-              className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl shadow-lg transition-all active:scale-[0.98]"
+              className="w-full h-12 bg-sax-800 hover:bg-sax-700 text-white rounded-xl shadow-lg transition-all active:scale-[0.98]"
             >
               {processing ? (
                 <Loader2 className="w-5 h-5 animate-spin" />

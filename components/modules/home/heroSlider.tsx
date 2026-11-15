@@ -101,7 +101,7 @@ export default function HeroSlider() {
     currentSlide.tag || currentSlide.title || currentSlide.subtitle;
 
   return (
-    <section className="relative w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] xl:aspect-[2.5/1] overflow-hidden group/hero bg-slate-950">
+    <section className="relative w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] xl:aspect-[2.5/1] overflow-hidden group/hero bg-gradient-to-br from-sax-950 to-sax-900">
       {/* 1. ARKA PLAN VE ANA LİNK */}
       <Link
         href="/products"
@@ -271,8 +271,8 @@ export default function HeroSlider() {
       </div>
 
       {/* Slayt Numarası Dekoru */}
-      <div className="absolute top-10 right-12 hidden xl:block select-none pointer-events-none opacity-[0.03]">
-        <span className="text-[12rem] font-black text-white leading-none">
+      <div className="absolute top-10 right-12 hidden xl:block select-none pointer-events-none">
+        <span className="text-[12rem] font-black text-sax-800/40 leading-none">
           0{current + 1}
         </span>
       </div>

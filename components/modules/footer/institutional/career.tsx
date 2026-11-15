@@ -69,14 +69,14 @@ export default function KariyerPage() {
   return (
     <div className="min-h-screen bg-white text-slate-900 selection:bg-orange-600 selection:text-white font-sans overflow-x-hidden">
       {/* --- HERO SECTION --- */}
-      <section className="relative h-[50vh] md:h-[65vh] flex items-center justify-center overflow-hidden bg-slate-950 px-6">
+      <section className="relative h-[50vh] md:h-[65vh] flex items-center justify-center overflow-hidden bg-sax-950 px-6">
         <div className="absolute inset-0 z-0">
           <img
             src="/about/3.jpg"
             alt="Endüstriyel Üretim"
             className="w-full h-full object-cover opacity-30 grayscale"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-slate-950/90" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-sax-950/90" />
         </div>
 
         <div className="container mx-auto relative z-10">
