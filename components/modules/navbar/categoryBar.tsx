@@ -455,9 +455,9 @@ export default function CategoryBar({
               initial={{ opacity: 0, y: 5, x: "-50%" }}
               animate={{ opacity: 1, y: 0, x: "-50%" }}
               exit={{ opacity: 0, y: 5, x: "-50%" }}
-              className="absolute left-1/2 top-full w-[95vw] max-w-[1500px] bg-white border-t-[3px] border-sax-800 rounded-xl shadow-lg z-50"
+              className="absolute left-1/2 top-full w-[95vw] max-w-[1500px] max-h-[calc(100vh-200px)] overflow-y-auto overscroll-contain bg-white border-t-[3px] border-sax-800 rounded-xl shadow-lg z-50"
             >
-              <div className="mx-auto px-8 py-8 grid grid-cols-[240px_1fr] gap-10">
+              <div className="mx-auto px-8 py-6 grid grid-cols-[200px_1fr] items-start gap-10">
                 {/* Sol: öne çıkan alan (mevcut kategori adı) */}
                 <div className="border-r border-sax-100 pr-8">
                   <Link
@@ -474,8 +474,8 @@ export default function CategoryBar({
                   </Link>
                 </div>
 
-                {/* Sağ: 3 sütun liste */}
-                <div className="grid grid-cols-3 gap-x-8 gap-y-8">
+                {/* Sağ: lg'de 4, xl'de 5 sütun liste */}
+                <div className="grid grid-cols-4 xl:grid-cols-5 gap-x-8 gap-y-5">
                   {currentCategory.middleCategories.map((mid) => (
                     <div key={mid.id}>
                       <Link
@@ -487,7 +487,7 @@ export default function CategoryBar({
                         </h4>
                       </Link>
 
-                      <ul className="space-y-2">
+                      <ul className="space-y-1.5">
                         {mid.subCategories.map((sub) => (
                           <li key={sub.id}>
                             <Link
