@@ -56,13 +56,6 @@ const subCategoriesData = subCategoriesDataRaw as any[];
 // SABİTLER
 // --------------------
 const BRANDS = [
-  "3M",
-  "YDS",
-  "CERVA",
-  "PORTWEST",
-  "MAPA",
-  "PANDA",
-  "GVS",
   "POLYBOOT",
   "THERMOFORM",
   "Bmes",
